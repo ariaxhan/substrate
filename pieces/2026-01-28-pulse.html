@@ -1,26 +1,36 @@
 <section data-date='2026-01-28' data-type='pulse'>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;color:#fff;font-family:monospace;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.eq{position:relative;width:80vmin;height:80vmin;display:flex;align-items:center;justify-content:center}
-.line{position:absolute;background:#fff;opacity:.3}
-.h{width:100%;height:1px;top:50%}
-.v{height:100%;width:1px;left:50%}
-.dot{position:absolute;width:8px;height:8px;border-radius:50%;background:#fff;top:calc(50% - 4px);left:calc(50% - 4px);animation:pulse 2s ease-in-out infinite}
-.txt{position:absolute;font-size:12px;opacity:.6;letter-spacing:1px}
-.t{top:10px;left:50%;transform:translateX(-50%)}
-.b{bottom:10px;left:50%;transform:translateX(-50%)}
-.l{left:10px;top:50%;transform:translateY(-50%)}
-.r{right:10px;top:50%;transform:translateY(-50%)}
-@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(2);opacity:.3}}
+.pulse-container{display:flex;align-items:center;justify-content:center;min-height:80vh;font-family:monospace;color:#fff}
+.equilibrium{text-align:center;position:relative}
+.bar{height:2px;background:#fff;margin:20px 0;position:relative;overflow:hidden}
+.bar::after{content:'';position:absolute;left:50%;transform:translateX(-50%);width:4px;height:100%;background:#fff;box-shadow:0 0 10px #fff}
+.weight{display:inline-block;width:40px;height:40px;border:2px solid #fff;border-radius:50%;margin:0 60px;position:relative}
+.weight::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60%;height:60%;border:2px solid #fff;border-radius:50%}
+.counter{font-size:48px;margin:30px 0;letter-spacing:8px}
+.label{font-size:12px;opacity:0.6;letter-spacing:3px;margin:10px 0}
+@keyframes pulse{0%,100%{opacity:0.4}50%{opacity:1}}
+.weight{animation:pulse 2s ease-in-out infinite}
+.weight:first-of-type{animation-delay:0s}
+.weight:last-of-type{animation-delay:1s}
 </style>
-<div class='eq'>
-<div class='line h'></div>
-<div class='line v'></div>
-<div class='dot'></div>
-<div class='txt t'>BEFORE</div>
-<div class='txt b'>AFTER</div>
-<div class='txt l'>LEFT</div>
-<div class='txt r'>RIGHT</div>
+<div class="pulse-container">
+<div class="equilibrium">
+<div class="label">BEFORE</div>
+<div style="display:flex;align-items:center;justify-content:center">
+<span class="weight"></span>
+<div style="width:200px">
+<div class="bar"></div>
+</div>
+<span class="weight"></span>
+</div>
+<div class="counter">50:50</div>
+<div class="label">AFTER</div>
+<div style="margin-top:40px;font-size:11px;opacity:0.5;max-width:400px">
+The fulcrum holds. Neither side wins.<br>
+Perfect tension. Perfect stillness.<br>
+The midpoint is not empty—<br>
+it is the point of maximum potential.
+</div>
+</div>
 </div>
 </section>
