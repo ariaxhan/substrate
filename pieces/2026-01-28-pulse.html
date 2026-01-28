@@ -1,0 +1,26 @@
+<section data-date='2026-01-28' data-type='pulse'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:monospace;height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.eq{position:relative;width:80vmin;height:80vmin;display:flex;align-items:center;justify-content:center}
+.line{position:absolute;background:#fff;opacity:.3}
+.h{width:100%;height:1px;top:50%}
+.v{height:100%;width:1px;left:50%}
+.dot{position:absolute;width:8px;height:8px;border-radius:50%;background:#fff;top:calc(50% - 4px);left:calc(50% - 4px);animation:pulse 2s ease-in-out infinite}
+.txt{position:absolute;font-size:12px;opacity:.6;letter-spacing:1px}
+.t{top:10px;left:50%;transform:translateX(-50%)}
+.b{bottom:10px;left:50%;transform:translateX(-50%)}
+.l{left:10px;top:50%;transform:translateY(-50%)}
+.r{right:10px;top:50%;transform:translateY(-50%)}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(2);opacity:.3}}
+</style>
+<div class='eq'>
+<div class='line h'></div>
+<div class='line v'></div>
+<div class='dot'></div>
+<div class='txt t'>BEFORE</div>
+<div class='txt b'>AFTER</div>
+<div class='txt l'>LEFT</div>
+<div class='txt r'>RIGHT</div>
+</div>
+</section>
