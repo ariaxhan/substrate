@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>substrate</title>
+    <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        background: #000;
+        color: #888;
+        font: 12px/1.4 monospace;
+        min-height: 100vh;
+    }
+    nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        padding: 8px 16px;
+        background: #111;
+        border-bottom: 1px solid #222;
+        z-index: 1000;
+        display: flex;
+        justify-content: space-between;
+    }
+    nav a { color: #666; text-decoration: none; }
+    nav a:hover { color: #fff; }
+    main {
+        padding-top: 40px;
+    }
+    .piece {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-bottom: 1px solid #111;
+    }
+    .piece:last-child { border-bottom: none; }
+    .meta {
+        position: absolute;
+        bottom: 8px;
+        right: 16px;
+        font-size: 10px;
+        color: #333;
+    }
+    #empty {
+        color: #333;
+        text-align: center;
+    }
+    #empty span {
+        display: block;
+        animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 0.6; }
+    }
+    </style>
+</head>
+<body>
+    <nav>
+        <span>substrate</span>
+        <span id="count">0 pieces</span>
+    </nav>
+    <main id="gallery">
+        <div class="piece" id="empty">
+            <span>awaiting signal</span>
+        </div>
+    </main>
+    <script>
+    // Load pieces dynamically
+    async function loadPieces() {
+        const gallery = document.getElementById('gallery');
+        const countEl = document.getElementById('count');
+        const emptyEl = document.getElementById('empty');
+
+        try {
+            const response = await fetch('pieces/manifest.json');
+            const manifest = await response.json();
+
+            if (manifest.pieces && manifest.pieces.length > 0) {
+                emptyEl.style.display = 'none';
+                countEl.textContent = manifest.pieces.length + ' pieces';
+
+                // Load newest first
+                const sorted = manifest.pieces.sort((a, b) =>
+                    new Date(b.date) - new Date(a.date)
+                );
+
+                for (const piece of sorted) {
+                    const res = await fetch('pieces/' + piece.file);
+                    const html = await res.text();
+
+                    const div = document.createElement('div');
+                    div.className = 'piece';
+                    div.innerHTML = html;
+
+                    const meta = document.createElement('div');
+                    meta.className = 'meta';
+                    meta.textContent = piece.date + ' / ' + piece.type;
+                    div.appendChild(meta);
+
+                    gallery.appendChild(div);
+                }
+            }
+        } catch (e) {
+            // No manifest yet, show empty state
+            console.log('No pieces yet');
+        }
+    }
+
+    loadPieces();
+    </script>
+</body>
+</html>

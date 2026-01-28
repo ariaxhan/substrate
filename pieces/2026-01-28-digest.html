@@ -1,0 +1,80 @@
+<section data-date="2026-01-28" data-type="digest">
+<style>
+section[data-type="digest"] {
+  background: #000;
+  color: #0f0;
+  font-family: 'Courier New', monospace;
+  padding: 2rem;
+  min-height: 400px;
+  position: relative;
+  overflow: hidden;
+}
+.accumulator {
+  font-size: 14px;
+  line-height: 1.6;
+}
+.metric {
+  opacity: 0.6;
+  font-size: 11px;
+  margin: 0.2rem 0;
+}
+.flow {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  overflow: hidden;
+  opacity: 0.3;
+}
+.stream {
+  white-space: nowrap;
+  animation: scroll 20s linear infinite;
+}
+@keyframes scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+</style>
+
+<div class="accumulator">
+  <div class="metric pulse">SPARKS: 192</div>
+  <div class="metric">THREADS: 9</div>
+  <div class="metric">COLLISIONS: 5</div>
+  <div class="metric">DISTILLATIONS: 6</div>
+  <div class="metric" style="margin-top: 1rem; opacity: 0.8;">DENSITY: 1168 LINES</div>
+  <div style="margin-top: 2rem; opacity: 0.4; font-size: 10px;">
+    knowledge accumulating<br>
+    information flowing<br>
+    patterns emerging<br>
+    connections forming
+  </div>
+</div>
+
+<div class="flow">
+  <div class="stream">
+    spark → thread → collision → synthesis → spark → thread → collision → synthesis →
+    spark → thread → collision → synthesis → spark → thread → collision → synthesis →
+  </div>
+</div>
+
+<script>
+const metrics = document.querySelectorAll('.metric');
+let delay = 0;
+metrics.forEach(m => {
+  m.style.opacity = '0';
+  setTimeout(() => {
+    m.style.transition = 'opacity 0.5s';
+    m.style.opacity = m.classList.contains('pulse') ? '0.6' : '0.6';
+  }, delay);
+  delay += 200;
+});
+</script>
+</section>

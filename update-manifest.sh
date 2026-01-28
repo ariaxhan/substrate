@@ -1,0 +1,36 @@
+#!/bin/bash
+# Update manifest.json with all pieces in the pieces directory
+# Run after each email script to register new pieces
+
+SITE_DIR="$(cd "$(dirname "$0")" && pwd)"
+PIECES_DIR="$SITE_DIR/pieces"
+MANIFEST="$PIECES_DIR/manifest.json"
+
+# Build the pieces array
+pieces=""
+for file in "$PIECES_DIR"/*.html; do
+    if [[ -f "$file" ]]; then
+        filename=$(basename "$file")
+        # Extract date and type from filename: YYYY-MM-DD-type.html
+        date=$(echo "$filename" | grep -oE '^[0-9]{4}-[0-9]{2}-[0-9]{2}')
+        type=$(echo "$filename" | sed 's/^[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}-//' | sed 's/\.html$//')
+
+        if [[ -n "$date" && -n "$type" ]]; then
+            if [[ -n "$pieces" ]]; then
+                pieces="$pieces,"
+            fi
+            pieces="$pieces
+    {\"file\": \"$filename\", \"date\": \"$date\", \"type\": \"$type\"}"
+        fi
+    fi
+done
+
+# Write manifest
+cat > "$MANIFEST" << EOF
+{
+  "pieces": [$pieces
+  ]
+}
+EOF
+
+echo "Manifest updated: $(echo "$pieces" | grep -c 'file') pieces"
