@@ -1,36 +1,14 @@
 <section data-date='2026-01-28' data-type='pulse'>
 <style>
-.pulse-container{display:flex;align-items:center;justify-content:center;min-height:80vh;font-family:monospace;color:#fff}
-.equilibrium{text-align:center;position:relative}
-.bar{height:2px;background:#fff;margin:20px 0;position:relative;overflow:hidden}
-.bar::after{content:'';position:absolute;left:50%;transform:translateX(-50%);width:4px;height:100%;background:#fff;box-shadow:0 0 10px #fff}
-.weight{display:inline-block;width:40px;height:40px;border:2px solid #fff;border-radius:50%;margin:0 60px;position:relative}
-.weight::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60%;height:60%;border:2px solid #fff;border-radius:50%}
-.counter{font-size:48px;margin:30px 0;letter-spacing:8px}
-.label{font-size:12px;opacity:0.6;letter-spacing:3px;margin:10px 0}
-@keyframes pulse{0%,100%{opacity:0.4}50%{opacity:1}}
-.weight{animation:pulse 2s ease-in-out infinite}
-.weight:first-of-type{animation-delay:0s}
-.weight:last-of-type{animation-delay:1s}
+#eq{display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:2rem}
+.bar{width:200px;height:2px;background:#fff;position:relative}
+.dot{width:8px;height:8px;background:#fff;border-radius:50%;position:absolute;top:-3px;animation:slide 4s ease-in-out infinite}
+@keyframes slide{0%,100%{left:0}50%{left:calc(100% - 8px)}}
+#t{font-size:11px;letter-spacing:2px;opacity:.6}
 </style>
-<div class="pulse-container">
-<div class="equilibrium">
-<div class="label">BEFORE</div>
-<div style="display:flex;align-items:center;justify-content:center">
-<span class="weight"></span>
-<div style="width:200px">
-<div class="bar"></div>
-</div>
-<span class="weight"></span>
-</div>
-<div class="counter">50:50</div>
-<div class="label">AFTER</div>
-<div style="margin-top:40px;font-size:11px;opacity:0.5;max-width:400px">
-The fulcrum holds. Neither side wins.<br>
-Perfect tension. Perfect stillness.<br>
-The midpoint is not empty—<br>
-it is the point of maximum potential.
-</div>
-</div>
+<div id='eq'>
+<div class='bar'><div class='dot'></div></div>
+<div id='t'>MIDPOINT</div>
+<div class='bar'><div class='dot' style='animation-delay:-2s'></div></div>
 </div>
 </section>

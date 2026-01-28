@@ -1,9 +1,12 @@
 {
   "pieces": [
+    {"file": "2026-01-28-brief.html", "date": "2026-01-28", "type": "brief", "timestamp": 1769629589},
+    {"file": "2026-01-28-creative-spark.html", "date": "2026-01-28", "type": "creative-spark", "timestamp": 1769629630},
     {"file": "2026-01-28-digest.html", "date": "2026-01-28", "type": "digest", "timestamp": 1769590806},
     {"file": "2026-01-28-genesis.html", "date": "2026-01-28", "type": "genesis", "timestamp": 1769590296},
+    {"file": "2026-01-28-midday-pulse.html", "date": "2026-01-28", "type": "midday-pulse", "timestamp": 1769629581},
     {"file": "2026-01-28-morning.html", "date": "2026-01-28", "type": "morning", "timestamp": 1769591566},
-    {"file": "2026-01-28-pulse.html", "date": "2026-01-28", "type": "pulse", "timestamp": 1769629389},
+    {"file": "2026-01-28-pulse.html", "date": "2026-01-28", "type": "pulse", "timestamp": 1769629986},
     {"file": "2026-01-28-reflection.html", "date": "2026-01-28", "type": "reflection", "timestamp": 1769593993},
     {"file": "2026-01-28-spark.html", "date": "2026-01-28", "type": "spark", "timestamp": 1769593259}
   ]
