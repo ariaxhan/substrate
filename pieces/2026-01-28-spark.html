@@ -1,29 +1,32 @@
 <section data-date='2026-01-28' data-type='spark'>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;overflow:hidden}
-.c{position:fixed;top:0;left:0;width:100vw;height:100vh}
-.d{position:absolute;width:40px;height:40px;border:1px solid #0f0;font:12px monospace;color:#0f0;display:flex;align-items:center;justify-content:center;transition:all 2s ease}
-.d:nth-child(1){top:20%;left:10%;animation:drift1 8s infinite}
-.d:nth-child(2){top:60%;right:10%;animation:drift2 8s infinite}
-.l{position:absolute;width:0;height:1px;background:#0f0;opacity:0;transform-origin:0 0}
-@keyframes drift1{50%{transform:translate(40vw,20vh) rotate(180deg)}}
-@keyframes drift2{50%{transform:translate(-40vw,-20vh) rotate(-180deg)}}
-.active .l{width:100%;opacity:1;transition:all 1s ease}
-</style>
-<div class="c">
-<div class="d">A</div>
-<div class="d">B</div>
-<svg style="position:absolute;width:100%;height:100%;pointer-events:none"><line class="l" x1="0" y1="0" x2="0" y2="0" stroke="#0f0" stroke-width="1"/></svg>
-</div>
+<style>*{margin:0;padding:0}canvas{display:block;background:#000}</style>
+<canvas id=c></canvas>
 <script>
-const d=document.querySelectorAll('.d'),l=document.querySelector('.l'),c=document.querySelector('.c');
-setInterval(()=>{
-let r1=d[0].getBoundingClientRect(),r2=d[1].getBoundingClientRect();
-let x1=r1.left+r1.width/2,y1=r1.top+r1.height/2,x2=r2.left+r2.width/2,y2=r2.top+r2.height/2;
-let dist=Math.hypot(x2-x1,y2-y1);
-l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);
-if(dist<200)c.classList.add('active');else c.classList.remove('active');
-},100);
+const c=document.getElementById('c'),x=c.getContext('2d');
+c.width=c.height=400;let t=0,m=0;
+function d(){
+x.fillStyle='rgba(0,0,0,.1)';x.fillRect(0,0,400,400);
+let a=Math.sin(t*.01)*120+200,b=Math.cos(t*.015)*120+200;
+let e=Math.cos(t*.01)*120+200,f=Math.sin(t*.015)*120+200;
+x.strokeStyle='#0f0';x.lineWidth=2;
+x.beginPath();x.arc(a,200,15,0,7);x.stroke();
+x.strokeStyle='#00f';
+x.beginPath();x.arc(200,b,15,0,7);x.stroke();
+let dx=e-a,dy=f-b,dist=Math.sqrt(dx*dx+dy*dy);
+if(dist<50){
+m=Math.min(m+.03,1);
+x.globalAlpha=m*.5;x.strokeStyle='#fff';x.lineWidth=1;
+for(let i=0;i<8;i++){
+let ang=i*.785+t*.05;
+x.beginPath();
+x.moveTo(e,f);
+x.lineTo(e+Math.cos(ang)*m*40,f+Math.sin(ang)*m*40);
+x.stroke();
+}
+x.globalAlpha=1;
+}else m=Math.max(m-.01,0);
+t++;requestAnimationFrame(d)
+}
+d()
 </script>
 </section>
