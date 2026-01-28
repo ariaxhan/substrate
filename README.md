@@ -2,15 +2,34 @@
 
 Taper-style generative gallery. Accumulates abstract HTML pieces from daily emails.
 
+## CRITICAL: Architecture Invariant
+
+```
+NEVER MODIFY:
+- index.html (static viewer with keyboard navigation)
+- update-manifest.sh (static manifest builder)
+
+ONLY ADD:
+- pieces/*.html (one file per email, auto-generated)
+```
+
+**The viewer is static. Pieces are dynamic.**
+
+Each email script ONLY:
+1. Creates ONE new file: `pieces/YYYY-MM-DD-{type}.html`
+2. Calls `update-manifest.sh` (which rebuilds manifest + pushes to GitHub)
+
+That's it. No touching index.html. No custom loaders. No special cases.
+
 ## Structure
 
 ```
 taper-site/
-├── index.html         # Main gallery page
-├── pieces/            # Generated pieces
-│   ├── manifest.json  # Piece registry
-│   └── *.html         # Individual pieces
-├── update-manifest.sh # Rebuilds manifest from pieces/
+├── index.html         # STATIC - keyboard nav viewer (DO NOT MODIFY)
+├── update-manifest.sh # STATIC - rebuilds manifest + git push (DO NOT MODIFY)
+├── pieces/            # DYNAMIC - generated pieces
+│   ├── manifest.json  # Auto-rebuilt by update-manifest.sh
+│   └── *.html         # One per email (ONLY ADD HERE)
 └── README.md
 ```
 
