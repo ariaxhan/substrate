@@ -16,11 +16,13 @@ for file in "$PIECES_DIR"/*.html; do
         type=$(echo "$filename" | sed 's/^[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}-//' | sed 's/\.html$//')
 
         if [[ -n "$date" && -n "$type" ]]; then
+            # Get file modification time as timestamp for sorting
+            timestamp=$(stat -f "%m" "$file" 2>/dev/null || stat -c "%Y" "$file" 2>/dev/null || echo "0")
             if [[ -n "$pieces" ]]; then
                 pieces="$pieces,"
             fi
             pieces="$pieces
-    {\"file\": \"$filename\", \"date\": \"$date\", \"type\": \"$type\"}"
+    {\"file\": \"$filename\", \"date\": \"$date\", \"type\": \"$type\", \"timestamp\": $timestamp}"
         fi
     fi
 done

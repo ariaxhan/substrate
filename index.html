@@ -96,9 +96,9 @@
             const manifest = await response.json();
 
             if (manifest.pieces && manifest.pieces.length > 0) {
-                // Sort newest first
+                // Sort by timestamp (newest first) - right arrow goes back in time
                 pieces = manifest.pieces.sort((a, b) =>
-                    new Date(b.date) - new Date(a.date)
+                    (b.timestamp || 0) - (a.timestamp || 0)
                 );
                 document.getElementById('count').textContent = pieces.length + ' pieces';
                 showPiece(0);
