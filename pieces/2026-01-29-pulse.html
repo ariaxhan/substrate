@@ -1,0 +1,72 @@
+<section data-date='2026-01-29' data-type='pulse'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a0a;font-family:Georgia,serif}
+#c{position:absolute;width:100%;height:100vh;display:flex;align-items:center;justify-content:center}
+.h{position:absolute;width:60vw;height:2px;background:linear-gradient(90deg,transparent,#666,transparent);transform-origin:center;transition:transform .3s cubic-bezier(.4,0,.2,1)}
+.s{position:absolute;font-size:12vw;color:#111;font-weight:100;letter-spacing:.5em;user-select:none;transition:all .5s}
+.w{position:absolute;font-size:1.2vw;color:#333;font-style:italic;writing-mode:vertical-rl;text-orientation:mixed;letter-spacing:.3em}
+.l{left:10vw}
+.r{right:10vw}
+#p{position:absolute;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle,#fff,#666);box-shadow:0 0 20px rgba(255,255,255,.3);transition:transform .3s}
+.d{position:absolute;font-size:.8vw;color:#444;font-variant:small-caps;letter-spacing:.2em;opacity:0;transition:opacity .5s}
+#tl{top:25vh;left:50%;transform:translateX(-50%)}
+#bl{bottom:25vh;left:50%;transform:translateX(-50%)}
+</style>
+<div id="c">
+<div class="h" id="b"></div>
+<div id="p"></div>
+<div class="s" id="t">NOON</div>
+<div class="w l">morning</div>
+<div class="w r">evening</div>
+<div class="d" id="tl">light</div>
+<div class="d" id="bl">shadow</div>
+</div>
+<script>
+const b=document.getElementById('b'),
+p=document.getElementById('p'),
+t=document.getElementById('t'),
+tl=document.getElementById('tl'),
+bl=document.getElementById('bl'),
+w=window.innerWidth,
+h=window.innerHeight;
+let a=0,hv=false;
+document.addEventListener('mousemove',e=>{
+const x=e.clientX,y=e.clientY,
+dx=(x-w/2)/(w/2),
+dy=(y-h/2)/(h/2),
+r=Math.atan2(dy,dx)*180/Math.PI,
+tilt=dx*15,
+lift=Math.abs(dx)*20,
+scale=1+Math.abs(dx)*.1;
+b.style.transform=`translateY(${-lift}px) rotate(${tilt}deg)`;
+p.style.transform=`translate(-50%,-50%) scale(${scale})`;
+const hue=Math.abs(dx)*30;
+t.style.color=`hsl(${hue},20%,${15+Math.abs(dy)*10}%)`;
+t.style.transform=`scale(${1-Math.abs(dx)*.2})`;
+if(Math.abs(dx)>.3){
+tl.style.opacity=dx<0?1:0;
+bl.style.opacity=dx>0?1:0;
+}else{
+tl.style.opacity=0;
+bl.style.opacity=0;
+}
+});
+document.addEventListener('click',()=>{
+hv=!hv;
+if(hv){
+t.textContent='DUSK';
+document.body.style.background='#1a1520';
+}else{
+t.textContent='NOON';
+document.body.style.background='#0a0a0a';
+}
+});
+const wobble=()=>{
+a+=.01;
+const w=Math.sin(a)*2;
+b.style.transform=`rotate(${w}deg)`;
+requestAnimationFrame(wobble);
+};
+wobble();
+</script>
+</section>
