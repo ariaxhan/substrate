@@ -79,8 +79,8 @@ Generate a Taper-style HTML piece.
 
 Theme: [your theme]
 
-Create a self-contained HTML section under 2KB.
-Black background, monospace, abstract.
+Use CollabVault/knowledge/reference/taper/taper-raw-references.md for inspiration.
+Create a self-contained HTML section (under 4KB). One idea, abstract, interactive.
 Output ONLY <section>...</section>.
 Include inline <style> and <script>.
 Add data-date='$(date +%Y-%m-%d)' data-type='test'.
@@ -109,9 +109,12 @@ Or set up a cron job to auto-sync nightly:
 
 ## Design Philosophy
 
-- Black backgrounds
-- Monospace typography
-- Under 2KB per piece
-- Abstract, not literal
-- Generative, not static
-- Meaning through form
+Pieces are inspired by the Taper reference (see `CollabVault/knowledge/reference/taper/taper-raw-references.md`). Core essence:
+
+- **Computational poetry**: meaning through form, algorithm, and interaction; the medium is part of the message
+- **Constraint as creative force**: single file, no external assets; one idea, maximum impact, minimum means
+- **Abstract and experiential**: not an article, not a brief, not literal content — a poem in code
+- **Interaction or generativity**: the piece responds (click, hover, mousemove, time) or generates; discovery, not a static poster
+- **Self-contained**: one HTML file, inline style and script; slightly larger is fine (e.g. under 4KB)
+
+Style, palette, and typography vary; the reference shows Taper is not one look.

@@ -1,35 +1,99 @@
 <section data-date='2026-01-28' data-type='digest'>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;color:#0f0;font:12px monospace;overflow:hidden}
-#c{width:100vw;height:100vh;display:block}
+body{background:#0a0a0f;overflow:hidden;cursor:crosshair;font-family:'Courier New',monospace}
+canvas{position:fixed;top:0;left:0;width:100vw;height:100vh;opacity:.95}
+#overlay{position:fixed;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:center;mix-blend-mode:screen}
+.glyph{position:absolute;color:#3a7c8a;font-size:11px;opacity:.4;transition:opacity .8s,color .8s;white-space:pre;letter-spacing:2px}
+.glyph.active{opacity:.9;color:#5fc9d8}
+#meta{position:fixed;bottom:20px;right:20px;font-size:10px;color:#446;letter-spacing:1px;text-align:right;line-height:1.6}
 </style>
-<canvas id="c"></canvas>
+<canvas id=c></canvas>
+<div id=overlay></div>
+<div id=meta></div>
 <script>
-const c=document.getElementById('c'),x=c.getContext('2d');
-c.width=innerWidth;c.height=innerHeight;
-let p=[],t=0,m=0;
-function d(){
-x.fillStyle='rgba(0,0,0,.05)';x.fillRect(0,0,c.width,c.height);
-if(Math.random()>.7&&p.length<120){
-p.push({x:Math.random()*c.width,y:c.height,v:Math.random()*2+1,s:Math.random()*3+1,c:`hsl(${120+Math.random()*60},70%,${40+Math.random()*30}%)`});
+const cv=document.getElementById('c'),ctx=cv.getContext('2d'),ov=document.getElementById('overlay'),mt=document.getElementById('meta');
+cv.width=window.innerWidth;cv.height=window.innerHeight;
+const nodes=[],edges=[],traces=[],glyphs=['∴','∵','⋯','⋮','∷','≡','≋','∼','⁓','⸬','⁖','⁙'],maxNodes=80,maxEdges=120;
+let mx=cv.width/2,my=cv.height/2,discovered=0,connections=0;
+
+class Node{
+constructor(x,y,vx,vy){
+this.x=x;this.y=y;this.vx=vx;this.vy=vy;this.r=1.5;this.alpha=.3;this.connected=false;
 }
-p=p.filter(d=>{
-d.y-=d.v;d.x+=Math.sin(t*.01+d.y*.01)*.5;
-x.fillStyle=d.c;x.fillRect(d.x,d.y,d.s,d.s);
-if(Math.random()>.95){
-x.strokeStyle=d.c+'44';x.beginPath();x.moveTo(d.x,d.y);
-x.lineTo(d.x+Math.random()*40-20,d.y+Math.random()*40-20);x.stroke();
+update(){
+this.x+=this.vx;this.y+=this.vy;
+if(this.x<0||this.x>cv.width)this.vx*=-1;
+if(this.y<0||this.y>cv.height)this.vy*=-1;
+const dx=mx-this.x,dy=my-this.y,dist=Math.sqrt(dx*dx+dy*dy);
+if(dist<100){this.alpha=Math.min(.8,.3+(100-dist)/100*.5);this.connected=true;}
+else this.alpha=Math.max(.1,this.alpha-.01);
 }
-return d.y>0;
+draw(){
+ctx.fillStyle=`rgba(95,201,216,${this.alpha})`;
+ctx.beginPath();ctx.arc(this.x,this.y,this.r,0,Math.PI*2);ctx.fill();
+}
+}
+
+class Edge{
+constructor(n1,n2){this.n1=n1;this.n2=n2;this.strength=0;this.maxStr=.6;}
+update(){
+const dx=this.n1.x-this.n2.x,dy=this.n1.y-this.n2.y,dist=Math.sqrt(dx*dx+dy*dy);
+if(dist<120&&(this.n1.connected||this.n2.connected))this.strength=Math.min(this.maxStr,this.strength+.02);
+else this.strength=Math.max(0,this.strength-.01);
+}
+draw(){
+if(this.strength>.01){
+const dx=mx-this.n1.x,dy=my-this.n1.y,d1=Math.sqrt(dx*dx+dy*dy);
+const dx2=mx-this.n2.x,dy2=my-this.n2.y,d2=Math.sqrt(dx2*dx2+dy2*dy2);
+const prox=Math.max(0,1-Math.min(d1,d2)/150);
+ctx.strokeStyle=`rgba(58,124,138,${this.strength*prox})`;
+ctx.lineWidth=.5;ctx.beginPath();
+ctx.moveTo(this.n1.x,this.n1.y);ctx.lineTo(this.n2.x,this.n2.y);ctx.stroke();
+}
+}
+}
+
+for(let i=0;i<maxNodes;i++){
+const x=Math.random()*cv.width,y=Math.random()*cv.height,vx=(Math.random()-.5)*.3,vy=(Math.random()-.5)*.3;
+nodes.push(new Node(x,y,vx,vy));
+}
+
+for(let i=0;i<maxEdges;i++){
+const n1=nodes[Math.floor(Math.random()*nodes.length)],n2=nodes[Math.floor(Math.random()*nodes.length)];
+if(n1!==n2)edges.push(new Edge(n1,n2));
+}
+
+for(let i=0;i<16;i++){
+const g=document.createElement('div');g.className='glyph';
+g.textContent=glyphs[Math.floor(Math.random()*glyphs.length)];
+g.style.left=Math.random()*90+5+'%';g.style.top=Math.random()*90+5+'%';
+ov.appendChild(g);
+}
+
+cv.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;traces.push({x:mx,y:my,life:30});});
+
+function animate(){
+ctx.fillStyle='rgba(10,10,15,.08)';ctx.fillRect(0,0,cv.width,cv.height);
+discovered=0;connections=0;
+for(let t of traces){
+ctx.fillStyle=`rgba(95,201,216,${t.life/30*.15})`;
+ctx.beginPath();ctx.arc(t.x,t.y,2,0,Math.PI*2);ctx.fill();
+t.life--;
+}
+traces.splice(0,traces.length,...traces.filter(t=>t.life>0));
+nodes.forEach(n=>{n.update();n.draw();if(n.connected)discovered++;});
+edges.forEach(e=>{e.update();e.draw();if(e.strength>.1)connections++;});
+const gs=document.querySelectorAll('.glyph');
+gs.forEach(g=>{
+const r=g.getBoundingClientRect(),gx=r.left+r.width/2,gy=r.top+r.height/2;
+const dx=mx-gx,dy=my-gy,dist=Math.sqrt(dx*dx+dy*dy);
+if(dist<120)g.classList.add('active');
+else g.classList.remove('active');
 });
-if(t%180===0&&m<8){
-x.fillStyle='#0f0';x.font='9px monospace';
-x.fillText(['threads','patterns','collisions','synthesis','knowledge','emergence','coherence','distillation'][m],20,c.height-20-m*12);
-m++;
+mt.innerHTML=`nodes: ${discovered}/${maxNodes}<br>edges: ${connections}/${maxEdges}<br>entropy: ${(discovered*connections).toString(16).toUpperCase()}`;
+requestAnimationFrame(animate);
 }
-t++;requestAnimationFrame(d);
-}
-d();
+animate();
 </script>
 </section>
