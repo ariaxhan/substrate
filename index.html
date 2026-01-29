@@ -126,6 +126,12 @@
             const html = await res.text();
 
             viewer.innerHTML = '<div class="piece">' + html + '</div>';
+            // Re-execute scripts (innerHTML doesn't run <script> tags)
+            viewer.querySelectorAll('script').forEach(s => {
+                const n = document.createElement('script');
+                n.textContent = s.textContent;
+                s.parentNode.replaceChild(n, s);
+            });
             meta.textContent = piece.date + ' / ' + piece.type;
             counter.textContent = (index + 1) + ' / ' + pieces.length;
         } catch (e) {
