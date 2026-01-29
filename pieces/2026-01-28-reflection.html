@@ -1,30 +1,35 @@
 <section data-date='2026-01-28' data-type='reflection'>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;color:#888;font:14px/1.6 monospace;overflow:hidden}
-.sky{position:relative;height:100vh;width:100vw}
-.star{position:absolute;width:1px;height:1px;background:#fff;opacity:0;animation:twinkle 3s ease-in-out infinite}
-.star:nth-child(2n){animation-delay:.5s}
-.star:nth-child(3n){animation-delay:1s}
-.star:nth-child(5n){animation-delay:1.5s}
-.breath{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;opacity:.6}
-.breath div{animation:breathe 4s ease-in-out infinite}
-@keyframes twinkle{0%,100%{opacity:0}50%{opacity:.8}}
-@keyframes breathe{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.8;transform:scale(1.02)}}
+@keyframes fade{0%{opacity:0}to{opacity:1}}
+@keyframes drift{0%,to{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.night{background:#000;color:#aaa;font-family:monospace;padding:2rem;min-height:60vh;display:flex;flex-direction:column;justify-content:center}
+.stars{margin:2rem 0;text-align:center;letter-spacing:8px;font-size:1.2rem;animation:fade 3s ease-in}
+.star{display:inline-block;animation:drift 4s ease-in-out infinite;opacity:.7}
+.star:nth-child(2){animation-delay:.5s}
+.star:nth-child(3){animation-delay:1s}
+.star:nth-child(4){animation-delay:1.5s}
+.star:nth-child(5){animation-delay:2s}
+.breath{text-align:center;font-size:.9rem;line-height:1.8;animation:fade 4s 2s both}
+.settle{margin-top:2rem;text-align:center;font-size:.8rem;color:#666;animation:fade 5s 4s both}
 </style>
-<div class="sky"></div>
-<div class="breath">
-<div>the day completes<br>stars arrive one by one<br>breath slows<br>ready</div>
+<div class='night'>
+<div class='stars'>
+<span class='star'>.</span>
+<span class='star'>.</span>
+<span class='star'>.</span>
+<span class='star'>.</span>
+<span class='star'>.</span>
 </div>
-<script>
-const sky=document.querySelector('.sky');
-for(let i=0;i<50;i++){
-const star=document.createElement('div');
-star.className='star';
-star.style.left=Math.random()*100+'%';
-star.style.top=Math.random()*100+'%';
-star.style.animationDelay=Math.random()*3+'s';
-sky.appendChild(star);
-}
-</script>
+<div class='breath'>
+the work is done<br>
+the thoughts can rest<br>
+the stars appear<br>
+one<br>
+by<br>
+one
+</div>
+<div class='settle'>
+everything settles into place
+</div>
+</div>
 </section>
