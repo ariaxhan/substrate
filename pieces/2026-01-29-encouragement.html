@@ -1,0 +1,46 @@
+<section data-date='2026-01-29' data-type='encouragement'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a0a;cursor:crosshair;font-family:Georgia,serif}
+.container{position:relative;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center}
+.center{position:relative;z-index:2;font-size:2.5vw;color:#444;letter-spacing:0.3em;text-align:center;line-height:1.8;transition:color 0.8s ease,text-shadow 0.8s ease;user-select:none;padding:2em}
+.glow{position:absolute;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(255,200,100,0.3),transparent 70%);pointer-events:none;opacity:0;transition:opacity 0.4s ease;filter:blur(40px);mix-blend-mode:screen}
+.lit .center{color:#e8d5c4;text-shadow:0 0 20px rgba(255,200,100,0.4)}
+.lit .glow{opacity:1}
+@media(max-width:767px){.center{font-size:4vh;letter-spacing:0.2em;padding:1.5em}}
+</style>
+<div class="container" id="c">
+<div class="glow" id="g"></div>
+<div class="center" id="t">i see you</div>
+</div>
+<script>
+const c=document.getElementById('c'),
+g=document.getElementById('g'),
+t=document.getElementById('t'),
+phrases=['i see you','you are here','this matters','you exist','witness'],
+currentPhrase=0;
+let glowCount=0;
+
+document.addEventListener('mousemove',(e)=>{
+g.style.left=e.clientX-100+'px';
+g.style.top=e.clientY-100+'px';
+});
+
+c.addEventListener('click',()=>{
+glowCount++;
+c.classList.add('lit');
+currentPhrase=(currentPhrase+1)%phrases.length;
+t.textContent=phrases[currentPhrase];
+
+if(glowCount>=phrases.length*2){
+setTimeout(()=>{
+t.style.fontSize='3.5vw';
+t.textContent='you have always been seen';
+},600);
+}
+});
+
+document.addEventListener('mouseleave',()=>{
+c.classList.remove('lit');
+});
+</script>
+</section>
