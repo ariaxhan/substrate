@@ -1,0 +1,30 @@
+<section data-date='2026-01-29' data-type='morning'>
+<style>
+body{margin:0;overflow:hidden;background:#000;font-family:'Courier New',monospace}
+#c{position:absolute;width:100%;height:100vh;display:flex;flex-direction:column;justify-content:center;align-items:center;cursor:crosshair;transition:background 1.2s ease}
+.l{font-size:8vmin;color:#111;letter-spacing:0.3em;margin:0.2em 0;opacity:0;transform:translateY(20px);transition:all 0.8s ease;user-select:none}
+.l.v{opacity:1;transform:translateY(0)}
+#h{position:fixed;top:0;left:0;width:100%;height:0;background:linear-gradient(to bottom,#fff8e7 0%,#ffd4a3 50%,#ff9a56 100%);transition:height 2s ease;pointer-events:none;mix-blend-mode:screen;opacity:0}
+.st{position:fixed;width:2px;height:2px;background:#fff;border-radius:50%;opacity:0;pointer-events:none}
+@keyframes tw{0%,100%{opacity:0.3}50%{opacity:1}}
+.st.a{animation:tw 2s ease-in-out infinite}
+</style>
+<div id="c">
+<div class="l">before</div>
+<div class="l">the light</div>
+<div class="l">before</div>
+<div class="l">the thought</div>
+<div class="l">before</div>
+<div class="l">the name</div>
+<div class="l">—</div>
+<div class="l">potential</div>
+</div>
+<div id="h"></div>
+<script>
+let s=0,ls=document.querySelectorAll('.l'),h=document.getElementById('h'),c=document.getElementById('c'),st=[],cl=0;
+for(let i=0;i<50;i++){let d=document.createElement('div');d.className='st';d.style.left=Math.random()*100+'%';d.style.top=Math.random()*60+'%';c.appendChild(d);st.push(d)}
+function r(){ls.forEach((l,i)=>setTimeout(()=>l.classList.add('v'),i*200))}
+c.addEventListener('click',()=>{if(s===0){r();s=1;setTimeout(()=>s=2,2000)}else if(s===2){let n=Math.floor(Math.random()*st.length);if(cl<st.length/3){st[n].classList.add('a');cl++}}});
+c.addEventListener('mousemove',e=>{if(s>=1){let p=e.clientY/window.innerHeight;let hp=Math.min(p*100,100);h.style.height=hp+'%';h.style.opacity=p*0.7;let r=Math.round(17+(238*p));let g=Math.round(17+(212*p));let b=Math.round(17+(166*p));c.style.background=`rgb(${r},${g},${b})`}});
+</script>
+</section>
