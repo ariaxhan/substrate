@@ -1,0 +1,102 @@
+<section data-date='2026-01-29' data-type='digest'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0f;overflow:hidden;cursor:crosshair;font-family:'Courier New',monospace}
+#v{position:fixed;top:0;left:0;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;perspective:1000px}
+#g{position:relative;width:80vmin;height:80vmin;transform-style:preserve-3d;animation:r 60s linear infinite}
+@keyframes r{to{transform:rotateY(360deg) rotateX(20deg)}}
+.n{position:absolute;width:2px;height:2px;background:radial-gradient(circle,#fff,transparent);opacity:0;transition:all .8s cubic-bezier(.23,1,.32,1);transform-origin:center;pointer-events:none}
+.n.a{opacity:.9}
+.l{position:absolute;height:1px;background:linear-gradient(90deg,transparent,rgba(100,200,255,.3),transparent);transform-origin:0 0;pointer-events:none;opacity:0;transition:opacity .5s}
+.l.v{opacity:1}
+#c{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);color:#4a90e2;font-size:11px;letter-spacing:2px;opacity:.5;text-transform:uppercase}
+#h{position:fixed;top:20px;right:20px;color:#4a90e2;font-size:32px;font-weight:100;opacity:.3;font-variant-numeric:tabular-nums}
+</style>
+<div id=v>
+<div id=g></div>
+<div id=c>click to accumulate knowledge</div>
+<div id=h>0</div>
+</div>
+<script>
+const g=document.getElementById('g'),
+h=document.getElementById('h'),
+r=()=>Math.random(),
+nodes=[],
+links=[],
+maxN=100,
+maxD=400;
+let count=0;
+
+function c3d(x,y,z){
+const t=Date.now()*.001,
+rx=x*Math.cos(t*.1)-z*Math.sin(t*.1),
+rz=x*Math.sin(t*.1)+z*Math.cos(t*.1);
+return{x:rx,y:y,z:rz}}
+
+function addNode(e){
+if(nodes.length>=maxN)return;
+const rect=g.getBoundingClientRect(),
+cx=rect.width/2,
+cy=rect.height/2,
+mx=e.clientX-rect.left-cx,
+my=e.clientY-rect.top-cy,
+d=Math.sqrt(mx*mx+my*my),
+theta=Math.atan2(my,mx),
+phi=d/200,
+x=maxD*Math.sin(phi)*Math.cos(theta),
+y=maxD*Math.sin(phi)*Math.sin(theta),
+z=maxD*Math.cos(phi),
+n=document.createElement('div');
+n.className='n';
+n.style.left=cx+'px';
+n.style.top=cy+'px';
+g.appendChild(n);
+nodes.push({el:n,x,y,z,px:cx,py:cy});
+count++;
+h.textContent=count;
+setTimeout(()=>n.classList.add('a'),10);
+if(nodes.length>1)connectLast()}
+
+function connectLast(){
+const a=nodes[nodes.length-1],
+b=nodes[Math.floor(r()*Math.max(0,nodes.length-10))];
+if(!b||a===b)return;
+const dx=b.x-a.x,
+dy=b.y-a.y,
+dz=b.z-a.z,
+dist=Math.sqrt(dx*dx+dy*dy+dz*dz);
+if(dist<maxD*.7){
+const l=document.createElement('div');
+l.className='l';
+g.appendChild(l);
+links.push({el:l,a,b});
+setTimeout(()=>l.classList.add('v'),r()*300)}}
+
+function update(){
+const rect=g.getBoundingClientRect(),
+cx=rect.width/2,
+cy=rect.height/2;
+nodes.forEach(n=>{
+const p=c3d(n.x,n.y,n.z),
+scale=1/(1+p.z/maxD),
+px=cx+p.x*scale,
+py=cy+p.y*scale;
+n.el.style.transform=`translate(${px}px,${py}px) scale(${scale*3})`;
+n.px=px;
+n.py=py});
+links.forEach(l=>{
+const dx=l.b.px-l.a.px,
+dy=l.b.py-l.a.py,
+len=Math.sqrt(dx*dx+dy*dy),
+ang=Math.atan2(dy,dx)*180/Math.PI;
+l.el.style.left=l.a.px+'px';
+l.el.style.top=l.a.py+'px';
+l.el.style.width=len+'px';
+l.el.style.transform=`rotate(${ang}deg)`});
+requestAnimationFrame(update)}
+
+document.addEventListener('click',addNode);
+update();
+for(let i=0;i<5;i++)setTimeout(()=>addNode({clientX:window.innerWidth/2+r()*200-100,clientY:window.innerHeight/2+r()*200-100}),i*100);
+</script>
+</section>
