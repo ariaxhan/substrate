@@ -1,0 +1,81 @@
+<section data-date='2026-01-29' data-type='spark'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a0a;font-family:'Courier New',monospace}
+#c{position:fixed;top:0;left:0;width:100vw;height:100vh}
+.orb{position:absolute;border-radius:50%;mix-blend-mode:screen;transition:transform .3s cubic-bezier(.4,0,.2,1);pointer-events:none}
+#a{width:120px;height:120px;background:radial-gradient(circle,#ff3366 0%,#ff1a4d 40%,transparent 70%);filter:blur(8px);top:20%;left:20%}
+#b{width:120px;height:120px;background:radial-gradient(circle,#00ccff 0%,#0099ff 40%,transparent 70%);filter:blur(8px);top:60%;right:20%}
+.trace{position:absolute;width:2px;height:2px;background:#666;border-radius:50%;pointer-events:none;opacity:0;animation:fade 2s forwards}
+@keyframes fade{0%{opacity:.8}100%{opacity:0;transform:scale(3)}}
+#t{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#444;font-size:14px;letter-spacing:8px;text-align:center;line-height:1.8;user-select:none;transition:all .5s}
+#t.active{color:#fff;text-shadow:0 0 20px rgba(255,255,255,.8),0 0 40px rgba(255,51,102,.4),0 0 60px rgba(0,204,255,.4);letter-spacing:12px;font-size:16px}
+.spark{position:absolute;width:3px;height:3px;background:#fff;border-radius:50%;pointer-events:none;opacity:0}
+@keyframes burst{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(0)}}
+</style>
+<div id='c'>
+<div id='a' class='orb'></div>
+<div id='b' class='orb'></div>
+<div id='t'>COLLISION<br>SYNTHESIS<br>EMERGENCE</div>
+</div>
+<script>
+const a=document.getElementById('a'),b=document.getElementById('b'),t=document.getElementById('t'),c=document.getElementById('c');
+let mx=window.innerWidth/2,my=window.innerHeight/2,collided=false,cooldown=false;
+const dist=(x1,y1,x2,y2)=>Math.sqrt((x2-x1)**2+(y2-y1)**2);
+const lerp=(s,e,t)=>s+(e-s)*t;
+let traces=[];
+document.addEventListener('mousemove',e=>{
+mx=e.clientX;my=e.clientY;
+if(Math.random()<.05){
+const tr=document.createElement('div');
+tr.className='trace';
+tr.style.left=mx+'px';
+tr.style.top=my+'px';
+c.appendChild(tr);
+traces.push(tr);
+setTimeout(()=>{tr.remove();traces=traces.filter(x=>x!==tr)},2000);
+}
+});
+function update(){
+const ar=a.getBoundingClientRect(),br=b.getBoundingClientRect();
+const ax=ar.left+ar.width/2,ay=ar.top+ar.height/2;
+const bx=br.left+br.width/2,by=br.top+br.height/2;
+const pull=.08;
+const targetAX=lerp(ax,mx,pull),targetAY=lerp(ay,my,pull);
+const targetBX=lerp(bx,mx,pull),targetBY=lerp(by,my,pull);
+a.style.left=targetAX-60+'px';
+a.style.top=targetAY-60+'px';
+b.style.left=targetBX-60+'px';
+b.style.top=targetBY-60+'px';
+const d=dist(targetAX,targetAY,targetBX,targetBY);
+if(d<150&&!collided&&!cooldown){
+collided=true;
+cooldown=true;
+t.classList.add('active');
+for(let i=0;i<20;i++){
+setTimeout(()=>{
+const sp=document.createElement('div');
+sp.className='spark';
+sp.style.left=mx+'px';
+sp.style.top=my+'px';
+const angle=Math.random()*Math.PI*2;
+const dist=50+Math.random()*100;
+sp.style.setProperty('--dx',Math.cos(angle)*dist+'px');
+sp.style.setProperty('--dy',Math.sin(angle)*dist+'px');
+sp.style.animation='burst .8s ease-out forwards';
+c.appendChild(sp);
+setTimeout(()=>sp.remove(),800);
+},i*30);
+}
+setTimeout(()=>{
+t.classList.remove('active');
+collided=false;
+setTimeout(()=>cooldown=false,1000);
+},600);
+}else if(d>=150){
+collided=false;
+}
+requestAnimationFrame(update);
+}
+update();
+</script>
+</section>
