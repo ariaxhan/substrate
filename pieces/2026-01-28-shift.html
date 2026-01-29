@@ -1,0 +1,25 @@
+<section data-date='2026-01-28' data-type='shift'>
+<style>
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rev{to{transform:rotate(-360deg)}}
+.b{background:#000;color:#0f0;font:14px monospace;height:100vh;margin:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.c{position:relative;width:300px;height:300px}
+.r{position:absolute;border:1px solid #0f0;animation:spin 8s linear infinite}
+.r:nth-child(1){width:280px;height:280px;top:10px;left:10px}
+.r:nth-child(2){width:220px;height:220px;top:40px;left:40px;animation:rev 6s linear infinite}
+.r:nth-child(3){width:160px;height:160px;top:70px;left:70px}
+.r:nth-child(4){width:100px;height:100px;top:100px;left:100px;animation:rev 4s linear infinite}
+.t{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;z-index:10}
+</style>
+<div class=b>
+<div class=c>
+<div class=r></div>
+<div class=r></div>
+<div class=r></div>
+<div class=r></div>
+<div class=t>
+SAME<br>VIEW<br><br>DIFFERENT<br>ANGLE
+</div>
+</div>
+</div>
+</section>
