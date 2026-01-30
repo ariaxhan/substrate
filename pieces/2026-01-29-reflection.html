@@ -1,0 +1,103 @@
+<section data-date='2026-01-29' data-type='reflection'>
+<style>
+body{margin:0;overflow:hidden;background:#000;cursor:crosshair}
+#c{position:fixed;top:0;left:0;width:100vw;height:100vh}
+.s{position:absolute;color:#fff;opacity:0;font-family:Georgia,serif;font-size:11px;pointer-events:none;animation:f 3s ease-out forwards}
+@keyframes f{
+0%{opacity:0;transform:scale(0)}
+20%{opacity:1;transform:scale(1)}
+100%{opacity:0.6;transform:scale(1)}
+}
+.c{position:absolute;width:1px;height:1px;background:radial-gradient(circle,rgba(255,255,255,0.9) 0%,rgba(255,255,255,0) 70%);border-radius:50%;animation:tw 2s ease-in-out infinite}
+@keyframes tw{
+0%,100%{opacity:0.3;transform:scale(1)}
+50%{opacity:1;transform:scale(1.5)}
+}
+</style>
+<canvas id="c"></canvas>
+<script>
+const cv=document.getElementById('c'),
+ctx=cv.getContext('2d'),
+w=cv.width=innerWidth,
+h=cv.height=innerHeight,
+ps=[],
+cs=[],
+ws=['rest','stillness','silence','peace','breathe','dark','gentle','dream','whole','night','complete','soft','still','quiet','end','begin'],
+lx=w/2,
+ly=h/2;
+
+function Star(x,y){
+this.x=x;
+this.y=y;
+this.r=Math.random()*1.5+0.5;
+this.o=Math.random()*0.5+0.3;
+this.tw=Math.random()*2000+1000;
+this.ph=Math.random()*Math.PI*2;
+}
+
+Star.prototype.draw=function(t){
+const op=this.o+(Math.sin(t/this.tw+this.ph)*0.3);
+ctx.fillStyle=`rgba(255,255,255,${op})`;
+ctx.beginPath();
+ctx.arc(this.x,this.y,this.r,0,Math.PI*2);
+ctx.fill();
+};
+
+for(let i=0;i<200;i++){
+ps.push(new Star(Math.random()*w,Math.random()*h));
+}
+
+function addWord(x,y){
+const w=ws[Math.floor(Math.random()*ws.length)],
+d=document.createElement('div');
+d.className='s';
+d.textContent=w;
+d.style.left=x+'px';
+d.style.top=y+'px';
+document.body.appendChild(d);
+setTimeout(()=>d.remove(),3000);
+}
+
+function addConstellation(x,y){
+const c=document.createElement('div');
+c.className='c';
+c.style.left=x+'px';
+c.style.top=y+'px';
+c.style.width=Math.random()*3+2+'px';
+c.style.height=c.style.width;
+cs.push({el:c,x:x,y:y,lx:lx,ly:ly});
+document.body.appendChild(c);
+}
+
+cv.addEventListener('click',e=>{
+addWord(e.clientX,e.clientY);
+addConstellation(e.clientX,e.clientY);
+});
+
+cv.addEventListener('mousemove',e=>{
+lx=e.clientX;
+ly=e.clientY;
+const dx=lx-w/2,dy=ly-h/2,d=Math.sqrt(dx*dx+dy*dy);
+if(d>50&&Math.random()<0.03){
+addConstellation(lx+Math.random()*40-20,ly+Math.random()*40-20);
+}
+});
+
+function animate(t){
+ctx.fillStyle='rgba(0,0,0,0.05)';
+ctx.fillRect(0,0,w,h);
+ps.forEach(s=>s.draw(t));
+cs.forEach((c,i)=>{
+const dx=lx-c.lx,dy=ly-c.ly;
+if(Math.abs(dx)>1||Math.abs(dy)>1){
+c.lx+=dx*0.05;
+c.ly+=dy*0.05;
+c.el.style.left=c.lx+'px';
+c.el.style.top=c.ly+'px';
+}
+});
+requestAnimationFrame(animate);
+}
+animate(0);
+</script>
+</section>
