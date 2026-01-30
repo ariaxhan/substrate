@@ -1,0 +1,49 @@
+<section data-date='2026-01-29' data-type='winddown'>
+<style>
+body{margin:0;overflow:hidden;background:#faf8f5;font-family:Georgia,serif}
+.sky{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(to bottom,#e8c89f 0%,#d4a574 40%,#8b6f5c 70%,#4a3f3a 100%);transition:opacity 3s}
+.ground{position:fixed;bottom:0;left:0;width:100%;height:30%;background:#2a2420;z-index:1}
+.lamp{position:absolute;bottom:30%;cursor:pointer;transition:all 0.8s}
+.pole{width:3px;height:120px;background:#333;margin:0 auto}
+.bulb{width:24px;height:24px;border-radius:50%;background:radial-gradient(circle,#fff9e6,#f4d799);margin:0 auto;box-shadow:0 0 40px #f4d799;transition:all 1.5s}
+.glow{position:absolute;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(244,215,153,0.3),transparent);top:-88px;left:-88px;opacity:1;transition:opacity 1.5s}
+.word{position:absolute;font-size:28px;color:#6b5b4d;opacity:0;transition:opacity 2s,transform 2s;pointer-events:none}
+.dim .bulb{background:#8a7a6a;box-shadow:0 0 8px #8a7a6a}
+.dim .glow{opacity:0}
+.hint{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);color:#8a7a6a;font-size:14px;font-style:italic;opacity:0.7;z-index:10}
+</style>
+<div class="sky"></div>
+<div class="ground"></div>
+<div class="hint">click the lamps as day fades</div>
+<script>
+const words=["exhale","settle","dusk","quiet","release","soften","fade","rest","dim","still","breathe","lower","ember","close","hush"];
+let w=[],ct=0,d=document;
+for(let i=0;i<7;i++){
+  let l=d.createElement('div');
+  l.className='lamp';
+  l.style.left=(15+i*12)+'%';
+  l.innerHTML='<div class="pole"></div><div class="bulb"><div class="glow"></div></div>';
+  d.body.appendChild(l);
+  l.onclick=()=>{
+    if(!l.classList.contains('dim')){
+      l.classList.add('dim');
+      ct++;
+      let wd=d.createElement('div');
+      wd.className='word';
+      wd.textContent=words[Math.floor(Math.random()*words.length)];
+      wd.style.left=(Math.random()*60+20)+'%';
+      wd.style.top=(Math.random()*40+20)+'%';
+      d.body.appendChild(wd);
+      w.push(wd);
+      setTimeout(()=>{wd.style.opacity=0.6;wd.style.transform='translateY(-20px)'},50);
+      if(ct>=7){
+        setTimeout(()=>{
+          d.querySelector('.sky').style.opacity=0.3;
+          w.forEach(e=>e.style.opacity=0);
+        },1000);
+      }
+    }
+  };
+}
+</script>
+</section>

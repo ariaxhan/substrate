@@ -15,6 +15,7 @@
     {"file": "2026-01-29-morning.html", "date": "2026-01-29", "type": "morning", "timestamp": 1769698967},
     {"file": "2026-01-29-pulse.html", "date": "2026-01-29", "type": "pulse", "timestamp": 1769713348},
     {"file": "2026-01-29-shift.html", "date": "2026-01-29", "type": "shift", "timestamp": 1769735353},
-    {"file": "2026-01-29-spark.html", "date": "2026-01-29", "type": "spark", "timestamp": 1769706162}
+    {"file": "2026-01-29-spark.html", "date": "2026-01-29", "type": "spark", "timestamp": 1769706162},
+    {"file": "2026-01-29-winddown.html", "date": "2026-01-29", "type": "winddown", "timestamp": 1769742172}
   ]
 }
