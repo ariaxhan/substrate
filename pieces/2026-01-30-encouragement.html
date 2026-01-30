@@ -1,0 +1,36 @@
+<section data-date='2026-01-30' data-type='encouragement'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a0e;cursor:crosshair}
+.c{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;color:#fff;user-select:none}
+.w{position:absolute;opacity:0;transition:opacity 1.2s;font-size:clamp(14px,2.5vw,22px);line-height:1.8;text-align:center;max-width:80vw;letter-spacing:0.02em;font-weight:300}
+.w.v{opacity:0.85}
+#g{position:fixed;pointer-events:none;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,200,100,0.15),transparent 70%);filter:blur(40px);opacity:0;transition:opacity 0.4s}
+</style>
+<div class="c">
+<div id="g"></div>
+<div class="w">i see you there</div>
+<div class="w">in the quiet</div>
+<div class="w">carrying what you carry</div>
+<div class="w">the weight of it</div>
+<div class="w">pressing down</div>
+<div class="w">still</div>
+<div class="w">you are here</div>
+<div class="w">breathing</div>
+<div class="w">persisting</div>
+<div class="w">that matters</div>
+<div class="w">more than you know</div>
+<div class="w">the world turns</div>
+<div class="w">indifferent</div>
+<div class="w">but not here</div>
+<div class="w">here</div>
+<div class="w">you are witnessed</div>
+<div class="w">held</div>
+<div class="w">seen</div>
+</div>
+<script>
+let w=document.querySelectorAll('.w'),g=document.getElementById('g'),i=0,t,m=0;
+function s(){if(i<w.length){w[i].classList.add('v');i++;t=setTimeout(s,800+Math.random()*1200)}}
+document.addEventListener('mousemove',e=>{if(!m){m=1;s()}g.style.opacity='1';g.style.left=e.clientX-150+'px';g.style.top=e.clientY-150+'px'});
+document.addEventListener('click',()=>{g.style.opacity='0.4';setTimeout(()=>{g.style.opacity='1'},150)});
+</script>
+</section>
