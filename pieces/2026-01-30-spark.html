@@ -1,0 +1,115 @@
+<section data-date='2026-01-30' data-type='spark'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a0a;cursor:crosshair}
+.spark{position:fixed;font-family:'Courier New',monospace;font-weight:700;pointer-events:none;transition:all .8s cubic-bezier(.23,1,.32,1);mix-blend-mode:lighten}
+#a{top:15%;left:15%;font-size:8vmin;color:#3a86ff;text-shadow:0 0 20px #3a86ff80}
+#b{bottom:15%;right:15%;font-size:8vmin;color:#fb5607;text-shadow:0 0 20px #fb560780}
+.trail{position:fixed;width:3px;height:3px;border-radius:50%;pointer-events:none;animation:fade 2s forwards}
+@keyframes fade{to{opacity:0;transform:scale(0)}}
+.merge{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12vmin;font-family:'Courier New',monospace;font-weight:700;color:#fff;text-shadow:0 0 40px #fff,0 0 80px #3a86ff,0 0 120px #fb5607;opacity:0;pointer-events:none;transition:opacity 1s}
+.merge.active{opacity:1}
+</style>
+
+<div class="spark" id="a">THREAD</div>
+<div class="spark" id="b">WEAVE</div>
+<div class="merge" id="m">SPARK</div>
+
+<script>
+let mx=0,my=0,ca=null,cb=null,m=null,trails=[],merged=false,mergeTime=0;
+
+function init(){
+  ca=document.getElementById('a');
+  cb=document.getElementById('b');
+  m=document.getElementById('m');
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+  animate();
+}
+
+function dist(x1,y1,x2,y2){
+  return Math.sqrt((x2-x1)**2+(y2-y1)**2);
+}
+
+function createTrail(x,y,c){
+  const t=document.createElement('div');
+  t.className='trail';
+  t.style.left=x+'px';
+  t.style.top=y+'px';
+  t.style.background=c;
+  t.style.boxShadow=`0 0 10px ${c}`;
+  document.body.appendChild(t);
+  trails.push(t);
+  setTimeout(()=>{
+    document.body.removeChild(t);
+    trails=trails.filter(tr=>tr!==t);
+  },2000);
+}
+
+function animate(){
+  const ra=ca.getBoundingClientRect();
+  const rb=cb.getBoundingClientRect();
+
+  const ax=ra.left+ra.width/2;
+  const ay=ra.top+ra.height/2;
+  const bx=rb.left+rb.width/2;
+  const by=rb.top+rb.height/2;
+
+  const da=dist(ax,ay,mx,my);
+  const db=dist(bx,by,mx,my);
+  const dab=dist(ax,ay,bx,by);
+
+  const pull=Math.min(500/da,1);
+  const pullb=Math.min(500/db,1);
+
+  const nx=ax+(mx-ax)*pull*.3;
+  const ny=ay+(my-ay)*pull*.3;
+  const nbx=bx+(mx-bx)*pullb*.3;
+  const nby=by+(my-by)*pullb*.3;
+
+  ca.style.left=nx-ra.width/2+'px';
+  ca.style.top=ny-ra.height/2+'px';
+  cb.style.left=nbx-rb.width/2+'px';
+  cb.style.top=nby-rb.height/2+'px';
+
+  if(Math.random()<.15){
+    createTrail(nx,ny,'#3a86ff');
+    createTrail(nbx,nby,'#fb5607');
+  }
+
+  if(dab<150&&!merged){
+    merged=true;
+    mergeTime=Date.now();
+    m.classList.add('active');
+    ca.style.opacity='0';
+    cb.style.opacity='0';
+
+    for(let i=0;i<20;i++){
+      setTimeout(()=>{
+        const angle=Math.random()*Math.PI*2;
+        const r=Math.random()*100+50;
+        const x=window.innerWidth/2+Math.cos(angle)*r;
+        const y=window.innerHeight/2+Math.sin(angle)*r;
+        createTrail(x,y,i%2?'#3a86ff':'#fb5607');
+      },i*50);
+    }
+
+    setTimeout(()=>{
+      m.classList.remove('active');
+      ca.style.opacity='1';
+      cb.style.opacity='1';
+      merged=false;
+
+      ca.style.left='15%';
+      ca.style.top='15%';
+      cb.style.left='';
+      cb.style.right='15%';
+      cb.style.top='';
+      cb.style.bottom='15%';
+    },3000);
+  }
+
+  requestAnimationFrame(animate);
+}
+
+init();
+</script>
+</section>

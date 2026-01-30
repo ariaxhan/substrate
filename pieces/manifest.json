@@ -18,6 +18,7 @@
     {"file": "2026-01-29-shift.html", "date": "2026-01-29", "type": "shift", "timestamp": 1769735353},
     {"file": "2026-01-29-spark.html", "date": "2026-01-29", "type": "spark", "timestamp": 1769706162},
     {"file": "2026-01-29-winddown.html", "date": "2026-01-29", "type": "winddown", "timestamp": 1769742172},
-    {"file": "2026-01-30-morning.html", "date": "2026-01-30", "type": "morning", "timestamp": 1769785398}
+    {"file": "2026-01-30-morning.html", "date": "2026-01-30", "type": "morning", "timestamp": 1769785398},
+    {"file": "2026-01-30-spark.html", "date": "2026-01-30", "type": "spark", "timestamp": 1769792575}
   ]
 }
