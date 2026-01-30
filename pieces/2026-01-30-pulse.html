@@ -1,0 +1,38 @@
+<section data-date='2026-01-30' data-type='pulse'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a0a;font-family:Georgia,serif}
+#w{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;position:relative}
+.h{position:absolute;width:50%;height:100%;display:flex;align-items:center;justify-content:center;transition:all .8s cubic-bezier(.4,0,.2,1)}
+#l{left:0;background:linear-gradient(90deg,#000 0%,#1a1a2e 100%);color:#88c0d0}
+#r{right:0;background:linear-gradient(-90deg,#000 0%,#2e1a1a 100%);color:#d08770}
+.t{font-size:clamp(2rem,8vw,6rem);letter-spacing:-.03em;opacity:.7;transition:opacity .5s}
+#f{position:absolute;width:4px;height:100%;background:linear-gradient(180deg,transparent 0%,#666 40%,#999 50%,#666 60%,transparent 100%);left:50%;transform:translateX(-50%);z-index:10;transition:background .5s}
+#c{position:absolute;width:60px;height:60px;border-radius:50%;background:radial-gradient(circle,#fff 0%,#ccc 100%);left:50%;top:50%;transform:translate(-50%,-50%);cursor:pointer;z-index:20;box-shadow:0 0 30px rgba(255,255,255,.3);transition:all .3s}
+#c:hover{transform:translate(-50%,-50%) scale(1.1);box-shadow:0 0 50px rgba(255,255,255,.5)}
+.p{position:absolute;font-size:.9rem;letter-spacing:.2em;opacity:.4;text-transform:uppercase;font-family:monospace;transition:opacity .5s}
+#lp{bottom:30px;left:30px;color:#88c0d0}
+#rp{bottom:30px;right:30px;color:#d08770;text-align:right}
+.s{position:absolute;width:2px;height:40px;background:rgba(255,255,255,.1);left:50%;transition:all .8s}
+</style>
+<div id="w">
+<div class="h" id="l"><div class="t">before</div></div>
+<div class="h" id="r"><div class="t">after</div></div>
+<div id="f"></div>
+<div id="c"></div>
+<div class="p" id="lp">night recedes</div>
+<div class="p" id="rp">day approaches</div>
+</div>
+<script>
+const l=document.getElementById('l'),r=document.getElementById('r'),f=document.getElementById('f'),c=document.getElementById('c'),w=document.getElementById('w'),lp=document.getElementById('lp'),rp=document.getElementById('rp');let b=50,m=false;
+function u(){l.style.width=b+'%';r.style.width=(100-b)+'%';const o=Math.abs(b-50)/50;l.querySelector('.t').style.opacity=.7-o*.4;r.querySelector('.t').style.opacity=.7-o*.4;lp.style.opacity=.4-o*.3;rp.style.opacity=.4-o*.3;if(b===50){f.style.background='linear-gradient(180deg,transparent 0%,#888 40%,#fff 50%,#888 60%,transparent 100%)';c.style.background='radial-gradient(circle,#fff 0%,#e0e0e0 100%)';c.style.boxShadow='0 0 50px rgba(255,255,255,.6)';}else{f.style.background='linear-gradient(180deg,transparent 0%,#666 40%,#999 50%,#666 60%,transparent 100%)';c.style.background='radial-gradient(circle,#fff 0%,#ccc 100%)';c.style.boxShadow='0 0 30px rgba(255,255,255,.3)';}}
+c.onclick=()=>{b=50;u();};
+w.onmousemove=(e)=>{if(m){b=Math.max(0,Math.min(100,(e.clientX/window.innerWidth)*100));u();}};
+w.onmousedown=()=>{m=true;};
+w.onmouseup=()=>{m=false;};
+w.ontouchstart=()=>{m=true;};
+w.ontouchend=()=>{m=false;};
+w.ontouchmove=(e)=>{if(m){b=Math.max(0,Math.min(100,(e.touches[0].clientX/window.innerWidth)*100));u();}};
+for(let i=0;i<12;i++){const s=document.createElement('div');s.className='s';s.style.top=(10+i*7)+'%';s.style.transform='translateX(-50%) rotate('+(Math.random()*6-3)+'deg)';w.appendChild(s);}
+u();
+</script>
+</section>
