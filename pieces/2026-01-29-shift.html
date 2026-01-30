@@ -1,0 +1,38 @@
+<section data-date='2026-01-29' data-type='shift'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a0a;cursor:pointer;user-select:none}
+.frame{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;transition:transform 1.2s cubic-bezier(0.4,0,0.2,1);transform-origin:center}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;width:90vmin;height:90vmin}
+.cell{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,0.08)}
+.word{position:absolute;font-family:Georgia,serif;font-size:12vmin;font-weight:400;color:#fff;line-height:1;letter-spacing:-0.02em;transition:opacity 0.6s,transform 0.6s cubic-bezier(0.4,0,0.2,1)}
+.word.up{top:50%;left:50%;transform:translate(-50%,-50%);opacity:1}
+.word.down{top:50%;left:50%;transform:translate(-50%,-50%) rotate(180deg);opacity:0}
+.rotated .word.up{opacity:0;transform:translate(-50%,-50%) rotate(180deg)}
+.rotated .word.down{opacity:1;transform:translate(-50%,-50%) rotate(360deg)}
+.axis{position:absolute;width:1px;height:100%;background:rgba(255,255,255,0.12);left:50%;transform-origin:center;animation:spin 20s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+
+<div class="frame" id="frame">
+<div class="grid">
+<div class="cell"><span class="word up">see</span><span class="word down">ees</span></div>
+<div class="cell"><span class="word up">now</span><span class="word down">MON</span></div>
+<div class="cell"><span class="word up">was</span><span class="word down">sem</span></div>
+<div class="cell"><span class="word up">mow</span><span class="word down">mom</span></div>
+<div class="cell"><div class="axis"></div></div>
+<div class="cell"><span class="word up">pod</span><span class="word down">dod</span></div>
+<div class="cell"><span class="word up">won</span><span class="word down">uom</span></div>
+<div class="cell"><span class="word up">saw</span><span class="word down">mes</span></div>
+<div class="cell"><span class="word up">new</span><span class="word down">meu</span></div>
+</div>
+</div>
+
+<script>
+let r=0;
+document.body.onclick=()=>{
+r=(r+180)%360;
+document.getElementById('frame').style.transform=`rotate(${r}deg)`;
+document.getElementById('frame').classList.toggle('rotated')
+}
+</script>
+</section>
