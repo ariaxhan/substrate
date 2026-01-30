@@ -1,0 +1,112 @@
+<section data-date='2026-01-30' data-type='digest'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{overflow:hidden;background:#0a0a0a;font-family:'Courier New',monospace}
+#c{position:fixed;top:0;left:0;width:100vw;height:100vh}
+#overlay{position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;display:flex;align-items:center;justify-content:center;font-size:12px;color:#1a1a1a;letter-spacing:2px;opacity:0;transition:opacity 2s}
+.node{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;opacity:0;animation:emerge 0.3s ease-out forwards}
+.edge{position:absolute;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);transform-origin:left center;opacity:0;animation:connect 0.5s ease-out forwards}
+@keyframes emerge{
+to{opacity:1;transform:scale(1.5)}
+}
+@keyframes connect{
+to{opacity:1}
+}
+</style>
+<canvas id="c"></canvas>
+<div id="overlay">EMERGENCE</div>
+<script>
+const canvas=document.getElementById('c');
+const ctx=canvas.getContext('2d');
+const overlay=document.getElementById('overlay');
+let w,h,nodes=[],edges=[],threshold=0,revealing=false;
+
+function resize(){
+w=canvas.width=innerWidth;
+h=canvas.height=innerHeight;
+}
+
+class Node{
+constructor(x,y,data){
+this.x=x;
+this.y=y;
+this.data=data;
+this.connections=[];
+this.el=document.createElement('div');
+this.el.className='node';
+this.el.style.left=x+'px';
+this.el.style.top=y+'px';
+document.body.appendChild(this.el);
+}
+connect(other){
+if(this.connections.includes(other))return;
+const dx=other.x-this.x;
+const dy=other.y-this.y;
+const dist=Math.sqrt(dx*dx+dy*dy);
+if(dist<120&&dist>0){
+this.connections.push(other);
+const edge=document.createElement('div');
+edge.className='edge';
+edge.style.left=this.x+'px';
+edge.style.top=this.y+'px';
+edge.style.width=dist+'px';
+edge.style.transform=`rotate(${Math.atan2(dy,dx)}rad)`;
+edge.style.animationDelay=Math.random()*0.3+'s';
+document.body.appendChild(edge);
+edges.push(edge);
+}
+}
+}
+
+function addNode(e){
+const node=new Node(e.clientX,e.clientY,nodes.length);
+nodes.forEach(n=>node.connect(n));
+nodes.push(node);
+threshold++;
+if(threshold===7&&!revealing){
+revealing=true;
+overlay.style.opacity='0.15';
+setTimeout(()=>overlay.style.opacity='0',3000);
+}
+draw();
+}
+
+function draw(){
+ctx.fillStyle='rgba(10,10,10,0.02)';
+ctx.fillRect(0,0,w,h);
+ctx.strokeStyle='rgba(255,255,255,0.08)';
+ctx.lineWidth=0.5;
+nodes.forEach(n=>{
+n.connections.forEach(c=>{
+ctx.beginPath();
+ctx.moveTo(n.x,n.y);
+ctx.lineTo(c.x,c.y);
+ctx.stroke();
+});
+});
+ctx.fillStyle='rgba(255,255,255,0.6)';
+nodes.forEach(n=>{
+ctx.beginPath();
+ctx.arc(n.x,n.y,2,0,Math.PI*2);
+ctx.fill();
+});
+}
+
+function animate(){
+draw();
+requestAnimationFrame(animate);
+}
+
+resize();
+window.addEventListener('resize',resize);
+canvas.addEventListener('click',addNode);
+animate();
+
+// Seed
+for(let i=0;i<3;i++){
+setTimeout(()=>{
+addNode({clientX:w/2+Math.random()*60-30,clientY:h/2+Math.random()*60-30});
+},i*300);
+}
+</script>
+</section>
