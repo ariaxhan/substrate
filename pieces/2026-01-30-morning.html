@@ -1,0 +1,137 @@
+<section data-date='2026-01-30' data-type='morning'>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box }
+body {
+  overflow: hidden;
+  font-family: Georgia, serif;
+  cursor: crosshair;
+  background: linear-gradient(to bottom, #001 0%, #124 30%, #f4a460 60%, #ffd 100%);
+  transition: background 8s ease;
+}
+#c {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+#w {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: rgba(255,255,255,0.03);
+  font-size: 8vw;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  user-select: none;
+  transition: color 3s ease;
+}
+.l {
+  position: absolute;
+  width: 1px;
+  background: rgba(255,255,255,0.1);
+  pointer-events: none;
+  transform-origin: top;
+}
+</style>
+
+<canvas id="c"></canvas>
+<div id="w">
+  <div>First</div>
+  <div style="font-size:4vw;margin-top:1em;opacity:0.5">Light</div>
+</div>
+
+<script>
+const cv = document.getElementById('c'),
+      ctx = cv.getContext('2d'),
+      w = cv.width = window.innerWidth,
+      h = cv.height = window.innerHeight,
+      lines = [],
+      maxLines = 40;
+
+let mx = w / 2,
+    my = h / 2,
+    clicks = 0;
+
+// Create initial lines
+for(let i = 0; i < maxLines; i++) {
+  lines.push({
+    x: Math.random() * w,
+    y: Math.random() * h,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: (Math.random() - 0.5) * 0.3,
+    life: Math.random()
+  });
+}
+
+function draw() {
+  ctx.fillStyle = 'rgba(0,0,0,0.02)';
+  ctx.fillRect(0, 0, w, h);
+
+  // Update and draw lines
+  lines.forEach((l, i) => {
+    // Gravitate slightly toward mouse
+    const dx = mx - l.x,
+          dy = my - l.y,
+          dist = Math.sqrt(dx*dx + dy*dy);
+
+    if(dist < 200) {
+      l.vx += dx * 0.00001;
+      l.vy += dy * 0.00001;
+    }
+
+    l.x += l.vx;
+    l.y += l.vy;
+    l.life += 0.001;
+
+    // Boundaries
+    if(l.x < 0 || l.x > w) l.vx *= -0.9;
+    if(l.y < 0 || l.y > h) l.vy *= -0.9;
+
+    // Draw line to next
+    const next = lines[(i + 1) % lines.length];
+    const alpha = Math.sin(l.life) * 0.3 + 0.1;
+
+    ctx.strokeStyle = `rgba(255,${200 + Math.sin(l.life)*55},${150 + Math.cos(l.life)*105},${alpha})`;
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    ctx.moveTo(l.x, l.y);
+    ctx.lineTo(next.x, next.y);
+    ctx.stroke();
+
+    // Draw point
+    ctx.fillStyle = `rgba(255,255,200,${alpha * 2})`;
+    ctx.beginPath();
+    ctx.arc(l.x, l.y, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  requestAnimationFrame(draw);
+}
+
+window.addEventListener('mousemove', e => {
+  mx = e.clientX;
+  my = e.clientY;
+});
+
+window.addEventListener('click', () => {
+  clicks++;
+  const wEl = document.getElementById('w');
+
+  if(clicks === 1) {
+    wEl.style.color = 'rgba(255,255,255,0.15)';
+    document.body.style.background = 'linear-gradient(to bottom, #235 0%, #46a 30%, #fab 60%, #ffe 100%)';
+  } else if(clicks === 2) {
+    wEl.style.color = 'rgba(255,255,255,0.4)';
+    document.body.style.background = 'linear-gradient(to bottom, #678 0%, #9bd 30%, #fec 60%, #fff 100%)';
+  } else {
+    wEl.style.color = 'rgba(50,50,50,0.8)';
+    document.body.style.background = 'linear-gradient(to bottom, #abc 0%, #def 30%, #fff 60%, #fff 100%)';
+  }
+});
+
+draw();
+</script>
+</section>
