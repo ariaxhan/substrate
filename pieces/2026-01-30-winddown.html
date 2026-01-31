@@ -1,0 +1,70 @@
+<section data-date='2026-01-30' data-type='winddown'>
+<style>
+body{margin:0;overflow:hidden;background:#1a1520;font-family:Georgia,serif}
+canvas{position:fixed;top:0;left:0;width:100vw;height:100vh;cursor:crosshair}
+#words{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:#d4a574;font-size:2.8rem;letter-spacing:0.15em;opacity:0.85;pointer-events:none;text-align:center;line-height:1.8;font-weight:300;text-shadow:0 0 40px rgba(212,165,116,0.4)}
+</style>
+<canvas id="c"></canvas>
+<div id="words">
+dusk<br>
+settles<br>
+slow
+</div>
+<script>
+const c=document.getElementById('c'),
+x=c.getContext('2d'),
+w=c.width=innerWidth,
+h=c.height=innerHeight,
+stars=[];
+
+for(let i=0;i<120;i++){
+stars.push({
+x:Math.random()*w,
+y:Math.random()*h,
+r:Math.random()*1.5+0.5,
+o:Math.random()*0.6+0.2,
+fade:0
+});
+}
+
+let mx=w/2,my=h/2,glow=0,time=0;
+
+c.addEventListener('mousemove',e=>{
+mx=e.clientX;
+my=e.clientY;
+glow=1;
+});
+
+function draw(){
+time+=0.008;
+x.fillStyle='rgba(26,21,32,'+(0.08+Math.sin(time)*0.02)+')';
+x.fillRect(0,0,w,h);
+
+const grad=x.createRadialGradient(mx,my,0,mx,my,200);
+grad.addColorStop(0,'rgba(212,165,116,'+(glow*0.25)+')');
+grad.addColorStop(0.5,'rgba(149,97,68,'+(glow*0.12)+')');
+grad.addColorStop(1,'rgba(26,21,32,0)');
+x.fillStyle=grad;
+x.fillRect(0,0,w,h);
+
+glow*=0.92;
+
+stars.forEach(s=>{
+const dx=s.x-mx,dy=s.y-my,dist=Math.sqrt(dx*dx+dy*dy);
+if(dist<180&&glow>0.1){
+s.fade=Math.min(1,s.fade+0.04);
+}else{
+s.fade*=0.96;
+}
+const brightness=s.o*(1-s.fade*0.7);
+x.fillStyle=`rgba(212,165,116,${brightness})`;
+x.beginPath();
+x.arc(s.x,s.y,s.r,0,Math.PI*2);
+x.fill();
+});
+
+requestAnimationFrame(draw);
+}
+draw();
+</script>
+</section>
