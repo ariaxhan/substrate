@@ -1,0 +1,51 @@
+<section data-date='2026-01-30' data-type='shift'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0a;overflow:hidden;font-family:'Courier New',monospace;cursor:crosshair}
+#c{position:fixed;top:0;left:0;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;transition:transform 1.2s cubic-bezier(.4,0,.2,1)}
+.w{position:absolute;font-size:18px;line-height:1.6;color:#fff;text-align:center;max-width:500px;transition:all 1.2s cubic-bezier(.4,0,.2,1);transform-origin:center;opacity:1}
+.h{opacity:0;pointer-events:none}
+#a{transform:rotate(0deg)}
+#b{transform:rotate(180deg);opacity:0}
+.inv #a{opacity:0}
+.inv #b{opacity:1}
+.inv{transform:rotate(180deg)}
+#i{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);font-size:11px;color:#666;letter-spacing:1px;opacity:.6}
+</style>
+<div id="c">
+<div id="a" class="w">
+THE WORLD<br>
+AS YOU KNOW IT<br><br>
+ORDER<br>
+CERTAINTY<br>
+PROGRESS<br><br>
+EVERYTHING<br>
+IN ITS PLACE
+</div>
+<div id="b" class="w h">
+˥HƎ ᙠOᴚ˥ᗡ<br>
+∀S ⅄Oᴧ ʞNOᙠ I˥<br><br>
+ƆH∀OS<br>
+ᴧNƆƎᴚ˥∀IN˥⅄<br>
+ƎN˥ᴚOԀ⅄<br><br>
+Ǝ˅ƎᴚY˥HING<br>
+Oᴧ˥ OF Ԁ˥∀ƆƎ
+</div>
+</div>
+<div id="i">CLICK TO INVERT</div>
+<script>
+let s=0,d=document.getElementById('c'),a=document.getElementById('a'),b=document.getElementById('b');
+d.onclick=()=>{
+s=!s;
+if(s){
+d.classList.add('inv');
+b.classList.remove('h');
+a.classList.add('h');
+}else{
+d.classList.remove('inv');
+a.classList.remove('h');
+b.classList.add('h');
+}
+};
+</script>
+</section>
