@@ -42,6 +42,15 @@
         align-items: center;
         justify-content: center;
         position: relative;
+        overflow: hidden;
+    }
+    /* Injected piece section must fill viewer so fixed/canvas content has correct layout */
+    #viewer .piece section {
+        width: 100%;
+        height: 100%;
+        min-height: 100%;
+        display: block;
+        box-sizing: border-box;
     }
     .meta {
         position: fixed;
@@ -123,7 +132,11 @@
 
         try {
             const res = await fetch('pieces/' + piece.file);
-            const html = await res.text();
+            let html = await res.text();
+
+            /* Scope piece's body{} styles to .piece so they apply to the viewer area, not the whole document */
+            html = html.replace(/<style([^>]*)>([\s\S]*?)<\/style>/gi, (_, attrs, content) =>
+                '<style' + attrs + '>' + content.replace(/\bbody\b/g, '.piece') + '</style>');
 
             viewer.innerHTML = '<div class="piece">' + html + '</div>';
             // Re-execute scripts (innerHTML doesn't run <script> tags)
