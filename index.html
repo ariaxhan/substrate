@@ -482,7 +482,7 @@
     <nav class="nav" role="navigation" aria-label="Main navigation">
         <div class="nav-left">
             <span class="nav-title">substrate</span>
-            <span class="nav-hint" id="nav-hint">? for shortcuts</span>
+            <span class="nav-hint" id="nav-hint">shift+/ for shortcuts</span>
         </div>
         <div class="nav-right">
             <span class="nav-count" id="nav-count" aria-live="polite"></span>
@@ -540,7 +540,7 @@
             <div class="shortcut-row"><span class="shortcut-key">Space</span><span class="shortcut-action">next piece</span></div>
             <div class="shortcut-row"><span class="shortcut-key">1-9</span><span class="shortcut-action">jump to 10-90%</span></div>
             <div class="shortcut-row"><span class="shortcut-key">R</span><span class="shortcut-action">reload piece</span></div>
-            <div class="shortcut-row"><span class="shortcut-key">?</span><span class="shortcut-action">toggle shortcuts</span></div>
+            <div class="shortcut-row"><span class="shortcut-key">Shift + /</span><span class="shortcut-action">toggle shortcuts</span></div>
             <div class="shortcut-row"><span class="shortcut-key">Escape</span><span class="shortcut-action">close overlay</span></div>
         </div>
     </div>
@@ -1180,30 +1180,7 @@ body>section{width:100%;height:100%;min-height:${vh}px;display:block}
             }
         }
         
-        // Touch zones
-        dom['touch-prev']?.addEventListener('click', () => navigate(-1));
-        dom['touch-next']?.addEventListener('click', () => navigate(1));
-        
-        // Make touch zones keyboard accessible
-        ['touch-prev', 'touch-next'].forEach(id => {
-            dom[id]?.addEventListener('keydown', e => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    navigate(id === 'touch-prev' ? -1 : 1);
-                }
-            });
-        });
-        
-        // Edge swipe zones (capture swipes that start at screen edge)
-        ['edge-left', 'edge-right'].forEach(id => {
-            const el = dom[id];
-            if (!el) return;
-            
-            el.addEventListener('touchstart', handleTouchStart, { passive: true });
-            el.addEventListener('touchend', handleTouchEnd, { passive: true });
-        });
-        
-        // Global touch handlers
+        // Global touch handlers (these don't need dom)
         document.addEventListener('touchstart', handleTouchStart, { passive: true });
         document.addEventListener('touchend', handleTouchEnd, { passive: true });
         
@@ -1254,25 +1231,51 @@ body>section{width:100%;height:100%;min-height:${vh}px;display:block}
         });
         
         // ================================================================
-        // Event Bindings
+        // Event Bindings (called after DOM is ready)
         // ================================================================
-        dom['retry-btn']?.addEventListener('click', retryWithBackoff);
-        dom['offline-retry-btn']?.addEventListener('click', () => {
-            showPiece(state.currentIndex, { force: true });
-        });
-        
-        // Close shortcuts on click outside
-        dom['shortcuts-overlay']?.addEventListener('click', (e) => {
-            if (e.target === dom['shortcuts-overlay']) {
-                dom['shortcuts-overlay'].classList.remove('visible');
-            }
-        });
+        function bindDomEvents() {
+            // Touch zones
+            dom['touch-prev']?.addEventListener('click', () => navigate(-1));
+            dom['touch-next']?.addEventListener('click', () => navigate(1));
+            
+            // Make touch zones keyboard accessible
+            ['touch-prev', 'touch-next'].forEach(id => {
+                dom[id]?.addEventListener('keydown', e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        navigate(id === 'touch-prev' ? -1 : 1);
+                    }
+                });
+            });
+            
+            // Edge swipe zones (capture swipes that start at screen edge)
+            ['edge-left', 'edge-right'].forEach(id => {
+                const el = dom[id];
+                if (!el) return;
+                el.addEventListener('touchstart', handleTouchStart, { passive: true });
+                el.addEventListener('touchend', handleTouchEnd, { passive: true });
+            });
+            
+            // Retry buttons
+            dom['retry-btn']?.addEventListener('click', retryWithBackoff);
+            dom['offline-retry-btn']?.addEventListener('click', () => {
+                showPiece(state.currentIndex, { force: true });
+            });
+            
+            // Close shortcuts on click outside
+            dom['shortcuts-overlay']?.addEventListener('click', (e) => {
+                if (e.target === dom['shortcuts-overlay']) {
+                    dom['shortcuts-overlay'].classList.remove('visible');
+                }
+            });
+        }
         
         // ================================================================
         // Initialization
         // ================================================================
         async function init() {
             initDom();
+            bindDomEvents();
             
             // Initial state
             updateStatus(state.isOnline ? 'online' : 'offline');

@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Code was just modified. This project has no test/lint/type tooling (static HTML + shell). Do not run or suggest npm test, lint, or typecheck. If you edited index.html or update-manifest.sh, remind: architecture invariant is to NOT modify those files; only add pieces/*.html."
+          }
+        ]
+      }
+    ]
+  }
+}
