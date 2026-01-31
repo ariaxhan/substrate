@@ -93,8 +93,8 @@
             <span>awaiting signal</span>
         </div>
     </div>
-    <div class="counter" id="counter"></div>
-    <div class="meta" id="meta"></div>
+    <div class="counter" id="viewer-counter"></div>
+    <div class="meta" id="viewer-meta"></div>
     <script>
     let pieces = [];
     let currentIndex = 0;
@@ -127,8 +127,8 @@
 
         const piece = pieces[index];
         const viewer = document.getElementById('viewer');
-        const meta = document.getElementById('meta');
-        const counter = document.getElementById('counter');
+        const metaEl = document.getElementById('viewer-meta');
+        const counterEl = document.getElementById('viewer-counter');
 
         try {
             const res = await fetch('pieces/' + piece.file);
@@ -139,14 +139,18 @@
                 '<style' + attrs + '>' + content.replace(/\bbody\b/g, '.piece') + '</style>');
 
             viewer.innerHTML = '<div class="piece">' + html + '</div>';
-            // Re-execute scripts (innerHTML doesn't run <script> tags)
-            viewer.querySelectorAll('script').forEach(s => {
-                const n = document.createElement('script');
-                n.textContent = s.textContent;
-                s.parentNode.replaceChild(n, s);
-            });
-            meta.textContent = piece.date + ' / ' + piece.type;
-            counter.textContent = (index + 1) + ' / ' + pieces.length;
+            // Run piece scripts after layout so canvas/getBoundingClientRect/innerWidth are correct
+            const scripts = viewer.querySelectorAll('script');
+            const runScripts = () => {
+                scripts.forEach(s => {
+                    const n = document.createElement('script');
+                    n.textContent = s.textContent;
+                    s.parentNode.replaceChild(n, s);
+                });
+            };
+            requestAnimationFrame(() => requestAnimationFrame(runScripts));
+            metaEl.textContent = piece.date + ' / ' + piece.type;
+            counterEl.textContent = (index + 1) + ' / ' + pieces.length;
         } catch (e) {
             viewer.innerHTML = '<div class="piece">failed to load</div>';
         }
