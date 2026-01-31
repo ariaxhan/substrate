@@ -935,6 +935,7 @@ body>section{width:100%;height:100%;min-height:${vh}px;display:block}
                 // Success - show frame and clean up others
                 clearTimeout(loadingTimeout);
                 hideAllStates();
+                attachPieceKeyHandler(frame);
                 
                 // Double RAF for paint
                 requestAnimationFrame(() => {
@@ -1050,97 +1051,116 @@ body>section{width:100%;height:100%;min-height:${vh}px;display:block}
         // ================================================================
         // Keyboard Navigation
         // ================================================================
-        function handleKeydown(e) {
-            // Ignore if in input or shortcuts overlay is open
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-            
-            const isShortcutsOpen = dom['shortcuts-overlay']?.classList.contains('visible');
-            
-            switch (e.key) {
+        // Returns true if the key was handled (caller should preventDefault).
+        function executeShortcut(key, shiftKey, isShortcutsOpen) {
+            switch (key) {
                 case 'Escape':
                     if (isShortcutsOpen) {
-                        e.preventDefault();
                         dom['shortcuts-overlay'].classList.remove('visible');
+                        return true;
                     }
-                    break;
+                    return false;
                     
                 case '?':
-                    e.preventDefault();
                     dom['shortcuts-overlay']?.classList.toggle('visible');
-                    break;
+                    return true;
                     
                 case 'ArrowLeft':
                 case 'a':
                 case 'A':
                     if (!isShortcutsOpen) {
-                        e.preventDefault();
                         navigate(-1);
+                        return true;
                     }
-                    break;
+                    return false;
                     
                 case 'ArrowRight':
                 case 'd':
                 case 'D':
                     if (!isShortcutsOpen) {
-                        e.preventDefault();
                         navigate(1);
+                        return true;
                     }
-                    break;
+                    return false;
                     
                 case 'ArrowUp':
                 case 'w':
                 case 'W':
                     if (!isShortcutsOpen) {
-                        e.preventDefault();
                         navigate(-1);
+                        return true;
                     }
-                    break;
+                    return false;
                     
                 case 'ArrowDown':
                 case 's':
                 case 'S':
                     if (!isShortcutsOpen) {
-                        e.preventDefault();
                         navigate(1);
+                        return true;
                     }
-                    break;
+                    return false;
                     
                 case ' ':
                     if (!isShortcutsOpen) {
-                        e.preventDefault();
-                        navigate(e.shiftKey ? -1 : 1);
+                        navigate(shiftKey ? -1 : 1);
+                        return true;
                     }
-                    break;
+                    return false;
                     
                 case 'Home':
                     if (!isShortcutsOpen) {
-                        e.preventDefault();
                         navigateTo(0);
+                        return true;
                     }
-                    break;
+                    return false;
                     
                 case 'End':
                     if (!isShortcutsOpen) {
-                        e.preventDefault();
                         navigateTo(state.pieces.length - 1);
+                        return true;
                     }
-                    break;
+                    return false;
                     
                 case 'r':
                 case 'R':
                     if (!isShortcutsOpen) {
-                        e.preventDefault();
                         showPiece(state.currentIndex, { force: true });
+                        return true;
                     }
-                    break;
+                    return false;
                     
                 case '1': case '2': case '3': case '4': case '5':
                 case '6': case '7': case '8': case '9':
                     if (!isShortcutsOpen) {
-                        e.preventDefault();
-                        navigateToPercent(parseInt(e.key, 10) * 10);
+                        navigateToPercent(parseInt(key, 10) * 10);
+                        return true;
                     }
-                    break;
+                    return false;
+                    
+                default:
+                    return false;
+            }
+        }
+        
+        function handleKeydown(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            const isShortcutsOpen = dom['shortcuts-overlay']?.classList.contains('visible');
+            if (executeShortcut(e.key, e.shiftKey, isShortcutsOpen)) e.preventDefault();
+        }
+        
+        // Forward shortcuts from piece iframe so they work when focus is inside the piece.
+        function attachPieceKeyHandler(frame) {
+            try {
+                const doc = frame.contentDocument;
+                if (!doc) return;
+                doc.addEventListener('keydown', function(e) {
+                    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
+                    const isShortcutsOpen = dom['shortcuts-overlay']?.classList.contains('visible');
+                    if (executeShortcut(e.key, e.shiftKey, isShortcutsOpen)) e.preventDefault();
+                });
+            } catch (err) {
+                // Cross-origin or unavailable; ignore
             }
         }
         
