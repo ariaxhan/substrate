@@ -6,6 +6,7 @@
     <title>substrate</title>
     <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    
     body {
         background: #000;
         color: #888;
@@ -13,70 +14,104 @@
         min-height: 100vh;
         overflow: hidden;
     }
+    
     nav {
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         padding: 8px 16px;
-        background: rgba(0,0,0,0.9);
-        border-bottom: 1px solid #222;
+        background: rgba(0,0,0,0.95);
+        border-bottom: 1px solid #1a1a1a;
         z-index: 1000;
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
-    .nav-left { display: flex; gap: 16px; align-items: center; }
-    .nav-controls { color: #444; font-size: 10px; }
-    #viewer {
+    
+    .nav-left { 
+        display: flex; 
+        gap: 16px; 
+        align-items: center; 
+    }
+    
+    .nav-controls { 
+        color: #444; 
+        font-size: 10px; 
+    }
+    
+    .viewer-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+    }
+    
+    .piece-frame {
+        width: 100%;
+        height: 100%;
+        border: none;
+        background: #000;
+    }
+    
+    .empty-state {
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 100vw;
         height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
+        color: #333;
+        text-align: center;
     }
-    .piece {
-        width: 100%;
-        height: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        overflow: hidden;
-    }
-    /* Injected piece section must fill viewer so fixed/canvas content has correct layout */
-    #viewer .piece section {
-        width: 100%;
-        height: 100%;
-        min-height: 100%;
+    
+    .empty-state span {
         display: block;
-        box-sizing: border-box;
+        animation: pulse 2s ease-in-out infinite;
     }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 0.6; }
+    }
+    
     .meta {
         position: fixed;
         bottom: 8px;
         right: 16px;
         font-size: 10px;
         color: #333;
+        z-index: 1001;
+        pointer-events: none;
     }
+    
     .counter {
         position: fixed;
         bottom: 8px;
         left: 16px;
         font-size: 10px;
         color: #333;
+        z-index: 1001;
+        pointer-events: none;
     }
-    #empty {
+    
+    .loading {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         color: #333;
-        text-align: center;
+        font-size: 10px;
+        z-index: 999;
+        opacity: 0;
+        transition: opacity 0.3s;
     }
-    #empty span {
-        display: block;
-        animation: pulse 2s ease-in-out infinite;
-    }
-    @keyframes pulse {
-        0%, 100% { opacity: 0.3; }
-        50% { opacity: 0.6; }
+    
+    .loading.visible {
+        opacity: 1;
     }
     </style>
 </head>
@@ -84,109 +119,202 @@
     <nav>
         <div class="nav-left">
             <span>substrate</span>
-            <span class="nav-controls">← → or A D to navigate</span>
+            <span class="nav-controls">arrows or WASD to navigate</span>
         </div>
-        <span id="count">0 pieces</span>
+        <span id="nav-count">0 pieces</span>
     </nav>
-    <div id="viewer">
-        <div class="piece" id="empty">
+    
+    <div class="viewer-container" id="viewer-container">
+        <div class="empty-state" id="empty-state">
             <span>awaiting signal</span>
         </div>
     </div>
-    <div class="counter" id="viewer-counter"></div>
-    <div class="meta" id="viewer-meta"></div>
+    
+    <div class="loading" id="loading-indicator">loading</div>
+    <div class="counter" id="piece-counter"></div>
+    <div class="meta" id="piece-meta"></div>
+
     <script>
-    let pieces = [];
-    let currentIndex = 0;
-
-    async function loadPieces() {
-        try {
-            const response = await fetch('pieces/manifest.json');
-            const manifest = await response.json();
-
-            if (manifest.pieces && manifest.pieces.length > 0) {
-                // Sort by timestamp (newest first) - right arrow goes back in time
-                pieces = manifest.pieces.sort((a, b) =>
-                    (b.timestamp || 0) - (a.timestamp || 0)
-                );
-                document.getElementById('count').textContent = pieces.length + ' pieces';
-                showPiece(0);
+    (function() {
+        'use strict';
+        
+        // State
+        let pieces = [];
+        let currentIndex = 0;
+        let currentFrame = null;
+        let isLoading = false;
+        
+        // DOM references
+        const container = document.getElementById('viewer-container');
+        const emptyState = document.getElementById('empty-state');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        const navCount = document.getElementById('nav-count');
+        const pieceCounter = document.getElementById('piece-counter');
+        const pieceMeta = document.getElementById('piece-meta');
+        
+        // Load manifest and initialize
+        async function init() {
+            try {
+                const response = await fetch('pieces/manifest.json');
+                const manifest = await response.json();
+                
+                if (manifest.pieces && manifest.pieces.length > 0) {
+                    // Sort by timestamp (newest first)
+                    pieces = manifest.pieces.sort((a, b) => 
+                        (b.timestamp || 0) - (a.timestamp || 0)
+                    );
+                    navCount.textContent = pieces.length + ' pieces';
+                    showPiece(0);
+                }
+            } catch (e) {
+                console.error('Failed to load manifest:', e);
             }
-        } catch (e) {
-            console.log('No pieces yet');
         }
-    }
-
-    async function showPiece(index) {
-        if (pieces.length === 0) return;
-
-        // Wrap around
-        if (index < 0) index = pieces.length - 1;
-        if (index >= pieces.length) index = 0;
-        currentIndex = index;
-
-        const piece = pieces[index];
-        const viewer = document.getElementById('viewer');
-        const metaEl = document.getElementById('viewer-meta');
-        const counterEl = document.getElementById('viewer-counter');
-
-        try {
-            const res = await fetch('pieces/' + piece.file);
-            let html = await res.text();
-
-            /* Scope piece's body{} styles to .piece so they apply to the viewer area, not the whole document */
-            html = html.replace(/<style([^>]*)>([\s\S]*?)<\/style>/gi, (_, attrs, content) =>
-                '<style' + attrs + '>' + content.replace(/\bbody\b/g, '.piece') + '</style>');
-
-            viewer.innerHTML = '<div class="piece">' + html + '</div>';
-            // Run piece scripts after layout so canvas/getBoundingClientRect/innerWidth are correct
-            const scripts = viewer.querySelectorAll('script');
-            const runScripts = () => {
-                scripts.forEach(s => {
-                    const n = document.createElement('script');
-                    n.textContent = s.textContent;
-                    s.parentNode.replaceChild(n, s);
-                });
-            };
-            requestAnimationFrame(() => requestAnimationFrame(runScripts));
-            metaEl.textContent = piece.date + ' / ' + piece.type;
-            counterEl.textContent = (index + 1) + ' / ' + pieces.length;
-        } catch (e) {
-            viewer.innerHTML = '<div class="piece">failed to load</div>';
+        
+        // Build full HTML document for iframe
+        function buildPieceDocument(html) {
+            return `<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { 
+            width: 100%; 
+            height: 100%; 
+            background: #000;
+            overflow: hidden;
         }
-    }
-
-    function navigate(direction) {
-        showPiece(currentIndex + direction);
-    }
-
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
-        switch(e.key) {
-            case 'ArrowLeft':
-            case 'a':
-            case 'A':
-                navigate(-1);
-                break;
-            case 'ArrowRight':
-            case 'd':
-            case 'D':
-                navigate(1);
-                break;
-            case 'ArrowUp':
-            case 'w':
-            case 'W':
-                navigate(-1);
-                break;
-            case 'ArrowDown':
-            case 's':
-            case 'S':
-                navigate(1);
-                break;
+    </style>
+</head>
+<body>
+${html}
+</body>
+</html>`;
         }
-    });
-
-    loadPieces();
+        
+        // Display a piece in an isolated iframe
+        async function showPiece(index) {
+            if (pieces.length === 0 || isLoading) return;
+            
+            // Wrap index
+            if (index < 0) index = pieces.length - 1;
+            if (index >= pieces.length) index = 0;
+            currentIndex = index;
+            
+            const piece = pieces[index];
+            
+            // Show loading state
+            isLoading = true;
+            loadingIndicator.classList.add('visible');
+            
+            try {
+                const res = await fetch('pieces/' + piece.file);
+                const html = await res.text();
+                
+                // Hide empty state
+                emptyState.style.display = 'none';
+                
+                // Remove previous iframe if exists
+                if (currentFrame) {
+                    currentFrame.remove();
+                    currentFrame = null;
+                }
+                
+                // Create new iframe for complete isolation
+                const frame = document.createElement('iframe');
+                frame.className = 'piece-frame';
+                frame.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+                
+                // Build full document and inject via srcdoc
+                const fullDoc = buildPieceDocument(html);
+                frame.srcdoc = fullDoc;
+                
+                container.appendChild(frame);
+                currentFrame = frame;
+                
+                // Update metadata
+                pieceMeta.textContent = piece.date + ' / ' + piece.type;
+                pieceCounter.textContent = (index + 1) + ' / ' + pieces.length;
+                
+            } catch (e) {
+                console.error('Failed to load piece:', e);
+                pieceMeta.textContent = 'failed to load';
+            } finally {
+                isLoading = false;
+                loadingIndicator.classList.remove('visible');
+            }
+        }
+        
+        // Navigation
+        function navigate(direction) {
+            showPiece(currentIndex + direction);
+        }
+        
+        // Keyboard controls
+        document.addEventListener('keydown', function(e) {
+            // Prevent navigation while loading
+            if (isLoading) return;
+            
+            switch(e.key) {
+                case 'ArrowLeft':
+                case 'a':
+                case 'A':
+                    e.preventDefault();
+                    navigate(-1);
+                    break;
+                case 'ArrowRight':
+                case 'd':
+                case 'D':
+                    e.preventDefault();
+                    navigate(1);
+                    break;
+                case 'ArrowUp':
+                case 'w':
+                case 'W':
+                    e.preventDefault();
+                    navigate(-1);
+                    break;
+                case 'ArrowDown':
+                case 's':
+                case 'S':
+                    e.preventDefault();
+                    navigate(1);
+                    break;
+            }
+        });
+        
+        // Touch/swipe support
+        let touchStartX = 0;
+        let touchStartY = 0;
+        
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+        
+        document.addEventListener('touchend', function(e) {
+            if (isLoading) return;
+            
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            const deltaX = touchEndX - touchStartX;
+            const deltaY = touchEndY - touchStartY;
+            
+            // Require minimum swipe distance and mostly horizontal
+            if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (deltaX > 0) {
+                    navigate(-1); // Swipe right = previous
+                } else {
+                    navigate(1);  // Swipe left = next
+                }
+            }
+        }, { passive: true });
+        
+        // Initialize
+        init();
+    })();
     </script>
 </body>
 </html>
