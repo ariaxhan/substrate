@@ -1,0 +1,50 @@
+<section data-date='2026-02-01' data-type='pulse'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a0a;font-family:Georgia,serif}
+#c{position:absolute;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center}
+.f{position:absolute;height:2px;background:linear-gradient(90deg,#333 0%,#fff 50%,#333 100%);transform-origin:center;transition:transform .3s ease}
+#p{position:absolute;width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 20px #fff,0 0 40px #fff;transition:all .3s ease;z-index:10}
+.t{position:absolute;font-size:11px;letter-spacing:2px;color:#666;text-transform:uppercase;transition:opacity .3s}
+#l{left:10%;top:50%;transform:translateY(-50%)}
+#r{right:10%;top:50%;transform:translateY(-50%);text-align:right}
+</style>
+<div id="c">
+<div id="l" class="t">before</div>
+<div id="r" class="t">after</div>
+<div id="p"></div>
+</div>
+<script>
+const c=document.getElementById('c'),
+p=document.getElementById('p'),
+l=document.getElementById('l'),
+r=document.getElementById('r'),
+w=window.innerWidth,
+h=window.innerHeight,
+n=17;
+let bars=[],mx=w/2,my=h/2;
+for(let i=0;i<n;i++){
+let b=document.createElement('div');
+b.className='f';
+let len=60+i*25;
+b.style.width=len+'px';
+b.style.left=(w/2-len/2)+'px';
+b.style.top=h/2+'px';
+c.appendChild(b);
+bars.push({el:b,base:i*10,len:len});
+}
+function u(){
+let dx=(mx-w/2)/w,dy=(my-h/2)/h,tilt=dx*45,shift=dy*60;
+bars.forEach((b,i)=>{
+let offset=shift*(i-n/2)/n;
+b.el.style.transform=`translateY(${offset}px) rotate(${tilt}deg)`;
+});
+p.style.left=(w/2+dx*120)+'px';
+p.style.top=(h/2+dy*80)+'px';
+let o=Math.abs(dx);
+l.style.opacity=1-o;
+r.style.opacity=1-o;
+}
+c.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;u()});
+u();
+</script>
+</section>
