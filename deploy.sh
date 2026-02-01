@@ -13,6 +13,6 @@ bash update-manifest.sh
 
 # Deploy
 echo "Deploying to Cloudflare Pages..."
-wrangler pages deploy . --project-name substrate
+wrangler pages deploy . --project-name nexus-substrate --commit-dirty=true
 
-echo "Done. Site live at https://substrate.pages.dev"
+echo "Done. Site live at https://nexus-substrate.pages.dev"

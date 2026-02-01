@@ -1,0 +1,74 @@
+<section data-date='2026-02-01' data-type='morning'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{overflow:hidden;font-family:serif;background:#0a0a12;cursor:crosshair}
+#sky{position:fixed;width:100%;height:100%;transition:background 2s ease}
+.word{position:absolute;opacity:0;color:#fff;font-size:2.5vw;letter-spacing:.3em;pointer-events:none;transform:translateY(20px);transition:all 1.2s cubic-bezier(.19,1,.22,1);text-transform:uppercase;font-weight:100}
+.visible{opacity:1;transform:translateY(0)}
+#horizon{position:fixed;bottom:0;left:0;width:100%;height:1px;background:linear-gradient(90deg,transparent,#ffd700,transparent);box-shadow:0 0 20px #ffd700;transition:all 3s ease}
+#time{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:12vw;color:rgba(255,255,255,.03);font-family:monospace;letter-spacing:.05em;user-select:none;font-weight:100}
+.glow{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,215,0,.4),transparent);pointer-events:none;mix-blend-mode:screen;opacity:0;transition:opacity .3s}
+</style>
+
+<div id="sky"></div>
+<div id="time">00:00</div>
+<div id="horizon"></div>
+<div class="glow"></div>
+
+<script>
+const words=['WAKE','RISE','UNFOLD','EMERGE','BREATHE','DAWN','BEGIN','FIRST','LIGHT','OPEN'],
+sky=document.getElementById('sky'),
+horizon=document.getElementById('horizon'),
+timeEl=document.getElementById('time'),
+glow=document.querySelector('.glow'),
+colors=['#0a0a12','#1a1a2e','#2d2d44','#4a4a6a','#6b6b8f','#8b8bb0','#b8b8d8','#dcdcf5','#f5f5ff'],
+h=window.innerHeight,w=window.innerWidth;
+
+let clicks=0,dawn=0;
+
+function updateTime(){
+const now=new Date(),
+hh=String(now.getHours()).padStart(2,'0'),
+mm=String(now.getMinutes()).padStart(2,'0');
+timeEl.textContent=hh+':'+mm;
+}
+
+function spawnWord(){
+if(clicks>=words.length)return;
+const word=document.createElement('div');
+word.className='word';
+word.textContent=words[clicks];
+word.style.left=Math.random()*80+10+'%';
+word.style.top=Math.random()*70+15+'%';
+document.body.appendChild(word);
+setTimeout(()=>word.classList.add('visible'),10);
+}
+
+function advanceDawn(){
+if(dawn<colors.length-1){
+dawn++;
+sky.style.background=colors[dawn];
+horizon.style.height=dawn*3+'px';
+horizon.style.boxShadow=`0 0 ${dawn*5}px #ffd700`;
+timeEl.style.color=`rgba(255,255,255,${.03+dawn*.02})`;
+}
+}
+
+document.addEventListener('click',e=>{
+if(clicks<words.length){
+spawnWord();
+clicks++;
+advanceDawn();
+}
+});
+
+document.addEventListener('mousemove',e=>{
+glow.style.left=e.clientX-150+'px';
+glow.style.top=e.clientY-150+'px';
+glow.style.opacity=dawn/colors.length*.6;
+});
+
+updateTime();
+setInterval(updateTime,10000);
+</script>
+</section>
