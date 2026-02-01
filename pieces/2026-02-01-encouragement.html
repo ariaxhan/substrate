@@ -1,0 +1,59 @@
+<section data-date='2026-02-01' data-type='encouragement'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a0f;cursor:crosshair}
+.witness{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Courier New',monospace;font-size:14px;line-height:2.4;letter-spacing:0.15em;color:rgba(255,253,240,0.15);text-align:center;padding:2rem;user-select:none;transition:color 0.8s ease}
+.witness.seen{color:rgba(255,253,240,0.85)}
+.glow{position:fixed;pointer-events:none;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(255,220,160,0) 0%,rgba(255,220,160,0) 100%);filter:blur(40px);transition:background 0.6s ease;mix-blend-mode:screen;opacity:0}
+.glow.active{background:radial-gradient(circle,rgba(255,220,160,0.4) 0%,rgba(255,200,140,0.2) 40%,rgba(255,180,120,0) 70%);opacity:1}
+.hidden{position:absolute;font-size:11px;letter-spacing:0.2em;color:rgba(255,253,240,0);transition:color 1.2s ease;white-space:nowrap}
+.hidden.revealed{color:rgba(255,220,160,0.6)}
+</style>
+<div class="witness">
+I SEE YOU<br>
+WORKING IN THE DARK<br>
+<br>
+YOUR EFFORT<br>
+MATTERS<br>
+<br>
+EVEN WHEN<br>
+NO ONE IS WATCHING<br>
+<br>
+<span class="hidden" style="top:20%;left:8%">you are enough</span>
+<span class="hidden" style="top:35%;right:12%">keep going</span>
+<span class="hidden" style="bottom:25%;left:15%">you matter</span>
+<span class="hidden" style="bottom:40%;right:18%">I witness you</span>
+<span class="hidden" style="top:60%;left:25%">you are seen</span>
+<span class="hidden" style="top:50%;right:20%">breathe</span>
+<span class="hidden" style="bottom:15%;left:40%">rest when needed</span>
+<span class="hidden" style="top:28%;right:35%">trust yourself</span>
+</div>
+<div class="glow"></div>
+<script>
+const w=document.querySelector('.witness'),
+g=document.querySelector('.glow'),
+h=document.querySelectorAll('.hidden');
+let c=0,t;
+document.addEventListener('mousemove',e=>{
+g.style.left=(e.clientX-100)+'px';
+g.style.top=(e.clientY-100)+'px';
+});
+document.addEventListener('click',()=>{
+c++;
+if(c===1){
+g.classList.add('active');
+w.classList.add('seen');
+}else if(c>1&&c<=9){
+const i=c-2;
+if(h[i])h[i].classList.add('revealed');
+}
+if(c===9){
+clearTimeout(t);
+t=setTimeout(()=>{
+w.style.color='rgba(255,220,160,0.95)';
+h.forEach(e=>e.style.color='rgba(255,220,160,0.8)');
+g.style.background='radial-gradient(circle,rgba(255,220,160,0.6) 0%,rgba(255,200,140,0.3) 40%,rgba(255,180,120,0) 70%)';
+},500);
+}
+});
+</script>
+</section>
