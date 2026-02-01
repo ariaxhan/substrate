@@ -1,0 +1,104 @@
+<section data-date='2026-02-01' data-type='digest'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{overflow:hidden;background:#0a0a0a;font-family:monospace}
+#c{position:fixed;top:0;left:0;width:100vw;height:100vh;cursor:crosshair}
+.node{position:absolute;width:2px;height:2px;background:#fff;opacity:0;transition:opacity .3s;pointer-events:none}
+.edge{position:absolute;height:1px;background:linear-gradient(90deg,transparent,#444,transparent);opacity:0;transform-origin:0 0;transition:opacity .5s;pointer-events:none}
+#info{position:fixed;bottom:20px;left:20px;color:#333;font-size:11px;letter-spacing:1px;user-select:none}
+</style>
+
+<div id="c"></div>
+<div id="info">click to crystallize</div>
+
+<script>
+const c=document.getElementById('c'),
+nodes=[],
+edges=[],
+maxNodes=150,
+w=window.innerWidth,
+h=window.innerHeight;
+
+let nodeCount=0,
+edgeCount=0,
+lastX=0,
+lastY=0;
+
+function dist(x1,y1,x2,y2){
+return Math.sqrt((x2-x1)**2+(y2-y1)**2)
+}
+
+function createNode(x,y){
+if(nodeCount>=maxNodes)return;
+const n=document.createElement('div');
+n.className='node';
+n.style.left=x+'px';
+n.style.top=y+'px';
+c.appendChild(n);
+nodes.push({x,y,el:n});
+nodeCount++;
+setTimeout(()=>n.style.opacity=.8,10);
+connectNearby(x,y)
+}
+
+function connectNearby(x,y){
+const threshold=120+Math.random()*80;
+nodes.forEach(n=>{
+if(n.x===x&&n.y===y)return;
+const d=dist(x,y,n.x,n.y);
+if(d<threshold&&Math.random()>.4){
+createEdge(x,y,n.x,n.y,d)
+}
+})
+}
+
+function createEdge(x1,y1,x2,y2,len){
+const e=document.createElement('div');
+e.className='edge';
+const angle=Math.atan2(y2-y1,x2-x1)*180/Math.PI;
+e.style.left=x1+'px';
+e.style.top=y1+'px';
+e.style.width=len+'px';
+e.style.transform=`rotate(${angle}deg)`;
+c.appendChild(e);
+edges.push(e);
+edgeCount++;
+setTimeout(()=>e.style.opacity=.3,100+Math.random()*200)
+}
+
+function propagate(x,y){
+const angle=Math.random()*Math.PI*2,
+dist=30+Math.random()*50,
+newX=x+Math.cos(angle)*dist,
+newY=y+Math.sin(angle)*dist;
+if(newX>10&&newX<w-10&&newY>10&&newY<h-10){
+createNode(newX,newY);
+if(Math.random()>.7&&nodeCount<maxNodes){
+setTimeout(()=>propagate(newX,newY),50+Math.random()*150)
+}
+}
+}
+
+c.addEventListener('click',e=>{
+const x=e.clientX,
+y=e.clientY;
+createNode(x,y);
+if(nodeCount<15||Math.random()>.5){
+propagate(x,y)
+}
+lastX=x;
+lastY=y
+});
+
+function seed(){
+for(let i=0;i<3;i++){
+const x=w/2+Math.random()*200-100,
+y=h/2+Math.random()*200-100;
+createNode(x,y);
+setTimeout(()=>propagate(x,y),200*i)
+}
+}
+
+seed()
+</script>
+</section>
