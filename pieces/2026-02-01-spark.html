@@ -1,0 +1,210 @@
+<section data-date='2026-02-01' data-type='spark'>
+<style>
+* { margin:0; padding:0; box-sizing:border-box }
+body {
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1432 50%, #2d1b3d 100%);
+  overflow: hidden;
+  font-family: 'Courier New', monospace;
+  height: 100vh;
+  cursor: crosshair;
+}
+.node {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  pointer-events: none;
+}
+.a { background: #ff6b9d; box-shadow: 0 0 20px #ff6b9d; }
+.b { background: #4ecdc4; box-shadow: 0 0 20px #4ecdc4; }
+.spark {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #fff;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: sparkle 0.6s ease-out forwards;
+}
+@keyframes sparkle {
+  0% { opacity: 1; transform: scale(1) }
+  100% { opacity: 0; transform: scale(3) }
+}
+.line {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #ffd700, transparent);
+  transform-origin: left center;
+  pointer-events: none;
+  opacity: 0;
+  animation: flash 0.4s ease-out;
+}
+@keyframes flash {
+  0%, 100% { opacity: 0 }
+  50% { opacity: 0.8 }
+}
+.trail {
+  position: absolute;
+  font-size: 9px;
+  color: rgba(255,255,255,0.7);
+  pointer-events: none;
+  white-space: nowrap;
+  animation: fade 2s ease-out forwards;
+}
+@keyframes fade {
+  0% { opacity: 0.7; transform: translateY(0) }
+  100% { opacity: 0; transform: translateY(-40px) }
+}
+#hint {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,0.3);
+  font-size: 11px;
+  letter-spacing: 2px;
+  animation: pulse 3s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.3 }
+  50% { opacity: 0.6 }
+}
+</style>
+
+<div id="hint">CLICK TO COLLIDE</div>
+
+<script>
+const W = innerWidth, H = innerHeight;
+const nodes = [];
+const words = ['THREAD','MERGE','SYNTH','SPLIT','PULSE','CLASH','WEAVE','FUSE','BOND','LINK'];
+let collisions = 0;
+
+class Node {
+  constructor(type, x, y, vx, vy) {
+    this.type = type;
+    this.x = x;
+    this.y = y;
+    this.vx = vx;
+    this.vy = vy;
+    this.el = document.createElement('div');
+    this.el.className = `node ${type}`;
+    document.body.appendChild(this.el);
+    this.update();
+  }
+
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+
+    if (this.x < 0 || this.x > W) this.vx *= -1;
+    if (this.y < 0 || this.y > H) this.vy *= -1;
+
+    this.x = Math.max(0, Math.min(W, this.x));
+    this.y = Math.max(0, Math.min(H, this.y));
+
+    this.el.style.left = this.x + 'px';
+    this.el.style.top = this.y + 'px';
+  }
+
+  attract(tx, ty) {
+    const dx = tx - this.x;
+    const dy = ty - this.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if (dist > 10) {
+      this.vx += dx * 0.002;
+      this.vy += dy * 0.002;
+      const speed = Math.sqrt(this.vx*this.vx + this.vy*this.vy);
+      if (speed > 3) {
+        this.vx = (this.vx / speed) * 3;
+        this.vy = (this.vy / speed) * 3;
+      }
+    }
+  }
+}
+
+function spawn() {
+  const margin = 100;
+  nodes.push(
+    new Node('a', margin, H/2, Math.random()-0.5, Math.random()-0.5),
+    new Node('b', W-margin, H/2, Math.random()-0.5, Math.random()-0.5)
+  );
+}
+
+function collision(n1, n2) {
+  const dx = n2.x - n1.x;
+  const dy = n2.y - n1.y;
+  const dist = Math.sqrt(dx*dx + dy*dy);
+
+  if (dist < 20) {
+    const mx = (n1.x + n2.x) / 2;
+    const my = (n1.y + n2.y) / 2;
+
+    const line = document.createElement('div');
+    line.className = 'line';
+    line.style.left = n1.x + 'px';
+    line.style.top = n1.y + 'px';
+    line.style.width = dist + 'px';
+    line.style.transform = `rotate(${Math.atan2(dy, dx)}rad)`;
+    document.body.appendChild(line);
+    setTimeout(() => line.remove(), 400);
+
+    for (let i = 0; i < 8; i++) {
+      const spark = document.createElement('div');
+      spark.className = 'spark';
+      spark.style.left = mx + 'px';
+      spark.style.top = my + 'px';
+      document.body.appendChild(spark);
+      setTimeout(() => spark.remove(), 600);
+    }
+
+    const trail = document.createElement('div');
+    trail.className = 'trail';
+    trail.textContent = words[collisions % words.length];
+    trail.style.left = mx + 'px';
+    trail.style.top = my + 'px';
+    document.body.appendChild(trail);
+    setTimeout(() => trail.remove(), 2000);
+
+    collisions++;
+
+    n1.vx = -n1.vx * 1.2;
+    n1.vy = -n1.vy * 1.2;
+    n2.vx = -n2.vx * 1.2;
+    n2.vy = -n2.vy * 1.2;
+  }
+}
+
+let mx = W/2, my = H/2;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX;
+  my = e.clientY;
+});
+
+document.addEventListener('click', () => {
+  spawn();
+  document.getElementById('hint').style.opacity = 0;
+});
+
+function loop() {
+  nodes.forEach(n => {
+    n.attract(mx, my);
+    n.update();
+  });
+
+  for (let i = 0; i < nodes.length; i++) {
+    for (let j = i+1; j < nodes.length; j++) {
+      if (nodes[i].type !== nodes[j].type) {
+        collision(nodes[i], nodes[j]);
+      }
+    }
+  }
+
+  requestAnimationFrame(loop);
+}
+
+spawn();
+loop();
+</script>
+</section>
