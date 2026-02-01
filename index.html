@@ -79,17 +79,25 @@
         color: #666;
     }
     
-    .nav-hint { 
-        color: var(--text-subtle); 
+    .nav-shortcuts {
+        color: var(--text-subtle);
         font-size: 10px;
-        opacity: 0;
-        transition: opacity var(--transition-normal);
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
     }
-    
-    .nav-hint.visible { opacity: 1; }
-    
-    @media (min-width: 640px) {
-        .nav-hint { opacity: 1; }
+
+    .nav-shortcuts span {
+        white-space: nowrap;
+    }
+
+    .nav-shortcuts kbd {
+        color: var(--text-dim);
+        font: inherit;
+    }
+
+    @media (max-width: 639px) {
+        .nav-shortcuts { display: none; }
     }
     
     .nav-right {
@@ -380,58 +388,6 @@
         .touch-zone { display: flex; }
     }
     
-    /* ========== Keyboard Shortcuts Overlay ========== */
-    .shortcuts-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.95);
-        z-index: 2000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        visibility: hidden;
-        transition: all var(--transition-normal);
-    }
-    
-    .shortcuts-overlay.visible {
-        opacity: 1;
-        visibility: visible;
-    }
-    
-    .shortcuts-content {
-        max-width: 320px;
-        padding: 32px;
-    }
-    
-    .shortcuts-title {
-        color: var(--text-dim);
-        font-size: 11px;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        margin-bottom: 24px;
-    }
-    
-    .shortcut-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px 0;
-        border-bottom: 1px solid #1a1a1a;
-    }
-    
-    .shortcut-key {
-        color: var(--text-dim);
-        font-size: 11px;
-    }
-    
-    .shortcut-action {
-        color: var(--text-subtle);
-        font-size: 10px;
-    }
-    
     /* ========== Swipe Hint ========== */
     .swipe-hint {
         position: fixed;
@@ -482,7 +438,13 @@
     <nav class="nav" role="navigation" aria-label="Main navigation">
         <div class="nav-left">
             <span class="nav-title">substrate</span>
-            <span class="nav-hint" id="nav-hint">shift+/ for shortcuts</span>
+            <div class="nav-shortcuts">
+                <span><kbd>← →</kbd> nav</span>
+                <span><kbd>Space</kbd> next</span>
+                <span><kbd>Home/End</kbd> jump</span>
+                <span><kbd>1-9</kbd> 10-90%</span>
+                <span><kbd>R</kbd> reload</span>
+            </div>
         </div>
         <div class="nav-right">
             <span class="nav-count" id="nav-count" aria-live="polite"></span>
@@ -531,19 +493,6 @@
         <button class="state-action" id="offline-retry-btn" type="button">retry</button>
     </div>
     
-    <!-- Keyboard shortcuts overlay -->
-    <div class="shortcuts-overlay" id="shortcuts-overlay" role="dialog" aria-label="Keyboard shortcuts">
-        <div class="shortcuts-content">
-            <div class="shortcuts-title">keyboard shortcuts</div>
-            <div class="shortcut-row"><span class="shortcut-key">← → or A D</span><span class="shortcut-action">navigate</span></div>
-            <div class="shortcut-row"><span class="shortcut-key">Home / End</span><span class="shortcut-action">first / last</span></div>
-            <div class="shortcut-row"><span class="shortcut-key">Space</span><span class="shortcut-action">next piece</span></div>
-            <div class="shortcut-row"><span class="shortcut-key">1-9</span><span class="shortcut-action">jump to 10-90%</span></div>
-            <div class="shortcut-row"><span class="shortcut-key">R</span><span class="shortcut-action">reload piece</span></div>
-            <div class="shortcut-row"><span class="shortcut-key">Shift + /</span><span class="shortcut-action">toggle shortcuts</span></div>
-            <div class="shortcut-row"><span class="shortcut-key">Escape</span><span class="shortcut-action">close overlay</span></div>
-        </div>
-    </div>
     
     <!-- Swipe hint -->
     <div class="swipe-hint" id="swipe-hint">swipe or tap edges to navigate</div>
@@ -602,11 +551,11 @@
         const dom = {};
         function initDom() {
             const ids = [
-                'viewer', 'progress-bar', 'nav-count', 'nav-hint', 'status-dot',
+                'viewer', 'progress-bar', 'nav-count', 'status-dot',
                 'counter', 'meta', 'position-dots', 'state-empty', 'state-loading',
                 'state-error', 'state-offline', 'error-title', 'error-message',
                 'retry-btn', 'offline-retry-btn', 'touch-prev', 'touch-next',
-                'shortcuts-overlay', 'swipe-hint', 'edge-left', 'edge-right'
+                'swipe-hint', 'edge-left', 'edge-right'
             ];
             ids.forEach(id => dom[id] = document.getElementById(id));
         }
@@ -1052,92 +1001,54 @@ body>section{width:100%;height:100%;min-height:${vh}px;display:block}
         // Keyboard Navigation
         // ================================================================
         // Returns true if the key was handled (caller should preventDefault).
-        function executeShortcut(key, shiftKey, isShortcutsOpen) {
+        function executeShortcut(key, shiftKey) {
             switch (key) {
-                case 'Escape':
-                    if (isShortcutsOpen) {
-                        dom['shortcuts-overlay'].classList.remove('visible');
-                        return true;
-                    }
-                    return false;
-                    
-                case '?':
-                    dom['shortcuts-overlay']?.classList.toggle('visible');
-                    return true;
-                    
                 case 'ArrowLeft':
                 case 'a':
                 case 'A':
-                    if (!isShortcutsOpen) {
-                        navigate(-1);
-                        return true;
-                    }
-                    return false;
-                    
+                    navigate(-1);
+                    return true;
+
                 case 'ArrowRight':
                 case 'd':
                 case 'D':
-                    if (!isShortcutsOpen) {
-                        navigate(1);
-                        return true;
-                    }
-                    return false;
-                    
+                    navigate(1);
+                    return true;
+
                 case 'ArrowUp':
                 case 'w':
                 case 'W':
-                    if (!isShortcutsOpen) {
-                        navigate(-1);
-                        return true;
-                    }
-                    return false;
-                    
+                    navigate(-1);
+                    return true;
+
                 case 'ArrowDown':
                 case 's':
                 case 'S':
-                    if (!isShortcutsOpen) {
-                        navigate(1);
-                        return true;
-                    }
-                    return false;
-                    
+                    navigate(1);
+                    return true;
+
                 case ' ':
-                    if (!isShortcutsOpen) {
-                        navigate(shiftKey ? -1 : 1);
-                        return true;
-                    }
-                    return false;
-                    
+                    navigate(shiftKey ? -1 : 1);
+                    return true;
+
                 case 'Home':
-                    if (!isShortcutsOpen) {
-                        navigateTo(0);
-                        return true;
-                    }
-                    return false;
-                    
+                    navigateTo(0);
+                    return true;
+
                 case 'End':
-                    if (!isShortcutsOpen) {
-                        navigateTo(state.pieces.length - 1);
-                        return true;
-                    }
-                    return false;
-                    
+                    navigateTo(state.pieces.length - 1);
+                    return true;
+
                 case 'r':
                 case 'R':
-                    if (!isShortcutsOpen) {
-                        showPiece(state.currentIndex, { force: true });
-                        return true;
-                    }
-                    return false;
-                    
+                    showPiece(state.currentIndex, { force: true });
+                    return true;
+
                 case '1': case '2': case '3': case '4': case '5':
                 case '6': case '7': case '8': case '9':
-                    if (!isShortcutsOpen) {
-                        navigateToPercent(parseInt(key, 10) * 10);
-                        return true;
-                    }
-                    return false;
-                    
+                    navigateToPercent(parseInt(key, 10) * 10);
+                    return true;
+
                 default:
                     return false;
             }
@@ -1145,8 +1056,7 @@ body>section{width:100%;height:100%;min-height:${vh}px;display:block}
         
         function handleKeydown(e) {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
-            const isShortcutsOpen = dom['shortcuts-overlay']?.classList.contains('visible');
-            if (executeShortcut(e.key, e.shiftKey, isShortcutsOpen)) e.preventDefault();
+            if (executeShortcut(e.key, e.shiftKey)) e.preventDefault();
         }
         
         // Forward shortcuts from piece iframe so they work when focus is inside the piece.
@@ -1156,8 +1066,7 @@ body>section{width:100%;height:100%;min-height:${vh}px;display:block}
                 if (!doc) return;
                 doc.addEventListener('keydown', function(e) {
                     if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
-                    const isShortcutsOpen = dom['shortcuts-overlay']?.classList.contains('visible');
-                    if (executeShortcut(e.key, e.shiftKey, isShortcutsOpen)) e.preventDefault();
+                    if (executeShortcut(e.key, e.shiftKey)) e.preventDefault();
                 });
             } catch (err) {
                 // Cross-origin or unavailable; ignore
@@ -1282,12 +1191,6 @@ body>section{width:100%;height:100%;min-height:${vh}px;display:block}
                 showPiece(state.currentIndex, { force: true });
             });
             
-            // Close shortcuts on click outside
-            dom['shortcuts-overlay']?.addEventListener('click', (e) => {
-                if (e.target === dom['shortcuts-overlay']) {
-                    dom['shortcuts-overlay'].classList.remove('visible');
-                }
-            });
         }
         
         // ================================================================
@@ -1350,10 +1253,6 @@ body>section{width:100%;height:100%;min-height:${vh}px;display:block}
                     }, 1500);
                 }
                 
-                // Show keyboard hint on desktop
-                setTimeout(() => {
-                    dom['nav-hint']?.classList.add('visible');
-                }, 2000);
                 
             } catch (error) {
                 console.error('Init failed:', error);
