@@ -1,0 +1,231 @@
+<section data-date='2026-01-31' data-type='encouragement'>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #0a0a0f;
+  overflow: hidden;
+  font-family: 'Charter', 'Georgia', serif;
+  cursor: crosshair;
+}
+#canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 1;
+}
+.phrase {
+  position: absolute;
+  color: rgba(255, 255, 255, 0.03);
+  font-size: 18px;
+  letter-spacing: 0.15em;
+  text-transform: lowercase;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+}
+.phrase.seen {
+  color: rgba(255, 240, 220, 0.85);
+  text-shadow: 0 0 20px rgba(255, 200, 100, 0.4);
+  font-size: 22px;
+  letter-spacing: 0.2em;
+}
+#center {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  color: rgba(200, 200, 200, 0.15);
+  letter-spacing: 0.3em;
+  text-align: center;
+  z-index: 10;
+  transition: opacity 0.8s;
+}
+</style>
+
+<canvas id="canvas"></canvas>
+<div id="center">you are witnessed</div>
+
+<script>
+const phrases = [
+  'i see you',
+  'you are here',
+  'this matters',
+  'you exist',
+  'i notice',
+  'presence felt',
+  'not alone',
+  'warmth found',
+  'light remains',
+  'being known',
+  'gently held',
+  'soft landing',
+  'breath shared',
+  'quiet witness',
+  'here with you'
+];
+
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const center = document.getElementById('center');
+let w, h, particles = [];
+let mouseX = 0, mouseY = 0;
+let lastClick = 0;
+
+function resize() {
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+// Create floating phrases
+function initPhrases() {
+  const container = document.body;
+  phrases.forEach((text, i) => {
+    const el = document.createElement('div');
+    el.className = 'phrase';
+    el.textContent = text;
+    el.style.left = Math.random() * 90 + 5 + '%';
+    el.style.top = Math.random() * 90 + 5 + '%';
+    el.dataset.x = parseFloat(el.style.left);
+    el.dataset.y = parseFloat(el.style.top);
+    el.dataset.vx = (Math.random() - 0.5) * 0.02;
+    el.dataset.vy = (Math.random() - 0.5) * 0.02;
+    container.appendChild(el);
+  });
+}
+
+// Particle system for warm glow
+class Particle {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.vx = (Math.random() - 0.5) * 0.5;
+    this.vy = (Math.random() - 0.5) * 0.5;
+    this.life = 1;
+    this.decay = Math.random() * 0.01 + 0.005;
+    this.size = Math.random() * 3 + 2;
+  }
+
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.life -= this.decay;
+    this.vx *= 0.98;
+    this.vy *= 0.98;
+  }
+
+  draw() {
+    const alpha = this.life * 0.4;
+    const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size * 8);
+    gradient.addColorStop(0, `rgba(255, 200, 100, ${alpha})`);
+    gradient.addColorStop(0.5, `rgba(255, 150, 80, ${alpha * 0.5})`);
+    gradient.addColorStop(1, 'rgba(255, 100, 50, 0)');
+
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size * 8, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+// Animate phrases
+function animatePhrases() {
+  const els = document.querySelectorAll('.phrase');
+  els.forEach(el => {
+    let x = parseFloat(el.dataset.x);
+    let y = parseFloat(el.dataset.y);
+    let vx = parseFloat(el.dataset.vx);
+    let vy = parseFloat(el.dataset.vy);
+
+    x += vx;
+    y += vy;
+
+    if (x < 0 || x > 95) vx *= -1;
+    if (y < 0 || y > 95) vy *= -1;
+
+    el.dataset.x = x;
+    el.dataset.y = y;
+    el.dataset.vx = vx;
+    el.dataset.vy = vy;
+    el.style.left = x + '%';
+    el.style.top = y + '%';
+  });
+}
+
+// Mouse move creates warm light
+let trail = [];
+window.addEventListener('mousemove', e => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+
+  // Create particles along mouse path
+  if (Math.random() > 0.7) {
+    particles.push(new Particle(mouseX, mouseY));
+  }
+
+  // Check proximity to phrases
+  const els = document.querySelectorAll('.phrase');
+  els.forEach(el => {
+    const rect = el.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dist = Math.hypot(mouseX - cx, mouseY - cy);
+
+    if (dist < 150) {
+      el.classList.add('seen');
+    } else {
+      el.classList.remove('seen');
+    }
+  });
+});
+
+// Click reveals hidden warmth
+window.addEventListener('click', e => {
+  const now = Date.now();
+  if (now - lastClick < 200) return;
+  lastClick = now;
+
+  // Burst of particles
+  for (let i = 0; i < 30; i++) {
+    particles.push(new Particle(
+      e.clientX + (Math.random() - 0.5) * 20,
+      e.clientY + (Math.random() - 0.5) * 20
+    ));
+  }
+
+  // Fade center text
+  if (center.style.opacity !== '0') {
+    center.style.opacity = '0';
+    setTimeout(() => center.style.display = 'none', 800);
+  }
+});
+
+// Animation loop
+function animate() {
+  ctx.fillStyle = 'rgba(10, 10, 15, 0.15)';
+  ctx.fillRect(0, 0, w, h);
+
+  // Update and draw particles
+  particles = particles.filter(p => {
+    p.update();
+    if (p.life > 0) {
+      p.draw();
+      return true;
+    }
+    return false;
+  });
+
+  animatePhrases();
+  requestAnimationFrame(animate);
+}
+
+initPhrases();
+animate();
+</script>
+</section>

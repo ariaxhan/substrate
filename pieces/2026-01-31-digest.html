@@ -1,0 +1,112 @@
+<section data-date='2026-01-31' data-type='digest'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{overflow:hidden;background:#0a0a0a;font-family:monospace}
+#c{position:absolute;top:0;left:0;width:100vw;height:100vh;cursor:crosshair}
+.node{position:absolute;width:3px;height:3px;border-radius:50%;transition:all .3s cubic-bezier(.4,0,.2,1)}
+.edge{position:absolute;height:1px;transform-origin:0 0;opacity:0;transition:opacity .5s}
+#info{position:fixed;bottom:20px;right:20px;color:#444;font-size:11px;text-align:right;line-height:1.6;pointer-events:none}
+</style>
+<div id="c"></div>
+<div id="info">click to accumulate<br><span id="count">0</span> nodes<br><span id="edges">0</span> connections</div>
+<script>
+const c=document.getElementById('c');
+const nodes=[];
+const maxNodes=300;
+const connectThreshold=150;
+let totalEdges=0;
+
+const hues=[190,210,230,250,270];
+const getColor=(i)=>{
+  const h=hues[i%hues.length];
+  const s=Math.random()*30+50;
+  const l=Math.random()*20+60;
+  return`hsl(${h},${s}%,${l}%)`;
+};
+
+const dist=(a,b)=>Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2);
+
+const createEdge=(n1,n2)=>{
+  const dx=n2.x-n1.x;
+  const dy=n2.y-n1.y;
+  const d=Math.sqrt(dx*dx+dy*dy);
+  const angle=Math.atan2(dy,dx)*180/Math.PI;
+
+  const edge=document.createElement('div');
+  edge.className='edge';
+  edge.style.left=n1.x+'px';
+  edge.style.top=n1.y+'px';
+  edge.style.width=d+'px';
+  edge.style.transform=`rotate(${angle}deg)`;
+  edge.style.background=`linear-gradient(90deg,${n1.color}00,${n1.color}33,${n2.color}00)`;
+  c.appendChild(edge);
+
+  setTimeout(()=>edge.style.opacity='1',50);
+  totalEdges++;
+  document.getElementById('edges').textContent=totalEdges;
+};
+
+const addNode=(x,y)=>{
+  if(nodes.length>=maxNodes)return;
+
+  const node=document.createElement('div');
+  node.className='node';
+  const color=getColor(nodes.length);
+  node.style.left=x+'px';
+  node.style.top=y+'px';
+  node.style.background=color;
+  node.style.boxShadow=`0 0 ${4+Math.random()*6}px ${color}`;
+  c.appendChild(node);
+
+  const nodeData={x,y,el:node,color};
+  nodes.push(nodeData);
+
+  // Connect to nearby nodes
+  nodes.slice(0,-1).forEach(n=>{
+    if(dist(nodeData,n)<connectThreshold){
+      createEdge(n,nodeData);
+    }
+  });
+
+  // Grow existing nodes slightly
+  nodes.forEach((n,i)=>{
+    const size=3+Math.min(nodes.length/30,4);
+    n.el.style.width=size+'px';
+    n.el.style.height=size+'px';
+  });
+
+  document.getElementById('count').textContent=nodes.length;
+
+  // Emergent clustering effect
+  if(nodes.length%7===0&&nodes.length>14){
+    const center={
+      x:nodes.reduce((s,n)=>s+n.x,0)/nodes.length,
+      y:nodes.reduce((s,n)=>s+n.y,0)/nodes.length
+    };
+    nodes.forEach(n=>{
+      const dx=(center.x-n.x)*.05;
+      const dy=(center.y-n.y)*.05;
+      n.x+=dx;
+      n.y+=dy;
+      n.el.style.left=n.x+'px';
+      n.el.style.top=n.y+'px';
+    });
+  }
+};
+
+c.addEventListener('click',e=>{
+  addNode(e.clientX,e.clientY);
+});
+
+// Seed initial sparse structure
+const seed=5;
+for(let i=0;i<seed;i++){
+  setTimeout(()=>{
+    addNode(
+      Math.random()*window.innerWidth,
+      Math.random()*window.innerHeight
+    );
+  },i*150);
+}
+</script>
+</section>

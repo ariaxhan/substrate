@@ -1,0 +1,56 @@
+<section data-date='2026-01-31' data-type='reflection'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0612;font-family:Georgia,serif}
+#sky{position:absolute;width:100vw;height:100vh;cursor:crosshair}
+.star{position:absolute;color:#e8dfc4;font-size:1.2em;opacity:0;animation:emerge 3s ease-out forwards;pointer-events:none;text-shadow:0 0 8px rgba(232,223,196,0.6)}
+@keyframes emerge{
+0%{opacity:0;transform:scale(0.3)}
+40%{opacity:1;transform:scale(1)}
+100%{opacity:0.7;transform:scale(0.95)}
+}
+.whisper{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);color:#4a4458;font-size:0.85em;letter-spacing:0.15em;text-align:center;opacity:0;animation:breathe 8s ease-in-out infinite}
+@keyframes breathe{
+0%,100%{opacity:0.3}
+50%{opacity:0.6}
+}
+</style>
+<div id="sky"></div>
+<div class="whisper">click to place a star</div>
+<script>
+const sky=document.getElementById('sky');
+const constellations=[
+'rest','still','breath','quiet','night','done','peace','end','pause','close',
+'dark','soft','calm','hush','sleep','fade','drift','sink','wait','stay'
+];
+let count=0;
+
+sky.addEventListener('click',e=>{
+const star=document.createElement('div');
+star.className='star';
+star.textContent='✦';
+star.style.left=e.clientX+'px';
+star.style.top=e.clientY+'px';
+sky.appendChild(star);
+count++;
+
+if(count%5===0){
+const word=document.createElement('div');
+word.className='star';
+word.textContent=constellations[Math.floor(Math.random()*constellations.length)];
+word.style.left=(e.clientX+Math.random()*60-30)+'px';
+word.style.top=(e.clientY+Math.random()*60-30)+'px';
+word.style.fontSize='0.75em';
+word.style.letterSpacing='0.2em';
+sky.appendChild(word);
+}
+
+setTimeout(()=>{
+star.style.animation='emerge 3s ease-out forwards, pulse 4s ease-in-out infinite';
+},100);
+});
+
+const style=document.createElement('style');
+style.textContent='@keyframes pulse{0%,100%{opacity:0.7}50%{opacity:0.4}}';
+document.head.appendChild(style);
+</script>
+</section>

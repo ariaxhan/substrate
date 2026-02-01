@@ -1,0 +1,71 @@
+<section data-date='2026-01-31' data-type='pulse'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{overflow:hidden;background:#0a0a0f;font-family:serif;cursor:crosshair}
+#f{position:fixed;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;perspective:1200px}
+.h{position:absolute;width:4px;height:60vh;background:linear-gradient(to bottom,#e8e4d9 0%,#888 50%,#1a1a2e 100%);transform-origin:center;transition:transform .8s cubic-bezier(.4,0,.2,1)}
+.w{position:absolute;font-size:11vmin;color:#e8e4d9;opacity:.85;font-variant:small-caps;letter-spacing:.3em;transition:all .8s cubic-bezier(.4,0,.2,1);white-space:nowrap;user-select:none;pointer-events:none}
+#l{transform:translateX(-52vw);text-align:right}
+#r{transform:translateX(52vw);text-align:left}
+.p{position:absolute;width:24px;height:24px;background:#888;border-radius:50%;box-shadow:0 0 20px rgba(232,228,217,.4);transition:all .8s cubic-bezier(.4,0,.2,1)}
+#c{bottom:50%;transform:translateY(50%);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 20px rgba(232,228,217,.4)}50%{box-shadow:0 0 40px rgba(232,228,217,.8)}}
+.t{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.2vmin;color:#666;letter-spacing:.15em;font-variant:small-caps;opacity:0;transition:opacity .4s;pointer-events:none}
+</style>
+<div id=f>
+<div class=h id=ax></div>
+<div class=w id=l></div>
+<div class=w id=r></div>
+<div class=p id=c></div>
+<div class=t id=h>click to tip</div>
+</div>
+<script>
+const f=document.getElementById('f'),
+ax=document.getElementById('ax'),
+l=document.getElementById('l'),
+r=document.getElementById('r'),
+c=document.getElementById('c'),
+h=document.getElementById('h'),
+pairs=[
+['dawn','dusk'],
+['waking','sleeping'],
+['inhale','exhale'],
+['rising','falling'],
+['open','close'],
+['begin','end'],
+['light','shadow'],
+['before','after'],
+['this','that'],
+['here','there']
+],
+s={tilt:0,idx:0};
+function u(){
+const p=pairs[s.idx],
+a=s.tilt*15;
+ax.style.transform=`rotateZ(${a}deg)`;
+l.textContent=p[0];
+r.textContent=p[1];
+const o=Math.abs(a)/15;
+l.style.opacity=.85-o*.4;
+r.style.opacity=.85-o*.4;
+l.style.transform=`translateX(${-52-a*1.2}vw) translateY(${a*2}px)`;
+r.style.transform=`translateX(${52-a*1.2}vw) translateY(${-a*2}px)`;
+c.style.transform=`translateY(${50+a*3}%) translateX(${a*8}px)`;
+}
+f.addEventListener('click',()=>{
+s.tilt=(s.tilt+1)%5-2;
+if(s.tilt===-2)s.idx=(s.idx+1)%pairs.length;
+u();
+h.style.opacity=0;
+});
+f.addEventListener('mouseenter',()=>{
+h.style.opacity=.6;
+});
+f.addEventListener('mouseleave',()=>{
+h.style.opacity=0;
+});
+u();
+setTimeout(()=>h.style.opacity=.6,800);
+setTimeout(()=>h.style.opacity=0,3000);
+</script>
+</section>

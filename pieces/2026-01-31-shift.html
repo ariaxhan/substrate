@@ -1,0 +1,30 @@
+<section data-date='2026-01-31' data-type='shift'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a0a;font-family:'Courier New',monospace}
+#v{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;transition:transform 1.2s cubic-bezier(.68,-.55,.265,1.55);cursor:pointer;user-select:none}
+.l{position:absolute;font-size:clamp(60px,12vw,180px);font-weight:900;letter-spacing:-0.05em;line-height:1}
+.t{color:#e8e8e8;text-shadow:0 0 20px rgba(232,232,232,0.4)}
+.b{color:#1a1a1a;text-shadow:0 0 20px rgba(26,26,26,0.8)}
+#l1{top:20%;left:10%;transform:rotate(-5deg)}
+#l2{top:25%;right:12%;transform:rotate(3deg)}
+#l3{top:45%;left:15%;transform:rotate(-2deg)}
+#l4{top:50%;right:18%;transform:rotate(4deg)}
+#l5{top:70%;left:20%;transform:rotate(2deg)}
+#l6{top:75%;right:10%;transform:rotate(-3deg)}
+.h{position:fixed;bottom:5%;left:50%;transform:translateX(-50%);font-size:12px;color:#444;opacity:0;animation:f 3s ease-in-out 1s forwards}
+@keyframes f{to{opacity:1}}
+</style>
+<div id="v">
+<div class="l t" id="l1">NOW</div>
+<div class="l b" id="l2">MOM</div>
+<div class="l t" id="l3">WAS</div>
+<div class="l b" id="l4">SAM</div>
+<div class="l t" id="l5">SIS</div>
+<div class="l b" id="l6">SIS</div>
+</div>
+<div class="h">click to invert</div>
+<script>
+let r=0,v=document.getElementById('v');
+v.onclick=()=>{r+=180;v.style.transform=`rotate(${r}deg)`};
+</script>
+</section>

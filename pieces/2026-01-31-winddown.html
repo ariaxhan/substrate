@@ -1,0 +1,102 @@
+<section data-date='2026-01-31' data-type='winddown'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0e1a;font-family:'Courier New',monospace;cursor:crosshair}
+.sky{position:fixed;width:100vw;height:100vh;top:0;left:0;transition:background 2s ease}
+.ember{position:absolute;font-size:14px;opacity:0;transition:all 1.5s cubic-bezier(.4,0,.2,1);pointer-events:none;color:#ff9966;filter:blur(.5px)}
+.glow{position:fixed;border-radius:50%;pointer-events:none;mix-blend-mode:screen;opacity:0;transition:opacity .8s ease}
+.settled{opacity:0!important;transform:translateY(60vh)scale(.3)!important;filter:blur(4px)!important}
+#breath{position:fixed;bottom:8vh;left:50%;transform:translateX(-50%);font-size:13px;letter-spacing:3px;color:#556677;opacity:.6;white-space:nowrap}
+</style>
+
+<div class="sky"></div>
+<div class="glow"></div>
+<div id="breath">let go</div>
+
+<script>
+const sky=document.querySelector('.sky');
+const glow=document.querySelector('.glow');
+const breath=document.getElementById('breath');
+let embers=[];
+let mouseX=window.innerWidth/2;
+let mouseY=window.innerHeight/2;
+let lastMove=Date.now();
+let settled=0;
+
+const words=['warmth','ember','dusk','hush','fade','still','breath','drift','dim','rest','quiet','slow'];
+const gradients=[
+'radial-gradient(ellipse at 50% 20%,#1a2332,#0a0e1a)',
+'radial-gradient(ellipse at 50% 30%,#0f1621,#060810)',
+'radial-gradient(ellipse at 50% 40%,#080c15,#030508)'
+];
+
+function createEmber(){
+if(embers.length>40)return;
+const e=document.createElement('div');
+e.className='ember';
+e.textContent=words[Math.floor(Math.random()*words.length)];
+e.style.left=Math.random()*90+'vw';
+e.style.top=Math.random()*80+'vh';
+e.style.transform=`rotate(${Math.random()*20-10}deg)`;
+document.body.appendChild(e);
+embers.push(e);
+setTimeout(()=>e.style.opacity=.7,50);
+}
+
+function settle(e){
+if(!e.classList.contains('settled')){
+e.classList.add('settled');
+settled++;
+if(settled>=embers.length&&embers.length>20){
+breath.textContent='the day releases';
+breath.style.opacity=.3;
+}
+}
+}
+
+document.addEventListener('mousemove',e=>{
+mouseX=e.clientX;
+mouseY=e.clientY;
+lastMove=Date.now();
+glow.style.left=mouseX+'px';
+glow.style.top=mouseY+'px';
+glow.style.opacity=.4;
+});
+
+document.addEventListener('click',()=>{
+if(embers.length>0){
+const idx=Math.floor(Math.random()*embers.length);
+settle(embers[idx]);
+}
+});
+
+let phase=0;
+setInterval(()=>{
+const elapsed=Date.now()-lastMove;
+if(elapsed>1500){
+glow.style.opacity=Math.max(0,.4-(elapsed-1500)/2000);
+}
+if(elapsed>3000&&Math.random()<.15){
+embers.forEach(e=>{
+if(!e.classList.contains('settled')&&Math.random()<.08)settle(e);
+});
+}
+if(phase<3&&Date.now()>5000*phase){
+sky.style.background=gradients[phase];
+phase++;
+}
+},100);
+
+for(let i=0;i<15;i++){
+setTimeout(createEmber,i*800+Math.random()*400);
+}
+setInterval(()=>{
+if(embers.length<35&&Math.random()<.3)createEmber();
+},2000);
+
+glow.style.width='200px';
+glow.style.height='200px';
+glow.style.background='radial-gradient(circle,rgba(255,150,100,.3),transparent)';
+glow.style.left=mouseX+'px';
+glow.style.top=mouseY+'px';
+</script>
+</section>
