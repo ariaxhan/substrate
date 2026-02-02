@@ -1,0 +1,81 @@
+<section data-date='2026-02-01' data-type='winddown'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0510;cursor:none}
+#c{position:fixed;top:0;left:0}
+.w{position:fixed;color:#3a2a45;font:300 14px/1.8 'Georgia',serif;letter-spacing:2px;opacity:.3;transition:opacity 2s,color 2s;pointer-events:none}
+.w.l{color:#8b6d94;opacity:.9}
+</style>
+
+<canvas id=c></canvas>
+<div class=w style="top:15%;left:8%">the day releases</div>
+<div class=w style="top:35%;left:62%">its hold</div>
+<div class=w style="top:58%;left:20%">slowly</div>
+<div class=w style="top:72%;left:75%">softly</div>
+<div class=w style="top:48%;left:85%">settling</div>
+<div class=w style="top:82%;left:35%">into dusk</div>
+<div class=w style="top:28%;left:40%">breath</div>
+
+<script>
+let cv=document.getElementById('c'),
+x=cv.getContext('2d'),
+w=window.innerWidth,
+h=window.innerHeight,
+mx=w/2,my=h/2,
+lx=mx,ly=my,
+spd=0,
+ps=[];
+
+cv.width=w;cv.height=h;
+
+for(let i=0;i<120;i++){
+ps.push({
+x:Math.random()*w,
+y:Math.random()*h,
+s:Math.random()*1.5+0.5,
+a:Math.random()*.15+.05
+});
+}
+
+document.onmousemove=e=>{
+let dx=e.clientX-lx,dy=e.clientY-ly;
+spd=Math.sqrt(dx*dx+dy*dy);
+lx=e.clientX;ly=e.clientY;
+mx=e.clientX;my=e.clientY;
+
+document.querySelectorAll('.w').forEach((el,i)=>{
+let r=el.getBoundingClientRect(),
+cx=r.left+r.width/2,
+cy=r.top+r.height/2,
+d=Math.sqrt((mx-cx)**2+(my-cy)**2);
+if(d<180){el.classList.add('l')}
+else{el.classList.remove('l')}
+});
+};
+
+function draw(){
+x.fillStyle='rgba(10,5,16,0.08)';
+x.fillRect(0,0,w,h);
+
+let g=x.createRadialGradient(mx,my,0,mx,my,spd*3.5+80);
+g.addColorStop(0,'rgba(139,109,148,'+(spd*.008)+')');
+g.addColorStop(.4,'rgba(94,75,108,'+(spd*.004)+')');
+g.addColorStop(1,'rgba(58,42,69,0)');
+x.fillStyle=g;
+x.fillRect(0,0,w,h);
+
+ps.forEach(p=>{
+x.fillStyle=`rgba(200,180,210,${p.a})`;
+x.beginPath();
+x.arc(p.x,p.y,p.s,0,Math.PI*2);
+x.fill();
+p.y+=.08;
+if(p.y>h+10){p.y=-10;p.x=Math.random()*w}
+});
+
+spd*=.92;
+requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+</section>
