@@ -1,0 +1,192 @@
+<section data-date='2026-02-02' data-type='spark'>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #0a0a0f;
+  overflow: hidden;
+  font-family: 'Courier New', monospace;
+  cursor: crosshair;
+}
+#canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+.particle {
+  position: absolute;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-shadow: 0 0 20px currentColor;
+}
+.orbit-a { color: #ff2a6d; }
+.orbit-b { color: #05d9e8; }
+.collided {
+  color: #d1f7ff;
+  font-size: 32px;
+  text-shadow: 0 0 40px #d1f7ff, 0 0 80px #05d9e8;
+  animation: synthesize 2s ease-out forwards;
+}
+@keyframes synthesize {
+  0% { transform: scale(1) rotate(0deg); opacity: 1; }
+  50% { transform: scale(1.5) rotate(180deg); opacity: 1; }
+  100% { transform: scale(0) rotate(360deg); opacity: 0; }
+}
+.trail {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: fade 1s ease-out forwards;
+}
+@keyframes fade {
+  to { opacity: 0; transform: scale(0); }
+}
+</style>
+
+<div id="canvas"></div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const w = window.innerWidth;
+const h = window.innerHeight;
+
+const words_a = ['idea', 'light', 'signal', 'thought', 'wave', 'pulse'];
+const words_b = ['matter', 'form', 'body', 'mass', 'field', 'void'];
+
+class Particle {
+  constructor(text, orbit, x, y) {
+    this.text = text;
+    this.orbit = orbit;
+    this.x = x;
+    this.y = y;
+    this.vx = (Math.random() - 0.5) * 2;
+    this.vy = (Math.random() - 0.5) * 2;
+    this.el = document.createElement('div');
+    this.el.className = `particle orbit-${orbit}`;
+    this.el.textContent = text;
+    this.el.style.left = x + 'px';
+    this.el.style.top = y + 'px';
+    canvas.appendChild(this.el);
+  }
+
+  update(mx, my, attract) {
+    if (attract) {
+      const dx = mx - this.x;
+      const dy = my - this.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist > 10) {
+        this.vx += (dx / dist) * 0.3;
+        this.vy += (dy / dist) * 0.3;
+      }
+    }
+
+    this.vx *= 0.95;
+    this.vy *= 0.95;
+    this.x += this.vx;
+    this.y += this.vy;
+
+    if (this.x < 0 || this.x > w) this.vx *= -1;
+    if (this.y < 0 || this.y > h) this.vy *= -1;
+
+    this.x = Math.max(0, Math.min(w, this.x));
+    this.y = Math.max(0, Math.min(h, this.y));
+
+    this.el.style.left = this.x + 'px';
+    this.el.style.top = this.y + 'px';
+  }
+
+  distance(other) {
+    const dx = this.x - other.x;
+    const dy = this.y - other.y;
+    return Math.sqrt(dx*dx + dy*dy);
+  }
+
+  collide(other) {
+    const cx = (this.x + other.x) / 2;
+    const cy = (this.y + other.y) / 2;
+
+    const spark = document.createElement('div');
+    spark.className = 'particle collided';
+    spark.textContent = this.text + '×' + other.text;
+    spark.style.left = cx + 'px';
+    spark.style.top = cy + 'px';
+    canvas.appendChild(spark);
+
+    for (let i = 0; i < 8; i++) {
+      const trail = document.createElement('div');
+      trail.className = 'trail';
+      trail.style.background = i % 2 ? '#ff2a6d' : '#05d9e8';
+      trail.style.left = cx + 'px';
+      trail.style.top = cy + 'px';
+      const angle = (Math.PI * 2 * i) / 8;
+      const speed = 3;
+      trail.style.transform = `translate(${Math.cos(angle)*speed*10}px, ${Math.sin(angle)*speed*10}px)`;
+      canvas.appendChild(trail);
+      setTimeout(() => trail.remove(), 1000);
+    }
+
+    setTimeout(() => spark.remove(), 2000);
+  }
+}
+
+let particles_a = [];
+let particles_b = [];
+let mouseX = w / 2;
+let mouseY = h / 2;
+let attracting = false;
+
+for (let i = 0; i < 4; i++) {
+  particles_a.push(new Particle(
+    words_a[Math.floor(Math.random() * words_a.length)],
+    'a',
+    Math.random() * w * 0.4,
+    Math.random() * h
+  ));
+  particles_b.push(new Particle(
+    words_b[Math.floor(Math.random() * words_b.length)],
+    'b',
+    w * 0.6 + Math.random() * w * 0.4,
+    Math.random() * h
+  ));
+}
+
+document.addEventListener('mousemove', e => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+});
+
+document.addEventListener('mousedown', () => attracting = true);
+document.addEventListener('mouseup', () => attracting = false);
+
+function loop() {
+  particles_a.forEach(p => p.update(mouseX, mouseY, attracting));
+  particles_b.forEach(p => p.update(mouseX, mouseY, attracting));
+
+  particles_a.forEach(pa => {
+    particles_b.forEach(pb => {
+      if (pa.distance(pb) < 60) {
+        pa.collide(pb);
+        pa.x = Math.random() * w * 0.4;
+        pa.y = Math.random() * h;
+        pb.x = w * 0.6 + Math.random() * w * 0.4;
+        pb.y = Math.random() * h;
+        pa.vx = (Math.random() - 0.5) * 2;
+        pa.vy = (Math.random() - 0.5) * 2;
+        pb.vx = (Math.random() - 0.5) * 2;
+        pb.vy = (Math.random() - 0.5) * 2;
+      }
+    });
+  });
+
+  requestAnimationFrame(loop);
+}
+
+loop();
+</script>
+</section>
