@@ -1,0 +1,149 @@
+<section data-date='2026-02-02' data-type='digest'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a0f;font-family:monospace;cursor:crosshair}
+#c{position:absolute;top:0;left:0;width:100%;height:100vh}
+#l{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#3a3a4f;font-size:13px;letter-spacing:2px;pointer-events:none;text-align:center;line-height:1.8;z-index:1}
+.n{position:absolute;width:3px;height:3px;border-radius:50%;pointer-events:none;transition:all .3s ease}
+.t{position:absolute;color:#8a8aa0;font-size:9px;pointer-events:none;opacity:0;transition:opacity .5s;white-space:nowrap}
+.e{stroke:#2a2a3f;stroke-width:1;opacity:.3;transition:opacity .5s}
+</style>
+<div id="c">
+<svg id="s" style="position:absolute;width:100%;height:100%"></svg>
+<div id="l">move to discover<br>click to crystallize<br>patterns emerge from noise</div>
+</div>
+<script>
+const w=window.innerWidth,h=window.innerHeight,
+d=document,s=d.getElementById('s'),c=d.getElementById('c'),
+l=d.getElementById('l'),
+words=['signal','pattern','thread','node','edge','cluster','lattice','weave','graph','link','nexus','vector','mesh','trace','path','web','grid','bloom','seed','root','branch','leaf','trunk','core','layer','flow','stream','pulse','wave','echo','ripple','network','system','structure','emerge','converge','align','connect','resonate','crystallize'],
+nodes=[],edges=[],mx=w/2,my=h/2,hovered=null,locked=[];
+
+function rand(min,max){return Math.random()*(max-min)+min}
+
+function dist(x1,y1,x2,y2){
+const dx=x2-x1,dy=y2-y1;
+return Math.sqrt(dx*dx+dy*dy)
+}
+
+function init(){
+for(let i=0;i<80;i++){
+const x=rand(50,w-50),y=rand(50,h-50),
+node={x,y,vx:0,vy:0,word:words[Math.floor(rand(0,words.length))],locked:false};
+nodes.push(node);
+const dot=d.createElement('div');
+dot.className='n';
+dot.style.left=x+'px';
+dot.style.top=y+'px';
+dot.style.background='#'+['1a1a2f','2a2a3f','3a3a4f'][Math.floor(rand(0,3))];
+node.el=dot;
+const txt=d.createElement('div');
+txt.className='t';
+txt.textContent=node.word;
+txt.style.left=(x+8)+'px';
+txt.style.top=(y-12)+'px';
+node.txt=txt;
+c.appendChild(dot);
+c.appendChild(txt);
+}
+}
+
+function update(){
+nodes.forEach((n,i)=>{
+if(n.locked)return;
+const dx=mx-n.x,dy=my-n.y,d=dist(n.x,n.y,mx,my);
+if(d<200&&d>0){
+const force=Math.pow(200-d,1.3)*.0003;
+n.vx+=dx/d*force;
+n.vy+=dy/d*force;
+}
+nodes.forEach((m,j)=>{
+if(i>=j)return;
+const dx=m.x-n.x,dy=m.y-n.y,d=dist(n.x,n.y,m.x,m.y);
+if(d<100&&d>0){
+const f=(100-d)*.002;
+n.vx-=dx/d*f;
+n.vy-=dy/d*f;
+m.vx+=dx/d*f;
+m.vy+=dy/d*f;
+}
+});
+n.vx*=.95;
+n.vy*=.95;
+n.x+=n.vx;
+n.y+=n.vy;
+if(n.x<20){n.x=20;n.vx*=-.5}
+if(n.x>w-20){n.x=w-20;n.vx*=-.5}
+if(n.y<20){n.y=20;n.vy*=-.5}
+if(n.y>h-20){n.y=h-20;n.vy*=-.5}
+n.el.style.left=n.x+'px';
+n.el.style.top=n.y+'px';
+n.txt.style.left=(n.x+8)+'px';
+n.txt.style.top=(n.y-12)+'px';
+});
+edges=[];
+nodes.forEach((n,i)=>{
+const d=dist(n.x,n.y,mx,my);
+if(d<180){
+edges.push({x1:n.x,y1:n.y,x2:mx,y2:my,op:.15});
+n.txt.style.opacity=1;
+n.el.style.background='#5a5a7f';
+n.el.style.width='5px';
+n.el.style.height='5px';
+}else{
+n.txt.style.opacity=0;
+n.el.style.background='#'+['1a1a2f','2a2a3f','3a3a4f'][Math.floor(rand(0,3))];
+n.el.style.width='3px';
+n.el.style.height='3px';
+}
+nodes.forEach((m,j)=>{
+if(i>=j)return;
+const d=dist(n.x,n.y,m.x,m.y);
+if(d<100){
+edges.push({x1:n.x,y1:n.y,x2:m.x,y2:m.y,op:.2});
+}
+});
+});
+locked.forEach(n=>{
+n.el.style.background='#7a7aaf';
+n.el.style.width='6px';
+n.el.style.height='6px';
+n.txt.style.opacity=1;
+n.txt.style.color='#aaaacf';
+});
+s.innerHTML='';
+edges.forEach(e=>{
+const line=d.createElementNS('http://www.w3.org/2000/svg','line');
+line.setAttribute('x1',e.x1);
+line.setAttribute('y1',e.y1);
+line.setAttribute('x2',e.x2);
+line.setAttribute('y2',e.y2);
+line.setAttribute('class','e');
+line.style.opacity=e.op;
+s.appendChild(line);
+});
+if(locked.length>2){
+l.style.opacity=Math.max(0,1-locked.length*.08);
+}
+requestAnimationFrame(update);
+}
+
+c.addEventListener('mousemove',e=>{
+mx=e.clientX;
+my=e.clientY;
+});
+
+c.addEventListener('click',e=>{
+const cx=e.clientX,cy=e.clientY;
+nodes.forEach(n=>{
+const d=dist(n.x,n.y,cx,cy);
+if(d<180&&!n.locked){
+n.locked=true;
+locked.push(n);
+}
+});
+});
+
+init();
+update();
+</script>
+</section>
