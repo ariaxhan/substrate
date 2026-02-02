@@ -1,0 +1,71 @@
+<section data-date='2026-02-02' data-type='encouragement'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a0a;font-family:serif;cursor:none}
+.w{position:fixed;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.t{color:#2a2a2a;font-size:3.5vw;line-height:1.6;text-align:center;max-width:80vw;transition:color 1.2s ease;user-select:none;letter-spacing:0.02em}
+.t span{display:inline-block;transition:all 0.8s cubic-bezier(0.4,0,0.2,1);opacity:0.3}
+.g{position:fixed;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle at center,rgba(255,200,100,0.15) 0%,rgba(255,150,80,0.08) 30%,transparent 70%);pointer-events:none;transform:translate(-50%,-50%);filter:blur(40px);opacity:0;transition:opacity 0.4s ease}
+.p{position:fixed;bottom:5vh;right:5vw;color:#1a1a1a;font-size:0.9vw;font-family:monospace;opacity:0.4;letter-spacing:0.1em;transition:opacity 1s ease}
+</style>
+<div class="w">
+<div class="g" id="g"></div>
+<div class="t" id="t">
+<span>i</span> <span>see</span> <span>you</span> <span>here</span><br>
+<span>in</span> <span>the</span> <span>quiet</span><br>
+<span>doing</span> <span>the</span> <span>work</span><br>
+<span>that</span> <span>no</span> <span>one</span> <span>sees</span><br><br>
+<span>you</span> <span>are</span> <span>witnessed</span>
+</div>
+<div class="p" id="p">move to illuminate</div>
+</div>
+<script>
+const g=document.getElementById('g'),
+t=document.getElementById('t'),
+p=document.getElementById('p'),
+s=t.querySelectorAll('span');
+let x=window.innerWidth/2,y=window.innerHeight/2,
+tx=x,ty=y,active=false;
+function l(e){
+tx=e.clientX;
+ty=e.clientY;
+if(!active){
+active=true;
+g.style.opacity='1';
+p.style.opacity='0';
+}
+}
+function u(){
+x+=(tx-x)*0.08;
+y+=(ty-y)*0.08;
+g.style.left=x+'px';
+g.style.top=y+'px';
+s.forEach((e,i)=>{
+const r=e.getBoundingClientRect(),
+cx=r.left+r.width/2,
+cy=r.top+r.height/2,
+dx=x-cx,dy=y-cy,
+d=Math.sqrt(dx*dx+dy*dy),
+m=Math.max(0,1-d/300),
+b=0.3+m*0.7,
+sc=1+m*0.15;
+e.style.opacity=b;
+e.style.transform=`scale(${sc})`;
+e.style.color=`rgba(${150+m*105},${120+m*135},${80+m*175},${b})`;
+});
+requestAnimationFrame(u);
+}
+document.addEventListener('mousemove',l);
+u();
+setTimeout(()=>{
+if(!active){
+g.style.opacity='0.6';
+g.style.left='50%';
+g.style.top='50%';
+s.forEach(e=>{
+e.style.opacity='0.5';
+e.style.color='rgba(180,150,120,0.5)';
+});
+}
+},2000);
+</script>
+</section>
