@@ -1,0 +1,133 @@
+<section data-date='2026-02-02' data-type='morning'>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: #0a0a0f;
+  overflow: hidden;
+  cursor: crosshair;
+  font-family: 'Courier New', monospace;
+}
+#c {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+#w {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+.l {
+  position: absolute;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  opacity: 0;
+  transition: opacity 0.8s;
+  color: #fff;
+  text-transform: uppercase;
+}
+</style>
+<canvas id="c"></canvas>
+<div id="w"></div>
+<script>
+const cv = document.getElementById('c');
+const cx = cv.getContext('2d');
+const wd = document.getElementById('w');
+let W = cv.width = window.innerWidth;
+let H = cv.height = window.innerHeight;
+let clicks = 0;
+let particles = [];
+let lightWords = ['first', 'begin', 'dawn', 'wake', 'rise', 'new', 'open', 'break', 'born', 'emerge', 'start', 'breath'];
+
+class Ray {
+  constructor(x, y, angle, speed, hue) {
+    this.x = x;
+    this.y = y;
+    this.angle = angle;
+    this.speed = speed;
+    this.hue = hue;
+    this.life = 1;
+    this.length = Math.random() * 60 + 40;
+  }
+  update() {
+    this.x += Math.cos(this.angle) * this.speed;
+    this.y += Math.sin(this.angle) * this.speed;
+    this.life -= 0.005;
+    this.speed *= 0.99;
+  }
+  draw() {
+    cx.save();
+    cx.globalAlpha = this.life * 0.6;
+    cx.strokeStyle = `hsl(${this.hue}, 70%, 60%)`;
+    cx.lineWidth = 2;
+    cx.beginPath();
+    cx.moveTo(this.x, this.y);
+    cx.lineTo(
+      this.x - Math.cos(this.angle) * this.length,
+      this.y - Math.sin(this.angle) * this.length
+    );
+    cx.stroke();
+    cx.restore();
+  }
+}
+
+function spawnRays(x, y) {
+  const baseHue = 30 + clicks * 15;
+  const count = 12 + clicks * 3;
+  for (let i = 0; i < count; i++) {
+    const angle = (Math.PI * 2 / count) * i + Math.random() * 0.2;
+    particles.push(new Ray(x, y, angle, Math.random() * 3 + 2, baseHue + Math.random() * 20));
+  }
+
+  if (clicks < lightWords.length) {
+    const word = document.createElement('div');
+    word.className = 'l';
+    word.textContent = lightWords[clicks];
+    word.style.left = `${x}px`;
+    word.style.top = `${y}px`;
+    word.style.transform = `translate(-50%, -50%) rotate(${Math.random() * 20 - 10}deg)`;
+    wd.appendChild(word);
+    setTimeout(() => { word.style.opacity = '0.7'; }, 10);
+  }
+
+  clicks++;
+}
+
+function animate() {
+  cx.fillStyle = 'rgba(10, 10, 15, 0.15)';
+  cx.fillRect(0, 0, W, H);
+
+  particles = particles.filter(p => p.life > 0);
+  particles.forEach(p => {
+    p.update();
+    p.draw();
+  });
+
+  if (clicks > 0) {
+    const glow = Math.sin(Date.now() * 0.002) * 0.05 + 0.1;
+    cx.fillStyle = `rgba(255, 220, 150, ${glow * Math.min(clicks / 8, 1)})`;
+    cx.fillRect(0, 0, W, H);
+  }
+
+  requestAnimationFrame(animate);
+}
+
+cv.addEventListener('click', (e) => {
+  spawnRays(e.clientX, e.clientY);
+});
+
+window.addEventListener('resize', () => {
+  W = cv.width = window.innerWidth;
+  H = cv.height = window.innerHeight;
+});
+
+animate();
+</script>
+</section>
