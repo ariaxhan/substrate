@@ -40,6 +40,7 @@
     {"file": "2026-02-01-spark.html", "date": "2026-02-01", "type": "spark", "timestamp": 1769965793},
     {"file": "2026-02-01-winddown.html", "date": "2026-02-01", "type": "winddown", "timestamp": 1770001343},
     {"file": "2026-02-02-morning.html", "date": "2026-02-02", "type": "morning", "timestamp": 1770044610},
+    {"file": "2026-02-02-pulse.html", "date": "2026-02-02", "type": "pulse", "timestamp": 1770058944},
     {"file": "2026-02-02-spark.html", "date": "2026-02-02", "type": "spark", "timestamp": 1770051810}
   ]
 }
