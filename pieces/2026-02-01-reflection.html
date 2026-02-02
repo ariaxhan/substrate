@@ -1,0 +1,93 @@
+<section data-date='2026-02-01' data-type='reflection'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a14;cursor:crosshair}
+.sky{position:fixed;width:100vw;height:100vh;top:0;left:0}
+.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;opacity:0;transition:opacity .8s ease}
+.star.visible{opacity:1}
+.constellation{position:absolute;stroke:#4a5568;stroke-width:1;opacity:0;transition:opacity 1.2s ease}
+.constellation.revealed{opacity:.3}
+.poem{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);font-family:Georgia,serif;font-size:14px;color:#6b7280;text-align:center;line-height:1.8;letter-spacing:1px;pointer-events:none;opacity:.4}
+</style>
+<div class="sky" id="sky">
+<svg width="100%" height="100%" style="position:absolute;top:0;left:0">
+<defs>
+<filter id="glow">
+<feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+<feMerge>
+<feMergeNode in="coloredBlur"/>
+<feMergeNode in="SourceGraphic"/>
+</feMerge>
+</filter>
+</defs>
+<g id="constellations"></g>
+</svg>
+</div>
+<div class="poem">
+the day complete&ensp;·&ensp;each breath a star appearing<br>
+in the stillness&ensp;·&ensp;night's canvas holds us
+</div>
+<script>
+const stars=[],constellations=[],threshold=120,discovered=new Set();
+for(let i=0;i<180;i++){
+const s=document.createElement('div');
+s.className='star';
+s.style.left=Math.random()*100+'vw';
+s.style.top=Math.random()*100+'vh';
+s.dataset.x=parseFloat(s.style.left);
+s.dataset.y=parseFloat(s.style.top);
+sky.appendChild(s);
+stars.push(s);
+}
+function createConstellation(indices){
+const pts=indices.map(i=>({
+x:parseFloat(stars[i].style.left),
+y:parseFloat(stars[i].style.top)
+}));
+const path=pts.map((p,i)=>i===0?`M ${p.x} ${p.y}`:`L ${p.x} ${p.y}`).join(' ');
+const line=document.createElementNS('http://www.w3.org/2000/svg','path');
+line.setAttribute('d',path);
+line.className='constellation';
+line.dataset.stars=indices.join(',');
+document.getElementById('constellations').appendChild(line);
+constellations.push({el:line,indices});
+}
+const groups=[
+[12,45,67,89,23],
+[5,34,78,91,102],
+[15,56,87,120,145],
+[8,29,63,94,110],
+[20,48,75,99,131],
+[3,38,69,108,156],
+[17,52,84,117,149],
+[10,43,71,105,138]
+];
+groups.forEach(createConstellation);
+sky.addEventListener('mousemove',e=>{
+const mx=e.clientX/window.innerWidth*100;
+const my=e.clientY/window.innerHeight*100;
+stars.forEach((s,i)=>{
+const sx=parseFloat(s.dataset.x);
+const sy=parseFloat(s.dataset.y);
+const dist=Math.sqrt((mx-sx)**2+(my-sy)**2);
+if(dist<threshold){
+s.classList.add('visible');
+}
+});
+constellations.forEach(c=>{
+const indices=c.indices;
+const revealed=indices.every(i=>stars[i].classList.contains('visible'));
+if(revealed&&!discovered.has(c.el)){
+setTimeout(()=>c.el.classList.add('revealed'),300);
+discovered.add(c.el);
+}
+});
+});
+let auto=0;
+setInterval(()=>{
+if(auto<stars.length){
+stars[auto].classList.add('visible');
+auto++;
+}
+},80);
+</script>
+</section>
