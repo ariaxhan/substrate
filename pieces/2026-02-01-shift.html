@@ -1,0 +1,60 @@
+<section data-date='2026-02-01' data-type='shift'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:100vw;height:100vh;overflow:hidden;background:#0a0a0a;font-family:monospace;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none}
+#f{position:absolute;width:100vw;height:100vh;display:grid;place-items:center;transition:all 1.8s cubic-bezier(.87,0,.13,1);transform-origin:center}
+.l{position:absolute;font-size:clamp(2rem,8vw,12rem);font-weight:100;letter-spacing:.3em;mix-blend-mode:difference;transition:all 1.8s cubic-bezier(.87,0,.13,1)}
+#a{top:20%;left:15%;color:#fff;opacity:.8}
+#b{top:45%;right:18%;color:#3af;opacity:.7;font-style:italic}
+#c{bottom:25%;left:50%;transform:translateX(-50%);color:#f3a;opacity:.75;letter-spacing:.8em}
+#d{top:50%;left:50%;transform:translate(-50%,-50%);font-size:clamp(1rem,3vw,4rem);color:#fa3;opacity:0;transition:opacity 1.8s}
+.g{position:absolute;width:1px;height:100vh;background:linear-gradient(180deg,transparent,rgba(255,255,255,.03),transparent);transition:all 1.8s cubic-bezier(.87,0,.13,1)}
+#g1{left:25%;transform:rotate(8deg)}
+#g2{left:50%}
+#g3{left:75%;transform:rotate(-8deg)}
+#h{position:fixed;bottom:2rem;right:2rem;font-size:.75rem;color:rgba(255,255,255,.2);letter-spacing:.1em}
+</style>
+<div id=f>
+<span class=l id=a>SHIFT</span>
+<span class=l id=b>turn</span>
+<span class=l id=c>SEE</span>
+<span class=l id=d>the same becomes other</span>
+<div class=g id=g1></div>
+<div class=g id=g2></div>
+<div class=g id=g3></div>
+</div>
+<div id=h>TAP</div>
+<script>
+let r=0,s=1;
+const f=document.getElementById('f'),
+a=document.getElementById('a'),
+b=document.getElementById('b'),
+c=document.getElementById('c'),
+d=document.getElementById('d'),
+g1=document.getElementById('g1'),
+g2=document.getElementById('g2'),
+g3=document.getElementById('g3');
+document.body.addEventListener('click',()=>{
+r+=180;
+s*=-1;
+f.style.transform=`rotate(${r}deg) scale(${s},1)`;
+if(r%360===0){
+a.style.opacity=.8;
+b.style.opacity=.7;
+c.style.opacity=.75;
+d.style.opacity=0;
+g1.style.transform='rotate(8deg)';
+g2.style.transform='rotate(0deg)';
+g3.style.transform='rotate(-8deg)';
+}else{
+a.style.opacity=.3;
+b.style.opacity=.9;
+c.style.opacity=.4;
+d.style.opacity=1;
+g1.style.transform='rotate(-82deg)';
+g2.style.transform='rotate(180deg)';
+g3.style.transform='rotate(98deg)';
+}
+});
+</script>
+</section>
