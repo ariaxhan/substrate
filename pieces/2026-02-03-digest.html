@@ -1,0 +1,158 @@
+<section data-date='2026-02-03' data-type='digest'>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box }
+body {
+  background: #0a0a0f;
+  overflow: hidden;
+  cursor: crosshair;
+  font-family: 'Courier New', monospace;
+}
+#canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+#info {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  color: #4a9eff;
+  font-size: 11px;
+  letter-spacing: 1px;
+  opacity: 0.7;
+  pointer-events: none;
+}
+.node {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #4a9eff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulse 2s infinite;
+  pointer-events: none;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1) }
+  50% { opacity: 0.4; transform: translate(-50%, -50%) scale(1.3) }
+}
+.line {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg,
+    rgba(74, 158, 255, 0) 0%,
+    rgba(74, 158, 255, 0.6) 50%,
+    rgba(74, 158, 255, 0) 100%
+  );
+  transform-origin: 0 0;
+  pointer-events: none;
+  animation: fadeIn 0.8s ease-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; width: 0 }
+  to { opacity: 1 }
+}
+.cluster {
+  position: absolute;
+  color: #66b3ff;
+  font-size: 9px;
+  opacity: 0;
+  animation: textFade 1.5s ease-in forwards;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  text-shadow: 0 0 4px rgba(74, 158, 255, 0.8);
+}
+@keyframes textFade {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8) }
+  100% { opacity: 0.9; transform: translate(-50%, -50%) scale(1) }
+}
+</style>
+
+<div id="canvas"></div>
+<div id="info">CLICK TO ACCUMULATE</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const info = document.getElementById('info');
+const nodes = [];
+const words = [
+  'vector', 'token', 'pattern', 'embed', 'cluster',
+  'signal', 'latent', 'graph', 'link', 'sparse',
+  'dense', 'flow', 'node', 'edge', 'weight'
+];
+
+let clickCount = 0;
+
+function distance(x1, y1, x2, y2) {
+  return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+}
+
+function createNode(x, y) {
+  const node = document.createElement('div');
+  node.className = 'node';
+  node.style.left = x + 'px';
+  node.style.top = y + 'px';
+  canvas.appendChild(node);
+
+  nodes.push({ x, y, element: node });
+  clickCount++;
+
+  // Connect to nearby nodes
+  nodes.forEach((other, i) => {
+    if (other === nodes[nodes.length - 1]) return;
+
+    const dist = distance(x, y, other.x, other.y);
+    if (dist < 300) {
+      createLine(x, y, other.x, other.y);
+    }
+  });
+
+  // Create cluster labels at certain thresholds
+  if (clickCount === 5 || clickCount === 12 || clickCount === 20 || clickCount === 30) {
+    const centerX = nodes.reduce((sum, n) => sum + n.x, 0) / nodes.length;
+    const centerY = nodes.reduce((sum, n) => sum + n.y, 0) / nodes.length;
+    createCluster(centerX, centerY, clickCount);
+  }
+
+  updateInfo();
+}
+
+function createLine(x1, y1, x2, y2) {
+  const line = document.createElement('div');
+  line.className = 'line';
+
+  const length = distance(x1, y1, x2, y2);
+  const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+
+  line.style.width = length + 'px';
+  line.style.left = x1 + 'px';
+  line.style.top = y1 + 'px';
+  line.style.transform = `rotate(${angle}deg)`;
+
+  canvas.appendChild(line);
+}
+
+function createCluster(x, y, count) {
+  const cluster = document.createElement('div');
+  cluster.className = 'cluster';
+  cluster.textContent = words[Math.floor(Math.random() * words.length)];
+  cluster.style.left = x + 'px';
+  cluster.style.top = y + 'px';
+  canvas.appendChild(cluster);
+}
+
+function updateInfo() {
+  const connections = nodes.length * (nodes.length - 1) / 2;
+  info.textContent = `${nodes.length} NODES • ${clickCount} CLICKS`;
+}
+
+canvas.addEventListener('click', (e) => {
+  createNode(e.clientX, e.clientY);
+});
+
+// Seed nodes
+setTimeout(() => createNode(window.innerWidth / 2, window.innerHeight / 2), 500);
+</script>
+</section>
