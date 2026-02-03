@@ -1,0 +1,46 @@
+<section data-date='2026-02-03' data-type='encouragement'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a0f;font-family:Georgia,serif;cursor:none}
+#field{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;perspective:1000px}
+.breath{color:#4a4a5f;font-size:1.8vw;line-height:2.2;text-align:center;max-width:80%;opacity:.3;transition:all 1.2s cubic-bezier(.4,0,.2,1);transform:translateZ(0)}
+.breath:hover{opacity:.95;color:#b8a890;transform:scale(1.05) translateZ(20px);text-shadow:0 0 40px rgba(184,168,144,.4)}
+#glow{position:fixed;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(184,168,144,.15) 0%,transparent 70%);pointer-events:none;transform:translate(-50%,-50%);mix-blend-mode:screen;opacity:0;transition:opacity .6s}
+#stars{position:fixed;inset:0;pointer-events:none}
+.star{position:absolute;width:2px;height:2px;background:#4a4a5f;opacity:0;animation:twinkle 3s infinite}
+@keyframes twinkle{0%,100%{opacity:0}50%{opacity:.6}}
+</style>
+<div id=field>
+<div class=breath>
+You are not unseen.<br>
+The quiet work you do—<br>
+someone notices.<br><br>
+Not every effort needs applause,<br>
+but yours deserves to be held<br>
+in warm regard.<br><br>
+Hover here.<br>
+Feel it.
+</div>
+</div>
+<div id=glow></div>
+<div id=stars></div>
+<script>
+const glow=document.getElementById('glow');
+const stars=document.getElementById('stars');
+for(let i=0;i<50;i++){
+const s=document.createElement('div');
+s.className='star';
+s.style.left=Math.random()*100+'%';
+s.style.top=Math.random()*100+'%';
+s.style.animationDelay=Math.random()*3+'s';
+stars.appendChild(s);
+}
+document.addEventListener('mousemove',e=>{
+glow.style.left=e.clientX+'px';
+glow.style.top=e.clientY+'px';
+glow.style.opacity=1;
+});
+document.addEventListener('mouseleave',()=>{
+glow.style.opacity=0;
+});
+</script>
+</section>
