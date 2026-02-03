@@ -1,0 +1,143 @@
+<section data-date='2026-02-03' data-type='pulse'>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: linear-gradient(90deg, #0a0a0f 0%, #1a1a2e 50%, #0a0a0f 100%);
+  overflow: hidden;
+  cursor: none;
+  font-family: 'Courier New', monospace;
+}
+#c {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.beam {
+  position: absolute;
+  width: 2px;
+  height: 100vh;
+  left: 50%;
+  background: linear-gradient(180deg, transparent, #4a90e2, transparent);
+  transform-origin: center;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  opacity: 0.6;
+}
+.w {
+  position: absolute;
+  font-size: 14px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.5s, transform 0.5s;
+  pointer-events: none;
+}
+.w.l {
+  right: 52%;
+  text-align: right;
+  color: #e8b4b8;
+}
+.w.r {
+  left: 52%;
+  text-align: left;
+  color: #b4d4e8;
+}
+.w.show {
+  opacity: 0.85;
+}
+#fulcrum {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border: 2px solid #4a90e2;
+  border-radius: 50%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s;
+  cursor: pointer;
+  z-index: 100;
+}
+#fulcrum:hover {
+  width: 60px;
+  height: 60px;
+  box-shadow: 0 0 30px #4a90e2;
+  border-color: #fff;
+}
+#fulcrum.active {
+  animation: pulse 1.5s ease-in-out;
+}
+@keyframes pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -50%) scale(1.5); box-shadow: 0 0 50px #4a90e2; }
+}
+</style>
+<div id="c">
+  <div class="beam" id="beam"></div>
+  <div id="fulcrum"></div>
+</div>
+<script>
+const pairs = [
+  ['dawn', 'dusk'], ['inhale', 'exhale'], ['rise', 'fall'],
+  ['tether', 'drift'], ['silence', 'sound'], ['open', 'close'],
+  ['signal', 'noise'], ['order', 'entropy'], ['root', 'wing'],
+  ['hold', 'release'], ['surface', 'depth'], ['echo', 'source']
+];
+let tilt = 0, active = -1;
+const b = document.getElementById('beam');
+const f = document.getElementById('fulcrum');
+const c = document.getElementById('c');
+
+pairs.forEach(([l, r], i) => {
+  const ld = document.createElement('div');
+  ld.className = 'w l';
+  ld.textContent = l;
+  ld.style.top = `${15 + i * 6.5}%`;
+  c.appendChild(ld);
+
+  const rd = document.createElement('div');
+  rd.className = 'w r';
+  rd.textContent = r;
+  rd.style.top = `${15 + i * 6.5}%`;
+  c.appendChild(rd);
+});
+
+const ws = document.querySelectorAll('.w');
+
+document.addEventListener('mousemove', (e) => {
+  const x = e.clientX / window.innerWidth;
+  tilt = (x - 0.5) * 30;
+  b.style.transform = `translateX(-50%) rotate(${tilt}deg)`;
+
+  const intensity = Math.abs(tilt) / 15;
+  const idx = Math.floor(intensity * pairs.length);
+
+  ws.forEach((w, i) => {
+    const pair = Math.floor(i / 2);
+    if (pair <= idx) {
+      w.classList.add('show');
+      const side = i % 2 === 0 ? 1 : -1;
+      w.style.transform = `translateX(${tilt * side * 0.8}px)`;
+    } else {
+      w.classList.remove('show');
+    }
+  });
+});
+
+f.addEventListener('click', () => {
+  f.classList.add('active');
+  tilt = tilt > 0 ? -tilt : -tilt;
+  b.style.transform = `translateX(-50%) rotate(${tilt}deg)`;
+  setTimeout(() => f.classList.remove('active'), 1500);
+});
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    ws[0].classList.add('show');
+    ws[1].classList.add('show');
+  }, 500);
+});
+</script>
+</section>
