@@ -1,0 +1,200 @@
+<section data-date='2026-02-03' data-type='spark'>
+<style>
+* { margin:0; padding:0; box-sizing:border-box }
+body {
+  background: #0a0a0f;
+  overflow: hidden;
+  font-family: 'Courier New', monospace;
+  cursor: crosshair
+}
+#c {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh
+}
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1)
+}
+#hint {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #444;
+  font-size: 11px;
+  letter-spacing: 2px;
+  opacity: 0;
+  animation: fadeIn 2s 1s forwards
+}
+@keyframes fadeIn {
+  to { opacity: 1 }
+}
+</style>
+
+<canvas id="c"></canvas>
+<div id="hint">MOVE TO COLLIDE</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const particles = [];
+const colors = ['#ff3366', '#33ffaa', '#3366ff', '#ffaa33', '#aa33ff', '#33aaff'];
+let mx = canvas.width / 2;
+let my = canvas.height / 2;
+
+class Particle {
+  constructor(side) {
+    this.side = side;
+    if (side === 'left') {
+      this.x = Math.random() * canvas.width * 0.3;
+      this.baseX = canvas.width * 0.25;
+    } else {
+      this.x = canvas.width * 0.7 + Math.random() * canvas.width * 0.3;
+      this.baseX = canvas.width * 0.75;
+    }
+    this.y = Math.random() * canvas.height;
+    this.baseY = this.y;
+    this.vx = (Math.random() - 0.5) * 0.5;
+    this.vy = (Math.random() - 0.5) * 0.5;
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+    this.radius = Math.random() * 2 + 1;
+    this.phase = Math.random() * Math.PI * 2;
+  }
+
+  update(t) {
+    // Drift in original region
+    this.x += this.vx;
+    this.y += this.vy;
+
+    // Gentle orbit around base position
+    const orbitX = Math.cos(t * 0.001 + this.phase) * 30;
+    const orbitY = Math.sin(t * 0.001 + this.phase) * 30;
+
+    // Pull toward mouse
+    const dx = mx - this.x;
+    const dy = my - this.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+
+    if (dist < 200) {
+      const force = (200 - dist) / 200;
+      this.x += dx * force * 0.02;
+      this.y += dy * force * 0.02;
+    }
+
+    // Return to region
+    const returnForce = 0.01;
+    this.x += (this.baseX + orbitX - this.x) * returnForce;
+    this.y += (this.baseY + orbitY - this.y) * returnForce;
+
+    // Bounds
+    if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+    if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+  }
+
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+  }
+}
+
+// Create two swarms
+for (let i = 0; i < 60; i++) {
+  particles.push(new Particle('left'));
+  particles.push(new Particle('right'));
+}
+
+// Connection detection and drawing
+function drawConnections() {
+  particles.forEach((p1, i) => {
+    particles.slice(i + 1).forEach(p2 => {
+      const dx = p1.x - p2.x;
+      const dy = p1.y - p2.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+
+      // Connect particles from different sides when close
+      if (p1.side !== p2.side && dist < 80) {
+        const opacity = 1 - dist / 80;
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+
+        // Gradient between colors
+        const gradient = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
+        gradient.addColorStop(0, p1.color);
+        gradient.addColorStop(1, p2.color);
+
+        ctx.strokeStyle = gradient;
+        ctx.globalAlpha = opacity * 0.3;
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+
+        // Spark at midpoint for very close particles
+        if (dist < 30) {
+          const mx = (p1.x + p2.x) / 2;
+          const my = (p1.y + p2.y) / 2;
+          ctx.beginPath();
+          ctx.arc(mx, my, 2, 0, Math.PI * 2);
+          ctx.fillStyle = '#fff';
+          ctx.globalAlpha = opacity;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        }
+      }
+    });
+  });
+}
+
+// Animation loop
+let time = 0;
+function animate() {
+  ctx.fillStyle = 'rgba(10, 10, 15, 0.1)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  drawConnections();
+
+  particles.forEach(p => {
+    p.update(time);
+    p.draw();
+  });
+
+  time += 16;
+  requestAnimationFrame(animate);
+}
+
+// Mouse tracking
+document.addEventListener('mousemove', e => {
+  mx = e.clientX;
+  my = e.clientY;
+});
+
+// Touch support
+document.addEventListener('touchmove', e => {
+  mx = e.touches[0].clientX;
+  my = e.touches[0].clientY;
+});
+
+// Resize handling
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  particles.forEach(p => {
+    p.baseX = p.side === 'left' ? canvas.width * 0.25 : canvas.width * 0.75;
+  });
+});
+
+animate();
+</script>
+</section>
