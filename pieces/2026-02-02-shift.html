@@ -1,0 +1,43 @@
+<section data-date='2026-02-02' data-type='shift'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{overflow:hidden;background:#0a0a0a;font-family:monospace;cursor:pointer}
+#v{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;transition:transform 1.2s cubic-bezier(0.68,-0.55,0.265,1.55)}
+#v.f{transform:perspective(1200px) rotateX(180deg) rotateY(180deg)}
+.l{position:absolute;height:2px;background:linear-gradient(90deg,transparent,#fff,transparent);transform-origin:center;animation:r 8s linear infinite}
+.l:nth-child(1){width:60%;top:20%;animation-delay:0s}
+.l:nth-child(2){width:40%;top:35%;animation-delay:-2s}
+.l:nth-child(3){width:80%;top:50%;animation-delay:-4s}
+.l:nth-child(4){width:50%;top:65%;animation-delay:-6s}
+.l:nth-child(5){width:70%;top:80%;animation-delay:-1s}
+.w{position:absolute;color:#fff;font-size:clamp(1.5rem,4vw,3rem);letter-spacing:0.3em;opacity:0.9;text-transform:uppercase;font-weight:100;mix-blend-mode:difference}
+.w:nth-child(6){top:10%;left:10%;animation:p 12s ease-in-out infinite}
+.w:nth-child(7){top:50%;right:15%;animation:p 12s ease-in-out infinite 3s}
+.w:nth-child(8){bottom:15%;left:50%;transform:translateX(-50%);animation:p 12s ease-in-out infinite 6s}
+@keyframes r{0%{transform:rotateZ(0deg) scaleX(0.3);opacity:0.2}50%{opacity:1}100%{transform:rotateZ(360deg) scaleX(0.3);opacity:0.2}}
+@keyframes p{0%,100%{opacity:0.9;transform:translateY(0)}50%{opacity:0.3;transform:translateY(-20px)}}
+.h{position:fixed;bottom:5%;left:50%;transform:translateX(-50%);color:#666;font-size:0.7rem;letter-spacing:0.2em;opacity:0;animation:fi 2s ease-in 1s forwards}
+@keyframes fi{to{opacity:1}}
+</style>
+<div id="v">
+<div class="l"></div>
+<div class="l"></div>
+<div class="l"></div>
+<div class="l"></div>
+<div class="l"></div>
+<div class="w">AXIS</div>
+<div class="w">SHIFT</div>
+<div class="w">TURN</div>
+</div>
+<div class="h">CLICK TO INVERT</div>
+<script>
+let f=0;
+document.body.onclick=()=>{
+v.classList.toggle('f');
+f=!f;
+document.querySelectorAll('.l').forEach((l,i)=>{
+l.style.animationDirection=f?'reverse':'normal';
+});
+};
+</script>
+</section>
