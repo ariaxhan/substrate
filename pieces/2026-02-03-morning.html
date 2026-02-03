@@ -1,0 +1,70 @@
+<section data-date='2026-02-03' data-type='morning'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+#m{width:100vw;height:100vh;background:linear-gradient(to bottom,#0a0a14 0%,#1a1a2e 20%,#2d4a6e 50%,#e8a87c 75%,#fff5e1 100%);position:relative;overflow:hidden;cursor:crosshair;font-family:'Courier New',monospace}
+.s{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;opacity:0;transition:all .8s cubic-bezier(.2,1,.3,1)}
+.v{opacity:.6;animation:t 3s infinite}
+@keyframes t{0%,100%{opacity:.3}50%{opacity:.9}}
+.r{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:0;height:0;border-radius:50%;background:radial-gradient(circle,rgba(255,220,150,.3),transparent 70%);transition:all 1.2s cubic-bezier(.2,.8,.3,1);pointer-events:none}
+.w{color:#fff;font-size:14px;letter-spacing:8px;text-transform:uppercase;opacity:0;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;white-space:nowrap;transition:opacity 1s;pointer-events:none}
+.l{position:absolute;bottom:20px;left:20px;color:rgba(255,255,255,.4);font-size:11px;letter-spacing:2px}
+</style>
+<div id=m>
+<div class=r id=rv></div>
+<div class=w id=wt></div>
+<div class=l>click to begin</div>
+</div>
+<script>
+const M=document.getElementById('m'),R=document.getElementById('rv'),W=document.getElementById('wt'),
+m=()=>Math.random(),
+T=["first light","unwritten","threshold","emergence","potential","genesis","becoming","origin","nascent","awakening"],
+P=[];
+for(let i=0;i<120;i++){
+const s=document.createElement('div');
+s.className='s';
+s.style.left=m()*100+'%';
+s.style.top=m()*100+'%';
+s.style.animationDelay=m()*3+'s';
+M.appendChild(s);
+P.push({e:s,x:parseFloat(s.style.left),y:parseFloat(s.style.top),d:m()*2+.5})
+}
+let C=0,A=!1;
+const D=()=>{
+if(!A)return;
+C+=.3;
+P.forEach((p,i)=>{
+const o=.3+.3*Math.sin(C*.01+i*.1);
+p.e.style.opacity=o;
+const dx=(p.x-50)*.002*C,dy=(p.y-50)*.002*C;
+p.e.style.transform=`translate(${dx}px,${dy}px) scale(${1+C*.01})`
+});
+if(C<100)requestAnimationFrame(D);
+else{
+W.style.opacity=1;
+W.textContent=T[Math.floor(m()*T.length)]
+}
+};
+M.addEventListener('click',e=>{
+if(A)return;
+A=!0;
+const x=e.clientX,y=e.clientY;
+R.style.left=x+'px';
+R.style.top=y+'px';
+setTimeout(()=>{
+R.style.width='3000px';
+R.style.height='3000px';
+P.forEach(p=>p.e.classList.add('v'));
+D()
+},50)
+});
+M.addEventListener('mousemove',e=>{
+if(!A){
+const dx=(e.clientX-window.innerWidth/2)*.05,dy=(e.clientY-window.innerHeight/2)*.05;
+P.forEach((p,i)=>{
+const f=(i%3===0)?1:(i%3===1)?-.5:.3;
+p.e.style.transform=`translate(${dx*f}px,${dy*f}px)`
+})
+}
+})
+</script>
+</section>
