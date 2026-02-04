@@ -1,0 +1,136 @@
+<section data-date='2026-02-03' data-type='winddown'>
+<style>
+body{margin:0;overflow:hidden;background:#1a1410;font-family:'Playfair Display',Georgia,serif}
+#sky{position:fixed;top:0;left:0;width:100vw;height:100vh;transition:background 2s ease}
+.ember{position:absolute;border-radius:50%;opacity:0;transition:all .8s ease;pointer-events:none}
+#breath{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:clamp(2rem,8vw,6rem);color:#fff;opacity:0;text-align:center;letter-spacing:.15em;font-weight:300;text-shadow:0 0 40px rgba(255,140,60,.4);mix-blend-mode:screen;transition:opacity 1.2s ease}
+.word{display:inline-block;opacity:.7;transition:opacity .6s ease}
+</style>
+<div id="sky"></div>
+<div id="breath">
+<span class="word">S</span><span class="word">E</span><span class="word">T</span><span class="word">T</span><span class="word">L</span><span class="word">E</span>
+</div>
+<script>
+const sky=document.getElementById('sky');
+const breath=document.getElementById('breath');
+const words=document.querySelectorAll('.word');
+let warmth=90;
+let sat=45;
+let light=12;
+let emberCount=0;
+let mouseX=window.innerWidth/2;
+let mouseY=window.innerHeight/2;
+let lastMove=Date.now();
+let glowOpacity=0;
+
+function updateSky(){
+const h=Math.max(20,warmth-50);
+sky.style.background=`radial-gradient(ellipse at ${mouseX}px ${mouseY}px,
+hsl(${h},${sat}%,${light+glowOpacity*4}%) 0%,
+hsl(${h-5},${sat-10}%,${light}%) 40%,
+hsl(${h-15},${sat-20}%,${light-4}%) 100%)`;
+}
+
+function createEmber(x,y){
+if(emberCount>40)return;
+const ember=document.createElement('div');
+ember.className='ember';
+const size=Math.random()*4+2;
+ember.style.width=size+'px';
+ember.style.height=size+'px';
+ember.style.left=x+'px';
+ember.style.top=y+'px';
+const hue=30+Math.random()*30;
+ember.style.background=`hsl(${hue},85%,${60+Math.random()*20}%)`;
+ember.style.boxShadow=`0 0 ${size*3}px hsl(${hue},90%,60%)`;
+document.body.appendChild(ember);
+emberCount++;
+
+setTimeout(()=>{
+const drift=Math.random()*100-50;
+ember.style.transform=`translate(${drift}px,${-100-Math.random()*200}px)`;
+ember.style.opacity=.6;
+},50);
+
+setTimeout(()=>{
+ember.style.opacity=0;
+setTimeout(()=>{
+ember.remove();
+emberCount--;
+},800);
+},1000+Math.random()*2000);
+}
+
+let breathVisible=false;
+function showBreath(){
+if(!breathVisible){
+breath.style.opacity=1;
+breathVisible=true;
+words.forEach((w,i)=>{
+setTimeout(()=>{
+w.style.opacity=.9;
+},i*120);
+});
+}
+}
+
+let fadeWords=null;
+function startFadeWords(){
+if(fadeWords)clearInterval(fadeWords);
+let idx=0;
+fadeWords=setInterval(()=>{
+if(idx>=words.length){
+clearInterval(fadeWords);
+fadeWords=null;
+return;
+}
+words[idx].style.opacity=.15;
+idx++;
+},800);
+}
+
+window.addEventListener('mousemove',(e)=>{
+mouseX=e.clientX;
+mouseY=e.clientY;
+const now=Date.now();
+const velocity=Math.sqrt(Math.pow(e.movementX,2)+Math.pow(e.movementY,2));
+
+if(velocity>2){
+lastMove=now;
+glowOpacity=Math.min(glowOpacity+.05,1);
+if(Math.random()>.7){
+createEmber(e.clientX,e.clientY);
+}
+}
+
+updateSky();
+});
+
+setInterval(()=>{
+const now=Date.now();
+const timeSinceMove=now-lastMove;
+
+if(timeSinceMove>200){
+glowOpacity=Math.max(glowOpacity-.02,0);
+updateSky();
+}
+
+if(timeSinceMove>1500&&warmth>20){
+warmth=Math.max(20,warmth-1);
+sat=Math.max(15,sat-.5);
+light=Math.max(8,light-.1);
+updateSky();
+}
+
+if(timeSinceMove>3000){
+showBreath();
+if(timeSinceMove>5000&&!fadeWords){
+startFadeWords();
+}
+}
+},100);
+
+updateSky();
+showBreath();
+</script>
+</section>
