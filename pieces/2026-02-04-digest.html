@@ -1,0 +1,135 @@
+<section data-date='2026-02-04' data-type='digest'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a0a;font-family:monospace}
+#c{width:100vw;height:100vh;cursor:crosshair}
+.n{position:absolute;width:4px;height:4px;border-radius:50%;background:#fff;transition:all .3s ease;opacity:.6}
+.n.a{opacity:1;transform:scale(1.5);box-shadow:0 0 12px rgba(255,255,255,.8)}
+.l{position:absolute;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);transform-origin:left center;opacity:0;transition:opacity .5s}
+.l.v{opacity:1}
+.t{position:fixed;top:20px;left:20px;color:#666;font-size:11px;letter-spacing:2px;pointer-events:none;user-select:none;line-height:1.6}
+.m{position:fixed;bottom:20px;right:20px;color:#444;font-size:9px;letter-spacing:1px;text-align:right;pointer-events:none}
+</style>
+<div id="c"></div>
+<div class="t">
+KNOWLEDGE<br>
+ACCUMULATES<br>
+<span id="ct">0</span> NODES<br>
+<span id="lc">0</span> CONNECTIONS
+</div>
+<div class="m">
+CLICK TO ADD<br>
+HOVER TO REVEAL<br>
+WATCH EMERGE
+</div>
+<script>
+const c=document.getElementById('c'),
+ct=document.getElementById('ct'),
+lc=document.getElementById('lc'),
+ns=[],
+ls=[],
+th=120,
+colors=['#fff','#e0e0e0','#c0c0c0','#a0a0a0'];
+
+function d(x1,y1,x2,y2){
+return Math.sqrt((x2-x1)**2+(y2-y1)**2);
+}
+
+function cN(x,y){
+const n=document.createElement('div');
+n.className='n';
+n.style.left=x+'px';
+n.style.top=y+'px';
+n.style.background=colors[ns.length%colors.length];
+c.appendChild(n);
+const node={el:n,x,y,id:ns.length};
+ns.push(node);
+ct.textContent=ns.length;
+
+ns.forEach(on=>{
+if(on.id!==node.id){
+const dist=d(x,y,on.x,on.y);
+if(dist<th){
+cL(on,node);
+}
+}
+});
+
+if(ns.length>1){
+setTimeout(()=>cC(node),100);
+}
+}
+
+function cL(n1,n2){
+const l=document.createElement('div');
+l.className='l';
+const dx=n2.x-n1.x;
+const dy=n2.y-n1.y;
+const dist=Math.sqrt(dx*dx+dy*dy);
+const angle=Math.atan2(dy,dx)*180/Math.PI;
+l.style.left=n1.x+'px';
+l.style.top=n1.y+'px';
+l.style.width=dist+'px';
+l.style.transform=`rotate(${angle}deg)`;
+c.appendChild(l);
+ls.push({el:l,n1,n2});
+lc.textContent=ls.length;
+setTimeout(()=>l.classList.add('v'),50);
+}
+
+function cC(node){
+let closest=null,minDist=Infinity;
+ns.forEach(n=>{
+if(n.id!==node.id){
+const dist=d(node.x,node.y,n.x,n.y);
+if(dist<minDist&&dist>0){
+minDist=dist;
+closest=n;
+}
+}
+});
+if(closest&&minDist>th){
+const steps=8;
+for(let i=1;i<=steps;i++){
+setTimeout(()=>{
+const px=node.x+(closest.x-node.x)*(i/steps);
+const py=node.y+(closest.y-node.y)*(i/steps);
+if(i===steps){
+cN(px,py);
+}
+},i*120);
+}
+}
+}
+
+c.addEventListener('click',e=>{
+cN(e.clientX,e.clientY);
+});
+
+c.addEventListener('mousemove',e=>{
+ns.forEach(n=>{
+const dist=d(e.clientX,e.clientY,n.x,n.y);
+if(dist<60){
+n.el.classList.add('a');
+}else{
+n.el.classList.remove('a');
+}
+});
+});
+
+const seed=[[window.innerWidth/2,window.innerHeight/2]];
+seed.forEach(([x,y])=>cN(x,y));
+
+setInterval(()=>{
+if(ns.length<80&&Math.random()<.15){
+const rn=ns[Math.floor(Math.random()*ns.length)];
+const angle=Math.random()*Math.PI*2;
+const dist=40+Math.random()*80;
+const nx=rn.x+Math.cos(angle)*dist;
+const ny=rn.y+Math.sin(angle)*dist;
+if(nx>20&&nx<window.innerWidth-20&&ny>20&&ny<window.innerHeight-20){
+cN(nx,ny);
+}
+}
+},2000);
+</script>
+</section>
