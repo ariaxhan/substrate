@@ -1,0 +1,112 @@
+<section data-date='2026-02-03' data-type='reflection'>
+<style>
+.taper-2026-02-03 {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(180deg, #000814 0%, #001d3d 50%, #000814 100%);
+  overflow: hidden;
+  cursor: crosshair;
+  font-family: 'Georgia', serif;
+}
+.taper-2026-02-03 .star {
+  position: absolute;
+  color: #fff;
+  opacity: 0;
+  font-size: 0.5rem;
+  pointer-events: none;
+  animation: emerge 2s ease-out forwards;
+}
+@keyframes emerge {
+  0% { opacity: 0; transform: scale(0) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.5) rotate(180deg); }
+  100% { opacity: 0.9; transform: scale(1) rotate(360deg); }
+}
+.taper-2026-02-03 .constellation {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  background: rgba(255,255,255,0);
+  opacity: 0;
+  animation: line 3s ease-in-out forwards;
+}
+@keyframes line {
+  0% { opacity: 0; transform: scaleX(0); }
+  30% { opacity: 0.3; }
+  100% { opacity: 0.2; transform: scaleX(1); }
+}
+.taper-2026-03 .verse {
+  position: absolute;
+  bottom: 5vh;
+  width: 100%;
+  text-align: center;
+  color: rgba(255,255,255,0.4);
+  font-size: 0.9rem;
+  letter-spacing: 0.3em;
+  opacity: 0;
+  transition: opacity 4s ease-in;
+}
+.taper-2026-02-03 .verse.show {
+  opacity: 1;
+}
+</style>
+<div class="taper-2026-02-03">
+  <div class="verse">THE DAY COMPLETE · STILLNESS · REST</div>
+</div>
+<script>
+(function() {
+  const c = document.querySelector('.taper-2026-02-03');
+  const v = c.querySelector('.verse');
+  const stars = [];
+  const glyphs = ['✦', '✧', '⋆', '˚', '·', '∘'];
+  let count = 0;
+
+  const dist = (x1, y1, x2, y2) => Math.sqrt((x2-x1)**2 + (y2-y1)**2);
+
+  const createStar = (x, y) => {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+    s.style.left = x + 'px';
+    s.style.top = y + 'px';
+    s.style.animationDelay = Math.random() * 0.5 + 's';
+    c.appendChild(s);
+    stars.push({x, y, el: s});
+
+    // Connect nearby stars
+    if (stars.length > 1) {
+      const last = stars[stars.length - 2];
+      if (dist(x, y, last.x, last.y) < 200) {
+        const line = document.createElement('div');
+        line.className = 'constellation';
+        const angle = Math.atan2(y - last.y, x - last.x);
+        const length = dist(x, y, last.x, last.y);
+        line.style.left = last.x + 'px';
+        line.style.top = last.y + 'px';
+        line.style.width = length + 'px';
+        line.style.transform = `rotate(${angle}rad)`;
+        line.style.transformOrigin = '0 0';
+        line.style.background = 'linear-gradient(90deg, rgba(255,255,255,0.2), rgba(255,255,255,0))';
+        line.style.animationDelay = Math.random() * 1 + 's';
+        c.appendChild(line);
+      }
+    }
+
+    count++;
+    if (count === 7) {
+      setTimeout(() => v.classList.add('show'), 1000);
+    }
+  };
+
+  c.addEventListener('click', (e) => {
+    const rect = c.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    createStar(x, y);
+  });
+
+  // Seed with one star
+  setTimeout(() => createStar(window.innerWidth / 2, window.innerHeight / 3), 500);
+})();
+</script>
+</section>
