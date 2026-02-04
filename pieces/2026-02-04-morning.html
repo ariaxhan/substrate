@@ -1,0 +1,72 @@
+<section data-date='2026-02-04' data-type='morning'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{overflow:hidden;background:#000;font-family:'Courier New',monospace;cursor:none}
+#c{position:fixed;top:0;left:0;width:100vw;height:100vh}
+#t{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:#000;font-size:4vw;font-weight:700;letter-spacing:.2em;mix-blend-mode:difference;pointer-events:none;text-align:center;line-height:1.4;transition:color 2s ease}
+.w{position:absolute;font-size:1.2vw;color:#111;opacity:0;transition:opacity 1.5s,color 1.5s;pointer-events:none;font-weight:400}
+#g{position:fixed;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(255,230,180,.4) 0%,rgba(255,200,100,.2) 20%,rgba(255,150,50,.1) 40%,transparent 70%);pointer-events:none;transform:translate(-50%,-50%);opacity:0;transition:opacity .3s;filter:blur(40px)}
+</style>
+<canvas id=c></canvas>
+<div id=t>FIRST<br>LIGHT</div>
+<div id=g></div>
+<script>
+const cv=document.getElementById('c'),
+ctx=cv.getContext('2d'),
+tx=document.getElementById('t'),
+gl=document.getElementById('g'),
+w=cv.width=innerWidth,
+h=cv.height=innerHeight,
+words=['begin','wake','emerge','rise','potential','unwritten','possible','open','new','breath','threshold','genesis','spark','unfold','becoming','dawn','moment','now','here','start'];
+let mx=w/2,my=h/2,lum=0,ws=[];
+words.forEach((word,i)=>{
+let d=document.createElement('div');
+d.className='w';
+d.textContent=word;
+d.style.left=Math.random()*80+10+'%';
+d.style.top=Math.random()*80+10+'%';
+document.body.appendChild(d);
+ws.push({el:d,x:parseFloat(d.style.left)*w/100,y:parseFloat(d.style.top)*h/100})
+});
+function dist(x1,y1,x2,y2){
+return Math.sqrt((x2-x1)**2+(y2-y1)**2)
+}
+function draw(){
+ctx.fillStyle='#000';
+ctx.fillRect(0,0,w,h);
+let grd=ctx.createRadialGradient(mx,my,0,mx,my,300);
+grd.addColorStop(0,`rgba(255,${220-lum*50},${150-lum*100},.8)`);
+grd.addColorStop(.3,`rgba(255,${180-lum*40},${100-lum*80},.4)`);
+grd.addColorStop(.6,`rgba(255,${150-lum*30},${80-lum*60},.2)`);
+grd.addColorStop(1,'rgba(0,0,0,0)');
+ctx.fillStyle=grd;
+ctx.fillRect(0,0,w,h);
+ws.forEach(({el,x,y})=>{
+let d=dist(mx,my,x,y),
+op=Math.max(0,1-d/400),
+bright=Math.floor(20+op*235);
+el.style.opacity=op;
+el.style.color=`rgb(${bright},${bright},${bright})`
+});
+let avgBright=ws.reduce((sum,{el,x,y})=>sum+parseFloat(el.style.opacity),0)/ws.length;
+lum=Math.min(avgBright*3,.8);
+let tBright=Math.floor(lum*255);
+tx.style.color=`rgb(${tBright},${tBright},${tBright})`;
+requestAnimationFrame(draw)
+}
+document.addEventListener('mousemove',e=>{
+mx=e.clientX;
+my=e.clientY;
+gl.style.left=mx+'px';
+gl.style.top=my+'px';
+gl.style.opacity=.6
+});
+document.addEventListener('mouseenter',()=>gl.style.opacity=.6);
+document.addEventListener('mouseleave',()=>{
+gl.style.opacity=0;
+mx=w/2;
+my=h/2
+});
+draw()
+</script>
+</section>
