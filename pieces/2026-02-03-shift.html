@@ -1,0 +1,32 @@
+<section data-date='2026-02-03' data-type='shift'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a0a;font-family:monospace;cursor:pointer}
+#c{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;transition:transform 1.2s cubic-bezier(.4,0,.2,1);perspective:1000px}
+.w{position:absolute;font-size:clamp(3rem,12vw,18rem);font-weight:900;letter-spacing:-.05em;line-height:.85;text-transform:uppercase;user-select:none;mix-blend-mode:difference}
+#w0{color:#fff;top:5%;left:5%}
+#w1{color:#ddd;top:50%;left:80%;transform:translate(-50%,-50%)}
+#w2{color:#bbb;bottom:8%;right:8%}
+#w3{color:#999;top:28%;left:40%}
+#w4{color:#fff;bottom:35%;left:15%}
+#i{position:fixed;bottom:2rem;right:2rem;font-size:.75rem;color:#666;letter-spacing:.1em}
+</style>
+<div id=c onclick="r()">
+<div id=w0 class=w>SHIFT</div>
+<div id=w1 class=w>TURN</div>
+<div id=w2 class=w>SEE</div>
+<div id=w3 class=w>CHANGE</div>
+<div id=w4 class=w>ROTATE</div>
+</div>
+<div id=i>CLICK TO ROTATE</div>
+<script>
+let a=0;
+function r(){
+a=(a+90)%360;
+c.style.transform=`rotate(${a}deg)`;
+if(a===0){w0.textContent='SHIFT';w1.textContent='TURN';w2.textContent='SEE';w3.textContent='CHANGE';w4.textContent='ROTATE'}
+else if(a===90){w0.textContent='ANGLE';w1.textContent='FLIP';w2.textContent='VIEW';w3.textContent='TWIST';w4.textContent='INVERT'}
+else if(a===180){w0.textContent='MIRROR';w1.textContent='SPIN';w2.textContent='AXIS';w3.textContent='ALTER';w4.textContent='REVERSE'}
+else{w0.textContent='PIVOT';w1.textContent='TILT';w2.textContent='SKEW';w3.textContent='CYCLE';w4.textContent='TRANSFORM'}
+}
+</script>
+</section>
