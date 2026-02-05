@@ -1,0 +1,58 @@
+<section data-date='2026-02-04' data-type='shift'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{overflow:hidden;background:#0a0a0a;font-family:'Courier New',monospace}
+#v{position:fixed;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;transition:transform 1.2s cubic-bezier(.68,-.55,.265,1.55);cursor:pointer}
+#v.f{transform:rotate(180deg)}
+.l{position:absolute;font-size:13vmin;letter-spacing:-0.05em;white-space:nowrap;opacity:0.9;font-weight:300;mix-blend-mode:difference}
+.l1{color:#fff;transform:translateY(-12vmin)}
+.l2{color:#fff;transform:translateY(0)}
+.l3{color:#fff;transform:translateY(12vmin)}
+#g{position:absolute;width:200%;height:200%;top:-50%;left:-50%;opacity:0.15;transition:opacity 1.2s}
+#v.f #g{opacity:0.35}
+.c{position:absolute;border-radius:50%;mix-blend-mode:screen}
+#p{position:fixed;bottom:2vh;right:2vh;color:#666;font-size:1.8vmin;letter-spacing:0.2em;opacity:0;animation:fi 2s 1s forwards}
+@keyframes fi{to{opacity:1}}
+@keyframes dr{0%,100%{transform:translate(var(--x),var(--y))}50%{transform:translate(calc(var(--x) + var(--dx)),calc(var(--y) + var(--dy)))}}
+</style>
+<div id="v">
+<div id="g"></div>
+<div class="l l1">SAME WORLD</div>
+<div class="l l2">INVERTED SIGHT</div>
+<div class="l l3">NEW MEANING</div>
+</div>
+<div id="p">CLICK TO INVERT</div>
+<script>
+const v=document.getElementById('v'),g=document.getElementById('g'),w=window;
+let f=0;
+v.onclick=()=>{f=!f;v.classList.toggle('f')};
+function cr(s,c,x,y,dx,dy,d){
+const e=document.createElement('div');
+e.className='c';
+e.style.width=e.style.height=s+'px';
+e.style.background=`radial-gradient(circle,${c},transparent)`;
+e.style.setProperty('--x',x+'px');
+e.style.setProperty('--y',y+'px');
+e.style.setProperty('--dx',dx+'px');
+e.style.setProperty('--dy',dy+'px');
+e.style.animation=`dr ${d}s infinite ease-in-out`;
+g.appendChild(e)
+}
+const R=()=>Math.random(),iw=w.innerWidth,ih=w.innerHeight;
+for(let i=0;i<35;i++){
+const s=30+R()*120,
+x=-iw/2+R()*iw*2,
+y=-ih/2+R()*ih*2,
+dx=(R()-0.5)*300,
+dy=(R()-0.5)*300,
+d=8+R()*12,
+h=R()*60+180,
+c=`hsla(${h},70%,60%,${0.3+R()*0.4})`;
+cr(s,c,x,y,dx,dy,d)
+}
+w.addEventListener('mousemove',e=>{
+const mx=(e.clientX/iw-0.5)*30,my=(e.clientY/ih-0.5)*30;
+v.style.transform=f?`rotate(180deg) perspective(1000px) rotateX(${my}deg) rotateY(${-mx}deg)`:`perspective(1000px) rotateX(${my}deg) rotateY(${-mx}deg)`
+})
+</script>
+</section>
