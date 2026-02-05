@@ -1,0 +1,31 @@
+<section data-date='2026-02-05' data-type='morning'>
+<style>
+body{margin:0;background:#0a0a12;overflow:hidden;cursor:crosshair}
+#c{position:fixed;top:0;left:0;mix-blend-mode:screen}
+.word{position:absolute;font-family:'Iowan Old Style','Palatino','Georgia',serif;color:#fff;opacity:0;pointer-events:none;transition:opacity 2s ease-out;font-size:clamp(18px,2.5vw,42px);letter-spacing:0.05em;font-weight:300}
+.lit{opacity:.95;text-shadow:0 0 20px rgba(255,255,255,.4)}
+</style>
+<canvas id="c"></canvas>
+<div class="word" style="top:15%;left:10%">first</div>
+<div class="word" style="top:22%;left:65%">breath</div>
+<div class="word" style="top:38%;left:25%">unwritten</div>
+<div class="word" style="top:45%;left:72%">potential</div>
+<div class="word" style="top:58%;left:15%">threshold</div>
+<div class="word" style="top:68%;left:58%">becoming</div>
+<div class="word" style="top:82%;left:32%">dawn</div>
+<script>
+const cv=document.getElementById('c'),ctx=cv.getContext('2d'),words=document.querySelectorAll('.word');
+let w=cv.width=innerWidth,h=cv.height=innerHeight,particles=[],hue=200,discovered=0;
+window.addEventListener('resize',()=>{w=cv.width=innerWidth;h=cv.height=innerHeight});
+class P{
+  constructor(x,y){this.x=x;this.y=y;this.vx=(Math.random()-.5)*.3;this.vy=-Math.random()*1.5-.5;this.life=1;this.size=Math.random()*2+1;this.hue=hue+(Math.random()-0.5)*30}
+  update(){this.x+=this.vx;this.y+=this.vy;this.life-=.008;this.vy+=.02}
+  draw(){if(this.life<=0)return;ctx.globalAlpha=this.life*.6;ctx.fillStyle=`hsl(${this.hue},80%,${60+this.life*20}%)`;ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fill()}
+}
+function emit(x,y,n=8){for(let i=0;i<n;i++)particles.push(new P(x,y));hue=(hue+2)%360}
+cv.addEventListener('mousemove',e=>{if(Math.random()<.3)emit(e.clientX,e.clientY,3)});
+cv.addEventListener('click',e=>{emit(e.clientX,e.clientY,15);const closest=Array.from(words).map(w=>({w,d:Math.hypot(e.clientX-w.offsetLeft-w.offsetWidth/2,e.clientY-w.offsetTop-w.offsetHeight/2)})).sort((a,b)=>a.d-b.d)[0];if(!closest.w.classList.contains('lit')){closest.w.classList.add('lit');discovered++;if(discovered===words.length)setTimeout(()=>words.forEach(w=>w.style.textShadow='0 0 30px rgba(255,255,255,.8)'),500)}});
+function draw(){ctx.fillStyle='rgba(10,10,18,.08)';ctx.fillRect(0,0,w,h);particles=particles.filter(p=>p.life>.01);particles.forEach(p=>{p.update();p.draw()});requestAnimationFrame(draw)}
+draw();
+</script>
+</section>
