@@ -1,0 +1,71 @@
+<section data-date='2026-02-04' data-type='reflection'>
+<style>
+body{margin:0;overflow:hidden;background:#050510;font-family:Georgia,serif;cursor:crosshair}
+#sky{position:fixed;top:0;left:0;width:100vw;height:100vh;background:radial-gradient(ellipse at 50% 20%,#0a0a28 0%,#050510 60%)}
+.star{position:absolute;color:#fff;font-size:3px;opacity:0;transition:opacity 1.2s ease-out;pointer-events:none;text-shadow:0 0 2px rgba(255,255,255,.8),0 0 4px rgba(255,255,255,.4)}
+.star.visible{opacity:1}
+.star.bright{font-size:4px;text-shadow:0 0 3px rgba(255,255,255,.9),0 0 6px rgba(255,255,255,.6),0 0 8px rgba(255,255,255,.3)}
+#whisper{position:fixed;bottom:8vh;left:50%;transform:translateX(-50%);color:rgba(200,200,230,.3);font-size:13px;letter-spacing:2px;text-align:center;line-height:1.8;max-width:80%;transition:color .3s}
+#whisper:hover{color:rgba(200,200,230,.7)}
+#count{position:fixed;top:6vh;right:6vw;color:rgba(200,200,230,.2);font-size:11px;letter-spacing:3px;font-variant:small-caps}
+</style>
+<div id="sky"></div>
+<div id="whisper">tap to place a star<br>in the stillness between days</div>
+<div id="count"></div>
+<script>
+const sky=document.getElementById('sky');
+const count=document.getElementById('count');
+const glyphs=['✦','✧','⋆','∗','·','*','˚','°'];
+let stars=0;
+const maxStars=144;
+
+function placeConstellation(x,y){
+  const cluster=Math.floor(Math.random()*3)+1;
+  for(let i=0;i<cluster;i++){
+    const offsetX=(Math.random()-.5)*40;
+    const offsetY=(Math.random()-.5)*40;
+    createStar(x+offsetX,y+offsetY,Math.random()<.2);
+  }
+}
+
+function createStar(x,y,bright){
+  if(stars>=maxStars)return;
+  const star=document.createElement('div');
+  star.className='star'+(bright?' bright':'');
+  star.textContent=glyphs[Math.floor(Math.random()*glyphs.length)];
+  star.style.left=x+'px';
+  star.style.top=y+'px';
+  star.style.animationDelay=(Math.random()*.5)+'s';
+  sky.appendChild(star);
+  setTimeout(()=>star.classList.add('visible'),50);
+  stars++;
+  updateCount();
+}
+
+function updateCount(){
+  if(stars<maxStars){
+    count.textContent=stars+' of '+maxStars+' stars';
+  }else{
+    count.textContent='night complete';
+    setTimeout(()=>{
+      count.style.opacity='0';
+      document.getElementById('whisper').style.opacity='0';
+    },1200);
+  }
+}
+
+sky.addEventListener('click',e=>{
+  placeConstellation(e.clientX,e.clientY);
+});
+
+// Seed the night with faint stars
+for(let i=0;i<8;i++){
+  createStar(
+    Math.random()*window.innerWidth,
+    Math.random()*window.innerHeight*.6,
+    false
+  );
+}
+updateCount();
+</script>
+</section>
