@@ -1,0 +1,25 @@
+<section data-date='2026-02-05' data-type='spark'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a0f;font-family:serif}
+#c{position:fixed;top:0;left:0;width:100vw;height:100vh}
+.orb{position:fixed;width:180px;height:180px;border-radius:50%;transition:all .8s cubic-bezier(.23,1,.32,1);pointer-events:none;display:flex;align-items:center;justify-content:center;font-size:72px;mix-blend-mode:screen}
+#o1{background:radial-gradient(circle at 30% 30%,#ff6b9d,#c44569);left:20%;top:50%;transform:translate(-50%,-50%)}
+#o2{background:radial-gradient(circle at 30% 30%,#4facfe,#00f2fe);right:20%;top:50%;transform:translate(50%,-50%)}
+#t{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:18px;color:#667;text-align:center;line-height:1.8;opacity:0;transition:opacity 1.2s;pointer-events:none;letter-spacing:.5px}
+.merged{background:radial-gradient(circle at 30% 30%,#ffd89b,#19547b)!important;width:280px!important;height:280px!important}
+#trail{stroke-width:2;stroke:#334;fill:none;opacity:.3}
+</style>
+<canvas id="c"></canvas>
+<div class="orb" id="o1">⚡</div>
+<div class="orb" id="o2">✦</div>
+<div id="t">when two orbits cross<br>a third thing emerges<br>neither sum nor difference<br>but synthesis</div>
+<script>
+let cv=document.getElementById('c'),ctx=cv.getContext('2d'),o1=document.getElementById('o1'),o2=document.getElementById('o2'),txt=document.getElementById('t'),w=window.innerWidth,h=window.innerHeight,mx=w/2,my=h/2,merged=false,pts=[];
+cv.width=w;cv.height=h;
+function getCenter(el){let r=el.getBoundingClientRect();return{x:r.left+r.width/2,y:r.top+r.height/2}}
+function dist(x1,y1,x2,y2){return Math.sqrt((x2-x1)**2+(y2-y1)**2)}
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;let c1=getCenter(o1),c2=getCenter(o2),d1=dist(mx,my,c1.x,c1.y),d2=dist(mx,my,c2.x,c2.y),pull=.15;o1.style.left=(c1.x+pull*(mx-c1.x))+'px';o1.style.top=(c1.y+pull*(my-c1.y))+'px';o2.style.left=(c2.x+pull*(mx-c2.x))+'px';o2.style.top=(c2.y+pull*(my-c2.y))+'px';let d=dist(c1.x,c1.y,c2.x,c2.y);if(d<120&&!merged){merged=true;o1.classList.add('merged');o2.classList.add('merged');txt.style.opacity='1';o1.innerHTML='◆';o2.innerHTML='◆'}else if(d>300&&merged){merged=false;o1.classList.remove('merged');o2.classList.remove('merged');txt.style.opacity='0';o1.innerHTML='⚡';o2.innerHTML='✦'}pts.push({x:mx,y:my,a:1});if(pts.length>60)pts.shift()});
+function draw(){ctx.clearRect(0,0,w,h);ctx.beginPath();for(let i=0;i<pts.length;i++){let p=pts[i];p.a*=.96;ctx.strokeStyle=`rgba(51,68,85,${p.a*.3})`;if(i>0){ctx.moveTo(pts[i-1].x,pts[i-1].y);ctx.lineTo(p.x,p.y)}}ctx.stroke();let c1=getCenter(o1),c2=getCenter(o2);if(merged){ctx.beginPath();ctx.strokeStyle='rgba(255,216,155,.4)';ctx.lineWidth=3;ctx.moveTo(c1.x,c1.y);ctx.lineTo(c2.x,c2.y);ctx.stroke()}requestAnimationFrame(draw)}
+draw()
+</script>
+</section>
