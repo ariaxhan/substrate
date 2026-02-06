@@ -1,0 +1,17 @@
+<section data-date='2026-02-05' data-type='winddown'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0614;cursor:none}
+#c{position:fixed;top:0;left:0;width:100vw;height:100vh}
+.m{position:absolute;width:3px;height:3px;border-radius:50%;pointer-events:none;mix-blend-mode:screen}
+#t{position:fixed;bottom:8vh;left:50%;transform:translateX(-50%);font:2.8vh/1.6 'Georgia',serif;color:#4a3f52;text-align:center;letter-spacing:.08em;opacity:.7;pointer-events:none;max-width:80vw}
+</style>
+<div id="c"></div>
+<div id="t">the day settles<br>light gives ground<br>warmth seeks the earth</div>
+<script>
+const c=document.getElementById('c'),m=[];let lx=window.innerWidth/2,ly=window.innerHeight/2,lm=Date.now();
+function cr(){const d=document.createElement('div');d.className='m';const h=40+Math.random()*40,s=.5+Math.random()*.8,x=lx+((Math.random()-.5)*60),y=ly+((Math.random()-.5)*60);d.style.left=x+'px';d.style.top=y+'px';d.style.background=`hsl(${h},85%,${60+Math.random()*20}%)`;d.style.boxShadow=`0 0 ${8+Math.random()*12}px hsla(${h},90%,70%,.6)`;c.appendChild(d);m.push({el:d,x,y,vx:(Math.random()-.5)*.4,vy:.3+Math.random()*.5,life:1,s})}
+window.addEventListener('mousemove',e=>{lx=e.clientX;ly=e.clientY;lm=Date.now();if(Math.random()<.35)cr()});
+function u(){const n=Date.now(),dt=(n-lm)/1000,fd=dt>1.5?1+(dt-1.5)*.4:1;m.forEach((p,i)=>{p.y+=p.vy;p.x+=p.vx;p.vy+=.015;p.life-=.004*fd*p.s;const o=Math.max(0,p.life);p.el.style.opacity=o;p.el.style.transform=`translate(${p.x-lx}px,${p.y-ly}px) scale(${.6+o*.4})`;if(p.life<=0){p.el.remove();m.splice(i,1)}});requestAnimationFrame(u)}
+u();setInterval(()=>{if(Math.random()<.15)cr()},300);
+</script>
+</section>
