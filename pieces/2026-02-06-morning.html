@@ -1,0 +1,155 @@
+<section data-date='2026-02-06' data-type='morning'>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  background: linear-gradient(180deg, #0a0a12 0%, #1a1a2e 40%, #2d4263 70%, #c8b8a8 100%);
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Courier New', monospace;
+  cursor: crosshair;
+}
+#sky {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  transition: background 2s ease;
+}
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(255,255,255,0.8);
+  border-radius: 50%;
+  opacity: 1;
+  transition: opacity 3s ease, transform 3s ease;
+}
+.line {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,200,100,0.6), transparent);
+  opacity: 0;
+  transform-origin: left center;
+  pointer-events: none;
+}
+#horizon {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(255,150,100,0.3) 20%,
+    rgba(255,100,50,0.5) 50%,
+    rgba(255,150,100,0.3) 80%,
+    transparent 100%);
+  opacity: 0;
+  transition: opacity 2s ease;
+}
+#words {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgba(255,255,255,0.1);
+  font-size: 14px;
+  letter-spacing: 0.3em;
+  text-align: center;
+  transition: color 2s ease, opacity 2s ease;
+  pointer-events: none;
+  white-space: pre;
+}
+#count {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  color: rgba(255,255,255,0.3);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+}
+</style>
+
+<div id="sky"></div>
+<div id="horizon"></div>
+<div id="words">POTENTIAL</div>
+<div id="count">0</div>
+
+<script>
+const sky = document.getElementById('sky');
+const words = document.getElementById('words');
+const horizon = document.getElementById('horizon');
+const count = document.getElementById('count');
+
+const states = ['POTENTIAL', 'FIRST     LIGHT', 'AWAKENING', 'BEGINNING', 'UNWRITTEN', 'TODAY'];
+let clicks = 0;
+let stars = [];
+
+// Generate initial stars
+for(let i = 0; i < 80; i++) {
+  const star = document.createElement('div');
+  star.className = 'star';
+  star.style.left = Math.random() * 100 + '%';
+  star.style.top = Math.random() * 60 + '%';
+  sky.appendChild(star);
+  stars.push(star);
+}
+
+document.body.addEventListener('click', (e) => {
+  clicks++;
+  count.textContent = clicks;
+
+  // Create light ray from click point
+  const line = document.createElement('div');
+  line.className = 'line';
+  line.style.left = e.clientX + 'px';
+  line.style.top = e.clientY + 'px';
+  line.style.width = Math.random() * 200 + 100 + 'px';
+  line.style.transform = `rotate(${Math.random() * 360}deg)`;
+  sky.appendChild(line);
+
+  setTimeout(() => {
+    line.style.opacity = '1';
+    setTimeout(() => {
+      line.style.opacity = '0';
+      setTimeout(() => line.remove(), 1000);
+    }, 800);
+  }, 10);
+
+  // Progression of dawn
+  const progress = Math.min(clicks / 15, 1);
+
+  // Lighten sky
+  const nightR = 10, nightG = 10, nightB = 18;
+  const dawnR = 255, dawnG = 220, dawnB = 180;
+  const r = Math.floor(nightR + (dawnR - nightR) * progress);
+  const g = Math.floor(nightG + (dawnG - nightG) * progress);
+  const b = Math.floor(nightB + (dawnB - nightB) * progress);
+
+  sky.style.background = `linear-gradient(180deg,
+    rgb(${nightR + (r-nightR)*0.3}, ${nightG + (g-nightG)*0.3}, ${nightB + (b-nightB)*0.3}) 0%,
+    rgb(${nightR + (r-nightR)*0.5}, ${nightG + (g-nightG)*0.5}, ${nightB + (b-nightB)*0.5}) 40%,
+    rgb(${r*0.7}, ${g*0.7}, ${b*0.8}) 70%,
+    rgb(${r}, ${g}, ${b}) 100%)`;
+
+  // Fade stars
+  stars.forEach(star => {
+    const currentOpacity = 1 - progress;
+    star.style.opacity = currentOpacity;
+    star.style.transform = `translateY(${progress * 20}px)`;
+  });
+
+  // Brighten horizon
+  horizon.style.opacity = progress;
+
+  // Change word
+  const wordIndex = Math.floor(progress * states.length);
+  words.textContent = states[Math.min(wordIndex, states.length - 1)];
+  words.style.color = `rgba(255, ${200 - progress*100}, ${100 - progress*50}, ${0.2 + progress*0.6})`;
+
+  // Full dawn at 15 clicks
+  if(clicks >= 15) {
+    words.style.opacity = '1';
+    words.style.color = 'rgba(255, 150, 80, 0.9)';
+  }
+});
+</script>
+</section>
