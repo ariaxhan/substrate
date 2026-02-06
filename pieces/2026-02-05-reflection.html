@@ -1,0 +1,128 @@
+<section data-date='2026-02-05' data-type='reflection'>
+<style>
+body{margin:0;overflow:hidden;background:#000;font-family:serif;cursor:crosshair}
+#sky{position:fixed;top:0;left:0;width:100vw;height:100vh;background:radial-gradient(ellipse at bottom,#1b2735 0%,#090a0f 100%)}
+.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;opacity:0;animation:twinkle 3s ease-in-out forwards;pointer-events:none}
+@keyframes twinkle{0%{opacity:0;transform:scale(0)}20%{opacity:1;transform:scale(1.5)}100%{opacity:.8;transform:scale(1)}}
+.constellation{position:absolute;width:1px;height:1px;background:transparent}
+.line{position:absolute;height:1px;background:rgba(255,255,255,.15);transform-origin:0 0;opacity:0;animation:drawLine 1.5s ease-out forwards}
+@keyframes drawLine{to{opacity:1}}
+#text{position:fixed;bottom:8vh;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.3);font-size:1.2rem;letter-spacing:.3em;text-align:center;pointer-events:none;opacity:0;animation:fadeText 2s 1s forwards}
+@keyframes fadeText{to{opacity:1}}
+.word{display:inline-block;margin:0 .15em}
+</style>
+<div id="sky"></div>
+<div id="text">
+<span class="word">the</span>
+<span class="word">day</span>
+<span class="word">complete</span>
+<span class="word">—</span>
+<span class="word">stillness</span>
+<span class="word">before</span>
+<span class="word">the</span>
+<span class="word">next</span>
+<span class="word">beginning</span>
+</div>
+<script>
+const sky=document.getElementById('sky');
+const stars=[];
+let constellations=[];
+let lastConstellation=0;
+
+function distance(x1,y1,x2,y2){
+  return Math.sqrt((x2-x1)**2+(y2-y1)**2);
+}
+
+function drawLine(x1,y1,x2,y2,delay){
+  const line=document.createElement('div');
+  line.className='line';
+  const len=distance(x1,y1,x2,y2);
+  const angle=Math.atan2(y2-y1,x2-x1)*180/Math.PI;
+  line.style.width=len+'px';
+  line.style.left=x1+'px';
+  line.style.top=y1+'px';
+  line.style.transform=`rotate(${angle}deg)`;
+  line.style.animationDelay=delay+'ms';
+  sky.appendChild(line);
+}
+
+function createConstellation(baseStars){
+  const now=Date.now();
+  if(now-lastConstellation<1200)return;
+  lastConstellation=now;
+
+  if(baseStars.length<3)return;
+  const used=new Set();
+  const pattern=[];
+
+  // Pick 3-5 nearby stars
+  const first=baseStars[Math.floor(Math.random()*Math.min(5,baseStars.length))];
+  pattern.push(first);
+  used.add(first);
+
+  const count=Math.floor(Math.random()*3)+3;
+  for(let i=1;i<count&&baseStars.length>pattern.length;i++){
+    let nearest=null;
+    let minDist=Infinity;
+    for(const s of baseStars){
+      if(used.has(s))continue;
+      const d=distance(pattern[pattern.length-1].x,pattern[pattern.length-1].y,s.x,s.y);
+      if(d<minDist&&d<250){
+        minDist=d;
+        nearest=s;
+      }
+    }
+    if(nearest){
+      pattern.push(nearest);
+      used.add(nearest);
+    }
+  }
+
+  if(pattern.length>=3){
+    for(let i=0;i<pattern.length-1;i++){
+      drawLine(pattern[i].x,pattern[i].y,pattern[i+1].x,pattern[i+1].y,i*300);
+    }
+    // Sometimes close the shape
+    if(pattern.length>=4&&Math.random()>.5){
+      drawLine(pattern[pattern.length-1].x,pattern[pattern.length-1].y,pattern[0].x,pattern[0].y,(pattern.length-1)*300);
+    }
+  }
+}
+
+sky.addEventListener('click',e=>{
+  const x=e.clientX;
+  const y=e.clientY;
+
+  const star=document.createElement('div');
+  star.className='star';
+  star.style.left=x+'px';
+  star.style.top=y+'px';
+  sky.appendChild(star);
+
+  stars.push({x,y,el:star});
+
+  // Try to form constellation with recent stars
+  if(stars.length>=3){
+    const recent=stars.slice(-8);
+    createConstellation(recent);
+  }
+});
+
+// Subtle ambient stars appear over time
+let ambient=0;
+const addAmbient=()=>{
+  if(ambient>30)return;
+  const x=Math.random()*window.innerWidth;
+  const y=Math.random()*window.innerHeight*.6;
+  const star=document.createElement('div');
+  star.className='star';
+  star.style.left=x+'px';
+  star.style.top=y+'px';
+  star.style.animationDelay=Math.random()*2+'s';
+  sky.appendChild(star);
+  ambient++;
+  setTimeout(addAmbient,3000+Math.random()*5000);
+};
+setTimeout(addAmbient,2000);
+</script>
+</section>
