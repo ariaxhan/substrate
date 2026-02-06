@@ -1,0 +1,83 @@
+<section data-date='2026-02-06' data-type='digest'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0f;overflow:hidden;font-family:monospace;cursor:crosshair}
+#g{position:fixed;top:0;left:0;width:100vw;height:100vh}
+.n{position:absolute;width:3px;height:3px;background:#4a9eff;border-radius:50%;opacity:0;transform:translate(-50%,-50%);transition:opacity .6s}
+.n.v{opacity:.7}
+.c{position:absolute;height:1px;background:linear-gradient(90deg,transparent,#4a9eff,transparent);opacity:0;pointer-events:none;transform-origin:left center;transition:opacity .4s}
+.c.v{opacity:.15}
+#o{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);color:#4a9eff;font-size:11px;letter-spacing:2px;text-align:center;opacity:.4;transition:opacity .6s}
+#o.h{opacity:0}
+.w{position:fixed;bottom:50px;left:50%;transform:translateX(-50%);color:#6ac5ff;font-size:9px;letter-spacing:1px;opacity:0;transition:opacity .8s;text-transform:uppercase}
+.w.v{opacity:.6}
+</style>
+<div id=g></div>
+<div id=o>click to accumulate</div>
+<script>
+const g=document.getElementById('g'),
+o=document.getElementById('o'),
+ns=[],cs=[],
+w=window.innerWidth,h=window.innerHeight,
+r=()=>Math.random(),
+d=(x1,y1,x2,y2)=>Math.sqrt((x2-x1)**2+(y2-y1)**2),
+l=(x1,y1,x2,y2)=>{
+const c=document.createElement('div');
+c.className='c';
+const dx=x2-x1,dy=y2-y1,len=d(x1,y1,x2,y2),ang=Math.atan2(dy,dx)*180/Math.PI;
+c.style.left=x1+'px';
+c.style.top=y1+'px';
+c.style.width=len+'px';
+c.style.transform=`rotate(${ang}deg)`;
+g.appendChild(c);
+cs.push(c);
+setTimeout(()=>c.classList.add('v'),20);
+},
+m=x=>{
+const f=['accrete','coalesce','crystallize','converge','distill','emerge','pattern','resonate','weave','nexus'];
+if(x.classList.contains('w')){x.remove();return}
+const w=document.createElement('div');
+w.className='w';
+w.textContent=f[0|r()*f.length];
+w.style.left=x.style.left;
+w.style.bottom=(h-parseFloat(x.style.top)+30)+'px';
+g.appendChild(w);
+setTimeout(()=>{w.classList.add('v');setTimeout(()=>{w.classList.remove('v');setTimeout(()=>w.remove(),800)},2000)},20);
+};
+let t=0;
+g.addEventListener('click',e=>{
+const x=e.clientX,y=e.clientY,n=document.createElement('div');
+n.className='n';
+n.style.left=x+'px';
+n.style.top=y+'px';
+g.appendChild(n);
+ns.push({e:n,x,y,t:++t});
+setTimeout(()=>n.classList.add('v'),20);
+if(ns.length>1){
+const p=ns[ns.length-2];
+if(d(p.x,p.y,x,y)<w/3)l(p.x,p.y,x,y);
+}
+if(ns.length>2){
+for(let i=ns.length-3;i>=0&&ns.length-i<=8;i--){
+const p=ns[i];
+if(d(p.x,p.y,x,y)<w/4&&r()>.6)l(p.x,p.y,x,y);
+}}
+if(ns.length>4&&ns.length%5===0){
+const rc=ns.filter(n=>d(n.x,n.y,x,y)<w/5);
+if(rc.length>2){
+rc.forEach(n=>l(n.x,n.y,x,y));
+m(n);
+}}
+if(ns.length>2)o.classList.add('h');
+if(ns.length>30){
+const rm=ns.shift();
+rm.e.classList.remove('v');
+setTimeout(()=>rm.e.remove(),600);
+if(cs.length>45){
+const rc=cs.shift();
+rc.classList.remove('v');
+setTimeout(()=>rc.remove(),400);
+}}
+});
+</script>
+</section>
