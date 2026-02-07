@@ -1,0 +1,79 @@
+<section data-date='2026-02-06' data-type='winddown'>
+<style>
+body{margin:0;overflow:hidden;background:#1a1520;font-family:Georgia,serif;cursor:crosshair}
+#c{position:fixed;top:0;left:0;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.l{position:absolute;border-radius:50%;pointer-events:none;mix-blend-mode:screen;transition:opacity 2.5s ease-out}
+.w{position:absolute;font-size:14px;letter-spacing:3px;text-transform:lowercase;opacity:0;transition:opacity 1.5s;color:#d4a373;text-align:center;line-height:1.8}
+.f{opacity:1}
+#i{position:absolute;bottom:40px;font-size:11px;letter-spacing:2px;color:#6b5d70;opacity:0.4;text-transform:lowercase}
+</style>
+<div id="c"></div>
+<div id="i">click to dim</div>
+<script>
+const c=document.getElementById('c'),
+w=['breath','settle','ember','horizon','stillness','dusk','release','quietude'],
+ls=[],
+lc=12,
+active=lc;
+let idx=0,dims=0;
+
+function cL(x,y){
+  const l=document.createElement('div');
+  l.className='l';
+  const sz=Math.random()*180+120;
+  const h=Math.random()*40+20;
+  l.style.width=sz+'px';
+  l.style.height=sz+'px';
+  l.style.left=x-sz/2+'px';
+  l.style.top=y-sz/2+'px';
+  l.style.background=`radial-gradient(circle,rgba(255,${160+Math.random()*40},${100+Math.random()*50},0.4) 0%,transparent 70%)`;
+  l.style.opacity='1';
+  c.appendChild(l);
+  ls.push(l);
+  return l;
+}
+
+function init(){
+  for(let i=0;i<lc;i++){
+    const x=Math.random()*window.innerWidth;
+    const y=Math.random()*window.innerHeight;
+    cL(x,y);
+  }
+}
+
+function sW(x,y){
+  const wd=document.createElement('div');
+  wd.className='w';
+  wd.textContent=w[idx%w.length];
+  idx++;
+  wd.style.left=x-100+'px';
+  wd.style.top=y-20+'px';
+  c.appendChild(wd);
+  setTimeout(()=>wd.classList.add('f'),50);
+  setTimeout(()=>{
+    wd.style.opacity='0';
+    setTimeout(()=>wd.remove(),1500);
+  },3000);
+}
+
+c.addEventListener('click',(e)=>{
+  if(active>0){
+    const t=ls[lc-active];
+    if(t){
+      t.style.opacity='0';
+      setTimeout(()=>t.remove(),2500);
+      active--;
+      sW(e.clientX,e.clientY);
+      dims++;
+      if(dims>=lc){
+        setTimeout(()=>{
+          document.body.style.background='#0a0508';
+        },2000);
+      }
+    }
+  }
+});
+
+init();
+</script>
+</section>
