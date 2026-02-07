@@ -1,0 +1,105 @@
+<section data-date='2026-02-07' data-type='morning'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{overflow:hidden;background:#0a0612;font-family:serif}
+#sky{position:fixed;width:100vw;height:100vh;transition:background 1.2s ease}
+.layer{position:absolute;width:100%;height:100%;transition:all .8s cubic-bezier(.4,0,.2,1)}
+#horizon{bottom:0;height:40%;background:linear-gradient(to top,#1a0a1f,transparent);will-change:transform}
+#particles{position:absolute;inset:0;pointer-events:none}
+.p{position:absolute;width:2px;height:2px;background:rgba(255,255,255,.3);border-radius:50%;transition:opacity 1s}
+#text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#fff;opacity:0;transition:opacity 2s;pointer-events:none}
+#text span{font-size:clamp(1.2rem,4vw,2.4rem);letter-spacing:.15em;font-weight:300;text-transform:uppercase;margin:.5em 0;opacity:0;transform:translateY(20px);transition:all 1.2s cubic-bezier(.4,0,.2,1)}
+#hint{position:absolute;bottom:8%;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.4);font-size:.9rem;letter-spacing:.2em;text-transform:uppercase;animation:pulse 2s ease-in-out infinite;font-family:sans-serif}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:.7}}
+</style>
+
+<div id="sky">
+<div class="layer" id="horizon"></div>
+<div id="particles"></div>
+<div id="text">
+<span id="w1">Unwritten</span>
+<span id="w2">Unbegun</span>
+<span id="w3">Beginning</span>
+</div>
+</div>
+<div id="hint">Click to wake</div>
+
+<script>
+let stage=0,px=0,py=0;
+const sky=document.getElementById('sky');
+const hz=document.getElementById('horizon');
+const pc=document.getElementById('particles');
+const tx=document.getElementById('text');
+const hint=document.getElementById('hint');
+const w1=document.getElementById('w1');
+const w2=document.getElementById('w2');
+const w3=document.getElementById('w3');
+
+const stages=[
+'#0a0612',
+'#1a0f2e',
+'#2d1b4e',
+'#4a2861',
+'#6b3d7a',
+'#8e5a92',
+'#b87fb5',
+'#d4a5d4',
+'#e8c8e8'
+];
+
+// Generate particles
+for(let i=0;i<80;i++){
+const p=document.createElement('div');
+p.className='p';
+p.style.left=Math.random()*100+'%';
+p.style.top=Math.random()*60+'%';
+p.style.opacity=0;
+pc.appendChild(p);
+}
+const particles=document.querySelectorAll('.p');
+
+function advance(){
+if(stage<stages.length-1){
+stage++;
+sky.style.background=stages[stage];
+
+// Reveal particles gradually
+particles.forEach((p,i)=>{
+if(i<stage*10)p.style.opacity=Math.random()*.6;
+});
+
+// Horizon shift
+hz.style.transform=`translateY(${stage*2}px)`;
+
+// Text reveal at later stages
+if(stage===3){
+tx.style.opacity=1;
+setTimeout(()=>w1.style.cssText='opacity:1;transform:translateY(0)',200);
+}
+if(stage===5){
+setTimeout(()=>w2.style.cssText='opacity:1;transform:translateY(0)',200);
+}
+if(stage===7){
+setTimeout(()=>w3.style.cssText='opacity:1;transform:translateY(0)',200);
+hint.style.opacity=0;
+}
+}
+}
+
+// Click interaction
+sky.addEventListener('click',advance);
+
+// Mousemove parallax
+document.addEventListener('mousemove',e=>{
+const nx=(e.clientX/window.innerWidth-.5)*2;
+const ny=(e.clientY/window.innerHeight-.5)*2;
+px+=(nx-px)*.05;
+py+=(ny-py)*.05;
+hz.style.transform=`translate(${px*20}px,${py*10+stage*2}px)`;
+particles.forEach((p,i)=>{
+const d=(i%3+1)*.3;
+p.style.transform=`translate(${px*30*d}px,${py*20*d}px)`;
+});
+});
+</script>
+</section>
