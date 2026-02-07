@@ -1,0 +1,160 @@
+<section data-date='2026-02-07' data-type='digest'>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box }
+body {
+  margin: 0;
+  background: #0a0a0f;
+  overflow: hidden;
+  font-family: 'Courier New', monospace;
+  cursor: crosshair
+}
+#c {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh
+}
+.node {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: #4a9eff;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  animation: emerge 0.8s forwards;
+  box-shadow: 0 0 4px #4a9eff
+}
+@keyframes emerge {
+  from { opacity: 0; transform: scale(0) }
+  to { opacity: 1; transform: scale(1) }
+}
+.edge {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #2a5a8f, transparent);
+  transform-origin: 0 50%;
+  pointer-events: none;
+  opacity: 0;
+  animation: connect 1.2s forwards
+}
+@keyframes connect {
+  from { opacity: 0; width: 0 }
+  to { opacity: 0.4; width: var(--len) }
+}
+.cluster {
+  position: absolute;
+  color: #4a9eff;
+  font-size: 11px;
+  letter-spacing: 1px;
+  opacity: 0;
+  pointer-events: none;
+  text-shadow: 0 0 8px #1a3a5f;
+  animation: reveal 2s forwards;
+  animation-delay: var(--delay)
+}
+@keyframes reveal {
+  from { opacity: 0; filter: blur(4px) }
+  to { opacity: 0.7; filter: blur(0) }
+}
+#meta {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  color: #2a5a8f;
+  font-size: 10px;
+  letter-spacing: 2px;
+  opacity: 0.5
+}
+</style>
+<canvas id="c"></canvas>
+<div id="meta">CLICK TO CRYSTALLIZE</div>
+<script>
+const cv = document.getElementById('c');
+const ctx = cv.createContext('2d');
+const w = cv.width = window.innerWidth;
+const h = cv.height = window.innerHeight;
+const nodes = [];
+const edges = [];
+let clusters = 0;
+
+const words = [
+  'PATTERN', 'SIGNAL', 'NOISE', 'THREAD', 'WEAVE',
+  'COLLISION', 'SPARK', 'DRIFT', 'ANCHOR', 'FLUX',
+  'EMERGE', 'DISTILL', 'TRACE', 'ECHO', 'NEXUS'
+];
+
+const dist = (x1, y1, x2, y2) =>
+  Math.sqrt((x2-x1)**2 + (y2-y1)**2);
+
+const findNearby = (x, y, r) =>
+  nodes.filter(n => dist(x, y, n.x, n.y) < r);
+
+const createNode = (x, y) => {
+  const node = document.createElement('div');
+  node.className = 'node';
+  node.style.left = x + 'px';
+  node.style.top = y + 'px';
+  document.body.appendChild(node);
+
+  const n = { x, y, el: node };
+  nodes.push(n);
+
+  // Connect to nearby nodes
+  const nearby = findNearby(x, y, 180);
+  nearby.forEach(near => {
+    if (near === n) return;
+    const dx = near.x - x;
+    const dy = near.y - y;
+    const len = dist(x, y, near.x, near.y);
+    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+    const edge = document.createElement('div');
+    edge.className = 'edge';
+    edge.style.left = x + 'px';
+    edge.style.top = y + 'px';
+    edge.style.setProperty('--len', len + 'px');
+    edge.style.transform = `rotate(${angle}deg)`;
+    document.body.appendChild(edge);
+    edges.push(edge);
+  });
+
+  // Detect clusters (4+ connected nodes)
+  if (nearby.length >= 3) {
+    const label = document.createElement('div');
+    label.className = 'cluster';
+    label.textContent = words[clusters % words.length];
+    label.style.left = (x - 30) + 'px';
+    label.style.top = (y - 20) + 'px';
+    label.style.setProperty('--delay', (clusters * 0.3) + 's');
+    document.body.appendChild(label);
+    clusters++;
+  }
+
+  return n;
+};
+
+// Seed initial constellation
+for (let i = 0; i < 8; i++) {
+  createNode(
+    w * 0.2 + Math.random() * w * 0.6,
+    h * 0.2 + Math.random() * h * 0.6
+  );
+}
+
+document.addEventListener('click', e => {
+  createNode(e.clientX, e.clientY);
+});
+
+// Subtle drift animation
+let t = 0;
+setInterval(() => {
+  t += 0.01;
+  nodes.forEach((n, i) => {
+    const drift = Math.sin(t + i * 0.5) * 0.3;
+    n.el.style.transform = `translate(${drift}px, ${Math.cos(t + i) * 0.3}px)`;
+  });
+}, 50);
+</script>
+</section>
