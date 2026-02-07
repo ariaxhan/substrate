@@ -1,0 +1,54 @@
+<section data-date='2026-02-06' data-type='reflection'>
+<style>
+body{margin:0;overflow:hidden;background:radial-gradient(ellipse at center,#1a1a3e 0%,#000 100%);font-family:Georgia,serif;cursor:crosshair}
+#v{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+.s{position:absolute;width:3px;height:3px;background:#fff;border-radius:50%;box-shadow:0 0 8px 2px rgba(255,255,255,0.8),0 0 16px 4px rgba(200,220,255,0.4);opacity:0;animation:f 2s ease-out forwards;pointer-events:none}
+@keyframes f{0%{opacity:0;transform:scale(0)}50%{opacity:1;transform:scale(1.5)}100%{opacity:0.9;transform:scale(1)}}
+#t{position:fixed;bottom:60px;left:50%;transform:translateX(-50%);text-align:center;color:rgba(255,255,255,0.7);font-size:18px;letter-spacing:2px;line-height:1.6;pointer-events:none}
+.w{opacity:0;display:inline-block;margin:0 4px}
+.w.v{animation:fw 1.5s ease-in forwards}
+@keyframes fw{0%{opacity:0;transform:translateY(10px)}100%{opacity:0.85;transform:translateY(0)}}
+#i{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.3);font-size:12px;letter-spacing:1px;opacity:0;animation:fi 3s ease-in 1s forwards}
+@keyframes fi{to{opacity:1}}
+</style>
+<div id="v"></div>
+<div id="t"></div>
+<div id="i">click to scatter stars</div>
+<script>
+const v=document.getElementById('v'),
+t=document.getElementById('t'),
+p=["the","day","is","done","·","stillness","falls","·","one","by","one","·","the","stars","return","·","rest","now","·","tomorrow","begins","again"];
+let c=0,w=[];
+p.forEach((x,i)=>{
+const s=document.createElement('span');
+s.className='w';
+s.textContent=x;
+t.appendChild(s);
+w.push(s)
+});
+function a(e){
+if(c>=p.length)return;
+const s=document.createElement('div');
+s.className='s';
+const x=e.clientX+Math.random()*40-20,
+y=e.clientY+Math.random()*40-20;
+s.style.left=x+'px';
+s.style.top=y+'px';
+s.style.animationDelay=Math.random()*0.3+'s';
+v.appendChild(s);
+if(Math.random()>0.4&&c<p.length){
+setTimeout(()=>{
+w[c].classList.add('v');
+c++
+},300)
+}
+}
+document.body.addEventListener('click',a);
+setTimeout(()=>{
+const iv=setInterval(()=>{
+if(c>=p.length){clearInterval(iv);return}
+a({clientX:Math.random()*innerWidth,clientY:Math.random()*innerHeight})
+},2000)
+},5000)
+</script>
+</section>
