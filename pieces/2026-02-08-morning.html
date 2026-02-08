@@ -1,0 +1,110 @@
+<section data-date='2026-02-08' data-type='morning'>
+<style>
+* { margin:0; padding:0; box-sizing:border-box }
+body {
+  overflow:hidden;
+  font-family:Georgia,serif;
+  background:linear-gradient(180deg,#fef9f3 0%,#fff5e8 30%,#ffe8d6 60%,#ffd4b8 100%);
+  cursor:pointer;
+  user-select:none;
+  height:100vh;
+  position:relative
+}
+#v {
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+  width:90%;
+  max-width:600px
+}
+.w {
+  font-size:clamp(14px,2.5vw,18px);
+  line-height:1.7;
+  color:rgba(60,50,40,0);
+  transition:color 1.2s ease,transform 0.8s ease;
+  margin:0.5em 0;
+  letter-spacing:0.02em;
+  transform:translateY(8px)
+}
+.w.r {
+  color:rgba(60,50,40,0.85);
+  transform:translateY(0)
+}
+#h {
+  font-size:clamp(32px,7vw,72px);
+  font-weight:300;
+  letter-spacing:0.15em;
+  color:rgba(60,50,40,0.12);
+  transition:color 2s ease;
+  margin-bottom:1.5em;
+  text-transform:uppercase;
+  font-family:system-ui,-apple-system,sans-serif
+}
+#h.r {
+  color:rgba(60,50,40,0.65)
+}
+.d {
+  position:absolute;
+  width:4px;
+  height:4px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(255,200,120,0.4),transparent);
+  opacity:0;
+  transition:opacity 1.5s ease;
+  pointer-events:none
+}
+.d.r {
+  opacity:1
+}
+</style>
+<div id="v">
+  <div id="h">Dawn</div>
+  <div id="c"></div>
+</div>
+<script>
+const m=[
+  "Every hour unclaimed",
+  "A page blank as snow",
+  "The day folds open",
+  "Light finds the edges",
+  "What will you begin?",
+  "Potential hums beneath",
+  "The first breath decides",
+  "Nothing is written yet"
+];
+let i=0,d=[];
+const v=document.getElementById('v'),
+      c=document.getElementById('c'),
+      h=document.getElementById('h');
+
+function s(){
+  const p=document.createElement('div');
+  p.className='d';
+  p.style.left=Math.random()*100+'%';
+  p.style.top=Math.random()*100+'%';
+  document.body.appendChild(p);
+  d.push(p);
+  setTimeout(()=>p.classList.add('r'),50);
+}
+
+function n(){
+  if(i>=m.length){
+    h.classList.add('r');
+    return;
+  }
+  const w=document.createElement('div');
+  w.className='w';
+  w.textContent=m[i];
+  c.appendChild(w);
+  setTimeout(()=>w.classList.add('r'),50);
+  i++;
+  for(let j=0;j<3;j++){
+    setTimeout(s,Math.random()*600);
+  }
+}
+
+document.body.addEventListener('click',n);
+</script>
+</section>
