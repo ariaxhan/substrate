@@ -1,0 +1,89 @@
+<section data-date='2026-02-07' data-type='reflection'>
+<style>
+body{margin:0;overflow:hidden;background:#000;cursor:crosshair}
+#c{position:absolute;top:0;left:0}
+.label{position:absolute;font:11px/1.4 'Courier New',monospace;color:#fff;opacity:0;transition:opacity .8s;pointer-events:none;letter-spacing:.05em}
+</style>
+<canvas id="c"></canvas>
+<script>
+const canvas=document.getElementById('c');
+const ctx=canvas.getContext('2d');
+let w=canvas.width=innerWidth;
+let h=canvas.height=innerHeight;
+addEventListener('resize',()=>{w=canvas.width=innerWidth;h=canvas.height=innerHeight});
+
+const constellations=[
+  {name:'WORK',stars:[{x:.2,y:.3},{x:.25,y:.28},{x:.3,y:.3},{x:.28,y:.35}],label:{x:.25,y:.38}},
+  {name:'REST',stars:[{x:.7,y:.25},{x:.73,y:.22},{x:.77,y:.24},{x:.75,y:.28},{x:.71,y:.29}],label:{x:.73,y:.32}},
+  {name:'THOUGHT',stars:[{x:.5,y:.15},{x:.52,y:.13},{x:.55,y:.15},{x:.53,y:.18}],label:{x:.52,y:.21}},
+  {name:'DREAM',stars:[{x:.4,y:.6},{x:.43,y:.57},{x:.47,y:.58},{x:.45,y:.62},{x:.41,y:.63}],label:{x:.43,y:.66}},
+  {name:'SILENCE',stars:[{x:.8,y:.7},{x:.82,y:.68},{x:.85,y:.7},{x:.83,y:.73}],label:{x:.82,y:.76}},
+  {name:'BREATH',stars:[{x:.15,y:.65},{x:.18,y:.63},{x:.21,y:.65}],label:{x:.18,y:.68}},
+  {name:'BECOMING',stars:[{x:.6,y:.5},{x:.63,y:.48},{x:.67,y:.5},{x:.65,y:.53},{x:.61,y:.54}],label:{x:.63,y:.57}}
+];
+
+const bg=[...Array(200)].map(()=>({x:Math.random(),y:Math.random(),r:Math.random()*1.5+.5,o:Math.random()*.3+.1}));
+
+let revealed=new Set();
+let mouse={x:w/2,y:h/2};
+
+canvas.addEventListener('mousemove',e=>{
+  mouse.x=e.clientX;mouse.y=e.clientY;
+  constellations.forEach((c,i)=>{
+    const cx=c.stars.reduce((s,p)=>s+p.x*w,0)/c.stars.length;
+    const cy=c.stars.reduce((s,p)=>s+p.y*h,0)/c.stars.length;
+    const dist=Math.hypot(mouse.x-cx,mouse.y-cy);
+    if(dist<80 && !revealed.has(i)){
+      revealed.add(i);
+      const lbl=document.createElement('div');
+      lbl.className='label';
+      lbl.textContent=c.name;
+      lbl.style.left=c.label.x*w+'px';
+      lbl.style.top=c.label.y*h+'px';
+      document.body.appendChild(lbl);
+      setTimeout(()=>lbl.style.opacity='1',50);
+    }
+  });
+});
+
+function draw(){
+  ctx.fillStyle='#000';
+  ctx.fillRect(0,0,w,h);
+
+  bg.forEach(s=>{
+    ctx.fillStyle=`rgba(255,255,255,${s.o})`;
+    ctx.beginPath();
+    ctx.arc(s.x*w,s.y*h,s.r,0,Math.PI*2);
+    ctx.fill();
+  });
+
+  constellations.forEach((c,i)=>{
+    if(revealed.has(i)){
+      const stars=c.stars.map(p=>({x:p.x*w,y:p.y*h}));
+      ctx.strokeStyle='rgba(255,255,255,.4)';
+      ctx.lineWidth=1;
+      ctx.beginPath();
+      stars.forEach((s,j)=>{
+        if(j===0)ctx.moveTo(s.x,s.y);
+        else ctx.lineTo(s.x,s.y);
+      });
+      ctx.stroke();
+
+      stars.forEach(s=>{
+        const grd=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,8);
+        grd.addColorStop(0,'rgba(255,255,255,1)');
+        grd.addColorStop(.5,'rgba(255,255,255,.6)');
+        grd.addColorStop(1,'rgba(255,255,255,0)');
+        ctx.fillStyle=grd;
+        ctx.beginPath();
+        ctx.arc(s.x,s.y,8,0,Math.PI*2);
+        ctx.fill();
+      });
+    }
+  });
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</section>
