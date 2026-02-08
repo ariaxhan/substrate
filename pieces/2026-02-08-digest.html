@@ -1,0 +1,66 @@
+<section data-date='2026-02-08' data-type='digest'>
+<style>
+#d{position:fixed;inset:0;background:#0a0a0c;overflow:hidden;font-family:system-ui,-apple-system,sans-serif;cursor:crosshair}
+.n{position:absolute;width:4px;height:4px;background:#222;border-radius:50%;transition:all .3s}
+.n.a{background:#4a9eff;box-shadow:0 0 8px #4a9eff}
+.l{position:absolute;height:1px;background:linear-gradient(90deg,transparent,#4a9eff22,transparent);transform-origin:0 50%;opacity:0;transition:opacity .5s}
+.l.v{opacity:.4}
+#t{position:fixed;top:20px;left:20px;color:#444;font-size:11px;letter-spacing:1.2px;font-weight:500;text-transform:uppercase;pointer-events:none}
+#c{position:fixed;bottom:20px;right:20px;color:#333;font-size:10px;font-family:monospace;text-align:right;pointer-events:none;line-height:1.6}
+</style>
+<div id="d">
+<div id="t">trace to reveal</div>
+<div id="c"><span id="n">0</span> nodes · <span id="e">0</span> edges</div>
+</div>
+<script>
+const d=document.getElementById('d'),
+g=150,ns=[],ls=[],m={x:0,y:0},th=80;
+let ac=0,ec=0;
+for(let i=0;i<g;i++){
+let n=document.createElement('div');
+n.className='n';
+let x=Math.random()*window.innerWidth,
+y=Math.random()*window.innerHeight;
+n.style.left=x+'px';
+n.style.top=y+'px';
+n._x=x;n._y=y;n._a=false;
+d.appendChild(n);
+ns.push(n);
+}
+function u(){
+ns.forEach(n=>{
+let dx=m.x-n._x,dy=m.y-n._y,
+dt=Math.sqrt(dx*dx+dy*dy);
+if(dt<th&&!n._a){
+n.classList.add('a');n._a=true;ac++;
+document.getElementById('n').textContent=ac;
+ns.forEach(o=>{
+if(o!==n&&o._a){
+let dx2=o._x-n._x,dy2=o._y-n._y,
+dt2=Math.sqrt(dx2*dx2+dy2*dy2);
+if(dt2<th*2.5){
+let l=document.createElement('div');
+l.className='l';
+let a=Math.atan2(dy2,dx2)*180/Math.PI;
+l.style.left=n._x+'px';
+l.style.top=n._y+'px';
+l.style.width=dt2+'px';
+l.style.transform=`rotate(${a}deg)`;
+d.appendChild(l);
+ls.push(l);
+setTimeout(()=>l.classList.add('v'),10);
+ec++;
+document.getElementById('e').textContent=ec;
+}
+}
+});
+}
+});
+}
+d.addEventListener('mousemove',e=>{
+m.x=e.clientX;
+m.y=e.clientY;
+u();
+});
+</script>
+</section>
