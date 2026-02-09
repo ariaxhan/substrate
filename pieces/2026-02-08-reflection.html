@@ -1,0 +1,54 @@
+<section data-date='2026-02-08' data-type='reflection'>
+<style>
+body{margin:0;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#0a0e27,#000)}
+#sky{position:fixed;top:0;left:0;width:100%;height:100%;cursor:crosshair}
+.star{position:absolute;width:3px;height:3px;background:#fff;border-radius:50%;box-shadow:0 0 4px #fff,0 0 8px rgba(255,255,255,0.5);animation:pulse 3s ease-in-out infinite;pointer-events:none}
+@keyframes pulse{0%,100%{opacity:0.6;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
+svg{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none}
+line{stroke:rgba(150,180,220,0.15);stroke-width:1}
+</style>
+
+<div id="sky"></div>
+<svg id="lines"></svg>
+
+<script>
+const sky=document.getElementById('sky');
+const svg=document.getElementById('lines');
+const stars=[];
+const maxDist=150;
+
+sky.addEventListener('click',e=>{
+  const star=document.createElement('div');
+  star.className='star';
+  star.style.left=e.clientX+'px';
+  star.style.top=e.clientY+'px';
+  star.style.animationDelay=Math.random()*3+'s';
+  sky.appendChild(star);
+
+  stars.push({x:e.clientX,y:e.clientY,el:star});
+
+  drawLines();
+});
+
+function drawLines(){
+  svg.innerHTML='';
+  for(let i=0;i<stars.length;i++){
+    for(let j=i+1;j<stars.length;j++){
+      const dx=stars[i].x-stars[j].x;
+      const dy=stars[i].y-stars[j].y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+
+      if(dist<maxDist){
+        const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+        line.setAttribute('x1',stars[i].x);
+        line.setAttribute('y1',stars[i].y);
+        line.setAttribute('x2',stars[j].x);
+        line.setAttribute('y2',stars[j].y);
+        line.style.opacity=(1-dist/maxDist)*0.3;
+        svg.appendChild(line);
+      }
+    }
+  }
+}
+</script>
+</section>
