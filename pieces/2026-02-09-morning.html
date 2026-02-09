@@ -1,0 +1,163 @@
+<section data-date='2026-02-09' data-type='morning'>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(to bottom, #0a0a14 0%, #1a1a2e 40%, #2d3561 70%, #ff6b9d 100%);
+  cursor: crosshair;
+  font-family: 'Georgia', serif;
+}
+.horizon {
+  position: absolute;
+  bottom: 30%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.word {
+  position: absolute;
+  color: rgba(255, 255, 255, 0);
+  font-size: 14px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  pointer-events: none;
+  transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+.revealed { color: rgba(255, 255, 255, 0.9); }
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 1.5s ease-out;
+}
+.lit { opacity: 1; }
+.sun {
+  position: absolute;
+  bottom: 30%;
+  left: 50%;
+  transform: translate(-50%, 50%);
+  width: 0;
+  height: 0;
+  background: radial-gradient(circle, rgba(255, 230, 109, 1) 0%, rgba(255, 107, 157, 0.8) 50%, transparent 100%);
+  border-radius: 50%;
+  transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+.risen {
+  width: 120px;
+  height: 120px;
+  transform: translate(-50%, -60px);
+}
+</style>
+
+<div class="horizon"></div>
+<div class="sun"></div>
+
+<script>
+const words = [
+  { text: 'UNWRITTEN', x: 20, y: 15 },
+  { text: 'POTENTIAL', x: 70, y: 25 },
+  { text: 'BEGINNING', x: 15, y: 45 },
+  { text: 'FIRST', x: 85, y: 50 },
+  { text: 'LIGHT', x: 50, y: 60 },
+  { text: 'DAWN', x: 30, y: 75 },
+  { text: 'BREAKING', x: 65, y: 80 }
+];
+
+let clicks = 0;
+const totalClicks = 7;
+
+// Create stars
+for (let i = 0; i < 50; i++) {
+  const star = document.createElement('div');
+  star.className = 'star';
+  star.style.left = Math.random() * 100 + '%';
+  star.style.top = Math.random() * 60 + '%';
+  document.body.appendChild(star);
+}
+
+// Create word elements
+words.forEach((w, i) => {
+  const word = document.createElement('div');
+  word.className = 'word';
+  word.textContent = w.text;
+  word.style.left = w.x + '%';
+  word.style.top = w.y + '%';
+  word.dataset.index = i;
+  document.body.appendChild(word);
+});
+
+const allWords = document.querySelectorAll('.word');
+const horizon = document.querySelector('.horizon');
+const sun = document.querySelector('.sun');
+const stars = document.querySelectorAll('.star');
+
+// Click interaction: reveal the day
+document.body.addEventListener('click', (e) => {
+  clicks++;
+
+  // Progressively reveal
+  if (clicks <= totalClicks) {
+    // Light stars
+    const starsToLight = Math.floor((clicks / totalClicks) * stars.length);
+    for (let i = 0; i < starsToLight; i++) {
+      stars[i].classList.add('lit');
+    }
+
+    // Reveal words one by one
+    if (clicks <= words.length) {
+      allWords[clicks - 1].classList.add('revealed');
+    }
+
+    // Horizon brightens
+    horizon.style.background = `rgba(255, 255, 255, ${clicks * 0.15})`;
+
+    // Sun rises
+    if (clicks >= 4) {
+      sun.classList.add('risen');
+    }
+
+    // Background brightens
+    if (clicks === totalClicks) {
+      document.body.style.background = 'linear-gradient(to bottom, #2d3561 0%, #ff6b9d 40%, #ffe66d 70%, #fff8dc 100%)';
+    }
+  }
+});
+
+// Cursor trail effect
+let lastMove = 0;
+document.body.addEventListener('mousemove', (e) => {
+  const now = Date.now();
+  if (now - lastMove < 50) return;
+  lastMove = now;
+
+  if (clicks > 0) {
+    const glow = document.createElement('div');
+    glow.style.position = 'absolute';
+    glow.style.left = e.clientX + 'px';
+    glow.style.top = e.clientY + 'px';
+    glow.style.width = '4px';
+    glow.style.height = '4px';
+    glow.style.background = 'rgba(255, 230, 109, 0.6)';
+    glow.style.borderRadius = '50%';
+    glow.style.pointerEvents = 'none';
+    glow.style.transform = 'translate(-50%, -50%)';
+    document.body.appendChild(glow);
+
+    setTimeout(() => {
+      glow.style.transition = 'opacity 1s ease-out';
+      glow.style.opacity = '0';
+      setTimeout(() => glow.remove(), 1000);
+    }, 10);
+  }
+});
+</script>
+</section>
