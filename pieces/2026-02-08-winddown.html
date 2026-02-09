@@ -1,0 +1,76 @@
+<section data-date='2026-02-08' data-type='winddown'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0612;font-family:Georgia,serif}
+#c{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none}
+.e{position:absolute;color:#ffb366;font-size:14px;opacity:0;transition:opacity 2s,transform 3s;will-change:opacity,transform}
+.g{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(255,179,102,0.15),transparent);pointer-events:none;opacity:0;transition:opacity 0.8s,width 0.8s,height 0.8s}
+</style>
+<div id="c"></div>
+<script>
+const w=['the day's weight','releasing','soft breath','dusk','settling','warmth fading','let go','rest now','dim','quiet','sinking','release'],
+d=document,b=d.body,c=d.getElementById('c'),
+mx=0,my=0,pmx=0,pmy=0,gs=[],es=[];
+let lt=Date.now();
+
+function cr(t,x,y){
+const e=d.createElement('div');
+e.className='e';
+e.textContent=t;
+e.style.left=x+'px';
+e.style.top=y+'px';
+e.style.transform='translateY(0)';
+c.appendChild(e);
+es.push({el:e,t:Date.now()});
+setTimeout(()=>e.style.opacity='0.6',10);
+setTimeout(()=>e.style.transform='translateY(-20px)',10);
+setTimeout(()=>{e.remove();es=es.filter(i=>i.el!==e)},5000)
+}
+
+function cg(x,y,s){
+const g=d.createElement('div');
+g.className='g';
+const sz=s*150;
+g.style.left=(x-sz/2)+'px';
+g.style.top=(y-sz/2)+'px';
+g.style.width=sz+'px';
+g.style.height=sz+'px';
+c.appendChild(g);
+gs.push({el:g,t:Date.now(),s:s});
+setTimeout(()=>g.style.opacity=s*0.4,10);
+setTimeout(()=>{
+g.style.opacity='0';
+setTimeout(()=>{g.remove();gs=gs.filter(i=>i.el!==g)},800)
+},2000)
+}
+
+b.addEventListener('mousemove',e=>{
+const ct=Date.now(),dt=ct-lt;
+if(dt<16)return;
+pmx=mx;pmy=my;
+mx=e.clientX;my=e.clientY;
+const dx=mx-pmx,dy=my-pmy,
+sp=Math.sqrt(dx*dx+dy*dy)/dt*1000,
+gl=Math.max(0,Math.min(1,sp/500));
+if(gl>0.1)cg(mx,my,gl);
+lt=ct
+});
+
+setInterval(()=>{
+if(Math.random()<0.08){
+const x=Math.random()*window.innerWidth,
+y=Math.random()*window.innerHeight,
+t=w[Math.floor(Math.random()*w.length)];
+cr(t,x,y)
+}
+},3000);
+
+for(let i=0;i<4;i++){
+setTimeout(()=>{
+const x=Math.random()*window.innerWidth,
+y=Math.random()*window.innerHeight,
+t=w[Math.floor(Math.random()*w.length)];
+cr(t,x,y)
+},i*800)
+}
+</script>
+</section>
