@@ -1,0 +1,91 @@
+<section data-date='2026-02-09' data-type='reflection'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000810;overflow:hidden;cursor:crosshair;font-family:'Courier New',monospace}
+.v{position:fixed;width:100vw;height:100vh;overflow:hidden}
+.s{position:absolute;color:#fff;opacity:0;pointer-events:none;font-size:8px;transition:opacity 3s ease-out,transform 4s ease-out;text-shadow:0 0 4px rgba(255,255,255,.6)}
+.s.a{opacity:1}
+.w{position:absolute;font-size:13px;color:#445;letter-spacing:8px;opacity:0;transition:opacity 2s}
+.w.v{opacity:.4}
+#c{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#334;font-size:11px;opacity:0;transition:opacity 1s 2s}
+#c.v{opacity:.5}
+</style>
+<div class="v" id="sky">
+<div class="w" style="top:15%;left:10%">stillness</div>
+<div class="w" style="top:25%;right:15%">complete</div>
+<div class="w" style="top:45%;left:20%">rest</div>
+<div class="w" style="top:60%;right:25%">before</div>
+<div class="w" style="top:75%;left:30%">tomorrow</div>
+<div id="c">click to find what remains in the dark</div>
+</div>
+<script>
+const v=document.getElementById('sky'),
+ws=document.querySelectorAll('.w'),
+c=document.getElementById('c'),
+phrases=['the day is done','what was','what will be','between breaths','in the quiet','a moment held','the world sleeps','you are here','this too','passes','remains','nothing and everything','the space between'],
+n=[];
+let ct=0,wt;
+setTimeout(()=>{
+ws.forEach((w,i)=>setTimeout(()=>w.classList.add('v'),i*600));
+c.classList.add('v');
+},800);
+v.addEventListener('click',e=>{
+if(ct>45)return;
+const x=e.clientX,y=e.clientY,s=document.createElement('div');
+s.className='s';
+s.textContent='✦';
+s.style.left=x+'px';
+s.style.top=y+'px';
+s.style.transform=`translate(-50%,-50%) scale(${.5+Math.random()*.5})`;
+v.appendChild(s);
+n.push({el:s,x,y,v:Math.random()*.3+.1});
+setTimeout(()=>s.classList.add('a'),20);
+ct++;
+if(ct===1)ws.forEach(w=>w.style.opacity='0');
+if(ct===5){
+clearTimeout(wt);
+const p=document.createElement('div');
+p.className='w v';
+p.textContent=phrases[Math.floor(Math.random()*phrases.length)];
+p.style.top='50%';
+p.style.left='50%';
+p.style.transform='translate(-50%,-50%)';
+p.style.fontSize='16px';
+p.style.letterSpacing='4px';
+p.style.color='#667';
+v.appendChild(p);
+wt=setTimeout(()=>{
+p.style.opacity='0';
+setTimeout(()=>p.remove(),2000);
+},4000);
+}
+if(ct%7===0&&ct>5){
+const p=document.createElement('div');
+p.className='w v';
+p.textContent=phrases[Math.floor(Math.random()*phrases.length)];
+p.style.top=Math.random()*80+10+'%';
+p.style.left=Math.random()*80+10+'%';
+p.style.fontSize='13px';
+p.style.color='#556';
+v.appendChild(p);
+setTimeout(()=>{
+p.style.opacity='0';
+setTimeout(()=>p.remove(),2000);
+},3500);
+}
+if(ct===46){
+c.textContent='the sky is full';
+c.style.opacity='.6';
+}
+});
+setInterval(()=>{
+n.forEach(s=>{
+const d=s.el.style.opacity!=='0'?parseFloat(s.el.style.opacity)||1:0;
+if(d>.05){
+const ny=parseFloat(s.el.style.top)-s.v;
+s.el.style.top=ny+'px';
+}
+});
+},50);
+</script>
+</section>
