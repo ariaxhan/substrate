@@ -1,0 +1,125 @@
+<section data-date='2026-02-10' data-type='morning'>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(180deg, #0a0a0f 0%, #1a1a2e 40%, #2d4a6e 70%, #5d7fa3 85%, #8fb3d8 95%, #c8dff5 100%);
+  cursor: pointer;
+  font-family: 'Georgia', serif;
+  color: rgba(255,255,255,0);
+  transition: background 3s ease, color 2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+body.dawn {
+  background: linear-gradient(180deg, #2d4a6e 0%, #5d7fa3 20%, #8fb3d8 40%, #c8dff5 60%, #fef5e7 80%, #fff9f0 100%);
+  color: rgba(20,20,40,0.9);
+}
+.word {
+  position: absolute;
+  font-size: 1.2rem;
+  opacity: 0;
+  transition: opacity 1.5s ease, transform 2s ease;
+  letter-spacing: 0.15em;
+  font-weight: 300;
+}
+.word.visible {
+  opacity: 0.85;
+  transform: translateY(-10px);
+}
+.center {
+  font-size: 3rem;
+  letter-spacing: 0.3em;
+  font-weight: 200;
+  z-index: 10;
+}
+.hint {
+  position: absolute;
+  bottom: 2rem;
+  font-size: 0.9rem;
+  opacity: 0.4;
+  letter-spacing: 0.2em;
+  animation: pulse 3s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.5; }
+}
+</style>
+
+<div class="hint">click to begin</div>
+<div class="word center">BEFORE</div>
+
+<script>
+const words = [
+  'potential', 'unwritten', 'empty', 'silence', 'waiting',
+  'possibility', 'nascent', 'first', 'spark', 'threshold',
+  'inhale', 'pause', 'precipice', 'seed', 'latent',
+  'horizon', 'stirring', 'emergence', 'whisper', 'opening'
+];
+
+let clicks = 0;
+const body = document.body;
+const center = document.querySelector('.center');
+const hint = document.querySelector('.hint');
+const used = new Set();
+
+function getPosition() {
+  const angle = Math.random() * Math.PI * 2;
+  const radius = 150 + Math.random() * 200;
+  const x = 50 + Math.cos(angle) * (radius / window.innerWidth * 50);
+  const y = 50 + Math.sin(angle) * (radius / window.innerHeight * 50);
+  return { x, y };
+}
+
+function addWord() {
+  if (words.length === 0) return;
+
+  const available = words.filter(w => !used.has(w));
+  if (available.length === 0) return;
+
+  const word = available[Math.floor(Math.random() * available.length)];
+  used.add(word);
+
+  const el = document.createElement('div');
+  el.className = 'word';
+  el.textContent = word;
+
+  const pos = getPosition();
+  el.style.left = pos.x + '%';
+  el.style.top = pos.y + '%';
+
+  body.appendChild(el);
+
+  setTimeout(() => el.classList.add('visible'), 50);
+}
+
+body.addEventListener('click', () => {
+  clicks++;
+
+  if (clicks === 1) {
+    hint.style.opacity = '0';
+    center.textContent = 'AFTER';
+  }
+
+  if (clicks <= 12) {
+    addWord();
+    if (clicks % 3 === 0) addWord();
+  }
+
+  if (clicks === 6) {
+    body.classList.add('dawn');
+    center.style.opacity = '0.6';
+  }
+
+  if (clicks >= 12) {
+    center.textContent = 'NOW';
+    center.style.fontSize = '4rem';
+  }
+});
+</script>
+</section>
