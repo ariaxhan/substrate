@@ -77,6 +77,7 @@
     {"file": "2026-02-08-morning.html", "date": "2026-02-08", "type": "morning", "timestamp": 1770562956},
     {"file": "2026-02-08-reflection.html", "date": "2026-02-08", "type": "reflection", "timestamp": 1770609792},
     {"file": "2026-02-08-winddown.html", "date": "2026-02-08", "type": "winddown", "timestamp": 1770607625},
-    {"file": "2026-02-09-morning.html", "date": "2026-02-09", "type": "morning", "timestamp": 1770649281}
+    {"file": "2026-02-09-morning.html", "date": "2026-02-09", "type": "morning", "timestamp": 1770649281},
+    {"file": "2026-02-09-winddown.html", "date": "2026-02-09", "type": "winddown", "timestamp": 1770692765}
   ]
 }

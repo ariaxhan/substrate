@@ -1,0 +1,52 @@
+<section data-date='2026-02-09' data-type='winddown'>
+<style>
+body,html{margin:0;padding:0;width:100%;height:100vh;overflow:hidden;font-family:Georgia,serif}
+#sk{position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(180deg,#1a1428 0%,#0a0612 100%);transition:background 8s ease;cursor:pointer}
+#sk.settled{background:linear-gradient(180deg,#0a0612 0%,#000 100%)}
+.em{position:absolute;width:4px;height:4px;border-radius:50%;animation:glow 3s ease-in-out infinite;pointer-events:none;transition:opacity 1.2s ease,transform 1.2s ease}
+.em.fade{opacity:0;transform:scale(0.3)}
+@keyframes glow{0%,100%{opacity:.4;box-shadow:0 0 8px 2px currentColor}50%{opacity:.85;box-shadow:0 0 16px 4px currentColor}}
+#t{position:absolute;bottom:8%;left:50%;transform:translateX(-50%);color:#574966;font-size:13px;letter-spacing:2px;opacity:0;transition:opacity 3s ease 2s;text-align:center;font-variant:small-caps}
+#sk.settled #t{opacity:.6}
+</style>
+<div id="sk">
+<div id="t">the day releases its hold</div>
+</div>
+<script>
+(()=>{
+const sk=document.getElementById('sk');
+const clrs=['#ff6b4a','#ff8c5a','#ffa86a','#d4816f','#b87a7a','#9d6f80'];
+const cnt=42;
+let rmn=cnt;
+const ems=[];
+for(let i=0;i<cnt;i++){
+const em=document.createElement('div');
+em.className='em';
+const x=15+Math.random()*70;
+const y=20+Math.random()*60;
+em.style.left=x+'%';
+em.style.top=y+'%';
+em.style.color=clrs[Math.floor(Math.random()*clrs.length)];
+em.style.animationDelay=(Math.random()*2)+'s';
+const sz=3+Math.random()*3;
+em.style.width=sz+'px';
+em.style.height=sz+'px';
+sk.appendChild(em);
+ems.push(em);
+}
+sk.addEventListener('click',()=>{
+if(rmn>0){
+const idx=Math.floor(Math.random()*ems.length);
+const em=ems[idx];
+if(em&&!em.classList.contains('fade')){
+em.classList.add('fade');
+rmn--;
+if(rmn===0){
+setTimeout(()=>sk.classList.add('settled'),800);
+}
+}
+}
+});
+})();
+</script>
+</section>
