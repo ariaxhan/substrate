@@ -1,0 +1,103 @@
+<section data-date='2026-02-10' data-type='digest'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a0a;font-family:monospace}
+#c{position:fixed;top:0;left:0;width:100%;height:100%;cursor:crosshair}
+.n{position:absolute;color:#e8e8e8;font-size:11px;opacity:0;transition:opacity .5s;pointer-events:none;letter-spacing:.5px}
+.n.v{opacity:.9}
+.l{position:absolute;height:1px;background:linear-gradient(90deg,transparent,#4a9eff,transparent);opacity:0;transition:opacity .3s;pointer-events:none}
+.l.v{opacity:.3}
+#o{position:fixed;bottom:20px;right:20px;color:#666;font-size:10px;letter-spacing:1px}
+</style>
+<div id="c"></div>
+<div id="o">CLICK TO ACCUMULATE</div>
+<script>
+const w=["signal","pattern","thread","vector","lattice","node","edge","kernel","trace","link","nexus","field","pulse","layer","mesh","graph","seed","bloom","weave","strand"],
+d=document,
+c=d.getElementById("c"),
+ns=[],
+ls=[],
+th=25;
+let ct=0;
+function r(m){return Math.random()*m}
+function dst(x1,y1,x2,y2){
+const dx=x2-x1,dy=y2-y1;
+return Math.sqrt(dx*dx+dy*dy)
+}
+function mk(x,y){
+if(ct>=50)return;
+const n=d.createElement("div");
+n.className="n";
+n.textContent=w[Math.floor(r(w.length))];
+n.style.left=x+"px";
+n.style.top=y+"px";
+c.appendChild(n);
+ns.push({el:n,x,y,t:Date.now()});
+ct++;
+setTimeout(()=>n.classList.add("v"),50);
+for(let i=0;i<ns.length-1;i++){
+const p=ns[i];
+if(dst(p.x,p.y,x,y)<th*3){
+const ln=d.createElement("div");
+ln.className="l";
+const ang=Math.atan2(y-p.y,x-p.x)*180/Math.PI;
+const len=dst(p.x,p.y,x,y);
+ln.style.left=p.x+"px";
+ln.style.top=p.y+"px";
+ln.style.width=len+"px";
+ln.style.transform=`rotate(${ang}deg)`;
+ln.style.transformOrigin="0 0";
+c.appendChild(ln);
+ls.push({el:ln,t:Date.now()});
+setTimeout(()=>ln.classList.add("v"),100)
+}
+}
+}
+function ch(){
+const now=Date.now();
+ns.forEach(n=>{
+if(now-n.t>8000){
+n.el.classList.remove("v");
+setTimeout(()=>{
+if(n.el.parentNode)c.removeChild(n.el);
+const i=ns.indexOf(n);
+if(i>-1)ns.splice(i,1);
+ct--
+},500)
+}
+});
+ls.forEach(l=>{
+if(now-l.t>8000){
+l.el.classList.remove("v");
+setTimeout(()=>{
+if(l.el.parentNode)c.removeChild(l.el);
+const i=ls.indexOf(l);
+if(i>-1)ls.splice(i,1)
+},300)
+}
+})
+}
+c.addEventListener("click",e=>{
+mk(e.clientX,e.clientY);
+if(ct===1)d.getElementById("o").textContent="WATCH PATTERNS EMERGE"
+});
+let mx=0,my=0,tr=[];
+c.addEventListener("mousemove",e=>{
+mx=e.clientX;
+my=e.clientY;
+tr.push({x:mx,y:my,t:Date.now()});
+if(tr.length>1){
+const p=tr[tr.length-2];
+ns.forEach(n=>{
+if(dst(mx,my,n.x,n.y)<th){
+n.el.style.color="#4a9eff";
+setTimeout(()=>n.el.style.color="#e8e8e8",400)
+}
+})
+}
+if(tr.length>100)tr.shift()
+});
+setInterval(ch,1000);
+mk(window.innerWidth/2+r(40)-20,window.innerHeight/2+r(40)-20);
+setTimeout(()=>mk(window.innerWidth/2+r(80)-40,window.innerHeight/2+r(80)-40),800)
+</script>
+</section>
