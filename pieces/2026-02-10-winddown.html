@@ -1,0 +1,73 @@
+<section data-date='2026-02-10' data-type='winddown'>
+<style>
+body{margin:0;overflow:hidden;background:#1a1410;font-family:Georgia,serif;cursor:crosshair}
+.sky{position:fixed;top:0;left:0;width:100%;height:100%;background:linear-gradient(to bottom,#4a3428 0%,#2d1f1a 40%,#1a1410 100%);transition:background 8s ease}
+.sky.dimmed{background:linear-gradient(to bottom,#1f1610 0%,#110c08 40%,#000 100%)}
+.embers{position:absolute;color:#d4845c;font-size:2.5em;opacity:0;pointer-events:none;text-shadow:0 0 8px rgba(212,132,92,0.4);transition:opacity 1.2s ease}
+.word{position:absolute;color:#8b6f5c;font-size:1.4em;opacity:0.7;transition:all 0.8s ease;cursor:pointer;user-select:none}
+.word:hover{color:#d4845c;text-shadow:0 0 12px rgba(212,132,92,0.3)}
+.word.fading{opacity:0;transform:translateY(20px) scale(0.95)}
+.glow{position:fixed;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(212,132,92,0.15) 0%,transparent 70%);pointer-events:none;transition:opacity 0.3s ease;opacity:0;mix-blend-mode:screen}
+footer{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);color:#6b5445;font-size:0.85em;letter-spacing:0.1em;text-align:center;opacity:0.5}
+</style>
+<div class="sky" id="sky"></div>
+<div class="glow" id="glow"></div>
+<div id="words"></div>
+<footer>click to dim · hover to warm</footer>
+<script>
+const phrases=['breath','settle','fade','dusk','quiet','rest','release','soften','ember','hush','still','warmth','shadow','drift','slow'];
+const w=window.innerWidth,h=window.innerHeight;
+let clicks=0,lastMove=Date.now(),glowActive=false;
+const sky=document.getElementById('sky'),glow=document.getElementById('glow'),wordsEl=document.getElementById('words');
+
+phrases.forEach((txt,i)=>{
+  const word=document.createElement('div');
+  word.className='word';
+  word.textContent=txt;
+  word.style.left=Math.random()*85+5+'%';
+  word.style.top=Math.random()*80+10+'%';
+  word.style.opacity=0;
+  wordsEl.appendChild(word);
+  setTimeout(()=>word.style.opacity=0.7,i*200);
+
+  word.onclick=(e)=>{
+    e.stopPropagation();
+    word.classList.add('fading');
+    const ember=document.createElement('div');
+    ember.className='embers';
+    ember.textContent='·';
+    ember.style.left=word.offsetLeft+'px';
+    ember.style.top=word.offsetTop+'px';
+    wordsEl.appendChild(ember);
+    setTimeout(()=>ember.style.opacity=1,10);
+    setTimeout(()=>{
+      ember.style.opacity=0;
+      ember.style.transform='translateY(-80px)';
+    },300);
+    setTimeout(()=>ember.remove(),1500);
+  };
+});
+
+document.body.onclick=()=>{
+  clicks++;
+  if(clicks>3)sky.classList.add('dimmed');
+};
+
+document.body.onmousemove=(e)=>{
+  lastMove=Date.now();
+  glow.style.left=e.clientX-100+'px';
+  glow.style.top=e.clientY-100+'px';
+  if(!glowActive){
+    glowActive=true;
+    glow.style.opacity=1;
+  }
+};
+
+setInterval(()=>{
+  if(Date.now()-lastMove>1500&&glowActive){
+    glowActive=false;
+    glow.style.opacity=0;
+  }
+},100);
+</script>
+</section>
