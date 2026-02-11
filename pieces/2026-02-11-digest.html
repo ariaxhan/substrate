@@ -1,0 +1,73 @@
+<section data-date='2026-02-11' data-type='digest'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a0f;cursor:crosshair;font-family:'Courier New',monospace}
+#g{position:fixed;top:0;left:0;width:100%;height:100%;z-index:1}
+#t{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:#1a1a2e;font-size:13vmin;letter-spacing:-0.05em;font-weight:700;text-align:center;line-height:1;pointer-events:none;z-index:0;white-space:nowrap}
+.n{position:absolute;width:2px;height:2px;background:#4a90e2;opacity:0;transform-origin:center;pointer-events:none;transition:opacity 0.6s}
+.c{position:absolute;border:1px solid #2a5f8f;border-radius:50%;opacity:0;pointer-events:none;animation:ex 2s ease-out forwards}
+@keyframes ex{0%{opacity:0.7;transform:scale(0)}100%{opacity:0;transform:scale(30)}}
+</style>
+<canvas id="g"></canvas>
+<div id="t">CRYSTALLIZE</div>
+<script>
+const c=document.getElementById('g'),x=c.getContext('2d'),t=document.getElementById('t');
+let w=c.width=innerWidth,h=c.height=innerHeight,ns=[],cs=[],ct=0,lt=0;
+const m=(a,b,c,d,e)=>c+((a-b)/(d-b))*(e-c);
+window.onresize=()=>{w=c.width=innerWidth;h=c.height=innerHeight};
+function ad(ex,ey){
+const n=document.createElement('div');
+n.className='n';
+n.style.left=ex+'px';
+n.style.top=ey+'px';
+document.body.appendChild(n);
+setTimeout(()=>n.style.opacity=1,10);
+ns.push({x:ex,y:ey,vx:(Math.random()-0.5)*0.3,vy:(Math.random()-0.5)*0.3,age:0,el:n});
+const ci=document.createElement('div');
+ci.className='c';
+ci.style.left=ex+'px';
+ci.style.top=ey+'px';
+document.body.appendChild(ci);
+setTimeout(()=>ci.remove(),2000);
+ct++;
+if(ct>5&&ct<15)t.style.color='#2a2a3e';
+if(ct>=15&&ct<30)t.style.color='#3a4a5e';
+if(ct>=30&&ct<50)t.style.color='#4a6a8e';
+if(ct>=50)t.style.color='#5a8abe'
+}
+function dr(){
+x.fillStyle='rgba(10,10,15,0.08)';
+x.fillRect(0,0,w,h);
+for(let i=0;i<ns.length;i++){
+let p=ns[i];
+p.x+=p.vx;
+p.y+=p.vy;
+p.age++;
+if(p.x<0||p.x>w)p.vx*=-1;
+if(p.y<0||p.y>h)p.vy*=-1;
+p.el.style.left=p.x+'px';
+p.el.style.top=p.y+'px';
+for(let j=i+1;j<ns.length;j++){
+let q=ns[j],dx=q.x-p.x,dy=q.y-p.y,d=Math.sqrt(dx*dx+dy*dy);
+if(d<150){
+let o=m(d,0,150,0.4,0);
+x.strokeStyle=`rgba(74,144,226,${o})`;
+x.lineWidth=m(d,0,150,1.5,0.3);
+x.beginPath();
+x.moveTo(p.x,p.y);
+x.lineTo(q.x,q.y);
+x.stroke()
+}
+}
+}
+requestAnimationFrame(dr)
+}
+c.onclick=e=>{
+const now=Date.now();
+if(now-lt>100){
+ad(e.clientX,e.clientY);
+lt=now
+}
+};
+dr()
+</script>
+</section>
