@@ -1,0 +1,37 @@
+<section data-date='2026-02-12' data-type='morning'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0f1a;font-family:Georgia,serif;cursor:crosshair}
+#c{position:fixed;top:0;left:0;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.h{position:absolute;width:1px;background:linear-gradient(180deg,transparent,#1a2332,transparent);opacity:0;transition:all 2s cubic-bezier(.16,.84,.44,1)}
+.w{font-size:1.2rem;color:#4a5568;letter-spacing:.3em;text-transform:uppercase;opacity:0;transition:opacity 1.5s;margin-bottom:2rem;text-align:center}
+.t{font-size:2.5rem;color:#cbd5e0;opacity:0;transition:all 1.8s cubic-bezier(.16,.84,.44,1);transform:translateY(20px);text-align:center;line-height:1.6;max-width:80vw}
+#s{position:absolute;bottom:2rem;font-size:.9rem;color:#2d3748;letter-spacing:.2em;opacity:.4;transition:opacity .5s}
+#s:hover{opacity:.8}
+.l{position:absolute;width:100%;height:1px;background:linear-gradient(90deg,transparent,#1a2332,transparent);opacity:0;left:0;transition:opacity 2s}
+</style>
+<div id="c">
+<div class="w">before</div>
+<div class="t">the unwritten day<br>holds all possible paths</div>
+<div id="s">click to begin</div>
+</div>
+<script>
+const b=document.body,c=document.getElementById('c'),w=document.querySelector('.w'),t=document.querySelector('.t'),s=document.getElementById('s'),
+p=["first breath","opening","threshold","seed","dawn breaks silence","potential unfolds","blank page","horizon line","light touches edge","begin again","soft emergence","before the word","infinite doorway","moment zero","sky remembers blue"],
+st=0,mx=0,my=0;
+function cr(){
+const h=document.createElement('div');h.className='h';h.style.left=mx+'px';h.style.height='100vh';h.style.top='0';c.appendChild(h);
+setTimeout(()=>h.style.opacity=Math.random()*.4+.1,50);
+const l=document.createElement('div');l.className='l';l.style.top=my+'px';c.appendChild(l);
+setTimeout(()=>l.style.opacity=Math.random()*.3+.1,50)}
+function sh(){
+const r=Math.random(),g=17+r*40,bl=26+r*60;
+b.style.background=`linear-gradient(180deg,rgb(${g},${g+8},${bl}) 0%,rgb(${g*2},${g*2+10},${bl*1.2}) 50%,rgb(${g*3},${g*3+15},${bl*1.5}) 100%)`;
+if(st<p.length){t.textContent=p[st];t.style.opacity=1;t.style.transform='translateY(0)';
+setTimeout(()=>{t.style.opacity=0;t.style.transform='translateY(-20px)'},2800);st++}
+else{t.textContent='all days begin\nin darkness\nwaiting for your hand';t.style.opacity=1;t.style.transform='translateY(0)';
+w.style.opacity=0;s.style.opacity=0}}
+b.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+b.addEventListener('click',()=>{cr();sh();if(st===1){w.style.opacity=0;s.style.opacity=0}});
+setTimeout(()=>{w.style.opacity=1;t.style.opacity=1;t.style.transform='translateY(0)'},300);
+</script>
+</section>
