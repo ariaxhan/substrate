@@ -1,0 +1,98 @@
+<section data-date='2026-02-11' data-type='winddown'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{overflow:hidden;background:linear-gradient(180deg,#1a1a2e 0%,#0f0f1e 100%);font-family:Georgia,serif;cursor:crosshair}
+.sky{position:fixed;inset:0;transition:opacity 2s ease}
+.light{position:absolute;border-radius:50%;filter:blur(40px);transition:opacity 1.5s ease,transform 2s ease;pointer-events:none}
+.word{position:absolute;color:#e8d4b0;font-size:clamp(12px,1.5vw,18px);letter-spacing:0.15em;opacity:0;animation:settle 8s ease-out forwards;text-transform:lowercase;font-weight:300;pointer-events:none}
+@keyframes settle{
+  0%{opacity:0;transform:translateY(-30px)}
+  20%{opacity:0.8}
+  100%{opacity:0.3;transform:translateY(0)}
+}
+.orb{position:fixed;width:12px;height:12px;border-radius:50%;background:#fff4e0;box-shadow:0 0 20px #fff4e0;transition:all 0.8s cubic-bezier(0.4,0,0.2,1);cursor:pointer;z-index:10}
+.orb:hover{transform:scale(1.3);box-shadow:0 0 40px #fff4e0}
+.orb.dim{opacity:0;transform:scale(0.3)}
+</style>
+
+<div class="sky"></div>
+
+<script>
+const words=['release','settle','fade','dusk','ember','breath','soften','dim','quietude','rest'];
+const sky=document.querySelector('.sky');
+let litOrbs=[];
+
+// Generate ambient lights (background glow)
+for(let i=0;i<8;i++){
+  const l=document.createElement('div');
+  l.className='light';
+  const sz=100+Math.random()*200;
+  l.style.width=sz+'px';
+  l.style.height=sz+'px';
+  l.style.left=Math.random()*100+'%';
+  l.style.top=Math.random()*100+'%';
+  const hue=20+Math.random()*25; // warm oranges/ambers
+  const sat=60+Math.random()*30;
+  const light=30+Math.random()*20;
+  l.style.background=`radial-gradient(circle,hsla(${hue},${sat}%,${light}%,0.4),transparent)`;
+  sky.appendChild(l);
+}
+
+// Generate floating words
+words.forEach((w,i)=>{
+  const el=document.createElement('div');
+  el.className='word';
+  el.textContent=w;
+  el.style.left=10+Math.random()*80+'%';
+  el.style.top=10+Math.random()*80+'%';
+  el.style.animationDelay=i*0.5+'s';
+  sky.appendChild(el);
+});
+
+// Generate clickable orbs (lights to extinguish)
+for(let i=0;i<12;i++){
+  const orb=document.createElement('div');
+  orb.className='orb';
+  orb.style.left=15+Math.random()*70+'%';
+  orb.style.top=15+Math.random()*70+'%';
+  orb.style.animationDelay=Math.random()*2+'s';
+
+  // Click to dim
+  orb.addEventListener('click',function(){
+    if(!this.classList.contains('dim')){
+      this.classList.add('dim');
+      litOrbs=litOrbs.filter(o=>o!==this);
+
+      // When all orbs dimmed, fade entire sky
+      if(document.querySelectorAll('.orb:not(.dim)').length===0){
+        sky.style.opacity='0.2';
+      }
+    }
+  });
+
+  sky.appendChild(orb);
+  litOrbs.push(orb);
+}
+
+// Subtle drift animation for background lights
+setInterval(()=>{
+  document.querySelectorAll('.light').forEach(l=>{
+    const dx=(Math.random()-0.5)*50;
+    const dy=(Math.random()-0.5)*50;
+    const currentX=parseFloat(l.style.left)||0;
+    const currentY=parseFloat(l.style.top)||0;
+    l.style.transform=`translate(${dx}px,${dy}px)`;
+  });
+},4000);
+
+// Gentle pulsing of lit orbs
+setInterval(()=>{
+  litOrbs.forEach(o=>{
+    if(!o.classList.contains('dim')){
+      const pulse=0.7+Math.random()*0.3;
+      o.style.opacity=pulse;
+    }
+  });
+},1500);
+</script>
+</section>
