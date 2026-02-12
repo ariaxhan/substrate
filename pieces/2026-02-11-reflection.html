@@ -1,0 +1,47 @@
+<section data-date='2026-02-11' data-type='reflection'>
+<style>
+body{margin:0;overflow:hidden;background:#000;cursor:crosshair;font-family:serif}
+#c{position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none}
+.s{position:absolute;color:#fff;opacity:0;transition:opacity 2s ease;font-size:12px;text-shadow:0 0 8px rgba(255,255,255,.8);pointer-events:none}
+.v{opacity:1}
+#m{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);color:#444;font-size:11px;letter-spacing:2px;transition:color 3s}
+#m.f{color:#666}
+</style>
+<div id="c"></div>
+<div id="m">NIGHT REMEMBERS WHAT DAY FORGETS</div>
+<script>
+const w=innerWidth,h=innerHeight,c=document.getElementById('c'),m=document.getElementById('m');
+let n=0,words=["rest","stillness","complete","tomorrow","enough","quiet","done","peace","breathe","release"];
+function p(x,y){
+  const s=document.createElement('div');
+  s.className='s';
+  s.textContent='✦';
+  s.style.left=x+'px';
+  s.style.top=y+'px';
+  c.appendChild(s);
+  setTimeout(()=>s.classList.add('v'),50);
+  n++;
+  if(n>8&&Math.random()>.7){
+    const t=document.createElement('div');
+    t.className='s';
+    t.textContent=words[Math.floor(Math.random()*words.length)];
+    t.style.left=(x+Math.random()*60-30)+'px';
+    t.style.top=(y+Math.random()*60-30)+'px';
+    t.style.fontSize='9px';
+    t.style.letterSpacing='3px';
+    t.style.textShadow='none';
+    t.style.color='#555';
+    c.appendChild(t);
+    setTimeout(()=>t.classList.add('v'),800);
+  }
+  if(n===1)m.classList.add('f');
+}
+document.body.addEventListener('click',e=>{p(e.clientX,e.clientY)});
+setInterval(()=>{
+  if(n>20&&Math.random()>.9){
+    const x=Math.random()*w,y=Math.random()*h;
+    p(x,y);
+  }
+},3000);
+</script>
+</section>
