@@ -1,0 +1,111 @@
+<section data-date='2026-02-12' data-type='digest'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0c;overflow:hidden;font-family:'Courier New',monospace}
+#c{width:100vw;height:100vh;cursor:crosshair}
+.node{position:absolute;color:#2a3f5f;font-size:11px;letter-spacing:2px;pointer-events:none;transition:color .4s,opacity .4s;opacity:.3}
+.node.active{color:#7fa8c9;opacity:1}
+.line{position:absolute;height:1px;background:linear-gradient(90deg,transparent,#1a2f4f,transparent);transform-origin:0 50%;opacity:0;transition:opacity .6s}
+.line.visible{opacity:.4}
+#info{position:fixed;bottom:20px;left:20px;color:#3d5a7a;font-size:10px;letter-spacing:1px;line-height:1.8;pointer-events:none}
+</style>
+<canvas id="c"></canvas>
+<div id="info">CLICK TO ACCUMULATE<br>CONNECTIONS CRYSTALLIZE</div>
+<script>
+const cv=document.getElementById('c'),ctx=cv.getContext('2d'),w=cv.width=innerWidth,h=cv.height=innerHeight;
+const nodes=[],lines=[],words=['pattern','signal','thread','node','link','trace','fragment','echo','layer','vector','mesh','cluster','lattice','bridge','weave'];
+let active=0,phase=0;
+
+class Node{
+constructor(x,y,word,id){
+this.x=x;this.y=y;this.word=word;this.id=id;
+this.el=document.createElement('div');
+this.el.className='node';
+this.el.textContent=word;
+this.el.style.left=x+'px';
+this.el.style.top=y+'px';
+document.body.appendChild(this.el);
+}
+activate(){
+this.el.classList.add('active');
+}
+}
+
+class Line{
+constructor(n1,n2){
+this.n1=n1;this.n2=n2;
+const dx=n2.x-n1.x,dy=n2.y-n1.y,dist=Math.sqrt(dx*dx+dy*dy),angle=Math.atan2(dy,dx)*180/Math.PI;
+this.el=document.createElement('div');
+this.el.className='line';
+this.el.style.left=n1.x+'px';
+this.el.style.top=n1.y+'px';
+this.el.style.width=dist+'px';
+this.el.style.transform=`rotate(${angle}deg)`;
+document.body.appendChild(this.el);
+}
+show(){
+setTimeout(()=>this.el.classList.add('visible'),100);
+}
+}
+
+function addNode(x,y){
+if(nodes.length>=15)return;
+const word=words[nodes.length],n=new Node(x,y,word,nodes.length);
+nodes.push(n);
+n.activate();
+if(nodes.length>1){
+const prev=nodes[nodes.length-2];
+const l=new Line(prev,n);
+lines.push(l);
+l.show();
+if(nodes.length>2){
+const dist=(a,b)=>Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2);
+let closest=null,minD=Infinity;
+for(let i=0;i<nodes.length-2;i++){
+const d=dist(n,nodes[i]);
+if(d<minD&&d<400){minD=d;closest=nodes[i];}
+}
+if(closest){
+const l2=new Line(n,closest);
+lines.push(l2);
+setTimeout(()=>l2.show(),200);
+}
+}
+}
+active++;
+if(active===5||active===10||active===15){
+phase++;
+document.getElementById('info').innerHTML=['STRUCTURE EMERGES','NETWORK FORMS','KNOWLEDGE CRYSTALLIZES'][phase-1]||'';
+}
+}
+
+cv.addEventListener('click',e=>{
+const rect=cv.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top;
+addNode(x,y);
+});
+
+function draw(){
+ctx.fillStyle='rgba(10,10,12,0.03)';
+ctx.fillRect(0,0,w,h);
+if(nodes.length>0){
+ctx.strokeStyle='#1a2f4f';
+ctx.lineWidth=.5;
+ctx.globalAlpha=.1;
+for(let i=0;i<nodes.length;i++){
+for(let j=i+1;j<nodes.length;j++){
+const dx=nodes[j].x-nodes[i].x,dy=nodes[j].y-nodes[i].y,d=Math.sqrt(dx*dx+dy*dy);
+if(d<200){
+ctx.beginPath();
+ctx.moveTo(nodes[i].x,nodes[i].y);
+ctx.lineTo(nodes[j].x,nodes[j].y);
+ctx.stroke();
+}
+}
+}
+ctx.globalAlpha=1;
+}
+requestAnimationFrame(draw);
+}
+draw();
+</script>
+</section>
