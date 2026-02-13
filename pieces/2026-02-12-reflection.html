@@ -1,0 +1,41 @@
+<section data-date='2026-02-12' data-type='reflection'>
+<style>
+body{margin:0;overflow:hidden;background:#000;cursor:crosshair;font-family:serif}
+.sky{position:fixed;inset:0;background:radial-gradient(ellipse at 20% 30%,#050510,#000)}
+.star{position:absolute;color:#fff;opacity:0;font-size:1.2em;pointer-events:none;animation:dawn 3s ease-out forwards;text-shadow:0 0 8px rgba(255,255,255,.6)}
+@keyframes dawn{
+  0%{opacity:0;transform:scale(0)}
+  50%{opacity:1;transform:scale(1.2)}
+  100%{opacity:.85;transform:scale(1)}
+}
+.breath{position:fixed;bottom:8%;left:50%;transform:translateX(-50%);color:#445;font-size:15px;letter-spacing:3px;opacity:.4;text-align:center;line-height:1.8}
+.count{position:fixed;top:5%;right:5%;color:#223;font-size:13px;opacity:.3;font-variant-numeric:tabular-nums}
+</style>
+<div class="sky" id="s"></div>
+<div class="breath">the day is done<br>each star a breath released<br>rest before the return</div>
+<div class="count" id="c">0</div>
+<script>
+let n=0,sky=document.getElementById('s'),cnt=document.getElementById('c'),
+glyphs=['✦','✧','✶','⋆','∗','·','•','*','⁕','※'],
+pick=a=>a[Math.floor(Math.random()*a.length)];
+sky.onclick=e=>{
+  let s=document.createElement('div');
+  s.className='star';
+  s.textContent=pick(glyphs);
+  s.style.left=e.clientX+'px';
+  s.style.top=e.clientY+'px';
+  sky.appendChild(s);
+  n++;
+  cnt.textContent=n;
+  if(n%7===0){
+    let m=document.createElement('div');
+    m.className='star';
+    m.textContent=pick(glyphs);
+    m.style.left=(e.clientX+Math.random()*60-30)+'px';
+    m.style.top=(e.clientY+Math.random()*60-30)+'px';
+    m.style.animationDelay='.3s';
+    sky.appendChild(m);
+  }
+}
+</script>
+</section>
