@@ -1,0 +1,88 @@
+<section data-date='2026-02-12' data-type='winddown'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a12}
+#c{width:100vw;height:100vh;position:fixed;top:0;left:0}
+.b{position:absolute;transition:all 4s ease-out;mix-blend-mode:screen}
+</style>
+<canvas id="c"></canvas>
+<script>
+let cv=document.getElementById('c'),
+    cx=cv.getContext('2d'),
+    w=cv.width=innerWidth,
+    h=cv.height=innerHeight,
+    bs=[],
+    mx=0,my=0,
+    warm=1;
+
+class Box{
+  constructor(){
+    this.x=Math.random()*w;
+    this.y=Math.random()*h;
+    this.sz=20+Math.random()*120;
+    this.heat=1;
+    this.vx=0;
+    this.vy=0;
+    this.settled=false;
+  }
+
+  draw(){
+    let r=Math.floor(180*this.heat+30*(1-this.heat)),
+        g=Math.floor(100*this.heat+40*(1-this.heat)),
+        b=Math.floor(30*this.heat+80*(1-this.heat)),
+        a=0.15+this.heat*0.25;
+
+    cx.fillStyle=`rgba(${r},${g},${b},${a})`;
+    cx.fillRect(this.x,this.y,this.sz,this.sz);
+  }
+
+  update(){
+    let dx=mx-this.x,
+        dy=my-this.y,
+        dist=Math.sqrt(dx*dx+dy*dy),
+        threshold=150;
+
+    if(dist<threshold&&!this.settled){
+      this.heat*=0.985;
+      this.vy+=0.08;
+      if(this.heat<0.05){
+        this.settled=true;
+        this.heat=0;
+      }
+    }
+
+    this.y+=this.vy;
+    this.vy*=0.98;
+
+    if(this.y+this.sz>h){
+      this.y=h-this.sz;
+      this.vy*=-0.3;
+      if(Math.abs(this.vy)<0.1)this.vy=0;
+    }
+
+    this.draw();
+  }
+}
+
+for(let i=0;i<35;i++){
+  bs.push(new Box());
+}
+
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;
+  my=e.clientY;
+});
+
+function animate(){
+  cx.fillStyle='rgba(10,10,18,0.15)';
+  cx.fillRect(0,0,w,h);
+
+  warm=bs.reduce((s,b)=>s+b.heat,0)/bs.length;
+
+  bs.forEach(b=>b.update());
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+</section>
