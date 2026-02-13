@@ -1,0 +1,127 @@
+<section data-date='2026-02-13' data-type='digest'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0a0f;overflow:hidden;cursor:crosshair}
+#c{position:fixed;top:0;left:0;display:block}
+#t{position:fixed;top:20px;left:20px;color:#4a9eff;font:13px/1.6 'Courier New',monospace;pointer-events:none;opacity:.7;letter-spacing:.5px}
+.n{position:absolute;width:3px;height:3px;background:#4a9eff;border-radius:50%;box-shadow:0 0 8px #4a9eff,0 0 15px rgba(74,158,255,.3);transition:all .3s cubic-bezier(.4,0,.2,1)}
+.n:hover{transform:scale(2.5);background:#fff;box-shadow:0 0 15px #fff,0 0 30px rgba(74,158,255,.6)}
+</style>
+<canvas id=c></canvas>
+<div id=t>CLICK TO CONNECT<br>NODES: <span id=n>0</span><br>LINKS: <span id=l>0</span></div>
+<script>
+const C=document.getElementById('c'),
+x=C.getContext('2d'),
+W=window.innerWidth,
+H=window.innerHeight,
+N=[],
+E=[],
+nc=document.getElementById('n'),
+lc=document.getElementById('l'),
+R=()=>Math.random(),
+D=(a,b)=>{let dx=b.x-a.x,dy=b.y-a.y;return Math.sqrt(dx*dx+dy*dy)},
+P=(p,r)=>{let a=R()*Math.PI*2,d=Math.sqrt(R())*r;return{x:p.x+Math.cos(a)*d,y:p.y+Math.sin(a)*d}};
+C.width=W;
+C.height=H;
+function A(ex,ey){
+let p={x:ex,y:ey,vx:(R()-.5)*.3,vy:(R()-.5)*.3,c:0},
+e=document.createElement('div');
+e.className='n';
+e.style.left=p.x+'px';
+e.style.top=p.y+'px';
+document.body.appendChild(e);
+p.e=e;
+N.forEach(o=>{
+if(D(p,o)<250&&R()<.4){
+E.push({a:p,b:o,s:0,o:R()*.3+.1});
+lc.textContent=E.length
+}});
+N.push(p);
+nc.textContent=N.length;
+if(N.length>2&&R()<.3){
+let near=N.slice(-10).filter(o=>o!==p).sort((a,b)=>D(p,a)-D(p,b))[0];
+if(near&&D(p,near)<200){
+for(let i=0;i<3;i++){
+let np=P(p,60+R()*40),
+ne=document.createElement('div');
+ne.className='n';
+ne.style.left=np.x+'px';
+ne.style.top=np.y+'px';
+document.body.appendChild(ne);
+np.e=ne;
+np.vx=(R()-.5)*.2;
+np.vy=(R()-.5)*.2;
+np.c=0;
+N.push(np);
+E.push({a:p,b:np,s:0,o:R()*.2+.05});
+E.push({a:near,b:np,s:0,o:R()*.2+.05})
+}
+nc.textContent=N.length;
+lc.textContent=E.length
+}}}
+C.addEventListener('click',e=>A(e.clientX,e.clientY));
+for(let i=0;i<3;i++)A(W/2+(R()-.5)*100,H/2+(R()-.5)*100);
+function U(){
+x.fillStyle='rgba(10,10,15,.08)';
+x.fillRect(0,0,W,H);
+E.forEach(e=>{
+e.s+=.02;
+if(e.s>1)e.s=1;
+let o=e.o*e.s;
+x.strokeStyle=`rgba(74,158,255,${o})`;
+x.lineWidth=.5;
+x.beginPath();
+x.moveTo(e.a.x,e.a.y);
+x.lineTo(e.b.x,e.b.y);
+x.stroke()
+});
+N.forEach(p=>{
+p.c++;
+N.forEach(o=>{
+if(p!==o){
+let d=D(p,o),
+f=d<100?.05/d:0;
+p.vx+=(p.x-o.x)*f;
+p.vy+=(p.y-o.y)*f
+}});
+let cx=W/2,cy=H/2,
+dx=cx-p.x,dy=cy-p.y,
+dist=Math.sqrt(dx*dx+dy*dy),
+pull=.0002;
+p.vx+=dx*pull;
+p.vy+=dy*pull;
+p.vx*=.98;
+p.vy*=.98;
+p.x+=p.vx;
+p.y+=p.vy;
+if(p.x<10)p.vx=Math.abs(p.vx);
+if(p.x>W-10)p.vx=-Math.abs(p.vx);
+if(p.y<10)p.vy=Math.abs(p.vy);
+if(p.y>H-10)p.vy=-Math.abs(p.vy);
+p.e.style.left=p.x+'px';
+p.e.style.top=p.y+'px';
+if(p.c%180===0&&N.length<80&&R()<.1){
+let near=N.filter(o=>o!==p&&D(p,o)<150);
+if(near.length>0){
+let t=near[0|R()*near.length],
+np=P(p,40+R()*30),
+ne=document.createElement('div');
+ne.className='n';
+ne.style.left=np.x+'px';
+ne.style.top=np.y+'px';
+document.body.appendChild(ne);
+np.e=ne;
+np.vx=(R()-.5)*.2;
+np.vy=(R()-.5)*.2;
+np.c=0;
+N.push(np);
+E.push({a:p,b:np,s:0,o:.15});
+E.push({a:t,b:np,s:0,o:.15});
+nc.textContent=N.length;
+lc.textContent=E.length
+}}});
+requestAnimationFrame(U)
+}
+U()
+</script>
+</section>
