@@ -1,0 +1,84 @@
+<section data-date='2026-02-13' data-type='reflection'>
+<style>
+body{margin:0;overflow:hidden;background:linear-gradient(180deg,#000814 0%,#001d3d 100%);font-family:Georgia,serif;cursor:crosshair}
+#c{position:fixed;top:0;left:0;width:100vw;height:100vh}
+#t{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.3);font-size:13px;letter-spacing:2px;text-align:center;transition:opacity 2s;pointer-events:none}
+.s{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 8px rgba(255,255,255,0.8);animation:f 1.5s ease-out;pointer-events:none}
+.l{position:absolute;height:1px;background:rgba(255,255,255,0.2);transform-origin:0 0;pointer-events:none}
+@keyframes f{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
+@keyframes p{0%,100%{opacity:0.4}50%{opacity:0.9}}
+</style>
+<canvas id='c'></canvas>
+<div id='t'>click to find the stars</div>
+<script>
+const cv=document.getElementById('c'),
+ctx=cv.getContext('2d'),
+tx=document.getElementById('t'),
+M=Math,r=M.random,
+stars=[],lines=[];
+let w,h,fc=0;
+
+function init(){
+  w=cv.width=innerWidth;
+  h=cv.height=innerHeight;
+}
+
+function star(x,y){
+  const s={x,y,r:1+r()*2,a:r(),p:0.01+r()*0.02};
+  stars.push(s);
+
+  const d=document.createElement('div');
+  d.className='s';
+  d.style.left=x+'px';
+  d.style.top=y+'px';
+  d.style.width=d.style.height=s.r*2+'px';
+  document.body.appendChild(d);
+
+  if(stars.length>3){
+    const prev=stars[stars.length-2];
+    const dx=x-prev.x,dy=y-prev.y,
+    dist=M.sqrt(dx*dx+dy*dy);
+    if(dist<w*0.4){
+      lines.push({x1:prev.x,y1:prev.y,x2:x,y2:y,a:0});
+    }
+  }
+
+  if(stars.length===1){
+    setTimeout(()=>{tx.style.opacity='0'},1000);
+  }
+}
+
+cv.onclick=e=>{
+  star(e.clientX,e.clientY);
+};
+
+function draw(){
+  ctx.clearRect(0,0,w,h);
+
+  stars.forEach(s=>{
+    s.a+=s.p;
+    const a=0.4+M.sin(s.a)*0.5;
+    ctx.fillStyle=`rgba(255,255,255,${a})`;
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,M.PI*2);
+    ctx.fill();
+  });
+
+  lines.forEach(ln=>{
+    if(ln.a<0.3)ln.a+=0.005;
+    ctx.strokeStyle=`rgba(255,255,255,${ln.a})`;
+    ctx.lineWidth=0.5;
+    ctx.beginPath();
+    ctx.moveTo(ln.x1,ln.y1);
+    ctx.lineTo(ln.x2,ln.y2);
+    ctx.stroke();
+  });
+
+  requestAnimationFrame(draw);
+}
+
+init();
+draw();
+window.onresize=init;
+</script>
+</section>
