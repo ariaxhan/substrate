@@ -1,0 +1,89 @@
+<section data-date='2026-02-14' data-type='morning'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a12;cursor:crosshair;font-family:Georgia,serif}
+.canvas{position:fixed;inset:0;pointer-events:none}
+.field{position:fixed;inset:0;display:grid;place-items:center;mix-blend-mode:screen}
+.line{position:absolute;font-size:clamp(2rem,5vw,6rem);font-weight:100;letter-spacing:0.15em;opacity:0;transition:opacity 2s cubic-bezier(0.4,0,0.2,1);color:#fef5e7;text-shadow:0 0 40px rgba(254,245,231,0.3);white-space:nowrap}
+.line.lit{opacity:0.95}
+.glow{position:fixed;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,253,231,0.15) 0%,rgba(255,253,231,0.05) 40%,transparent 70%);pointer-events:none;mix-blend-mode:screen;transform:translate(-50%,-50%);transition:opacity 0.3s}
+</style>
+<canvas class="canvas"></canvas>
+<div class="field" id="field"></div>
+<div class="glow" id="glow"></div>
+<script>
+const lines=["BEFORE","THE FIRST","WORD","LIGHT","GATHERING","AT THE EDGE","OF WHAT","WILL BE"];
+const field=document.getElementById('field');
+const glow=document.getElementById('glow');
+const canvas=document.querySelector('.canvas');
+const ctx=canvas.getContext('2d');
+let w,h,particles=[];
+
+function resize(){w=innerWidth;h=innerHeight;canvas.width=w;canvas.height=h}
+resize();
+addEventListener('resize',resize);
+
+lines.forEach((text,i)=>{
+  const el=document.createElement('div');
+  el.className='line';
+  el.textContent=text;
+  el.style.top=`${15+i*10}%`;
+  el.style.left=`${5+Math.random()*20}%`;
+  field.appendChild(el);
+});
+
+const lineEls=document.querySelectorAll('.line');
+const litMap=new Set();
+
+addEventListener('mousemove',e=>{
+  glow.style.left=e.clientX+'px';
+  glow.style.top=e.clientY+'px';
+  glow.style.opacity=1;
+
+  lineEls.forEach((el,i)=>{
+    if(litMap.has(i))return;
+    const rect=el.getBoundingClientRect();
+    const dx=e.clientX-(rect.left+rect.width/2);
+    const dy=e.clientY-(rect.top+rect.height/2);
+    const dist=Math.sqrt(dx*dx+dy*dy);
+    if(dist<180){
+      el.classList.add('lit');
+      litMap.add(i);
+      for(let j=0;j<8;j++){
+        particles.push({
+          x:e.clientX,
+          y:e.clientY,
+          vx:(Math.random()-0.5)*2,
+          vy:(Math.random()-0.5)*2-1,
+          life:1,
+          size:Math.random()*3+1
+        });
+      }
+    }
+  });
+});
+
+addEventListener('mouseleave',()=>{glow.style.opacity=0});
+
+function animate(){
+  ctx.fillStyle='rgba(10,10,18,0.1)';
+  ctx.fillRect(0,0,w,h);
+
+  particles=particles.filter(p=>{
+    p.x+=p.vx;
+    p.y+=p.vy;
+    p.vy+=0.05;
+    p.life-=0.01;
+
+    if(p.life>0){
+      ctx.fillStyle=`rgba(254,245,231,${p.life*0.6})`;
+      ctx.fillRect(p.x,p.y,p.size,p.size);
+      return true;
+    }
+    return false;
+  });
+
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
+</section>
