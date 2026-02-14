@@ -1,0 +1,49 @@
+<section data-date='2026-02-13' data-type='winddown'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0e1a;cursor:none}
+#c{display:block;width:100vw;height:100vh}
+.credit{position:fixed;bottom:8px;right:12px;font:10px/1.2 monospace;color:#445;letter-spacing:.5px;opacity:.6}
+</style>
+<canvas id="c"></canvas>
+<div class="credit">winddown / 2026-02-13</div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d'),
+w=c.width=innerWidth,h=c.height=innerHeight,
+stars=Array(180).fill().map(()=>({
+x:Math.random()*w,
+y:Math.random()*h,
+r:1+Math.random()*2,
+b:.3+Math.random()*.7,
+t:.3+Math.random()*.7,
+v:0
+}));
+let mx=w/2,my=h/2,lastMove=Date.now();
+const draw=()=>{
+const now=Date.now(),stillTime=now-lastMove,
+recover=Math.min(stillTime/8000,1);
+x.fillStyle='#0a0e1a';
+x.fillRect(0,0,w,h);
+stars.forEach(s=>{
+const dx=s.x-mx,dy=s.y-my,
+dist=Math.sqrt(dx*dx+dy*dy),
+fade=Math.max(0,1-dist/220);
+s.v=Math.max(s.v-fade*.08,0);
+s.v=Math.min(s.v+recover*.004,1);
+const alpha=s.b*s.v,
+glow=x.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*4);
+glow.addColorStop(0,`rgba(${180+75*s.t},${160+95*s.t},255,${alpha})`);
+glow.addColorStop(.5,`rgba(${120+60*s.t},${100+80*s.t},200,${alpha*.4})`);
+glow.addColorStop(1,'rgba(40,60,120,0)');
+x.fillStyle=glow;
+x.fillRect(s.x-s.r*4,s.y-s.r*4,s.r*8,s.r*8);
+});
+requestAnimationFrame(draw);
+};
+c.addEventListener('mousemove',e=>{
+mx=e.clientX;
+my=e.clientY;
+lastMove=Date.now();
+});
+draw();
+</script>
+</section>
