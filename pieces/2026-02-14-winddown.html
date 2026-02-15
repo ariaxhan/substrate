@@ -1,0 +1,41 @@
+<section data-date='2026-02-14' data-type='winddown'>
+<style>
+body{margin:0;overflow:hidden;background:linear-gradient(to bottom,#d97941,#1a1832);font-family:Georgia,serif;height:100vh;display:flex;align-items:center;justify-content:center;cursor:crosshair;transition:background 4s}
+#t{font-size:4vw;color:rgba(255,255,255,0.15);text-align:center;line-height:1.6;pointer-events:none;user-select:none;max-width:80vw}
+.glow{position:absolute;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(255,200,120,0.3),transparent 70%);pointer-events:none;transition:opacity 1.2s ease-out,transform 0.8s ease-out;transform:translate(-50%,-50%) scale(0);opacity:0}
+.glow.active{opacity:1;transform:translate(-50%,-50%) scale(1)}
+</style>
+<div id="t">
+the day<br>
+releasing<br>
+its hold<br><br>
+warmth<br>
+settling<br>
+into stillness<br><br>
+slow<br>
+breath<br>
+fading
+</div>
+<div class="glow" id="g"></div>
+<script>
+let b=document.body,t=document.getElementById('t'),g=document.getElementById('g'),x=0,y=0,px=0,py=0,s=0,to=null,br=1;
+b.onmousemove=e=>{
+px=x;py=y;x=e.clientX;y=e.clientY;
+let dx=x-px,dy=y-py,spd=Math.sqrt(dx*dx+dy*dy);
+s=Math.min(spd/10,1);
+g.style.left=x+'px';g.style.top=y+'px';
+g.classList.add('active');
+clearTimeout(to);
+to=setTimeout(()=>g.classList.remove('active'),800);
+};
+setInterval(()=>{
+br+=0.005;
+let sc=1+Math.sin(br)*0.02;
+t.style.transform=`scale(${sc})`;
+let r=Math.floor(217-s*50),g1=Math.floor(121-s*30),b1=Math.floor(65-s*30);
+let r2=Math.floor(26-s*10),g2=Math.floor(24-s*10),b2=Math.floor(50-s*20);
+b.style.background=`linear-gradient(to bottom,rgb(${r},${g1},${b1}),rgb(${r2},${g2},${b2}))`;
+s*=0.92;
+},50);
+</script>
+</section>
