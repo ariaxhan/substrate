@@ -1,0 +1,95 @@
+<section data-date='2026-02-15' data-type='digest'>
+<style>
+#k{position:fixed;top:0;left:0;width:100vw;height:100vh;background:#0a0a0f;margin:0;overflow:hidden;font-family:'Courier New',monospace;cursor:crosshair}
+.n{position:absolute;color:#4a9eff;font-size:11px;opacity:0;transition:opacity .4s;pointer-events:none;letter-spacing:1px}
+.n.v{opacity:.85}
+.l{position:absolute;stroke:#1a4d7a;stroke-width:1;opacity:0;pointer-events:none}
+.l.v{opacity:.3;transition:opacity .6s}
+#c{position:fixed;bottom:20px;right:25px;color:#2a5580;font-size:9px;text-align:right;line-height:1.6;opacity:.7;letter-spacing:.5px}
+</style>
+<div id="k">
+<svg id="s" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none"></svg>
+<div id="c">NODES: <span id="nc">0</span><br>EDGES: <span id="ec">0</span><br>DENSITY: <span id="d">0.00</span></div>
+</div>
+<script>
+const w=["PATTERN","SIGNAL","THREAD","CLUSTER","EMERGE","LINK","NODE","TRACE","BOND","WEAVE","DATUM","SPARK","CHAIN","MESH","GRAPH","PULSE","SYNC","ALIGN","MERGE","GROW","FORM","SEED","BLOOM","BRIDGE","LAYER","DEPTH","PHASE","SHIFT","FLUX","CORE","EDGE","PATH","LOOP","NEST","WEB","HUB","NET","ARC","BIND","FUSE"],
+ns=[],
+ls=[],
+sv=document.getElementById('s'),
+nc=document.getElementById('nc'),
+ec=document.getElementById('ec'),
+dc=document.getElementById('d'),
+mx=0,my=0,
+th=120,
+r=(m,x)=>Math.random()*(x-m)+m,
+f=Math.floor;
+
+for(let i=0;i<40;i++){
+const n=document.createElement('div');
+n.className='n';
+n.textContent=w[f(r(0,w.length))];
+n.style.left=r(5,95)+'%';
+n.style.top=r(10,90)+'%';
+document.getElementById('k').appendChild(n);
+ns.push({el:n,x:parseFloat(n.style.left),y:parseFloat(n.style.top),v:false});
+}
+
+function dist(x1,y1,x2,y2){
+const dx=(x2-x1)*window.innerWidth/100;
+const dy=(y2-y1)*window.innerHeight/100;
+return Math.sqrt(dx*dx+dy*dy);
+}
+
+function upd(){
+const vw=window.innerWidth,vh=window.innerHeight;
+const cx=mx/vw*100,cy=my/vh*100;
+let vc=0;
+
+ns.forEach(n=>{
+const d=dist(cx,cy,n.x,n.y);
+if(d<th){
+if(!n.v){
+n.el.classList.add('v');
+n.v=true;
+}
+vc++;
+}
+});
+
+const nvs=ns.filter(n=>n.v);
+const pls=ls.length;
+
+ls.forEach(l=>l.remove());
+ls=[];
+
+for(let i=0;i<nvs.length;i++){
+for(let j=i+1;j<nvs.length;j++){
+const d=dist(nvs[i].x,nvs[i].y,nvs[j].x,nvs[j].y);
+if(d<th*1.2){
+const ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+ln.setAttribute('x1',nvs[i].x+'%');
+ln.setAttribute('y1',nvs[i].y+'%');
+ln.setAttribute('x2',nvs[j].x+'%');
+ln.setAttribute('y2',nvs[j].y+'%');
+ln.className='l';
+sv.appendChild(ln);
+ls.push(ln);
+setTimeout(()=>ln.classList.add('v'),10);
+}
+}
+}
+
+const tv=ns.filter(n=>n.v).length;
+nc.textContent=tv;
+ec.textContent=ls.length;
+const md=tv>0?(ls.length/(tv*(tv-1)/2)).toFixed(2):'0.00';
+dc.textContent=md;
+}
+
+document.getElementById('k').addEventListener('mousemove',e=>{
+mx=e.clientX;
+my=e.clientY;
+upd();
+});
+</script>
+</section>
