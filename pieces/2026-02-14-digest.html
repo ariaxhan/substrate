@@ -1,0 +1,80 @@
+<section data-date='2026-02-14' data-type='digest'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0a0f;font-family:Georgia,serif}
+#c{position:fixed;top:0;left:0;width:100vw;height:100vh;cursor:crosshair}
+.n{position:absolute;color:#fff;font-size:9px;opacity:0;transition:opacity .8s;pointer-events:none;font-weight:300;letter-spacing:.5px}
+.v{opacity:.7}
+.l{position:absolute;background:linear-gradient(90deg,rgba(120,150,255,.2),transparent);height:1px;transform-origin:0 0;pointer-events:none}
+#i{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);color:#667;font-size:11px;text-align:center;font-style:italic;opacity:.6}
+</style>
+<div id="c"></div>
+<div id="i">move to trace · patterns crystallize from motion</div>
+<script>
+const w=['thread','spark','signal','node','link','edge','datum','trace','pattern','form','layer','web','map','lattice','cluster','network','schema','kernel','axis','vector'],
+c=document.getElementById('c'),
+ns=[],
+mx=0,my=0,
+px=0,py=0,
+t=0,
+th=25;
+
+function cr(x,y){
+if(ns.length>200)return;
+const n=document.createElement('div');
+n.className='n';
+n.textContent=w[Math.floor(Math.random()*w.length)];
+n.style.left=x+'px';
+n.style.top=y+'px';
+c.appendChild(n);
+ns.push({e:n,x:x,y:y,t:Date.now()});
+setTimeout(()=>n.classList.add('v'),50);
+setTimeout(()=>{
+n.classList.remove('v');
+setTimeout(()=>{
+c.removeChild(n);
+const i=ns.findIndex(o=>o.e===n);
+if(i>-1)ns.splice(i,1);
+},800);
+},8000);
+}
+
+function cl(){
+if(ns.length<2)return;
+const r=ns[ns.length-1];
+for(let i=ns.length-2;i>=Math.max(0,ns.length-6);i--){
+const o=ns[i],
+dx=r.x-o.x,
+dy=r.y-o.y,
+d=Math.sqrt(dx*dx+dy*dy);
+if(d<150&&d>20){
+const l=document.createElement('div');
+l.className='l';
+l.style.left=o.x+'px';
+l.style.top=o.y+'px';
+l.style.width=d+'px';
+l.style.transform=`rotate(${Math.atan2(dy,dx)}rad)`;
+c.appendChild(l);
+setTimeout(()=>c.removeChild(l),1200);
+}
+}
+}
+
+c.addEventListener('mousemove',e=>{
+mx=e.clientX;
+my=e.clientY;
+const now=Date.now();
+if(now-t>120){
+const dx=mx-px,dy=my-py,d=Math.sqrt(dx*dx+dy*dy);
+if(d>th){
+cr(mx+Math.random()*20-10,my+Math.random()*20-10);
+cl();
+px=mx;py=my;t=now;
+}
+}
+});
+
+for(let i=0;i<5;i++){
+setTimeout(()=>cr(window.innerWidth/2+Math.random()*60-30,window.innerHeight/2+Math.random()*60-30),i*800);
+}
+</script>
+</section>
