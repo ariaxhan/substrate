@@ -1,0 +1,138 @@
+<section data-date='2026-02-15' data-type='winddown'>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(180deg,
+    #ffd89b 0%,
+    #ff8c5a 30%,
+    #d05d7e 60%,
+    #1a1446 100%
+  );
+  font-family: 'Courier New', monospace;
+  cursor: crosshair;
+  position: relative;
+}
+.ember {
+  position: absolute;
+  color: #fff;
+  opacity: 0.9;
+  pointer-events: none;
+  text-shadow: 0 0 8px rgba(255,140,90,0.8);
+  font-size: 2rem;
+  animation: fade-settle 4s ease-out forwards;
+  user-select: none;
+}
+@keyframes fade-settle {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(30vh) scale(0.3);
+    opacity: 0;
+  }
+}
+.breath {
+  position: absolute;
+  bottom: 5vh;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,0.3);
+  font-size: 0.9rem;
+  letter-spacing: 0.3em;
+  animation: pulse 4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.5; }
+}
+.trace {
+  position: absolute;
+  width: 2px;
+  background: radial-gradient(circle, rgba(255,255,255,0.6) 0%, transparent 70%);
+  pointer-events: none;
+  animation: trail 1.5s linear forwards;
+}
+@keyframes trail {
+  0% {
+    height: 40px;
+    opacity: 0.8;
+  }
+  100% {
+    height: 0;
+    opacity: 0;
+  }
+}
+</style>
+
+<div class="breath">release</div>
+
+<script>
+const phrases = [
+  '◦', '·', '∘', '○', '◌',
+  '◦◦', '··', '∘∘', '○○',
+  '◦·∘', '·○·', '∘◦○'
+];
+
+let lastMove = Date.now();
+let glowInterval;
+
+function createEmber(x, y) {
+  const ember = document.createElement('div');
+  ember.className = 'ember';
+  ember.textContent = phrases[Math.floor(Math.random() * phrases.length)];
+  ember.style.left = x + 'px';
+  ember.style.top = y + 'px';
+  document.body.appendChild(ember);
+
+  setTimeout(() => ember.remove(), 4000);
+}
+
+function createTrace(x, y) {
+  const trace = document.createElement('div');
+  trace.className = 'trace';
+  trace.style.left = x + 'px';
+  trace.style.top = y + 'px';
+  document.body.appendChild(trace);
+
+  setTimeout(() => trace.remove(), 1500);
+}
+
+function checkStillness() {
+  const now = Date.now();
+  const stillTime = now - lastMove;
+
+  if (stillTime > 800 && stillTime < 1000) {
+    const rect = document.body.getBoundingClientRect();
+    const x = Math.random() * rect.width;
+    const y = Math.random() * (rect.height * 0.6);
+    createEmber(x, y);
+  }
+}
+
+document.addEventListener('mousemove', (e) => {
+  lastMove = Date.now();
+
+  if (Math.random() > 0.85) {
+    createTrace(e.clientX, e.clientY);
+  }
+});
+
+glowInterval = setInterval(checkStillness, 200);
+
+// Initial embers
+setTimeout(() => {
+  for(let i = 0; i < 3; i++) {
+    setTimeout(() => {
+      createEmber(
+        Math.random() * window.innerWidth,
+        Math.random() * window.innerHeight * 0.5
+      );
+    }, i * 800);
+  }
+}, 500);
+</script>
+</section>
