@@ -1,0 +1,156 @@
+<section data-date='2026-02-16' data-type='digest'>
+<style>
+#digest-2026-02-16 {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #0a0e27 0%, #1a1433 100%);
+  overflow: hidden;
+  cursor: crosshair;
+  font-family: 'Courier New', monospace;
+}
+.node {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: #4a9eff;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.8s, transform 0.3s;
+  box-shadow: 0 0 8px #4a9eff;
+}
+.node.active {
+  opacity: 0.9;
+  transform: scale(1.5);
+}
+.edge {
+  position: absolute;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #4a9eff, transparent);
+  transform-origin: left center;
+  opacity: 0;
+  transition: opacity 1.2s;
+  pointer-events: none;
+}
+.edge.visible {
+  opacity: 0.3;
+}
+.label {
+  position: absolute;
+  color: #7fadff;
+  font-size: 9px;
+  opacity: 0;
+  transition: opacity 0.6s;
+  pointer-events: none;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.label.show {
+  opacity: 0.7;
+}
+#counter {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  color: #4a9eff;
+  font-size: 13px;
+  opacity: 0.6;
+  letter-spacing: 2px;
+}
+</style>
+<div id="digest-2026-02-16">
+  <div id="counter">CONNECTIONS: <span id="count">0</span></div>
+</div>
+<script>
+(()=>{
+const c=document.getElementById('digest-2026-02-16');
+const ct=document.getElementById('count');
+const words=['PATTERN','THREAD','CLUSTER','SIGNAL','VECTOR','NOTION','TRACE','LINK','GRAPH','MESH','LATTICE','NEXUS','AXIS','NODE','EDGE','PATH','WEB','NETWORK','BRIDGE','JUNCTION'];
+let nodes=[],edges=[],discovered=0;
+
+for(let i=0;i<50;i++){
+  const n=document.createElement('div');
+  n.className='node';
+  const x=Math.random()*window.innerWidth;
+  const y=Math.random()*window.innerHeight;
+  n.style.left=x+'px';
+  n.style.top=y+'px';
+  n.dataset.x=x;
+  n.dataset.y=y;
+  n.dataset.id=i;
+  c.appendChild(n);
+  nodes.push(n);
+
+  if(i>0&&Math.random()>0.3){
+    const prev=nodes[Math.floor(Math.random()*i)];
+    createEdge(prev,n);
+  }
+}
+
+function createEdge(n1,n2){
+  const e=document.createElement('div');
+  e.className='edge';
+  const x1=parseFloat(n1.dataset.x);
+  const y1=parseFloat(n1.dataset.y);
+  const x2=parseFloat(n2.dataset.x);
+  const y2=parseFloat(n2.dataset.y);
+  const len=Math.sqrt((x2-x1)**2+(y2-y1)**2);
+  const ang=Math.atan2(y2-y1,x2-x1)*180/Math.PI;
+  e.style.left=x1+'px';
+  e.style.top=y1+'px';
+  e.style.width=len+'px';
+  e.style.transform=`rotate(${ang}deg)`;
+  e.dataset.n1=n1.dataset.id;
+  e.dataset.n2=n2.dataset.id;
+  c.insertBefore(e,c.firstChild);
+  edges.push(e);
+}
+
+function reveal(n){
+  if(n.classList.contains('active'))return;
+  n.classList.add('active');
+  discovered++;
+  ct.textContent=discovered;
+
+  edges.forEach(e=>{
+    if(e.dataset.n1==n.dataset.id||e.dataset.n2==n.dataset.id){
+      e.classList.add('visible');
+    }
+  });
+
+  if(Math.random()>0.6&&discovered<words.length){
+    const l=document.createElement('div');
+    l.className='label show';
+    l.textContent=words[discovered%words.length];
+    l.style.left=(parseFloat(n.dataset.x)+8)+'px';
+    l.style.top=(parseFloat(n.dataset.y)-4)+'px';
+    c.appendChild(l);
+  }
+
+  setTimeout(()=>{
+    n.style.opacity='0.6';
+    n.style.transform='scale(1)';
+  },300);
+}
+
+c.addEventListener('mousemove',e=>{
+  const mx=e.clientX;
+  const my=e.clientY;
+  nodes.forEach(n=>{
+    const nx=parseFloat(n.dataset.x);
+    const ny=parseFloat(n.dataset.y);
+    const dist=Math.sqrt((mx-nx)**2+(my-ny)**2);
+    if(dist<40){
+      reveal(n);
+    }
+  });
+});
+
+setTimeout(()=>{
+  nodes.forEach((n,i)=>{
+    setTimeout(()=>{n.style.opacity='0.3'},i*30);
+  });
+},100);
+})();
+</script>
+</section>
