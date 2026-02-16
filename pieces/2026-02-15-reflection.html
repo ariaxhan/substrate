@@ -1,0 +1,65 @@
+<section data-date='2026-02-15' data-type='reflection'>
+<style>
+body{margin:0;overflow:hidden;background:#000;cursor:crosshair}
+.sky{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse at bottom,#1b2735 0%,#090a0f 100%)}
+.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;opacity:0;animation:appear 2s ease-out forwards;box-shadow:0 0 6px rgba(255,255,255,.8)}
+@keyframes appear{
+  0%{opacity:0;transform:scale(0)}
+  50%{opacity:1;transform:scale(1.5)}
+  100%{opacity:.9;transform:scale(1)}
+}
+.constellation{position:absolute;stroke:#fff;stroke-width:1;opacity:0;animation:drawLine 1.5s ease-out forwards}
+@keyframes drawLine{
+  0%{opacity:0;stroke-dashoffset:100}
+  100%{opacity:.3;stroke-dashoffset:0}
+}
+.whisper{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);font-family:Georgia,serif;font-size:14px;color:rgba(255,255,255,.3);letter-spacing:2px;font-style:italic;pointer-events:none}
+</style>
+<div class="sky"></div>
+<div class="whisper">the day complete</div>
+<script>
+const sky=document.querySelector('.sky');
+const stars=[];
+let lastStar=null;
+
+sky.addEventListener('click',e=>{
+  const star=document.createElement('div');
+  star.className='star';
+  star.style.left=e.clientX+'px';
+  star.style.top=e.clientY+'px';
+
+  const size=Math.random()*2+1;
+  star.style.width=size+'px';
+  star.style.height=size+'px';
+
+  sky.appendChild(star);
+  stars.push({x:e.clientX,y:e.clientY,el:star});
+
+  if(lastStar&&Math.random()>.6){
+    const line=document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1',lastStar.x);
+    line.setAttribute('y1',lastStar.y);
+    line.setAttribute('x2',e.clientX);
+    line.setAttribute('y2',e.clientY);
+    line.setAttribute('stroke-dasharray','100');
+    line.setAttribute('stroke-dashoffset','100');
+    line.className='constellation';
+
+    let svg=document.querySelector('svg');
+    if(!svg){
+      svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+      svg.style.position='fixed';
+      svg.style.top='0';
+      svg.style.left='0';
+      svg.style.width='100%';
+      svg.style.height='100%';
+      svg.style.pointerEvents='none';
+      sky.appendChild(svg);
+    }
+    svg.appendChild(line);
+  }
+
+  lastStar={x:e.clientX,y:e.clientY};
+});
+</script>
+</section>
