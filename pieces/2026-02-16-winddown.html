@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>winddown</title>
+<!-- winddown — computational poetry
+     theme: dusk, settling, the day releasing its hold
+     interaction: click dims words one by one; mousemove leaves warm glow
+     palette: amber-to-deep-indigo; Georgia serif
+-->
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#1a0e2e}
+#sky{position:fixed;inset:0;background:linear-gradient(170deg,#c0622a 0%,#7b3a6e 40%,#1a0e2e 100%);transition:background 4s ease}
+#glow{position:fixed;inset:0;pointer-events:none;opacity:0;transition:opacity 1.2s ease}
+#stage{position:fixed;inset:0;pointer-events:none}
+.w{position:absolute;font-family:Georgia,serif;color:#f5d799;pointer-events:none;transition:opacity 3.5s ease,color 3.5s ease;cursor:default;user-select:none;line-height:1.2}
+</style>
+</head>
+<body>
+<div id="sky"></div>
+<div id="glow"></div>
+<div id="stage"></div>
+
+<script>
+var words = [
+  "warmth","amber","held","still","open","slow",
+  "enough","soft","near","almost","given","light",
+  "known","late","gold","low","ease","wide",
+  "here","now","rest"
+];
+
+var stage = document.getElementById("stage"),
+    glow  = document.getElementById("glow"),
+    sky   = document.getElementById("sky"),
+    els   = [],
+    lit   = [],
+    mx=0, my=0, lx=0, ly=0,
+    glowT, glowFade;
+
+// place words
+words.forEach(function(w,i){
+  var el = document.createElement("span");
+  el.className = "w";
+  el.textContent = w;
+
+  // distribute with margin from edges
+  var px = 8 + Math.random()*80,
+      py = 8 + Math.random()*80,
+      fs = 0.9 + Math.random()*1.8;
+
+  el.style.left = px + "%";
+  el.style.top  = py + "%";
+  el.style.fontSize = fs + "rem";
+  el.style.opacity = 0.15 + Math.random()*0.65;
+  el.dataset.base = el.style.opacity;
+  el.dataset.alive = "1";
+  el.dataset.word = w;
+
+  stage.appendChild(el);
+  els.push(el);
+  if(w !== "rest") lit.push(el);
+});
+
+// "rest" stays, starts hidden
+var restEl = els[els.length-1];
+restEl.style.opacity = "0";
+restEl.style.left = "50%";
+restEl.style.top  = "50%";
+restEl.style.transform = "translate(-50%,-50%)";
+restEl.style.fontSize  = "2.4rem";
+restEl.style.letterSpacing = "0.15em";
+restEl.style.color = "#e8c98a";
+restEl.dataset.alive = "0";
+
+// mousemove warm glow
+document.addEventListener("mousemove", function(e){
+  mx = e.clientX; my = e.clientY;
+  var w = window.innerWidth, h = window.innerHeight;
+  glow.style.background =
+    "radial-gradient(circle 260px at "+mx+"px "+my+"px,"+
+    "rgba(240,160,60,0.18) 0%,rgba(200,100,40,0.06) 50%,transparent 100%)";
+  glow.style.opacity = "1";
+
+  clearTimeout(glowFade);
+  glowFade = setTimeout(function(){
+    glow.style.opacity = "0";
+  }, 900);
+});
+
+// click: dim one word
+document.addEventListener("click", function(){
+  if(lit.length === 0) return;
+
+  // pick a random lit word
+  var idx = Math.floor(Math.random()*lit.length);
+  var el  = lit.splice(idx,1)[0];
+
+  el.style.opacity = "0";
+  el.style.color   = "#4a3060";
+  el.dataset.alive = "0";
+
+  // deepen sky as words leave
+  var gone = words.length - 1 - lit.length; // words gone (not counting rest)
+  var total = words.length - 1;
+  var pct = gone / total;
+  var r1 = Math.round(192 - pct*140),
+      g1 = Math.round(98  - pct*70),
+      b1 = Math.round(42  + pct*10);
+  var r2 = Math.round(123 - pct*100),
+      g2 = Math.round(58  - pct*45),
+      b2 = Math.round(110 + pct*10);
+  sky.style.background =
+    "linear-gradient(170deg,rgb("+r1+","+g1+","+b1+") 0%,"+
+    "rgb("+r2+","+g2+","+b2+") 40%,#1a0e2e 100%)";
+
+  // last word gone: reveal "rest"
+  if(lit.length === 0){
+    setTimeout(function(){
+      restEl.style.opacity = "0.72";
+    }, 800);
+  }
+});
+</script>
+</body>
+</html>
