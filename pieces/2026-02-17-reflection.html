@@ -1,0 +1,112 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>still (2026-02-17)</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#03050e;overflow:hidden;cursor:crosshair}
+canvas{position:fixed;top:0;left:0;pointer-events:none}
+#w{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);
+  font:italic 1rem Georgia,serif;color:rgba(180,190,220,0);
+  letter-spacing:.35em;text-align:center;text-transform:lowercase;
+  transition:color 3s ease;user-select:none;pointer-events:none}
+#w.show{color:rgba(180,190,220,.38)}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="w">the day has finished its counting</div>
+<script>
+const cv=document.getElementById('c'),ctx=cv.getContext('2d'),wrd=document.getElementById('w');
+let W,H,stars=[],mouse={x:.5,y:.5},drifted=0;
+const phrases=['the day has finished its counting',
+  'each hour was enough',
+  'now only the dark and its light',
+  'rest is the oldest forgetting',
+  'what burns here burned before you were born',
+  'stillness is not the absence of motion',
+  'close your eyes — it continues'];
+let pi=0;
+
+function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight}
+resize();
+window.addEventListener('resize',resize);
+
+function Star(x,y){
+  this.x=x; this.y=y;
+  this.r=Math.random()*1.8+.3;
+  this.a=0; this.peak=Math.random()*.75+.2;
+  this.born=performance.now();
+  this.life=4000+Math.random()*6000;
+  this.drift={x:(Math.random()-.5)*.08,y:-(Math.random()*.04+.01)};
+  this.phase=Math.random()*Math.PI*2;
+  this.twinkle=Math.random()*.4+.6;
+}
+
+function draw(t){
+  ctx.clearRect(0,0,W,H);
+
+  // ambient field — faint fixed stars from mouse parallax
+  const ox=(mouse.x-.5)*12,oy=(mouse.y-.5)*12;
+  for(let i=0;i<40;i++){
+    const sx=((i*137.5%W)+(ox*(i%5)*.04)+W)%W;
+    const sy=((i*73.1%H)+(oy*(i%3)*.04)+H)%H;
+    const pulse=.12+Math.sin(t*.0007+i)*0.06;
+    ctx.beginPath();ctx.arc(sx,sy,.7,0,Math.PI*2);
+    ctx.fillStyle=`rgba(200,215,255,${pulse})`;ctx.fill();
+  }
+
+  // born stars
+  stars=stars.filter(s=>{
+    const age=t-s.born,pct=age/s.life;
+    if(pct>1)return false;
+    s.x+=s.drift.x;s.y+=s.drift.y;
+    const tw=s.twinkle+Math.sin(t*.003+s.phase)*(1-s.twinkle);
+    const fade=pct<.12?pct/.12:pct>.7?(1-pct)/.3:1;
+    s.a=s.peak*fade*tw;
+    // glow
+    const g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*6);
+    g.addColorStop(0,`rgba(220,230,255,${s.a})`);
+    g.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.beginPath();ctx.arc(s.x,s.y,s.r*6,0,Math.PI*2);
+    ctx.fillStyle=g;ctx.fill();
+    // core
+    ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(240,245,255,${Math.min(s.a*1.6,1)})`;ctx.fill();
+    return true;
+  });
+
+  requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+
+window.addEventListener('mousemove',e=>{
+  mouse.x=e.clientX/W;mouse.y=e.clientY/H;
+  drifted++;
+  if(drifted===18){wrd.classList.add('show')}
+});
+
+window.addEventListener('click',e=>{
+  // bloom: one bright star + small scatter
+  for(let i=0;i<7;i++){
+    const a=Math.random()*Math.PI*2,d=i===0?0:Math.random()*32;
+    const s=new Star(e.clientX+Math.cos(a)*d,e.clientY+Math.sin(a)*d);
+    if(i===0){s.r=2.1;s.peak=.95;}
+    stars.push(s);
+  }
+  // advance phrase
+  if(stars.length>12){
+    wrd.style.transition='color .4s ease';
+    wrd.classList.remove('show');
+    setTimeout(()=>{
+      wrd.textContent=phrases[pi%phrases.length];pi++;
+      wrd.style.transition='color 3s ease';
+      wrd.classList.add('show');
+    },500);
+  }
+});
+</script>
+<section data-date='2026-02-17' data-type='reflection'></section>
+</body>
+</html>
