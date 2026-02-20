@@ -1,0 +1,25 @@
+<section data-date='2026-02-19' data-type='reflection'>
+<style>
+body{margin:0;overflow:hidden;background:#0a0612;cursor:crosshair}
+.s{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;opacity:0;box-shadow:0 0 3px #fff,0 0 6px #fff,0 0 12px rgba(255,255,255,.4);animation:f 2s ease-in forwards}
+@keyframes f{to{opacity:1}}
+.p{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.15);font:11px monospace;letter-spacing:2px;pointer-events:none;opacity:0;animation:r 3s ease-in 1s forwards}
+@keyframes r{to{opacity:1}}
+</style>
+<p class="p">CLICK TO PLACE A STAR</p>
+<script>
+let c=0;
+document.body.onclick=e=>{
+  if(c>77)return;
+  let s=document.createElement('div');
+  s.className='s';
+  s.style.left=e.clientX+'px';
+  s.style.top=e.clientY+'px';
+  s.style.animationDelay=Math.random()*.8+'s';
+  s.style.width=s.style.height=(1+Math.random()*2)+'px';
+  document.body.appendChild(s);
+  c++;
+  if(c===77)document.querySelector('.p').textContent='THE NIGHT IS COMPLETE';
+}
+</script>
+</section>
