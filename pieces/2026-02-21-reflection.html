@@ -1,0 +1,155 @@
+<section data-date='2026-02-21' data-type='reflection'>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box }
+body {
+  background: #000;
+  overflow: hidden;
+  cursor: crosshair;
+  font-family: 'Courier New', monospace;
+  color: #666;
+  user-select: none;
+  -webkit-user-select: none;
+}
+#sky {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(ellipse at bottom, #0a0a12 0%, #000 100%);
+}
+.star {
+  position: absolute;
+  color: #fff;
+  opacity: 0;
+  transform: scale(0);
+  transition: all 1.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+  text-shadow: 0 0 8px rgba(255,255,255,0.8), 0 0 16px rgba(255,255,255,0.4);
+  font-size: 12px;
+}
+.star.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+.star.bright {
+  font-size: 18px;
+  text-shadow: 0 0 12px rgba(255,255,255,1), 0 0 24px rgba(255,255,255,0.6);
+}
+#msg {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  letter-spacing: 2px;
+  opacity: 0.4;
+  transition: opacity 0.6s;
+}
+#count {
+  position: fixed;
+  top: 20px;
+  right: 30px;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.8s;
+}
+</style>
+
+<div id="sky"></div>
+<div id="msg">click to place stars · rest before beginning</div>
+<div id="count"></div>
+
+<script>
+const sky = document.getElementById('sky');
+const msg = document.getElementById('msg');
+const count = document.getElementById('count');
+const glyphs = ['✦', '✧', '⋆', '∗', '·', '•', '◦', '○'];
+let stars = 0;
+let lastClick = 0;
+
+function dist(x1, y1, x2, y2) {
+  return Math.sqrt((x2-x1)**2 + (y2-y1)**2);
+}
+
+function findNearestStars(x, y, n) {
+  const existing = [...document.querySelectorAll('.star')];
+  return existing
+    .map(s => ({
+      el: s,
+      d: dist(x, y, parseFloat(s.style.left), parseFloat(s.style.top))
+    }))
+    .sort((a, b) => a.d - b.d)
+    .slice(0, n)
+    .map(s => s.el);
+}
+
+function createStar(x, y, bright = false) {
+  const star = document.createElement('div');
+  star.className = 'star' + (bright ? ' bright' : '');
+  star.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+  star.style.left = x + 'px';
+  star.style.top = y + 'px';
+  sky.appendChild(star);
+
+  setTimeout(() => star.classList.add('visible'), 20);
+  stars++;
+
+  // Update counter after first star
+  if (stars === 1) {
+    setTimeout(() => {
+      count.style.opacity = 0.3;
+    }, 800);
+  }
+  count.textContent = stars;
+
+  // Form constellations (every 5th star connects nearby stars with subtle lines)
+  if (stars % 5 === 0 && stars > 0) {
+    const nearby = findNearestStars(x, y, 3);
+    nearby.forEach(s => {
+      s.classList.add('bright');
+      setTimeout(() => s.classList.remove('bright'), 2000);
+    });
+  }
+}
+
+// Main interaction: click to place star
+sky.addEventListener('click', (e) => {
+  const now = Date.now();
+  const x = e.clientX;
+  const y = e.clientY;
+
+  // Double-click creates a brighter star
+  const bright = (now - lastClick) < 400;
+  lastClick = now;
+
+  createStar(x, y, bright);
+
+  // Fade message after first few stars
+  if (stars === 3) {
+    msg.style.opacity = 0.15;
+  }
+});
+
+// Subtle ambient stars appear slowly on their own
+function ambientStar() {
+  if (Math.random() > 0.7) {
+    const x = Math.random() * window.innerWidth;
+    const y = Math.random() * window.innerHeight * 0.6; // upper 60% of screen
+    createStar(x, y, false);
+  }
+  setTimeout(ambientStar, 8000 + Math.random() * 12000);
+}
+
+// Start ambient stars after a pause
+setTimeout(ambientStar, 10000);
+
+// Subtle breathing effect on body background
+let phase = 0;
+setInterval(() => {
+  phase += 0.01;
+  const brightness = Math.sin(phase) * 2 + 10;
+  sky.style.background = `radial-gradient(ellipse at bottom, rgb(${brightness},${brightness},${brightness+2}) 0%, #000 100%)`;
+}, 100);
+</script>
+</section>
