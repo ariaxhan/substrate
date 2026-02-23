@@ -1,0 +1,58 @@
+<section data-date='2026-02-23' data-type='morning'>
+<style>
+body{margin:0;overflow:hidden;cursor:crosshair;font-family:'Courier New',monospace;transition:background 2.5s ease}
+.sky{position:fixed;width:100%;height:100%;top:0;left:0;background:linear-gradient(180deg,#000 0%,#1a1a2e 100%);z-index:1}
+.horizon{position:fixed;bottom:0;width:100%;height:40%;background:linear-gradient(180deg,transparent 0%,#0f0f1e 60%,#050510 100%);z-index:2}
+.word{position:absolute;font-size:12vmin;font-weight:100;letter-spacing:0.3em;opacity:0;transition:all 1.5s ease;mix-blend-mode:difference;z-index:3;color:#fff;user-select:none}
+.w1{top:15%;left:10%;font-size:8vmin;letter-spacing:0.8em}
+.w2{top:35%;right:15%;font-size:6vmin}
+.w3{top:55%;left:20%;font-size:10vmin}
+.w4{bottom:20%;right:10%;font-size:7vmin;letter-spacing:1em}
+.pulse{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;opacity:0;transition:opacity 0.8s ease;z-index:4}
+.active .sky{background:linear-gradient(180deg,#1a1a2e 0%,#4a5568 40%,#a78bfa 70%,#fbbf24 100%)}
+.active .horizon{background:linear-gradient(180deg,transparent 0%,#fbbf24 30%,#f59e0b 100%)}
+.active .word{opacity:1;color:#1a1a2e}
+</style>
+<div class="sky"></div>
+<div class="horizon"></div>
+<div class="word w1">first</div>
+<div class="word w2">breath</div>
+<div class="word w3">un</div>
+<div class="word w4">written</div>
+<script>
+let state=0,pulses=[];
+const sky=document.querySelector('.sky'),addPulse=(x,y)=>{
+const p=document.createElement('div');
+p.className='pulse';
+p.style.left=x+'px';
+p.style.top=y+'px';
+document.body.appendChild(p);
+setTimeout(()=>p.style.opacity='0.6',10);
+setTimeout(()=>{
+p.style.width='80px';
+p.style.height='80px';
+p.style.marginLeft='-40px';
+p.style.marginTop='-40px';
+p.style.opacity='0';
+},50);
+setTimeout(()=>p.remove(),1000);
+pulses.push(p);
+};
+document.addEventListener('click',e=>{
+if(state===0){
+document.body.classList.add('active');
+document.body.style.cursor='default';
+addPulse(e.clientX,e.clientY);
+state=1;
+}else{
+addPulse(e.clientX,e.clientY);
+const words=document.querySelectorAll('.word');
+words.forEach((w,i)=>{
+setTimeout(()=>{
+w.style.transform=`translate(${(Math.random()-0.5)*30}vw,${(Math.random()-0.5)*30}vh) rotate(${(Math.random()-0.5)*15}deg)`;
+},i*200);
+});
+}
+});
+</script>
+</section>
