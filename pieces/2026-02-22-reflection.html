@@ -1,0 +1,123 @@
+<section data-date='2026-02-22' data-type='reflection'>
+<style>
+.night{
+position:fixed;
+top:0;left:0;
+width:100vw;
+height:100vh;
+background:#000;
+cursor:crosshair;
+overflow:hidden;
+font-family:'Courier New',monospace;
+}
+.star{
+position:absolute;
+color:#fff;
+font-size:8px;
+opacity:0;
+transition:opacity 2s ease-in;
+pointer-events:none;
+}
+.star.show{opacity:1}
+.constellation{
+position:absolute;
+width:1px;
+height:1px;
+background:#fff;
+opacity:0;
+transition:opacity 3s ease-in;
+}
+.constellation.show{opacity:0.3}
+.whisper{
+position:fixed;
+bottom:5vh;
+left:50%;
+transform:translateX(-50%);
+color:#333;
+font-size:11px;
+letter-spacing:2px;
+transition:color 8s;
+text-align:center;
+}
+.whisper.fade{color:#666}
+</style>
+
+<div class="night" id="n">
+<div class="whisper" id="w">the day is complete</div>
+</div>
+
+<script>
+(()=>{
+const n=document.getElementById('n');
+const w=document.getElementById('w');
+let stars=[];
+let clicks=0;
+
+const glyphs=['✦','✧','✵','⋆','∗','·','˙'];
+const words=['rest','still','quiet','breathe','dark','peace','complete'];
+
+const dist=(x1,y1,x2,y2)=>Math.sqrt((x2-x1)**2+(y2-y1)**2);
+
+const connect=(x,y)=>{
+stars.forEach(s=>{
+const d=dist(x,y,s.x,s.y);
+if(d<120&&d>20){
+const line=document.createElement('div');
+line.className='constellation';
+const angle=Math.atan2(s.y-y,s.x-x)*180/Math.PI;
+const len=d;
+line.style.width=len+'px';
+line.style.left=x+'px';
+line.style.top=y+'px';
+line.style.transform=`rotate(${angle}deg)`;
+line.style.transformOrigin='0 0';
+n.appendChild(line);
+setTimeout(()=>line.classList.add('show'),50);
+}
+});
+};
+
+n.addEventListener('click',e=>{
+const x=e.clientX;
+const y=e.clientY;
+const glyph=glyphs[Math.floor(Math.random()*glyphs.length)];
+const star=document.createElement('div');
+star.className='star';
+star.textContent=glyph;
+star.style.left=x+'px';
+star.style.top=y+'px';
+n.appendChild(star);
+stars.push({x,y,el:star});
+setTimeout(()=>star.classList.add('show'),50);
+
+if(stars.length>1)connect(x,y);
+
+clicks++;
+if(clicks===3)w.textContent='stillness';
+if(clicks===7){w.textContent='rest before beginning';w.classList.add('fade')}
+if(clicks===12)w.textContent='';
+});
+
+setTimeout(()=>{
+const centerX=window.innerWidth/2;
+const centerY=window.innerHeight/2;
+const radius=80;
+for(let i=0;i<5;i++){
+const angle=(Math.PI*2/5)*i-Math.PI/2;
+const x=centerX+Math.cos(angle)*radius;
+const y=centerY+Math.sin(angle)*radius;
+const star=document.createElement('div');
+star.className='star';
+star.textContent='·';
+star.style.left=x+'px';
+star.style.top=y+'px';
+star.style.fontSize='6px';
+n.appendChild(star);
+setTimeout(()=>star.classList.add('show'),i*800);
+}
+},3000);
+
+setTimeout(()=>w.classList.add('fade'),5000);
+})();
+</script>
+</section>
