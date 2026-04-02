@@ -1,0 +1,62 @@
+<section data-date='2026-04-02' data-type='morning'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+#s{position:fixed;top:0;left:0;width:100%;height:100%;overflow:hidden;cursor:crosshair}
+#sky{position:absolute;top:0;left:0;width:100%;height:60%;background:#020408;animation:dk 80s ease-in-out forwards}
+#earth{position:absolute;top:60%;left:0;width:100%;height:40%;background:#060202}
+@keyframes dk{0%{background:#020408}50%{background:#08101e}100%{background:#162038}}
+#hz{position:absolute;top:60%;left:0;width:100%;height:1px;background:#1a0600;transition:background .4s}
+#sun{
+  position:absolute;left:50%;top:60.5%;
+  width:2px;height:2px;border-radius:50%;
+  background:#ff7030;opacity:0;
+  transform:translate(-50%,-50%);
+  animation:rs 80s ease-out forwards
+}
+@keyframes rs{
+  0%{opacity:0;width:2px;height:2px;top:61%;
+    box-shadow:0 0 4px #ff5010}
+  4%{opacity:1}
+  100%{opacity:1;width:70px;height:70px;top:28%;
+    box-shadow:0 0 40px #ffb060,0 0 100px #ff8030,0 0 260px rgba(255,110,10,.12)}
+}
+.w{
+  position:absolute;
+  font:italic 1.15em Georgia,serif;
+  color:rgba(255,210,110,.9);
+  letter-spacing:.04em;
+  white-space:nowrap;
+  animation:fl 5s ease-out forwards;
+  pointer-events:none
+}
+@keyframes fl{
+  0%{opacity:0;transform:translateY(0) scale(.85)}
+  18%{opacity:1;transform:translateY(-8px) scale(1)}
+  100%{opacity:0;transform:translateY(-100px) scale(.95)}
+}
+</style>
+<div id=s>
+  <div id=sky></div>
+  <div id=earth></div>
+  <div id=hz></div>
+  <div id=sun></div>
+</div>
+<script>
+var ws=["still","first light","begin","breath","open","wake","not yet","already","once","—","before noise","the day","now"],
+    s=document.getElementById('s'),
+    h=document.getElementById('hz');
+s.addEventListener('mousemove',function(e){
+  var p=e.clientX/window.innerWidth;
+  h.style.background='hsl('+(18+p*14)+',85%,'+(8+p*14)+'%)';
+});
+s.addEventListener('click',function(e){
+  var d=document.createElement('div');
+  d.className='w';
+  d.textContent=ws[Math.floor(Math.random()*ws.length)];
+  d.style.left=(e.clientX-30)+'px';
+  d.style.top=(e.clientY-10)+'px';
+  s.appendChild(d);
+  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d)},5200);
+});
+</script>
+</section>
