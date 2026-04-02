@@ -1,0 +1,49 @@
+<section data-date='2026-04-01' data-type='reflection'>
+<style>
+#n{position:fixed;top:0;left:0;width:100%;height:100%;background:#000;overflow:hidden;cursor:crosshair}
+.w{position:absolute;color:#16111f;font:italic 16px Georgia,serif;transition:color .6s,opacity 1.2s,transform 1.3s;pointer-events:none;user-select:none}
+.w.lit{color:#eee;text-shadow:0 0 10px #fff,0 0 24px #99f}
+.w.gone{opacity:0;transform:scale(.08) rotate(18deg)}
+.s{position:absolute;border-radius:50%;pointer-events:none}
+.bg{background:rgba(255,255,255,.3);animation:tw 4s infinite alternate ease-in-out}
+.nw{background:#fff;box-shadow:0 0 5px #fff,0 0 2px #bbf;animation:tw 2.8s infinite alternate ease-in-out}
+@keyframes tw{0%{opacity:.12}100%{opacity:.95}}
+#r{position:fixed;bottom:20%;width:100%;text-align:center;color:#080610;font:italic 13px Georgia,serif;letter-spacing:.18em;transition:color 5s ease;pointer-events:none}
+</style>
+<div id=n></div>
+<div id=r>rest now</div>
+<script>
+const n=document.getElementById('n'),rm=document.getElementById('r');
+const ws=['noise','task','should','worry','plan','if only','later','not yet'];
+const W=()=>window.innerWidth,H=()=>window.innerHeight;
+let left=ws.length;
+ws.forEach(t=>{
+  const e=document.createElement('div');
+  e.className='w';e.textContent=t;
+  e.style.left=(.06+Math.random()*.88)*W()+'px';
+  e.style.top=(.1+Math.random()*.72)*H()+'px';
+  n.appendChild(e);
+});
+function mkS(x,y,c){
+  const s=document.createElement('div'),r=c=='bg'?1+Math.random():1.5+Math.random()*2.5;
+  s.className='s '+c;
+  s.style.cssText=`width:${r}px;height:${r}px;left:${x-r/2}px;top:${y-r/2}px;animation-delay:${Math.random()*4}s`;
+  n.appendChild(s);
+}
+for(let i=0;i<60;i++)mkS(Math.random()*W(),Math.random()*H(),'bg');
+n.onmousemove=e=>{
+  document.querySelectorAll('.w:not(.lit)').forEach(w=>{
+    const b=w.getBoundingClientRect(),cx=b.left+b.width/2,cy=b.top+b.height/2;
+    if(Math.hypot(e.clientX-cx,e.clientY-cy)<88){
+      w.classList.add('lit');
+      setTimeout(()=>{
+        const x=parseFloat(w.style.left),y=parseFloat(w.style.top);
+        w.classList.add('gone');
+        setTimeout(()=>{mkS(x,y,'nw');w.remove();if(!--left)rm.style.color='#5a6088'},1100);
+      },560);
+    }
+  });
+};
+n.onclick=e=>mkS(e.clientX,e.clientY,'nw');
+</script>
+</section>
