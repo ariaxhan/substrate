@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>noon</title>
+<style>
+*{margin:0;padding:0}
+body{background:#07070f;overflow:hidden;width:100vw;height:100vh;cursor:crosshair;user-select:none}
+canvas{display:block;position:fixed;inset:0}
+#noon{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
+  font:9px/1 Georgia,serif;letter-spacing:.7em;color:rgba(255,255,255,.3);
+  pointer-events:none;transition:opacity .6s;text-transform:uppercase;opacity:0}
+</style>
+</head>
+<body>
+<section data-date="2026-04-02" data-type="pulse">
+<canvas id="c"></canvas>
+<div id="noon">noon</div>
+</section>
+<script>
+const cv=document.getElementById('c'),
+      ctx=cv.getContext('2d'),
+      nl=document.getElementById('noon');
+
+let W,H,mx,my,tilt=0,flipped=false,t=0;
+
+const AM=['dawn','dream','fog','dew','slow','hush','begin','soft','still','amber','before','wait'],
+      PM=['work','fall','clear','weight','forward','done','steel','burn','close','end','after','move'];
+
+class W0rd{
+  constructor(txt,side,i,n){
+    this.txt=txt; this.side=side;
+    this.px=(i+.5)/n;
+    this.ph=Math.random()*Math.PI*2;
+    this.sp=.22+Math.random()*.28;
+    this.al=.35+Math.random()*.25;
+    this.sz=10+Math.floor(Math.random()*5);
+    this.serif=side==='am';
+  }
+  draw(t,tilt,fl,W,H){
+    const cx=this.px*W, half=H/2;
+    const lean=(cx-W/2)*Math.sin(tilt)*.45;
+    const top=(!fl&&this.side==='am')||(fl&&this.side==='pm');
+    const drift=Math.abs(Math.sin(t*this.sp+this.ph))*35;
+    const yb=top ? half-68-drift : half+68+drift;
+    const y=yb+lean;
+    const dist=Math.abs(y-half);
+    const fade=Math.min(1,(dist-18)/50)*this.al;
+    if(fade<=0)return;
+    ctx.save();
+    ctx.font=(this.serif?`italic ${this.sz}px Georgia,serif`:`${this.sz}px 'Courier New',monospace`);
+    ctx.textAlign='center';
+    ctx.fillStyle=this.serif
+      ? `rgba(255,205,130,${fade})`
+      : `rgba(130,175,255,${fade})`;
+    ctx.fillText(this.txt,cx,y);
+    ctx.restore();
+  }
+}
+
+let words=[];
+function init(){
+  W=cv.width=innerWidth; H=cv.height=innerHeight;
+  mx=W/2; my=H/2;
+  words=[
+    ...AM.map((w,i)=>new W0rd(w,'am',i,AM.length)),
+    ...PM.map((w,i)=>new W0rd(w,'pm',i,PM.length))
+  ];
+}
+
+function frame(){
+  ctx.fillStyle='#07070f';
+  ctx.fillRect(0,0,W,H);
+  t+=.006;
+
+  // ease tilt toward mouse
+  const target=(my-H/2)/(H/2)*.11;
+  tilt+=(target-tilt)*.055;
+
+  // fulcrum line
+  ctx.save();
+  ctx.translate(W/2,H/2);
+  ctx.rotate(tilt);
+  const g=ctx.createLinearGradient(-W/2,0,W/2,0);
+  g.addColorStop(0,'rgba(255,255,255,0)');
+  g.addColorStop(.25,'rgba(255,255,255,.05)');
+  g.addColorStop(.5,'rgba(255,255,255,.14)');
+  g.addColorStop(.75,'rgba(255,255,255,.05)');
+  g.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.strokeStyle=g; ctx.lineWidth=.8;
+  ctx.beginPath(); ctx.moveTo(-W/2,0); ctx.lineTo(W/2,0); ctx.stroke();
+
+  // pivot dot — breathes, brightens near center
+  const nearCenter=1-Math.min(1,Math.abs(my-H/2)/(H*.18));
+  const pulse=.45+Math.sin(t*2.2)*.15+nearCenter*.3;
+  const r=2+nearCenter*2;
+  ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2);
+  ctx.fillStyle=`rgba(255,255,255,${pulse})`; ctx.fill();
+
+  // soft halo on pivot when near center
+  if(nearCenter>.4){
+    ctx.beginPath(); ctx.arc(0,0,14,0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,255,255,${nearCenter*.04})`; ctx.fill();
+  }
+  ctx.restore();
+
+  // words
+  words.forEach(w=>w.draw(t,tilt,flipped,W,H));
+
+  // "noon" label — only when nearly flat
+  nl.style.opacity=Math.abs(tilt)<.007?'.35':'0';
+
+  requestAnimationFrame(frame);
+}
+
+addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+addEventListener('click',()=>{
+  flipped=!flipped;
+  // flash
+  ctx.save();
+  ctx.fillStyle='rgba(255,255,255,.06)';
+  ctx.fillRect(0,0,W,H);
+  ctx.restore();
+});
+addEventListener('resize',init);
+
+init(); frame();
+</script>
+</body>
+</html>
