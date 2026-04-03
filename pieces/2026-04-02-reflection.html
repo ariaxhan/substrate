@@ -1,0 +1,36 @@
+<section data-date='2026-04-02' data-type='reflection'>
+<style>
+#v{position:fixed;inset:0;background:#000;overflow:hidden;cursor:crosshair}
+.p{position:absolute;border-radius:50%;background:#fff;opacity:0;transition:opacity 1.2s,box-shadow 1.2s;transform:translate(-50%,-50%)}
+#t{position:absolute;bottom:22%;width:100%;text-align:center;font:italic 1.2rem Georgia,serif;color:#ffe;opacity:0;transition:opacity 5s;letter-spacing:.5em;pointer-events:none}
+</style>
+<div id=v><div id=t>rest</div></div>
+<script>
+(()=>{
+let v=document.getElementById('v'),t=document.getElementById('t'),S=[],N=90,m=0,tid;
+let W=innerWidth,H=innerHeight;
+for(let i=0;i<N;i++){
+let p=document.createElement('div'),x=Math.random()*W,y=Math.random()*H,r=Math.random()*1.5+.5;
+p.className='p';p.style.left=x+'px';p.style.top=y+'px';p.style.width=r*2+'px';p.style.height=r*2+'px';
+p._x=x;p._y=y;p._r=r;p._f=0;
+v.appendChild(p);S.push(p)
+}
+v.onmousemove=e=>{
+let mx=e.clientX,my=e.clientY;
+S.forEach(s=>{
+if(s._f)return;
+let d=Math.hypot(mx-s._x,my-s._y),o=Math.max(0,1-d/170);
+s.style.opacity=o;
+s.style.boxShadow=o>.05?`0 0 ${o*s._r*6}px rgba(255,255,220,${o*.8})`:'none'
+});
+if(!m){m=1;setTimeout(()=>t.style.opacity='.12',7e3)}
+clearTimeout(tid);tid=setTimeout(()=>S.forEach(s=>{if(!s._f)s.style.opacity=0}),2e3)
+};
+v.onclick=e=>{
+let mx=e.clientX,my=e.clientY,best=null,bd=Infinity;
+S.forEach(s=>{let d=Math.hypot(mx-s._x,my-s._y);if(d<bd){bd=d;best=s}});
+if(best&&bd<100&&!best._f){best._f=1;best.style.transition='none';best.style.opacity=.9;best.style.boxShadow=`0 0 ${best._r*5}px rgba(255,255,200,.6)`}
+};
+})();
+</script>
+</section>
