@@ -1,0 +1,39 @@
+<section data-date='2026-04-03' data-type='digest'>
+<style>
+canvas{display:block;cursor:crosshair}
+#h{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);color:#1a2d42;font:11px monospace;pointer-events:none;letter-spacing:.1em;transition:opacity 1.8s}
+#wl{position:absolute;pointer-events:none;font:italic 14px Georgia,serif;color:#5ec8ff;opacity:0;transition:opacity .35s;white-space:nowrap}
+</style>
+<canvas id=c></canvas>
+<div id=h>click to accumulate</div>
+<div id=wl></div>
+<script>
+const cv=document.getElementById('c'),
+x=cv.getContext('2d'),
+h=document.getElementById('h'),
+wl=document.getElementById('wl'),
+V=["pattern","signal","emergent","cluster","lattice","order","noise","memory","weight","dense","sparse","recognize","accumulate","crystallize","structure","knowledge","link","graph","index","echo","field","gradient","threshold","collapse","expand"],
+ns=[],D=158;
+function sz(){cv.width=innerWidth;cv.height=innerHeight}sz();onresize=sz;
+function frame(){
+  x.fillStyle='rgba(5,8,16,.88)';x.fillRect(0,0,cv.width,cv.height);
+  for(let i=0;i<ns.length;i++)for(let j=i+1;j<ns.length;j++){
+    const d=Math.hypot(ns[i].x-ns[j].x,ns[i].y-ns[j].y);
+    if(d<D){x.strokeStyle=`rgba(55,135,215,${(1-d/D)*.55})`;x.lineWidth=.7;x.beginPath();x.moveTo(ns[i].x,ns[i].y);x.lineTo(ns[j].x,ns[j].y);x.stroke()}
+  }
+  for(const n of ns){x.beginPath();x.arc(n.x,n.y,2.5,0,7);x.fillStyle='rgba(105,195,255,.9)';x.fill()}
+  requestAnimationFrame(frame)
+}
+frame();
+cv.onclick=e=>{
+  ns.push({x:e.clientX,y:e.clientY,w:V[Math.floor(Math.random()*V.length)]});
+  h.textContent=ns.length<3?'keep going':ns.length<8?'patterns forming':ns.length<17?'crystallizing':'';
+};
+cv.onmousemove=e=>{
+  let cl=null,md=52;
+  for(const n of ns){const d=Math.hypot(n.x-e.clientX,n.y-e.clientY);if(d<md){md=d;cl=n}}
+  if(cl){wl.style.cssText=`opacity:1;left:${cl.x+14}px;top:${cl.y-9}px`;wl.textContent=cl.w}
+  else wl.style.opacity=0
+};
+</script>
+</section>
