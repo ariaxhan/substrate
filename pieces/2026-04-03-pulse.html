@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>noon</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#0b0907;cursor:crosshair}
+#pivot{position:fixed;inset:0;transform-origin:50% 50%;will-change:transform}
+#above{position:absolute;top:0;left:0;right:0;height:50%;background:#0c1118}
+#below{position:absolute;bottom:0;left:0;right:0;height:50%;background:#120d07}
+#seam{position:absolute;top:50%;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent 0%,#b8954a 25%,#d4ab62 50%,#b8954a 75%,transparent 100%);transform:translateY(-50%);opacity:.55;transition:opacity .3s}
+.w{position:absolute;font-family:Georgia,"Times New Roman",serif;font-style:italic;pointer-events:none;letter-spacing:.07em}
+#noon{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font:300 .8em/1 "Courier New",monospace;letter-spacing:.45em;color:#c8a256;opacity:0;transition:opacity .7s;pointer-events:none;white-space:nowrap;z-index:10}
+#hint{position:fixed;bottom:1.8em;left:50%;transform:translateX(-50%);font:.65em/1 "Courier New",monospace;letter-spacing:.25em;color:rgba(180,160,120,.2);pointer-events:none}
+</style>
+</head>
+<body>
+<section data-date='2026-04-03' data-type='pulse'>
+<div id=pivot>
+  <div id=above></div>
+  <div id=below></div>
+  <div id=seam></div>
+</div>
+<div id=noon>— noon —</div>
+<div id=hint>click to level</div>
+<script>
+const pv=document.getElementById('pivot'),
+      sm=document.getElementById('seam'),
+      no=document.getElementById('noon'),
+      ht=document.getElementById('hint');
+
+const bef=["before","not yet","almost","still rising","the approach","becoming","early","not quite"],
+      aft=["after","already","later","still falling","the decline","having been","late","not quite"];
+
+let locked=false,tid;
+
+// seed words into each half
+function plant(words,top){
+  words.forEach(t=>{
+    const el=document.createElement('span');
+    el.className='w';
+    el.textContent=t;
+    const x=8+Math.random()*84,
+          y=top?(3+Math.random()*41):(55+Math.random()*41),
+          sz=.7+Math.random()*.55,
+          op=top?(0.12+Math.random()*.2):(0.1+Math.random()*.18),
+          r=180,g=top?195:155,b=top?230:100;
+    el.style.cssText=`left:${x}%;top:${y}%;font-size:${sz}em;color:rgba(${r},${g},${b},${op})`;
+    pv.appendChild(el);
+  });
+}
+plant(bef,true);
+plant(aft,false);
+
+document.addEventListener('mousemove',e=>{
+  if(locked)return;
+  const x=e.clientX/innerWidth-.5;
+  pv.style.transform=`rotate(${x*13}deg)`;
+  const nearSeam=Math.abs(e.clientY/innerHeight-.5)<.09;
+  sm.style.opacity=nearSeam?.85:.5;
+  ht.style.opacity=nearSeam?.35:.0;
+});
+
+document.addEventListener('click',()=>{
+  if(locked)return;
+  locked=true;
+  clearTimeout(tid);
+  pv.style.transition='transform 1.4s cubic-bezier(.19,1,.22,1)';
+  pv.style.transform='rotate(0deg)';
+  sm.style.opacity='1';
+  no.style.opacity='1';
+  ht.style.opacity='0';
+  tid=setTimeout(()=>{
+    no.style.opacity='0';
+    sm.style.opacity='.55';
+    pv.style.transition='transform .35s ease';
+    locked=false;
+  },2400);
+});
+</script>
+</section>
+</body>
+</html>
