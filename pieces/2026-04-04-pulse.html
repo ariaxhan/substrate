@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>pulse</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#f0ece4;cursor:crosshair}
+#s{position:absolute;inset:0}
+#a{position:absolute;height:1px;width:60vw;background:#2a2520;left:50%;top:50%;will-change:transform}
+#p{position:absolute;width:7px;height:7px;border-radius:50%;background:#2a2520;left:50%;top:50%;transform:translate(-50%,-50%);will-change:transform}
+.w{position:absolute;font:200 11px/1 -apple-system,Helvetica Neue,sans-serif;letter-spacing:.35em;text-transform:uppercase;color:#2a2520;top:50%;white-space:nowrap;user-select:none}
+#wl{right:calc(50% + 31vw)}
+#wr{left:calc(50% + 31vw)}
+.r{position:absolute;border-radius:50%;border:1px solid #9a8f86;pointer-events:none;left:50%;top:50%;opacity:0;animation:rp 1.4s ease-out forwards}
+@keyframes rp{from{width:7px;height:7px;opacity:.45;transform:translate(-50%,-50%)}to{width:88px;height:88px;opacity:0;transform:translate(-50%,-50%)}}
+</style>
+</head>
+<body>
+<section data-date='2026-04-04' data-type='pulse'>
+<div id="s">
+  <div id="a"></div>
+  <div id="p"></div>
+  <span class="w" id="wl"></span>
+  <span class="w" id="wr"></span>
+</div>
+</section>
+<script>
+const P=[['before','after'],['rise','fall'],['open','close'],['light','dark'],
+         ['begin','end'],['dawn','dusk'],['still','motion'],['first','last']];
+const ax=document.getElementById('a'),pt=document.getElementById('p'),
+      wl=document.getElementById('wl'),wr=document.getElementById('wr'),
+      sc=document.querySelector('#s');
+let pi=0,tilt=0,tt=0,locked=0,tick=0,ws=1,near=0,lastR=0;
+
+function set(i){wl.textContent=P[i][0];wr.textContent=P[i][1];}
+set(0);
+
+function emit(){
+  const r=document.createElement('div');
+  r.className='r';sc.appendChild(r);
+  r.addEventListener('animationend',()=>r.remove());
+}
+
+document.addEventListener('mousemove',e=>{
+  if(!locked)tt=((e.clientX/innerWidth)-.5)*18;
+  const dx=e.clientX-innerWidth/2,dy=e.clientY-innerHeight/2;
+  near=dx*dx+dy*dy<2500?1:0;
+});
+
+document.addEventListener('click',()=>{
+  emit();locked=1;tt=0;
+  setTimeout(()=>{pi=(pi+1)%P.length;set(pi);locked=0;},800);
+});
+
+(function loop(){
+  tick+=.01;
+  tilt+=(tt-tilt)*.06;
+  const b=locked?0:Math.sin(tick)*.28;
+  const ang=tilt+b;
+  const hw=.3*innerWidth,rad=ang*Math.PI/180,dy=Math.sin(rad)*hw;
+  ax.style.transform=`translate(-50%,-50%) rotate(${ang}deg)`;
+  wl.style.transform=`translateY(calc(-50% + ${-dy}px))`;
+  wr.style.transform=`translateY(calc(-50% + ${dy}px))`;
+  const ts=near?2.4:1;ws+=(ts-ws)*.1;
+  pt.style.transform=`translate(-50%,-50%) scale(${ws})`;
+  const now=Date.now();
+  if(near&&now-lastR>1500){lastR=now;emit();}
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
