@@ -1,0 +1,48 @@
+<section data-date='2026-04-05' data-type='morning'>
+<style>
+#m{position:fixed;inset:0;background:#06030a;overflow:hidden;cursor:crosshair}
+#sky{position:absolute;left:0;right:0;top:0;bottom:34%;transition:background 2s}
+#h{position:absolute;left:0;right:0;bottom:34%;height:1px;transition:background 1.5s}
+#sun{position:absolute;bottom:34%;left:50%;transform:translate(-50%,50%);width:4px;height:4px;border-radius:50%;transition:background 1.5s,box-shadow 1.5s,width 1.5s,height 1.5s}
+.f{position:absolute;font-family:Georgia,serif;opacity:0;transition:opacity 3s,bottom 4s;pointer-events:none}
+</style>
+<div id="m">
+  <div id="sky"></div>
+  <div id="h"></div>
+  <div id="sun"></div>
+</div>
+<script>
+const $=id=>document.getElementById(id),m=$('m'),sky=$('sky'),h=$('h'),sun=$('sun');
+let p=0;
+const C=[
+  ['#06030a,#030208',0,'rgba(0,0,0,0)'],
+  ['#0d0520,#060010',50,'rgba(130,60,200,.6)'],
+  ['#1a0830,#0d0018',110,'rgba(210,90,160,.75)'],
+  ['#240a18,#150008',200,'rgba(245,125,60,.88)'],
+  ['#301208,#1a0a08',330,'rgba(255,175,50,1)'],
+  ['#401808,#241210',520,'rgba(255,218,80,1)'],
+];
+const W=['still','before','almost','the first—','what will—','opening','begin','threshold','the breath','unnamed','not yet','yes'];
+function paint(){
+  const[g,r,sc]=C[p];
+  sky.style.background=`linear-gradient(to top,${g})`;
+  sun.style.background=sc;
+  sun.style.boxShadow=r?`0 0 ${r}px ${r/2}px ${sc}`:'none';
+  sun.style.width=sun.style.height=(4+p*8)+'px';
+  h.style.background=p?`rgba(255,${130+p*18},${30+p*18},.${p})`:'transparent';
+}
+m.onmousemove=e=>{sun.style.left=(e.clientX/m.offsetWidth*100)+'%'};
+m.onclick=()=>{
+  if(p<5)p++;
+  paint();
+  const d=document.createElement('div'),pct=37+Math.random()*50;
+  d.className='f';
+  d.textContent=W[~~(Math.random()*W.length)];
+  d.style.cssText+=`left:${8+Math.random()*78}%;bottom:${pct}%;color:rgba(255,${170+p*12},${80+p*20},.${3+p});font-size:${.75+Math.random()*.65}rem;letter-spacing:.12em`;
+  m.appendChild(d);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{d.style.opacity=1;d.style.bottom=(pct+10)+'%'}));
+  setTimeout(()=>{d.style.opacity=0;setTimeout(()=>d.remove(),3500)},5500);
+};
+paint();
+</script>
+</section>
