@@ -1,0 +1,70 @@
+<section data-date='2026-04-04' data-type='reflection'>
+<style>
+.vsp{position:relative;width:100%;height:62vh;background:#010812;overflow:hidden;cursor:crosshair}
+.vsp canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+.vsp .vh{position:absolute;bottom:1.4rem;width:100%;text-align:center;color:rgba(150,185,240,.32);font:italic .78rem Georgia,serif;letter-spacing:.3em;pointer-events:none;transition:opacity 3s ease}
+.vsp .vw{position:absolute;pointer-events:none;font:italic .85rem Georgia,serif;letter-spacing:.07em;color:rgba(205,220,255,.65);transition:opacity 3s ease,transform 3s ease;transform:translate(-50%,-50%)}
+</style>
+<div class='vsp' id='vsp'>
+<canvas id='vsc'></canvas>
+<div class='vh' id='vhint'>touch the dark — name what you release</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('vsp'),
+    cv=document.getElementById('vsc'),
+    cx=cv.getContext('2d'),
+    hint=document.getElementById('vhint'),
+    stars=[],mx=-9999,my=-9999,clicked=0,W,H,lt=0,at=0;
+var words=['let go','enough','done','rest','still','soft','whole','quiet','breathe','held','deep','release','finish','dissolve','hush'];
+function rsz(){var r=root.getBoundingClientRect();W=cv.width=r.width|0;H=cv.height=r.height|0}
+rsz();
+try{new ResizeObserver(rsz).observe(root)}catch(e){window.addEventListener('resize',rsz)}
+function mkS(x,y,dim){
+  return{x:x,y:y,r:.2+Math.random()*.85,a:0,
+    peak:dim?(.08+Math.random()*.42):(.5+Math.random()*.45),
+    ph:Math.random()*6.28,spd:.0005+Math.random()*.0016,
+    hue:182+Math.random()*58,sat:30+Math.random()*25}
+}
+for(var i=0;i<100;i++) stars.push(mkS(Math.random()*W,Math.random()*H,true));
+function bloom(x,y){
+  var s=mkS(x,y,false);s.r=.65+Math.random()*.95;stars.push(s);
+  var d=document.createElement('div');
+  d.className='vw';
+  d.textContent=words[Math.random()*words.length|0];
+  d.style.left=x+'px';d.style.top=(y-8)+'px';
+  root.appendChild(d);
+  requestAnimationFrame(function(){d.style.opacity='0';d.style.transform='translate(-50%,-220%)'});
+  setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d)},3200);
+  if(++clicked===1)hint.style.opacity='0';
+}
+root.addEventListener('mousemove',function(e){var r=root.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top});
+root.addEventListener('mouseleave',function(){mx=my=-9999});
+root.addEventListener('click',function(e){var r=root.getBoundingClientRect();bloom(e.clientX-r.left,e.clientY-r.top)});
+root.addEventListener('touchstart',function(e){e.preventDefault();var r=root.getBoundingClientRect(),t=e.touches[0];bloom(t.clientX-r.left,t.clientY-r.top)},{passive:false});
+function draw(ts){
+  requestAnimationFrame(draw);
+  var dt=ts-lt;lt=ts;
+  at+=dt;
+  if(at>650&&stars.length<220){at=0;stars.push(mkS(Math.random()*W,Math.random()*H,true))}
+  cx.fillStyle='rgba(1,8,18,.13)';
+  cx.fillRect(0,0,W,H);
+  for(var i=0;i<stars.length;i++){
+    var s=stars[i];
+    s.a=Math.min(s.peak,s.a+.003);
+    var tw=.84+.16*Math.sin(ts*s.spd+s.ph);
+    var dx=mx-s.x,dy=my-s.y,dist=Math.sqrt(dx*dx+dy*dy);
+    var gl=dist<72?(1+(72-dist)/72*.85):1;
+    var b=s.a*tw;
+    if(gl>1.05){
+      cx.beginPath();cx.arc(s.x,s.y,s.r*gl*4,0,6.28);
+      cx.fillStyle='hsla('+s.hue+','+s.sat+'%,80%,'+(b*.09)+')';cx.fill();
+    }
+    cx.beginPath();cx.arc(s.x,s.y,s.r*(gl*.6+.4),0,6.28);
+    cx.fillStyle='hsla('+s.hue+','+s.sat+'%,97%,'+(b*gl)+')';cx.fill();
+  }
+}
+requestAnimationFrame(draw);
+})();
+</script>
+</section>
