@@ -1,0 +1,59 @@
+<section data-date='2026-04-05' data-type='pulse'>
+<style>
+#p{position:fixed;inset:0;background:#080808;overflow:hidden;cursor:crosshair}
+#ln{position:absolute;left:-10%;right:-10%;height:1px;background:rgba(210,210,210,.25);transform-origin:center center}
+#bf{position:absolute;left:0;right:0;top:0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:22px}
+#af{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:flex-start;justify-content:center;padding-top:22px}
+.w{font-family:Georgia,serif;letter-spacing:.4em;text-transform:uppercase;font-weight:400}
+#bw{color:#9bbdd4}
+#aw{color:#d4a86a}
+#nw{position:absolute;top:50%;left:0;right:0;text-align:center;transform:translateY(-50%);font-family:Georgia,serif;font-size:9px;letter-spacing:1em;color:#ffffef;text-transform:uppercase;opacity:0;pointer-events:none}
+</style>
+<div id="p">
+<div id="bf"><div class="w" id="bw">before</div></div>
+<div id="ln"></div>
+<div id="af"><div class="w" id="aw">after</div></div>
+<div id="nw">noon</div>
+</div>
+<script>
+(()=>{
+const $=id=>document.getElementById(id),
+p=$('p'),ln=$('ln'),bf=$('bf'),af=$('af'),bw=$('bw'),aw=$('aw'),nw=$('nw');
+let tp=50,tr=0,cp=50,cr=0,fr=false;
+
+function draw(pct,rot){
+  ln.style.top=pct+'vh';
+  ln.style.transform=`rotate(${rot}deg)`;
+  bf.style.height=pct+'vh';
+  af.style.top=pct+'vh';
+  af.style.height=(100-pct)+'vh';
+  const a=pct/100,b=1-a;
+  bw.style.fontSize=(8+a*16)+'px';
+  bw.style.opacity=.1+a*.9;
+  aw.style.fontSize=(8+b*16)+'px';
+  aw.style.opacity=.1+b*.9;
+  nw.style.opacity=Math.max(0,1-Math.abs(pct-50)/2.5);
+}
+
+function loop(){
+  cp+=(tp-cp)*.1;
+  cr+=(tr-cr)*.08;
+  draw(cp,cr);
+  requestAnimationFrame(loop);
+}
+
+p.onmousemove=e=>{
+  if(fr)return;
+  tp=e.clientY/innerHeight*100;
+  tr=(e.clientX/innerWidth-.5)*12;
+};
+
+p.onclick=()=>{
+  fr=!fr;
+  if(fr){tp=50;tr=0;}
+};
+
+loop();
+})();
+</script>
+</section>
