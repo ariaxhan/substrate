@@ -1,0 +1,78 @@
+<!doctype html>
+<html><head>
+<meta charset="utf-8">
+<title>Precipitate</title>
+<style>
+*{margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#0a0812}
+canvas{display:block}
+</style>
+</head>
+<body>
+<section data-date='2026-04-05' data-type='digest'>
+<canvas id=c></canvas>
+<script>
+const cv=document.getElementById('c'),cx=cv.getContext('2d');
+cv.width=innerWidth;cv.height=innerHeight;
+const W=["signal","noise","pattern","cluster","emerge","structure",
+"memory","threshold","attention","weight","vector","layer",
+"gradient","crystal","form","precipitate","cohere","align",
+"bind","lattice","learn","observe","trace","know","become"];
+let mx=cv.width/2,my=cv.height/2;
+const P=W.map(w=>({
+  w,x:Math.random()*cv.width,y:Math.random()*cv.height,
+  vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5,
+  fixed:0,sz:11+Math.random()*7,a:.25+Math.random()*.2
+}));
+const seeds=[];
+addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+addEventListener('click',e=>{
+  seeds.push({x:e.clientX,y:e.clientY});
+  P.forEach(p=>{
+    if(!p.fixed&&Math.hypot(p.x-e.clientX,p.y-e.clientY)<140)
+      {p.fixed=1;p.a=.92}
+  })
+});
+(function loop(){
+  cx.fillStyle='rgba(10,8,18,.1)';
+  cx.fillRect(0,0,cv.width,cv.height);
+  P.forEach(p=>{
+    if(!p.fixed){
+      const d=Math.hypot(p.x-mx,p.y-my);
+      if(d<240){p.vx+=(mx-p.x)/d*.02;p.vy+=(my-p.y)/d*.02}
+      seeds.forEach(s=>{
+        const sd=Math.hypot(p.x-s.x,p.y-s.y);
+        if(sd<170){p.vx+=(s.x-p.x)/sd*.028;p.vy+=(s.y-p.y)/sd*.028}
+      });
+      p.vx*=.97;p.vy*=.97;p.x+=p.vx;p.y+=p.vy;
+      if(p.x<0)p.x=cv.width; if(p.x>cv.width)p.x=0;
+      if(p.y<0)p.y=cv.height;if(p.y>cv.height)p.y=0;
+      const d2=Math.hypot(p.x-mx,p.y-my);
+      if(d2<210){
+        cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(mx,my);
+        cx.strokeStyle=`rgba(190,170,240,${(1-d2/210)*.14})`;
+        cx.lineWidth=.4;cx.stroke()
+      }
+    }
+  });
+  for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){
+    if(!P[i].fixed||!P[j].fixed)continue;
+    const d=Math.hypot(P[i].x-P[j].x,P[i].y-P[j].y);
+    if(d<190){
+      cx.beginPath();cx.moveTo(P[i].x,P[i].y);cx.lineTo(P[j].x,P[j].y);
+      cx.strokeStyle=`rgba(240,200,80,${(1-d/190)*.65})`;
+      cx.lineWidth=.5;cx.stroke()
+    }
+  }
+  P.forEach(p=>{
+    cx.font=`${p.sz}px Georgia`;
+    cx.fillStyle=p.fixed
+      ?`rgba(252,244,218,${p.a})`
+      :`rgba(178,165,222,${p.a})`;
+    cx.fillText(p.w,p.x,p.y)
+  });
+  requestAnimationFrame(loop)
+})()
+</script>
+</section>
+</body></html>
