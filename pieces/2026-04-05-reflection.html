@@ -1,0 +1,85 @@
+<section data-date='2026-04-05' data-type='reflection'>
+<style>
+.ngv{position:relative;width:100%;height:64vh;background:#060410;overflow:hidden;cursor:crosshair}
+.ngv canvas{position:absolute;inset:0;width:100%;height:100%}
+.ng-h{position:absolute;bottom:1.2rem;width:100%;text-align:center;color:rgba(200,190,240,.18);font:italic .72rem Georgia,serif;letter-spacing:.32em;pointer-events:none;transition:opacity 4s}
+</style>
+<div class='ngv' id='ngv'><canvas id='ngc'></canvas>
+<div class='ng-h' id='ngh'>move to find what the dark holds · click to name it</div></div>
+<script>
+(function(){
+var root=document.getElementById('ngv'),cv=document.getElementById('ngc'),
+    cx=cv.getContext('2d'),hint=document.getElementById('ngh'),
+    stars=[],mx=-9999,my=-9999,W,H,lt=0,la=0,nclicks=0,rdy=false;
+var V=['done','still','held','rest','soft','dim','slow','hush','low','deep','cool','whole','known','clear','let','long','end','once','dark','safe','be','full','wait','near'];
+var P=['the day has closed','you were enough','nothing asks for you','rest now, rest','only this remains','the work is done'];
+function rsz(){var r=root.getBoundingClientRect();W=cv.width=r.width|0;H=cv.height=r.height|0}
+rsz(); window.addEventListener('resize',rsz);
+function mk(x,y){
+  var c=x!==undefined;
+  return{x:c?x:Math.random()*W,y:c?y:Math.random()*H,
+    r:.4+Math.random()*.7,word:c?P[~~(Math.random()*P.length)]:V[stars.length%V.length],
+    click:c,ph:Math.random()*6.28,spd:.0003+Math.random()*.001,born:0}
+}
+for(var i=0;i<6;i++) stars.push(mk());
+function draw(ts){
+  requestAnimationFrame(draw);
+  cx.fillStyle='rgba(6,4,16,.16)'; cx.fillRect(0,0,W,H);
+  if(!rdy){for(var i=0;i<stars.length;i++)stars[i].born=ts;rdy=true;la=ts;}
+  if(stars.length<V.length&&ts-la>2600){var s=mk();s.born=ts;stars.push(s);la=ts;}
+  for(var i=0;i<stars.length;i++){
+    for(var j=i+1;j<stars.length;j++){
+      var a=stars[i],b=stars[j];
+      var d=Math.sqrt((a.x-b.x)*(a.x-b.x)+(a.y-b.y)*(a.y-b.y));
+      if(d>135)continue;
+      var ma=Math.sqrt((a.x-mx)*(a.x-mx)+(a.y-my)*(a.y-my));
+      var mb=Math.sqrt((b.x-mx)*(b.x-mx)+(b.y-my)*(b.y-my));
+      var md=Math.min(ma,mb);
+      if(md>160)continue;
+      cx.strokeStyle='rgba(190,178,232,'+((1-d/135)*(1-md/160)*.22)+')';
+      cx.lineWidth=.4;cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);cx.stroke();
+    }
+  }
+  for(var i=0;i<stars.length;i++){
+    var s=stars[i]; if(!s.born)continue;
+    var age=Math.min((ts-s.born)/2200,1);
+    var pulse=.58+.42*Math.sin(ts*s.spd+s.ph);
+    var dm=Math.sqrt((s.x-mx)*(s.x-mx)+(s.y-my)*(s.y-my));
+    var near=Math.max(0,1-dm/95);
+    var glow=s.r*(1.4+near*4.5)*age;
+    if(glow>.08){
+      var g=cx.createRadialGradient(s.x,s.y,0,s.x,s.y,glow*4);
+      g.addColorStop(0,'rgba(232,226,255,'+(pulse*(.3+near*.6)*age)+')');
+      g.addColorStop(.38,'rgba(165,148,220,'+(pulse*.09*age)+')');
+      g.addColorStop(1,'rgba(6,4,16,0)');
+      cx.fillStyle=g;cx.beginPath();cx.arc(s.x,s.y,glow*4,0,6.28);cx.fill();
+    }
+    var show=near>.18||(s.click&&age>.4);
+    if(show){
+      var op=near>.18?near*age:(s.click?age*.42:0);
+      if(op>.015){
+        cx.fillStyle='rgba(215,208,248,'+op+')';
+        cx.font=(s.click?'italic ':'')+Math.round(10+near*3.5)+'px Georgia,serif';
+        cx.textAlign='center';
+        cx.fillText(s.word,s.x,s.y-(13+near*10));
+      }
+    }
+  }
+  lt=ts;
+}
+root.addEventListener('mousemove',function(e){var r=root.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top});
+root.addEventListener('mouseleave',function(){mx=my=-9999});
+root.addEventListener('click',function(e){
+  var r=root.getBoundingClientRect(),s=mk(e.clientX-r.left,e.clientY-r.top);
+  s.born=lt||1;stars.push(s);if(++nclicks===1)hint.style.opacity='0';
+  if(stars.length>50)stars.shift();
+});
+root.addEventListener('touchstart',function(e){
+  e.preventDefault();var r=root.getBoundingClientRect(),t=e.touches[0];
+  var s=mk(t.clientX-r.left,t.clientY-r.top);s.born=lt||1;stars.push(s);
+  if(stars.length>50)stars.shift();
+},{passive:false});
+requestAnimationFrame(draw);
+})();
+</script>
+</section>
