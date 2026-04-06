@@ -1,0 +1,83 @@
+<section data-date='2026-04-06' data-type='digest'><style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#f9f7f1;overflow:hidden;cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+canvas{position:fixed;top:0;left:0;pointer-events:none}
+.w{position:fixed;font-size:11px;letter-spacing:.1em;color:rgba(44,36,20,.45);transform:translate(-50%,-50%);pointer-events:none;transition:color .6s}
+.w.lit{color:rgba(44,36,20,.88)}
+#ghost{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font-size:20px;letter-spacing:.55em;font-style:italic;text-indent:.55em;color:rgba(130,95,30,0);pointer-events:none;transition:color 3s}
+#tally{position:fixed;bottom:18px;right:22px;font-size:9px;letter-spacing:.18em;color:rgba(44,36,20,.18);font-family:Georgia,serif}
+</style>
+<canvas id=c></canvas>
+<div id=ghost></div>
+<div id=tally></div>
+<script>
+const vocab='index entry record retrieve classify rank pattern weight frequency reference cite cross link thread trace archive layer sediment accumulate distill extract compress fold crystallize structure order signal noise remember forget encode decode surface depth echo residue margin annotation footnote keyword query result match cluster field gather parse hold sift sort weigh name'.split(' ');
+
+const cv=document.getElementById('c'),ctx=cv.getContext('2d'),gh=document.getElementById('ghost'),tl=document.getElementById('tally');
+let W,H,nodes=[],mx=0,my=0;
+
+function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight}
+resize();addEventListener('resize',resize);
+
+function add(x,y,delay){
+  setTimeout(()=>{
+    const el=document.createElement('div');
+    el.className='w';
+    el.textContent=vocab[Math.random()*vocab.length|0];
+    el.style.left=x+'px';
+    el.style.top=y+'px';
+    document.body.appendChild(el);
+    nodes.push({x,y,el});
+    const n=nodes.length;
+    tl.textContent=n+' entries';
+    if(n===13){flash('pattern')}
+    if(n===25){flash('structure')}
+    if(n===40){flash('emergence')}
+  },delay||0);
+}
+
+function flash(word){
+  gh.textContent=word;gh.style.color='rgba(130,95,30,.2)';
+  setTimeout(()=>gh.style.color='rgba(130,95,30,0)',3200);
+}
+
+for(let i=0;i<10;i++)add(W*.1+Math.random()*W*.8,H*.1+Math.random()*H*.8,i*180);
+
+addEventListener('click',e=>add(e.clientX,e.clientY));
+addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  nodes.forEach(n=>n.el.classList.remove('lit'));
+
+  for(let i=0;i<nodes.length;i++){
+    for(let j=i+1;j<nodes.length;j++){
+      const a=nodes[i],b=nodes[j],d=Math.hypot(a.x-b.x,a.y-b.y);
+      if(d<175){
+        const s=1-d/175;
+        ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);
+        ctx.strokeStyle=`rgba(90,65,20,${(s*.09).toFixed(3)})`;
+        ctx.lineWidth=s*.5;ctx.stroke();
+      }
+    }
+  }
+
+  nodes.forEach(n=>{
+    const d=Math.hypot(n.x-mx,n.y-my);
+    if(d<135){
+      const s=1-d/135;
+      ctx.beginPath();ctx.moveTo(mx,my);ctx.lineTo(n.x,n.y);
+      ctx.strokeStyle=`rgba(140,100,25,${(s*.55).toFixed(3)})`;
+      ctx.lineWidth=s*.8;ctx.stroke();
+      n.el.classList.add('lit');
+    }
+  });
+
+  ctx.beginPath();ctx.arc(mx,my,1.5,0,6.28);
+  ctx.fillStyle='rgba(140,100,25,.35)';ctx.fill();
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</section>
