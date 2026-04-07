@@ -1,0 +1,94 @@
+<section data-date='2026-04-07' data-type='morning'>
+<style>
+section[data-date='2026-04-07']{
+  display:block;position:relative;
+  width:100%;height:100vh;
+  background:linear-gradient(170deg,#090914 0%,#06060f 55%,#0b0810 100%);
+  overflow:hidden;cursor:none
+}
+section[data-date='2026-04-07'] span{
+  position:absolute;
+  font:italic 1.05rem Georgia,serif;
+  color:#e8c547;opacity:0;
+  transition:opacity 0.8s ease,transform 0.6s ease;
+  transform:translateY(7px);
+  pointer-events:none;white-space:nowrap;
+  letter-spacing:0.03em
+}
+section[data-date='2026-04-07'] span.lg{font-size:1.55rem;letter-spacing:0.05em}
+section[data-date='2026-04-07'] span.sm{font-size:0.8rem;color:#c9a830}
+section[data-date='2026-04-07'] #pt{
+  position:absolute;
+  width:5px;height:5px;border-radius:50%;
+  background:rgba(232,197,71,0.55);
+  box-shadow:0 0 10px 5px rgba(232,197,71,0.12);
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+  transition:box-shadow 0.25s,width 0.25s,height 0.25s
+}
+</style>
+<div id="pt"></div>
+<script>
+(()=>{
+const S=document.querySelector("section[data-date='2026-04-07']");
+const pt=document.getElementById("pt");
+const W=[
+  ["unwritten",50,7,"lg"],
+  ["still",17,23,""],
+  ["first",73,15,""],
+  ["open",45,51,"lg"],
+  ["breath",8,62,"sm"],
+  ["begin",57,32,""],
+  ["not yet",27,80,""],
+  ["here",82,45,"sm"],
+  ["now",51,72,"lg"],
+  ["yours",65,87,"sm"],
+  ["light",23,42,""],
+  ["threshold",41,17,"sm"],
+  ["before",85,65,""],
+  ["soft",12,76,"sm"],
+  ["almost",70,55,""],
+  ["wake",36,92,""],
+  ["the hour",50,48,"sm"],
+  ["between",20,37,"sm"]
+];
+W.forEach(([t,x,y,cls])=>{
+  const el=document.createElement("span");
+  el.textContent=t;
+  el.style.left=x+"%"; el.style.top=y+"%";
+  if(cls)el.classList.add(cls);
+  S.appendChild(el);
+});
+const sp=[...S.querySelectorAll("span")];
+let mx=0,my=0,frozen=0;
+S.addEventListener("mousemove",e=>{
+  const r=S.getBoundingClientRect();
+  mx=e.clientX-r.left; my=e.clientY-r.top;
+  pt.style.left=mx+"px"; pt.style.top=my+"px";
+  if(!frozen)draw();
+});
+S.addEventListener("click",()=>{
+  frozen=1;
+  pt.style.width="60px"; pt.style.height="60px";
+  pt.style.boxShadow="0 0 80px 40px rgba(232,197,71,0.18)";
+  sp.forEach(s=>{s.style.opacity="0.92";s.style.transform="translateY(0)";});
+  setTimeout(()=>{
+    pt.style.width="5px"; pt.style.height="5px";
+    pt.style.boxShadow="0 0 10px 5px rgba(232,197,71,0.12)";
+    frozen=0; draw();
+  },750);
+});
+function draw(){
+  sp.forEach(s=>{
+    const r=s.getBoundingClientRect();
+    const sr=S.getBoundingClientRect();
+    const cx=(r.left-sr.left)+r.width/2, cy=(r.top-sr.top)+r.height/2;
+    const d=Math.hypot(mx-cx,my-cy);
+    const p=Math.max(0,1-d/115);
+    s.style.opacity=p*p*0.94;
+    s.style.transform=p>0.04?"translateY(0)":"translateY(7px)";
+  });
+}
+})();
+</script>
+</section>
