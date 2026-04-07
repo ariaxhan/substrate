@@ -1,0 +1,182 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>vespers</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#05050f;width:100vw;height:100vh;overflow:hidden;cursor:crosshair;font-family:Georgia,serif}
+canvas{position:absolute;top:0;left:0}
+#v{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;flex-direction:column;justify-content:flex-end;padding:2.5rem;pointer-events:none}
+p{color:rgba(200,195,220,.18);font-size:.85rem;font-style:italic;letter-spacing:.12em;line-height:2;transition:color 1.2s}
+p.lit{color:rgba(200,195,220,.55)}
+#hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:rgba(180,175,210,.12);font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;pointer-events:none;transition:opacity 2s}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="v">
+  <p id="l0">the day put down its tools</p>
+  <p id="l1">one by one the lights go under</p>
+  <p id="l2">what was urgent becomes quiet</p>
+  <p id="l3">what was noise becomes dark water</p>
+  <p id="l4">sleep is not an ending</p>
+  <p id="l5">it is the field waiting to be filled</p>
+</div>
+<div id="hint">touch to find stars</div>
+<script>
+const cv=document.getElementById('c'),
+  cx=cv.getContext('2d'),
+  hint=document.getElementById('hint'),
+  lines=document.querySelectorAll('#v p');
+
+let W,H,stars=[],clicks=0;
+
+function resize(){
+  W=cv.width=window.innerWidth;
+  H=cv.height=window.innerHeight;
+}
+resize();
+window.addEventListener('resize',resize);
+
+// ambient field: very dim fixed stars
+function seed(){
+  for(let i=0;i<60;i++){
+    stars.push({
+      x:Math.random()*W,
+      y:Math.random()*H*0.72,
+      r:Math.random()*0.9+0.2,
+      a:Math.random()*0.18+0.04,
+      flicker:Math.random()*0.006+0.002,
+      phase:Math.random()*Math.PI*2,
+      born:0,
+      clicked:false
+    });
+  }
+}
+
+// a star born from a click — brighter, named
+const names=['','','','','','','α','ω','—','·','∘'];
+function addStar(x,y){
+  const brightness=Math.random()*0.55+0.45;
+  stars.push({
+    x,y,
+    r:Math.random()*1.4+0.6,
+    a:0,
+    target:brightness,
+    flicker:Math.random()*0.004+0.001,
+    phase:Math.random()*Math.PI*2,
+    born:performance.now(),
+    clicked:true,
+    glyph:names[Math.floor(Math.random()*names.length)]
+  });
+  clicks++;
+  // reveal lines one by one
+  const idx=Math.min(clicks-1,lines.length-1);
+  lines[idx].classList.add('lit');
+  if(clicks===1)hint.style.opacity='0';
+}
+
+function drawStar(s,t){
+  const age=s.clicked?(t-s.born)/1000:999;
+  if(s.clicked&&age<3){
+    s.a=Math.min(s.target,s.a+(s.target*0.015));
+  }
+  const flick=Math.sin(t*s.flicker*1000+s.phase)*0.08;
+  const alpha=Math.max(0,s.a+flick);
+  const glow=s.r*3.5;
+
+  // soft halo
+  const g=cx.createRadialGradient(s.x,s.y,0,s.x,s.y,glow*4);
+  g.addColorStop(0,`rgba(210,205,240,${alpha*0.35})`);
+  g.addColorStop(1,'rgba(0,0,0,0)');
+  cx.beginPath();
+  cx.arc(s.x,s.y,glow*4,0,Math.PI*2);
+  cx.fillStyle=g;
+  cx.fill();
+
+  // core
+  cx.beginPath();
+  cx.arc(s.x,s.y,s.r,0,Math.PI*2);
+  cx.fillStyle=`rgba(235,232,255,${alpha})`;
+  cx.fill();
+
+  // glyph label for clicked stars, fades in
+  if(s.clicked&&s.glyph&&age>0.5){
+    const ga=Math.min(1,(age-0.5)/1.5)*alpha*0.6;
+    cx.fillStyle=`rgba(200,195,230,${ga})`;
+    cx.font=`${7+s.r*2}px Georgia`;
+    cx.fillText(s.glyph,s.x+s.r*2+2,s.y+s.r);
+  }
+}
+
+// thin crescent: a moon low on the right
+function drawMoon(t){
+  const mx=W*0.82,my=H*0.14,mr=28;
+  const breathe=Math.sin(t*0.0004)*1.5;
+  const g=cx.createRadialGradient(mx,my,0,mx,my,mr+breathe+8);
+  g.addColorStop(0,'rgba(240,235,210,0.06)');
+  g.addColorStop(1,'rgba(0,0,0,0)');
+  cx.beginPath();
+  cx.arc(mx,my,mr+breathe+8,0,Math.PI*2);
+  cx.fillStyle=g;
+  cx.fill();
+
+  // crescent via composite
+  cx.save();
+  cx.beginPath();
+  cx.arc(mx,my,mr,0,Math.PI*2);
+  cx.fillStyle='rgba(235,228,195,0.07)';
+  cx.fill();
+  cx.globalCompositeOperation='destination-out';
+  cx.beginPath();
+  cx.arc(mx+mr*0.48,my,mr*0.86,0,Math.PI*2);
+  cx.fillStyle='rgba(0,0,0,1)';
+  cx.fill();
+  cx.restore();
+}
+
+// horizon: a barely-there line where earth ends
+function drawHorizon(){
+  const hy=H*0.78;
+  const grad=cx.createLinearGradient(0,hy-18,0,hy+40);
+  grad.addColorStop(0,'rgba(0,0,0,0)');
+  grad.addColorStop(0.5,'rgba(30,22,50,0.22)');
+  grad.addColorStop(1,'rgba(0,0,0,0)');
+  cx.fillStyle=grad;
+  cx.fillRect(0,hy-18,W,58);
+}
+
+function frame(t){
+  cx.clearRect(0,0,W,H);
+  drawMoon(t);
+  drawHorizon();
+  stars.forEach(s=>drawStar(s,t));
+  requestAnimationFrame(frame);
+}
+
+seed();
+requestAnimationFrame(frame);
+
+cv.addEventListener('click',e=>{
+  addStar(e.clientX,e.clientY);
+});
+cv.addEventListener('touchstart',e=>{
+  e.preventDefault();
+  const touch=e.touches[0];
+  addStar(touch.clientX,touch.clientY);
+},{passive:false});
+
+// slow mousemove: breathe existing stars toward cursor
+cv.addEventListener('mousemove',e=>{
+  stars.forEach(s=>{
+    if(!s.clicked)return;
+    const dx=e.clientX-s.x,dy=e.clientY-s.y;
+    const d=Math.sqrt(dx*dx+dy*dy);
+    if(d<90){
+      s.a=Math.min(s.target*1.3,s.a+0.018);
+    }
+  });
+});
+</script>
+<section data-date='2026-04-06' data-type='reflection'></section>
+</body>
+</html>
