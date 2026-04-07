@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Halfway</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+</style>
+</head>
+<body>
+<section data-date='2026-04-07' data-type='pulse'>
+<style>
+#stage{position:fixed;inset:0;cursor:crosshair;overflow:hidden}
+#top,#btm{position:absolute;width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden;transition:background .2s}
+#top{top:0;font:clamp(1.2rem,3.5vw,4rem) Georgia,'Times New Roman',serif;letter-spacing:.3em;text-transform:lowercase}
+#btm{bottom:0;font:clamp(1.2rem,3.5vw,4rem) 'Courier New',monospace;letter-spacing:.12em;text-transform:lowercase}
+#seam{position:absolute;left:0;right:0;height:1px;z-index:4;pointer-events:none}
+#mark{position:absolute;left:50%;transform:translateX(-50%);font:10px 'Courier New',monospace;letter-spacing:.2em;z-index:5;user-select:none;pointer-events:none;white-space:nowrap}
+@keyframes br{0%,100%{opacity:.65}50%{opacity:1}}
+#top,#btm{animation:br 5s ease-in-out infinite}
+#btm{animation-delay:2.5s}
+</style>
+<div id=stage>
+  <div id=top></div>
+  <div id=btm></div>
+  <div id=seam></div>
+  <div id=mark></div>
+</div>
+<script>
+const wa=['waking','ascending','first','opening','before','rising','half-full','brightening'],
+      wb=['sleeping','descending','last','closing','after','falling','half-gone','dimming'];
+let py=.5,wi=0,locked=false,anim,vy=0;
+
+const top=document.getElementById('top'),
+      btm=document.getElementById('btm'),
+      seam=document.getElementById('seam'),
+      mark=document.getElementById('mark'),
+      stage=document.getElementById('stage');
+
+function render(p){
+  const pct=p*100;
+  top.style.height=pct+'%';
+  btm.style.height=(100-pct)+'%';
+  seam.style.top=pct+'%';
+  mark.style.top='calc('+pct+'% - 9px)';
+
+  const tl=Math.round(62+p*16);
+  const bl=Math.round(7+p*9);
+  const bs=Math.round(18+p*12);
+  top.style.background='hsl(38,42%,'+tl+'%)';
+  top.style.color='hsl(25,35%,'+(32-Math.round(p*14))+'%)';
+  btm.style.background='hsl(228,'+bs+'%,'+bl+'%)';
+  btm.style.color='hsl(210,38%,'+(48+Math.round(p*18))+'%)';
+
+  const grad='linear-gradient(to right,transparent,hsl(38,28%,'+(52+Math.round(p*8))+'%) 25%,hsl(228,18%,'+(22+Math.round(p*8))+'%) 75%,transparent)';
+  seam.style.background=grad;
+
+  const a=Math.round(p*100),b=100-a;
+  mark.textContent=a+'\u2236'+b;
+  const mh=Math.round(38+(228-38)*p);
+  mark.style.color='hsl('+mh+',28%,'+(42+Math.round(p*16))+'%)';
+}
+
+stage.addEventListener('mousemove',function(e){
+  if(!locked){py=e.clientY/stage.clientHeight;render(py);}
+});
+
+stage.addEventListener('click',function(){
+  locked=true;
+  clearInterval(anim);
+  vy=0;
+  anim=setInterval(function(){
+    vy+=(0.5-py)*0.16;
+    vy*=0.78;
+    py+=vy;
+    render(py);
+    if(Math.abs(py-0.5)<0.0008&&Math.abs(vy)<0.00008){
+      py=0.5;vy=0;render(0.5);
+      clearInterval(anim);
+      setTimeout(function(){locked=false;},600);
+    }
+  },16);
+});
+
+function cycle(){
+  top.textContent=wa[wi%wa.length];
+  btm.textContent=wb[wi%wb.length];
+  wi++;
+}
+cycle();
+setInterval(cycle,4200);
+render(0.5);
+</script>
+</section>
+</body>
+</html>
