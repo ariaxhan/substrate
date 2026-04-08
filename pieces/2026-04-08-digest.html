@@ -1,0 +1,85 @@
+<section data-date='2026-04-08' data-type='digest'>
+<style>
+*{margin:0;padding:0}
+body{background:#04030e;overflow:hidden;cursor:none}
+canvas{position:fixed;inset:0}
+#h{position:fixed;bottom:1.8em;left:50%;transform:translateX(-50%);font:11px/1 Georgia,serif;color:#2a1e06;letter-spacing:.22em;pointer-events:none;transition:opacity 1.8s}
+</style>
+<canvas id=c></canvas>
+<div id=h>move to surface &middot; click to crystallize</div>
+<script>
+const cv=document.getElementById('c'),cx=cv.getContext('2d'),ht=document.getElementById('h');
+let W,H,mx=0,my=0,nodes=[],waves=[];
+const V=['observe','record','trace','pattern','signal','surface','depth','lattice','form','gather','emerge','structure','threshold','phase','nucleus','memory','order','chaos','bond','weight','field','force','potential','energy','state','density','index','cluster','gradient','layer'];
+
+function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+
+function init(){
+  nodes=V.map(w=>({
+    x:Math.random()*W, y:Math.random()*H,
+    vx:(Math.random()-.5)*.22, vy:(Math.random()-.5)*.22,
+    w, heat:0, frozen:false, sz:10+Math.random()*4
+  }));
+}
+
+function frame(){
+  cx.fillStyle='rgba(4,3,14,.9)';cx.fillRect(0,0,W,H);
+
+  waves=waves.filter(w=>{
+    w.r+=5;
+    let a=(1-w.r/w.max)*.5;
+    cx.strokeStyle=`rgba(200,150,30,${a})`;cx.lineWidth=1.2;
+    cx.beginPath();cx.arc(w.x,w.y,w.r,0,Math.PI*2);cx.stroke();
+    return w.r<w.max;
+  });
+
+  for(let i=0;i<nodes.length;i++){
+    if(!nodes[i].frozen)continue;
+    for(let j=i+1;j<nodes.length;j++){
+      if(!nodes[j].frozen)continue;
+      let d=Math.hypot(nodes[i].x-nodes[j].x,nodes[i].y-nodes[j].y);
+      if(d<130){
+        let a=(1-d/130)*nodes[i].heat*.4;
+        cx.strokeStyle=`rgba(160,110,20,${a})`;cx.lineWidth=.6;
+        cx.beginPath();cx.moveTo(nodes[i].x,nodes[i].y);cx.lineTo(nodes[j].x,nodes[j].y);cx.stroke();
+      }
+    }
+  }
+
+  cx.fillStyle='rgba(230,185,60,.85)';
+  cx.beginPath();cx.arc(mx,my,3,0,Math.PI*2);cx.fill();
+
+  nodes.forEach(n=>{
+    if(!n.frozen){
+      n.x+=n.vx;n.y+=n.vy;
+      if(n.x<5||n.x>W-5)n.vx*=-1;
+      if(n.y<5||n.y>H-5)n.vy*=-1;
+      let d=Math.hypot(n.x-mx,n.y-my);
+      let tgt=d<160?(1-d/160)*.9:0;
+      n.heat+=(tgt-n.heat)*.07;
+    } else {
+      n.heat=Math.min(1,n.heat+.007);
+    }
+    let a=n.frozen?Math.min(.95,.2+n.heat*.78):n.heat*.82;
+    if(a<.04)return;
+    cx.fillStyle=n.frozen?`rgba(240,200,75,${a})`:`rgba(175,125,38,${a})`;
+    cx.font=`${n.frozen?'italic ':''}${n.sz}px Georgia,serif`;
+    cx.fillText(n.w,n.x-n.w.length*n.sz*.27,n.y);
+  });
+
+  requestAnimationFrame(frame);
+}
+
+addEventListener('resize',()=>{resize();init()});
+addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;ht.style.opacity='0'});
+addEventListener('click',e=>{
+  waves.push({x:e.clientX,y:e.clientY,r:0,max:270});
+  nodes.forEach(n=>{
+    if(!n.frozen&&n.heat>.2&&Math.hypot(n.x-e.clientX,n.y-e.clientY)<160)
+      {n.frozen=true;n.heat=.55;}
+  });
+});
+
+resize();init();frame();
+</script>
+</section>
