@@ -1,0 +1,63 @@
+<section data-date='2026-04-08' data-type='pulse'>
+<style>
+#hlf{width:100%;height:100vh;overflow:hidden;cursor:crosshair;position:relative}
+#hlf-sc{position:absolute;width:160%;height:160%;top:-30%;left:-30%;transform-origin:center;transition:transform .07s linear}
+#hlf-tp{position:absolute;top:0;left:0;width:100%;height:50%;background:#ede5d4}
+#hlf-bt{position:absolute;bottom:0;left:0;width:100%;height:50%;background:#101624}
+#hlf-ln{position:absolute;top:50%;left:0;width:100%;height:1px;background:#c9a86a;transform:translateY(-.5px)}
+#hlf-pv{position:absolute;top:50%;left:50%;width:5px;height:5px;border-radius:50%;background:#c9a86a;transform:translate(-50%,-50%);z-index:2}
+.hlf-w{position:absolute;font-family:Georgia,'Times New Roman',serif;pointer-events:none;user-select:none;font-size:13px;letter-spacing:.05em}
+.hlf-a{color:#6a5540}
+.hlf-b{color:#7a8db0}
+#hlf-lb{position:absolute;bottom:18px;left:0;right:0;text-align:center;font-family:'Courier New',monospace;font-size:9px;letter-spacing:.38em;color:#c9a86a;opacity:0;transition:opacity .5s;text-transform:uppercase}
+</style>
+<div id='hlf'>
+  <div id='hlf-sc'>
+    <div id='hlf-tp'></div>
+    <div id='hlf-bt'></div>
+    <div id='hlf-ln'></div>
+    <div id='hlf-pv'></div>
+  </div>
+  <div id='hlf-lb'>—</div>
+</div>
+<script>
+(function(){
+var sc=document.getElementById('hlf-sc');
+var wr=document.getElementById('hlf');
+var lb=document.getElementById('hlf-lb');
+var tp=document.getElementById('hlf-tp');
+var bt=document.getElementById('hlf-bt');
+var aw=[['wake',13,30],['gather',68,20],['open',40,55],['rise',55,38],['before',26,70],['light',82,50]];
+var bw=[['rest',18,26],['close',62,16],['forget',35,50],['fall',78,40],['after',28,72],['dark',54,58]];
+function mk(d,p,c){
+  var el=document.createElement('div');
+  el.className='hlf-w '+c;
+  el.textContent=d[0];
+  el.style.left=d[1]+'%';
+  el.style.top=d[2]+'%';
+  el.style.opacity=(.35+Math.random()*.45).toFixed(2);
+  p.appendChild(el);
+}
+aw.forEach(function(d){mk(d,tp,'hlf-a');});
+bw.forEach(function(d){mk(d,bt,'hlf-b');});
+var lk=false,tid;
+wr.addEventListener('mousemove',function(e){
+  if(lk)return;
+  var dy=(e.clientY-window.innerHeight/2)/(window.innerHeight/2);
+  sc.style.transform='rotate('+(dy*9)+'deg)';
+});
+wr.addEventListener('click',function(){
+  if(lk)return;
+  lk=true;
+  sc.style.transition='transform .7s cubic-bezier(.34,1.56,.64,1)';
+  sc.style.transform='rotate(0deg)';
+  lb.style.opacity='1';
+  clearTimeout(tid);
+  tid=setTimeout(function(){
+    lb.style.opacity='0';
+    setTimeout(function(){lk=false;sc.style.transition='transform .07s linear';},500);
+  },950);
+});
+})();
+</script>
+</section>
