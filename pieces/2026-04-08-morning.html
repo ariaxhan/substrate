@@ -1,0 +1,85 @@
+<section data-date='2026-04-08' data-type='morning'>
+<style>
+section[data-date='2026-04-08']{
+  display:block;position:relative;
+  width:100%;height:100vh;
+  overflow:hidden;cursor:pointer;
+  background:#030612
+}
+section[data-date='2026-04-08'] #d{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 100% 62% at 50% 74%,#d4834e 0%,#8c3828 16%,#35134e 40%,#0a0620 70%,#030612 100%);
+  clip-path:circle(0px at 50% 50%)
+}
+section[data-date='2026-04-08'] .w{
+  position:absolute;
+  font-family:Georgia,'Palatino Linotype',serif;
+  font-style:italic;
+  color:#f2ca6a;
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+  opacity:0;
+  transition:opacity 1.1s ease;
+  letter-spacing:.05em;
+  text-shadow:0 0 28px rgba(238,172,52,.22)
+}
+</style>
+<div id="d"></div>
+<script>
+(()=>{
+const S=document.querySelector("section[data-date='2026-04-08']");
+const d=S.querySelector("#d");
+// [text, left%, top%, rem]
+const W=[
+  ["open",         50, 50, 3.4],
+  ["the eye",      50, 42, 1.5],
+  ["before",       34, 36, 1.0],
+  ["the mind",     65, 36, 1.0],
+  ["the day",      50, 27, 1.7],
+  ["arrives",      50, 65, 1.2],
+  ["first",        27, 56,  .9],
+  ["light",        72, 56,  .9],
+  ["already",      22, 46,  .7],
+  ["here",         77, 46,  .7],
+  ["without name", 50, 20,  .8],
+];
+const els=W.map(([t,x,y,f])=>{
+  const e=document.createElement("div");
+  e.className="w";
+  e.textContent=t;
+  e.style.left=x+"%";
+  e.style.top=y+"%";
+  e.style.fontSize=f+"rem";
+  S.appendChild(e);
+  return e;
+});
+let r=0,sp=.0014,go=1,done=0;
+S.addEventListener("click",()=>{sp=Math.min(sp+.004,.015)});
+function tick(){
+  if(!go)return;
+  r=Math.min(1,r+sp);
+  const pw=S.offsetWidth,ph=S.offsetHeight;
+  const mx=Math.sqrt(pw*pw+ph*ph)/2;
+  d.style.clipPath=`circle(${r*mx}px at 50% 50%)`;
+  els.forEach((e,i)=>{
+    const[,x,y]=W[i];
+    const dx=(x-50)/100*pw,dy=(y-50)/100*ph;
+    const dist=Math.sqrt(dx*dx+dy*dy)/mx;
+    e.style.opacity=Math.max(0,Math.min(.95,(r-dist)/.09));
+  });
+  if(r>=1&&!done){
+    done=1;go=0;
+    setTimeout(()=>{
+      r=0;sp=.0014;done=0;go=1;
+      els.forEach(e=>e.style.opacity="0");
+      d.style.clipPath="circle(0px at 50% 50%)";
+      requestAnimationFrame(tick);
+    },5200);
+    return;
+  }
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+})();
+</script>
+</section>
