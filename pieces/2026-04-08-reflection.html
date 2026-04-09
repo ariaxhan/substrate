@@ -1,0 +1,72 @@
+<section data-date='2026-04-08' data-type='reflection'>
+<style>
+#nr{position:relative;width:100%;height:72vh;min-height:380px;background:#050710;overflow:hidden;cursor:none}
+.nw{position:absolute;font:italic 1em Georgia,serif;color:rgba(225,215,180,0);transition:color .5s ease-out;pointer-events:none;transform:translate(-50%,-50%);letter-spacing:.06em;user-select:none}
+#nl{position:absolute;pointer-events:none;width:160px;height:160px;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,235,180,.07)0%,rgba(255,220,150,.02)40%,transparent 70%);mix-blend-mode:screen;left:-300px;top:-300px}
+#nc{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font:italic 1em Georgia,serif;color:rgba(200,188,155,.05);text-align:center;line-height:2;letter-spacing:.1em;pointer-events:none}
+#nh{position:absolute;bottom:1.4em;width:100%;text-align:center;font:.58em 'Courier New',monospace;color:rgba(140,130,105,.28);letter-spacing:.4em;pointer-events:none;transition:opacity 1.5s}
+</style>
+<div id="nr">
+  <div id="nl"></div>
+  <div id="nc">the day held<br>what it held</div>
+  <div id="nh">move through the dark</div>
+</div>
+<script>
+(function(){
+var W,ws=["enough","still","done","whole","rest","here","safe","known","quiet","held",
+"spent","present","soft","true","near","complete","finished","settled","full","released"],
+sz=[.8,.85,.9,.95,1,1,1.05,1.1,1.15,1.2],
+nr=document.getElementById('nr'),
+nl=document.getElementById('nl'),
+nh=document.getElementById('nh'),
+els=[],moved=false;
+
+function w(){W=nr.offsetWidth;}w();
+window.addEventListener('resize',w);
+
+ws.forEach(function(t,i){
+  var e=document.createElement('div');
+  e.className='nw';
+  e.textContent=t;
+  e.style.left=(8+Math.random()*84)+'%';
+  e.style.top=(8+Math.random()*84)+'%';
+  e.style.fontSize=sz[i%sz.length]+'em';
+  nr.appendChild(e);
+  els.push(e);
+});
+
+function reveal(mx,my){
+  var H=nr.offsetHeight;
+  nl.style.left=mx+'px';
+  nl.style.top=my+'px';
+  els.forEach(function(e){
+    var ex=parseFloat(e.style.left)/100*W;
+    var ey=parseFloat(e.style.top)/100*H;
+    var d=Math.sqrt((mx-ex)*(mx-ex)+(my-ey)*(my-ey));
+    var r=85;
+    var a=d<r?Math.pow(1-d/r,1.6)*.88:0;
+    e.style.color='rgba(225,215,180,'+a+')';
+  });
+}
+
+nr.addEventListener('mousemove',function(e){
+  if(!moved){moved=true;nh.style.opacity='0';}
+  var r=nr.getBoundingClientRect();
+  reveal(e.clientX-r.left,e.clientY-r.top);
+});
+
+nr.addEventListener('mouseleave',function(){
+  nl.style.left='-300px';
+  nl.style.top='-300px';
+  els.forEach(function(e){e.style.color='rgba(225,215,180,0)';});
+});
+
+nr.addEventListener('touchmove',function(e){
+  e.preventDefault();
+  if(!moved){moved=true;nh.style.opacity='0';}
+  var r=nr.getBoundingClientRect(),t=e.touches[0];
+  reveal(t.clientX-r.left,t.clientY-r.top);
+},{passive:false});
+})();
+</script>
+</section>
