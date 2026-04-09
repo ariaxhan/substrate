@@ -1,0 +1,106 @@
+<section data-date='2026-04-09' data-type='morning'>
+<style>
+section[data-date='2026-04-09']{
+  display:flex;align-items:center;justify-content:center;
+  position:relative;width:100%;height:100vh;
+  background:#08080f;overflow:hidden;cursor:default
+}
+section[data-date='2026-04-09'] canvas{
+  position:absolute;inset:0;pointer-events:none
+}
+section[data-date='2026-04-09'] #p09{
+  position:relative;z-index:1;
+  font-family:Georgia,'Palatino Linotype',serif;
+  font-size:1.35rem;line-height:2.1;
+  color:#f0e6d2;letter-spacing:.04em;
+  text-align:center;white-space:pre;
+  min-height:2em;cursor:pointer
+}
+section[data-date='2026-04-09'] #p09 .cur{
+  display:inline-block;width:1px;height:1.1em;
+  background:rgba(238,160,40,.85);
+  vertical-align:text-bottom;
+  animation:bl09 1s step-end infinite
+}
+@keyframes bl09{0%,100%{opacity:1}50%{opacity:0}}
+</style>
+<canvas id="cv09"></canvas>
+<div id="p09"></div>
+<script>(()=>{
+const S=document.querySelector("section[data-date='2026-04-09']");
+const p=S.querySelector("#p09");
+const cv=S.querySelector("#cv09");
+const ctx=cv.getContext("2d");
+let W,H,mx=-1,my=-1;
+
+// the poem — dawn writing itself
+const poem="still dark.\nbefore the world\nhas named this hour,\nit is entirely\nyours.\n\nfirst light\nasks only this:\n\nbegin.";
+
+let pos=0,tid=null,alive=true;
+
+function render(){
+  const shown=poem.slice(0,pos).replace(/\n/g,"<br>");
+  p.innerHTML=shown+'<span class="cur"></span>';
+}
+
+function next(){
+  if(!alive)return;
+  if(pos>=poem.length){
+    p.innerHTML=poem.replace(/\n/g,"<br>");
+    tid=setTimeout(restart,5200);
+    return;
+  }
+  pos++;render();
+  const ch=poem[pos-1];
+  let d=55+Math.random()*45;
+  if(".?!,".includes(ch))d=480+Math.random()*120;
+  else if(ch==="\n")d=380;
+  tid=setTimeout(next,d);
+}
+
+function restart(){
+  pos=0;render();
+  tid=setTimeout(next,1100);
+}
+
+function revealAll(){
+  if(pos>=poem.length)return;
+  clearTimeout(tid);
+  pos=poem.length;
+  p.innerHTML=poem.replace(/\n/g,"<br>");
+  tid=setTimeout(restart,5000);
+}
+
+function resize(){
+  W=cv.width=S.clientWidth||window.innerWidth;
+  H=cv.height=S.clientHeight||window.innerHeight;
+}
+
+function glow(){
+  ctx.clearRect(0,0,W,H);
+  if(mx>=0){
+    const g=ctx.createRadialGradient(mx,my,0,mx,my,220);
+    g.addColorStop(0,"rgba(235,155,35,.07)");
+    g.addColorStop(1,"rgba(0,0,0,0)");
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  }
+  // subtle warm bloom at bottom — the unseen horizon
+  const h=ctx.createLinearGradient(0,H,0,H*.55);
+  h.addColorStop(0,"rgba(180,70,15,.06)");
+  h.addColorStop(1,"rgba(0,0,0,0)");
+  ctx.fillStyle=h;ctx.fillRect(0,0,W,H);
+  requestAnimationFrame(glow);
+}
+
+p.addEventListener("click",revealAll);
+S.addEventListener("mousemove",e=>{
+  const r=S.getBoundingClientRect();
+  mx=e.clientX-r.left;my=e.clientY-r.top;
+});
+window.addEventListener("resize",resize);
+
+resize();render();
+tid=setTimeout(next,1200);
+requestAnimationFrame(glow);
+})();</script>
+</section>
