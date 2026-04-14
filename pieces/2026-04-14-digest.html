@@ -1,0 +1,114 @@
+<section data-date='2026-04-14' data-type='digest'>
+<style>
+*{margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#07070f}
+canvas{position:fixed;top:0;left:0}
+#w{position:fixed;bottom:1.6em;width:100%;text-align:center;
+  font:11px/1 Georgia,serif;letter-spacing:.22em;text-transform:lowercase;
+  color:#1c2418;pointer-events:none;transition:color 2s}
+</style>
+<canvas id=c></canvas>
+<div id=w>click to know</div>
+<script>
+const cv=document.getElementById('c'),
+  g=cv.getContext('2d'),
+  wl=document.getElementById('w'),
+  N=[],R=115,
+  ph=['click to know','something accumulates','patterns near','structure emerges','crystallized'],
+  pc=['#1c2418','#222a18','#183040','#184040','#184848'];
+
+let mx=-999,my=-999,W,H;
+
+function sz(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+sz();onresize=sz;
+
+for(let i=7;i--;)
+  N.push([W*.12+Math.random()*W*.76,H*.12+Math.random()*H*.76,0,.8+Math.random()*1.2]);
+
+function dst(a,b){const x=a[0]-b[0],y=a[1]-b[1];return Math.sqrt(x*x+y*y)}
+
+function frame(){
+  requestAnimationFrame(frame);
+  g.clearRect(0,0,W,H);
+  const n=N.length;
+
+  // crystallized triangles — emergence
+  for(let i=0;i<n-2;i++){
+    for(let j=i+1;j<n-1;j++){
+      if(dst(N[i],N[j])>R*.58) continue;
+      for(let k=j+1;k<n;k++){
+        if(dst(N[i],N[k])<R*.58&&dst(N[j],N[k])<R*.58){
+          g.beginPath();
+          g.moveTo(N[i][0],N[i][1]);
+          g.lineTo(N[j][0],N[j][1]);
+          g.lineTo(N[k][0],N[k][1]);
+          g.closePath();
+          g.fillStyle='rgba(38,155,148,.05)';
+          g.fill();
+        }
+      }
+    }
+  }
+
+  // edges — structure
+  for(let i=0;i<n;i++){
+    for(let j=i+1;j<n;j++){
+      const d=dst(N[i],N[j]);
+      if(d<R){
+        const t=1-d/R;
+        g.beginPath();
+        g.moveTo(N[i][0],N[i][1]);
+        g.lineTo(N[j][0],N[j][1]);
+        g.strokeStyle=`rgba(72,155,255,${t*.32})`;
+        g.lineWidth=t*1.1;
+        g.stroke();
+      }
+    }
+  }
+
+  // hover threads — attention as proximity
+  for(let i=0;i<n;i++){
+    const d=dst([mx,my],N[i]);
+    if(d<R*1.6){
+      const t=1-d/(R*1.6);
+      g.beginPath();
+      g.moveTo(mx,my);
+      g.lineTo(N[i][0],N[i][1]);
+      g.strokeStyle=`rgba(200,145,42,${t*.28})`;
+      g.lineWidth=.7;
+      g.stroke();
+    }
+  }
+
+  // nodes — raw knowledge
+  for(const p of N){
+    p[2]++;
+    const a=Math.min(1,p[2]/55);
+    g.beginPath();
+    g.arc(p[0],p[1],p[3]*2.2,0,7);
+    g.fillStyle=`rgba(205,148,48,${a})`;
+    g.fill();
+    g.beginPath();
+    g.arc(p[0],p[1],p[3]*7,0,7);
+    g.fillStyle=`rgba(205,148,48,${a*.03})`;
+    g.fill();
+  }
+
+  // cursor
+  g.beginPath();
+  g.arc(mx,my,1.8,0,7);
+  g.fillStyle='rgba(200,145,42,.35)';
+  g.fill();
+}
+
+onmousemove=e=>{mx=e.clientX;my=e.clientY};
+onclick=e=>{
+  N.push([e.clientX,e.clientY,0,.9+Math.random()*1.6]);
+  const s=Math.min(4,~~(N.length/9));
+  wl.textContent=ph[s];
+  wl.style.color=pc[s];
+};
+
+frame();
+</script>
+</section>
