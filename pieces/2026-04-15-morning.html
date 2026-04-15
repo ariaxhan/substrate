@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>before the day (2026-04-15)</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#0d0c18;cursor:none;
+  transition:background 9s cubic-bezier(.2,0,.6,1)}
+body.dawn{background:#e8b97a}
+#c{position:absolute;inset:0}
+.w{position:absolute;font-family:Georgia,'Palatino Linotype',serif;
+  color:rgba(235,205,160,.03);font-size:1.05rem;letter-spacing:.07em;
+  user-select:none;pointer-events:none;
+  transition:color .35s ease}
+body.dawn .w{color:rgba(60,35,10,.55)!important;transition:color 6s ease}
+#g{position:absolute;pointer-events:none;transform:translate(-50%,-50%);
+  width:340px;height:340px;border-radius:50%;
+  background:radial-gradient(circle,
+    rgba(255,185,90,.22) 0%,
+    rgba(255,140,50,.07) 42%,
+    transparent 70%);
+  transition:opacity .4s}
+body.dawn #g{opacity:0}
+#hint{position:absolute;bottom:1.8rem;width:100%;text-align:center;
+  font-family:Georgia,serif;font-size:.65rem;letter-spacing:.22em;
+  color:rgba(235,205,160,.18);transition:opacity 1.8s;opacity:0;
+  text-transform:lowercase}
+body.dawn #hint{opacity:0!important}
+</style>
+</head>
+<body>
+<section data-date='2026-04-15' data-type='morning'>
+<div id="c">
+  <div id="g"></div>
+  <div id="hint">move to find it &nbsp;·&nbsp; click to begin</div>
+</div>
+</section>
+<script>
+const poem = [
+  {t:"before",         x:10, y:14},
+  {t:"the alarm",      x:22, y:26},
+  {t:"there is",       x: 6, y:40},
+  {t:"a moment",       x:16, y:54},
+  {t:"belonging",      x:55, y:10},
+  {t:"to no one",      x:66, y:23},
+  {t:"still dark",     x:48, y:42},
+  {t:"still open",     x:62, y:56},
+  {t:"still yours",    x:52, y:68},
+  {t:"the window",     x:28, y:72},
+  {t:"already knows",  x:38, y:84},
+  {t:"what you will",  x:72, y:38},
+  {t:"make of it",     x:78, y:50},
+  {t:"the day",        x:74, y:64},
+  {t:"has not",        x:82, y:76},
+  {t:"decided",        x:68, y:86},
+  {t:"yet",            x:88, y:90},
+];
+
+const C  = document.getElementById("c");
+const g  = document.getElementById("g");
+const hint = document.getElementById("hint");
+
+const els = poem.map(({t,x,y}) => {
+  const d = document.createElement("div");
+  d.className = "w";
+  d.textContent = t;
+  d.style.left = x + "vw";
+  d.style.top  = y + "vh";
+  C.appendChild(d);
+  return {el:d, vx:x, vy:y};
+});
+
+setTimeout(() => { hint.style.opacity = "1" }, 1200);
+
+document.addEventListener("mousemove", e => {
+  if (document.body.classList.contains("dawn")) return;
+  const mx = e.clientX, my = e.clientY;
+  g.style.left = mx + "px";
+  g.style.top  = my + "px";
+  const W = window.innerWidth, H = window.innerHeight;
+  els.forEach(({el,vx,vy}) => {
+    const ex = vx / 100 * W, ey = vy / 100 * H;
+    const d = Math.sqrt((mx-ex)**2 + (my-ey)**2);
+    const r = 170;
+    const a = d < r ? (1 - d/r)**1.9 * .87 + .03 : .03;
+    el.style.color = `rgba(235,205,160,${a.toFixed(3)})`;
+  });
+});
+
+let dawned = false;
+document.addEventListener("click", () => {
+  if (dawned) return;
+  dawned = true;
+  hint.style.opacity = "0";
+  document.body.classList.add("dawn");
+});
+</script>
+</body>
+</html>
