@@ -1,0 +1,131 @@
+<section data-date='2026-04-14' data-type='reflection'>
+<style>
+*{margin:0;padding:0}
+body,html{width:100%;height:100%;overflow:hidden;background:#03040c;cursor:crosshair}
+canvas{position:fixed;top:0;left:0;display:block}
+#v{position:fixed;bottom:13vh;width:100%;text-align:center;
+  font:italic 1.1rem/1.8 Georgia,serif;color:rgba(205,218,242,0);
+  letter-spacing:.22em;pointer-events:none;transition:color 3.8s ease}
+#v.on{color:rgba(205,218,242,.26)}
+#h{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  font:300 .62rem/2 'Courier New',monospace;color:rgba(150,165,195,.18);
+  letter-spacing:.35em;text-align:center;pointer-events:none;
+  transition:opacity 2.5s ease;text-transform:uppercase}
+#h.gone{opacity:0}
+</style>
+<canvas id="k"></canvas>
+<div id="h">click to begin<br>move to reveal</div>
+<div id="v"></div>
+<script>
+const cv=document.getElementById('k'),
+  cx=cv.getContext('2d'),
+  vd=document.getElementById('v'),
+  hd=document.getElementById('h');
+
+let W,H,st=[],mx=-9,my=-9,clicks=0,showing=0;
+
+const LN=[
+  'the day releases you',
+  'the dark holds no record',
+  'each light was once a question',
+  'nothing left undone',
+  'somewhere a window goes dark',
+  'you are allowed to rest',
+  'rest'
+];
+
+function rs(){
+  cv.width=W=innerWidth;
+  cv.height=H=innerHeight;
+}
+addEventListener('resize',rs);
+rs();
+
+// seed stars — breathe in slowly
+for(let i=0;i<11;i++)
+  st.push({
+    x:Math.random()*W,y:Math.random()*H,
+    r:.4+Math.random()*.55,
+    a:0,ta:.03+Math.random()*.04,
+    ph:Math.random()*6.28,seed:1
+  });
+
+addEventListener('click',e=>{
+  hd.classList.add('gone');
+  st.push({
+    x:e.clientX,y:e.clientY,
+    r:.9+Math.random()*.8,
+    a:0,ta:.55+Math.random()*.38,
+    ph:0,seed:0,born:Date.now()
+  });
+  clicks++;
+  if(clicks%7===0&&!showing){
+    showing=1;
+    vd.textContent=LN[Math.floor(clicks/7-1)%LN.length];
+    vd.classList.add('on');
+    setTimeout(()=>{
+      vd.classList.remove('on');
+      setTimeout(()=>showing=0,3800);
+    },3300);
+  }
+});
+
+addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+
+function draw(){
+  cx.clearRect(0,0,W,H);
+  const t=Date.now();
+
+  for(const s of st){
+    if(s.seed){
+      s.a=s.ta*(.55+.45*Math.sin(t/9000+s.ph));
+    } else {
+      const ag=(t-s.born)/1000;
+      s.a=ag<1.2?s.ta*(ag/1.2):s.ta*Math.max(0,1-(ag-35)/22);
+    }
+    const md=(s.x-mx)**2+(s.y-my)**2;
+    if(md<10000) s.a=Math.min(1,s.a+(1-md/10000)*.42);
+  }
+
+  // prune faded non-seed stars
+  for(let i=st.length-1;i>=0;i--)
+    if(!st[i].seed&&st[i].a<.004) st.splice(i,1);
+
+  // constellation lines — visible only near mouse (the secret)
+  const vis=st.filter(s=>s.a>.008);
+  for(let i=0;i<vis.length;i++){
+    for(let j=i+1;j<vis.length;j++){
+      const dx=vis[i].x-vis[j].x,dy=vis[i].y-vis[j].y,
+            d2=dx*dx+dy*dy;
+      if(d2<27556){// 166px
+        const mid2=((vis[i].x+vis[j].x)/2-mx)**2+((vis[i].y+vis[j].y)/2-my)**2,
+              prox=Math.max(0,1-mid2/90000),
+              la=Math.min(vis[i].a,vis[j].a)*(1-d2/27556)*prox*.55;
+        if(la>.006){
+          cx.strokeStyle=`rgba(170,192,228,${la})`;
+          cx.lineWidth=.45;
+          cx.beginPath();cx.moveTo(vis[i].x,vis[i].y);
+          cx.lineTo(vis[j].x,vis[j].y);cx.stroke();
+        }
+      }
+    }
+  }
+
+  // draw stars
+  for(const s of st){
+    if(s.a<.004) continue;
+    const g=cx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*7);
+    g.addColorStop(0,`rgba(215,228,255,${s.a*.85})`);
+    g.addColorStop(.25,`rgba(195,212,255,${s.a*.3})`);
+    g.addColorStop(1,`rgba(175,198,255,0)`);
+    cx.fillStyle=g;
+    cx.beginPath();cx.arc(s.x,s.y,s.r*7,0,6.283);cx.fill();
+    cx.fillStyle=`rgba(238,244,255,${Math.min(1,s.a*1.5)})`;
+    cx.beginPath();cx.arc(s.x,s.y,s.r,0,6.283);cx.fill();
+  }
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</section>
