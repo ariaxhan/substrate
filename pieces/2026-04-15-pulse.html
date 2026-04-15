@@ -1,0 +1,60 @@
+<section data-date='2026-04-15' data-type='pulse'>
+<style>
+#f{position:relative;width:100vw;height:100vh;overflow:hidden;display:flex;cursor:crosshair}
+#a,#b{height:100%;display:flex;align-items:center}
+#a{background:#08060f;justify-content:flex-end;padding-right:5.5vw;border-right:1px solid rgba(255,255,255,.08)}
+#b{background:#08060f;justify-content:flex-start;padding-left:5.5vw}
+.t{display:flex;flex-direction:column;gap:2vh;text-align:right;font-family:Georgia,'Times New Roman',serif}
+.t em{font-style:normal;letter-spacing:.22em;text-transform:uppercase;color:#c9903a;opacity:.55;font-size:clamp(9px,1.5vw,17px);transition:opacity 1.2s}
+.t em.cx{opacity:1;font-size:clamp(12px,2.1vw,23px);color:#e2a84e}
+.r{text-align:left}
+.r em{color:#4e87c0}
+.r em.cx{color:#6aaee8}
+#p{position:absolute;top:0;left:50%;width:1px;height:100%;background:rgba(255,255,255,.12);pointer-events:none}
+#p i{position:absolute;top:50%;left:50%;width:7px;height:7px;margin:-3.5px;border-radius:50%;background:#fff;opacity:.45;transform:scale(1);transition:transform .3s,opacity .3s}
+#f:active #p i{transform:scale(2.2);opacity:.9}
+#k{position:absolute;bottom:3vh;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.18);font-size:10px;letter-spacing:.35em;font-family:monospace;pointer-events:none;white-space:nowrap;transition:left .04s}
+</style>
+<div id="f">
+  <div id="a" style="width:50%">
+    <div class="t">
+      <em>was</em>
+      <em>given</em>
+      <em class="cx">rose</em>
+      <em>before</em>
+      <em>half</em>
+    </div>
+  </div>
+  <div id="p"><i></i></div>
+  <div id="b" style="width:50%">
+    <div class="t r">
+      <em>will</em>
+      <em>taken</em>
+      <em class="cx">falls</em>
+      <em>after</em>
+      <em>half</em>
+    </div>
+  </div>
+  <div id="k">noon</div>
+</div>
+<script>
+const f=document.getElementById('f'),
+a=document.getElementById('a'),
+b=document.getElementById('b'),
+p=document.getElementById('p'),
+k=document.getElementById('k');
+const now=()=>(new Date().getHours()*60+new Date().getMinutes())/14.4;
+let t=now(),c=t,lk=0;
+f.onmousemove=e=>{if(!lk)t=e.clientX/innerWidth*100};
+f.onclick=()=>{lk^=1;if(!lk)t=now()};
+(function loop(){
+  c+=(t-c)*.09;
+  const v=+c.toFixed(2),w=(100-v).toFixed(2);
+  a.style.width=v+'%';
+  b.style.width=w+'%';
+  p.style.left=v+'%';
+  k.style.left=v+'%';
+  requestAnimationFrame(loop)
+})()
+</script>
+</section>
