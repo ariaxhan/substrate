@@ -1,0 +1,40 @@
+<section data-date='2026-04-16' data-type='morning'>
+<style>
+#s{position:fixed;inset:0;background:#06061a;cursor:crosshair;overflow:hidden;transition:background 1.5s ease}
+#s.day{background:linear-gradient(155deg,#c8440a 0%,#f0921e 38%,#fde68a 72%,#fffbf0 100%)}
+.w{position:absolute;font:italic var(--sz) Georgia,serif;color:#eddcb0;opacity:0;transition:opacity .38s,color 1.3s;pointer-events:none;user-select:none}
+#s.day .w{opacity:.11!important;color:#2c1200}
+#g{position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(255,165,55,.22) 0%,transparent 68%);pointer-events:none;transform:translate(-50%,-50%);transition:opacity .8s}
+</style>
+<div id="s"><div id="g"></div></div>
+<script>
+var S=document.getElementById('s'),G=document.getElementById('g'),lit=0;
+var ws=['open','still','possible','not yet','becoming','first light','before','threshold','breath','begin','almost','unwritten','waking','the day','ready','new'];
+var sz=[15,23,18,14,27,13,20,30,16,34,13,18,16,22,14,19];
+ws.forEach(function(w,i){
+  var e=document.createElement('div');
+  e.className='w';
+  e.textContent=w;
+  e.style.setProperty('--sz',sz[i%sz.length]+'px');
+  e.style.left=(2+Math.random()*91)+'%';
+  e.style.top=(4+Math.random()*88)+'%';
+  S.appendChild(e);
+});
+S.onmousemove=function(e){
+  G.style.left=e.clientX+'px';
+  G.style.top=e.clientY+'px';
+  if(lit)return;
+  S.querySelectorAll('.w').forEach(function(el){
+    var r=el.getBoundingClientRect();
+    var d=Math.hypot(e.clientX-(r.left+r.width/2),e.clientY-(r.top+r.height/2));
+    el.style.opacity=Math.max(0,1-d/145)*.93;
+  });
+};
+S.onclick=function(){
+  lit^=1;
+  S.classList.toggle('day',lit);
+  G.style.opacity=lit?0:1;
+  if(!lit)S.querySelectorAll('.w').forEach(function(el){el.style.opacity=0;});
+};
+</script>
+</section>
