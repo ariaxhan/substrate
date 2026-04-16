@@ -1,0 +1,43 @@
+<section data-date='2026-04-15' data-type='reflection'>
+<style>
+#v{position:fixed;inset:0;background:#020208;cursor:crosshair;overflow:hidden}
+.s{position:absolute;border-radius:50%;pointer-events:none}
+.w{position:absolute;font:300 11px Georgia,serif;color:rgba(235,225,205,.6);pointer-events:none;letter-spacing:.14em;animation:wf 3.8s ease forwards}
+@keyframes wf{0%,100%{opacity:0}20%,75%{opacity:1}}
+@keyframes gb{0%,100%{opacity:.75}50%{opacity:1}}
+</style>
+<div id=v></div>
+<script>
+const v=document.getElementById('v'),
+W=()=>innerWidth,H=()=>innerHeight,
+ws=['still','rest','done','whole','soft','begin','here','open','dark','breathe','pass','release'],
+N=88,st=[],el=[];
+for(let i=0;i<N;i++)st.push([Math.random(),Math.random(),Math.random()*1.2+.4]);
+st.forEach(()=>el.push(null));
+
+function mk(x,y,r,warm){
+  const d=document.createElement('div'),c=warm?'255,248,215':'210,228,255';
+  d.className='s';
+  d.style.cssText=`width:${r*2}px;height:${r*2}px;left:${x-r}px;top:${y-r}px;background:rgba(${c},.95);box-shadow:0 0 ${r*8}px 1px rgba(${c},.4)`;
+  v.appendChild(d);return d;
+}
+
+v.onmousemove=({clientX:mx,clientY:my})=>{
+  st.forEach(([fx,fy,r],i)=>{
+    const x=fx*W(),y=fy*H(),d=Math.hypot(mx-x,my-y),R=145;
+    if(!el[i])el[i]=mk(x,y,r,false);
+    el[i].style.opacity=d<R?((R-d)/R*.85):0;
+  });
+};
+
+v.onclick=({clientX:x,clientY:y})=>{
+  const d=mk(x,y,Math.random()*2+1,true);
+  d.style.opacity=1;d.style.animation='gb 5s ease-in-out infinite';
+  const w=document.createElement('div');
+  w.className='w';
+  w.textContent=ws[~~(Math.random()*ws.length)];
+  w.style.cssText=`left:${x+~~(Math.random()*22-8)}px;top:${y-26-~~(Math.random()*14)}px`;
+  v.appendChild(w);setTimeout(()=>w.remove(),3800);
+};
+</script>
+</section>
