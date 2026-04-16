@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Halfway</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#0c0b11;cursor:none}
+#stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#stage::before,#stage::after{
+  content:'';position:absolute;border-radius:50%;pointer-events:none;
+  width:55vw;height:70vh;filter:blur(90px);top:15vh
+}
+#stage::before{left:-12vw;background:rgba(195,100,40,.13)}
+#stage::after{right:-12vw;background:rgba(85,65,165,.13)}
+#arm{
+  position:absolute;width:70vw;height:1px;
+  transform-origin:50% 50%;
+  background:linear-gradient(90deg,
+    rgba(195,100,40,.65) 0%,
+    rgba(225,215,198,.9) 50%,
+    rgba(95,75,165,.65) 100%);
+  box-shadow:0 0 10px rgba(225,215,198,.1)
+}
+#pivot{
+  position:absolute;width:4px;height:4px;border-radius:50%;
+  background:#e1d7c6;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  box-shadow:0 0 8px rgba(225,215,198,.6)
+}
+.lbl{
+  position:absolute;top:50%;
+  font:italic clamp(.9rem,2.2vw,1.4rem)/1 Georgia,serif;
+  letter-spacing:.14em;pointer-events:none;color:#c3642800
+}
+#am{left:8.5vw;color:#c36428}
+#pm{right:8.5vw;color:#5f4ba5;text-align:right}
+#noon{
+  position:absolute;top:calc(50% - 2.6em);left:50%;
+  transform:translateX(-50%);
+  font:.52rem/1 'Courier New',monospace;letter-spacing:.5em;
+  color:#e1d7c6;opacity:0;white-space:nowrap;
+  text-transform:uppercase;transition:opacity .7s ease
+}
+#cursor{
+  position:absolute;width:6px;height:6px;border-radius:50%;
+  background:rgba(225,215,198,.35);pointer-events:none;
+  transform:translate(-50%,-50%);transition:background .3s
+}
+</style>
+</head>
+<body>
+<section data-date='2026-04-16' data-type='pulse'>
+<div id="stage">
+  <div id="noon">noon</div>
+  <div id="arm"></div>
+  <div id="pivot"></div>
+  <span class="lbl" id="am">AM</span>
+  <span class="lbl" id="pm">PM</span>
+</div>
+<div id="cursor"></div>
+</section>
+<script>
+var arm=document.getElementById('arm'),
+    am=document.getElementById('am'),
+    pm=document.getElementById('pm'),
+    noon=document.getElementById('noon'),
+    cur=document.getElementById('cursor'),
+    t=0,g=0;
+
+function pt(e){
+  var x=e.touches?e.touches[0].clientX:e.clientX,
+      y=e.touches?e.touches[0].clientY:e.clientY;
+  cur.style.left=x+'px';
+  cur.style.top=y+'px';
+  var d=(x/window.innerWidth-.5)*2;
+  g=d*28;
+  var bal=1-Math.abs(d);
+  noon.style.opacity=Math.max(0,(bal-.78)*4.5);
+  cur.style.background=bal>.95?'rgba(225,215,198,.7)':'rgba(225,215,198,.3)';
+  am.style.transform='translateY(calc(-50% - '+(g*.85)+'px))';
+  pm.style.transform='translateY(calc(-50% + '+(g*.85)+'px))';
+}
+
+document.addEventListener('mousemove',pt);
+document.addEventListener('touchmove',pt,{passive:true});
+document.addEventListener('click',function(){g=0});
+
+!function loop(){
+  t+=(g-t)*.062;
+  arm.style.transform='rotate('+t+'deg)';
+  requestAnimationFrame(loop);
+}();
+</script>
+</body>
+</html>

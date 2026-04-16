@@ -150,6 +150,7 @@
     {"file": "2026-04-15-morning.html", "date": "2026-04-15", "type": "morning", "timestamp": 1776262662},
     {"file": "2026-04-15-pulse.html", "date": "2026-04-15", "type": "pulse", "timestamp": 1776276383},
     {"file": "2026-04-15-reflection.html", "date": "2026-04-15", "type": "reflection", "timestamp": 1776308840},
-    {"file": "2026-04-16-morning.html", "date": "2026-04-16", "type": "morning", "timestamp": 1776348293}
+    {"file": "2026-04-16-morning.html", "date": "2026-04-16", "type": "morning", "timestamp": 1776348293},
+    {"file": "2026-04-16-pulse.html", "date": "2026-04-16", "type": "pulse", "timestamp": 1776365889}
   ]
 }
