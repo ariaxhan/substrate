@@ -1,0 +1,110 @@
+<section data-date='2026-04-16' data-type='reflection'>
+<style>
+.vs{position:relative;height:100vh;min-height:500px;background:#04061a;overflow:hidden;cursor:crosshair;font-family:Georgia,serif}
+.vs canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.vw{position:absolute;font-style:italic;font-size:13px;color:rgba(255,240,200,0);pointer-events:none;white-space:nowrap;transform:translateX(-50%)}
+.vp{position:absolute;bottom:2.5rem;width:100%;text-align:center;font-style:italic;font-size:.85rem;color:rgba(255,240,200,.22);letter-spacing:.18em;animation:vs_in 8s 1.5s both}
+.vi{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-style:italic;font-size:.8rem;color:rgba(255,240,200,.2);pointer-events:none;letter-spacing:.14em;transition:opacity 1.8s ease}
+@keyframes vs_in{from{opacity:0;letter-spacing:.45em}to{opacity:1;letter-spacing:.18em}}
+</style>
+<div class='vs' id='vs16'>
+<canvas id='vc16'></canvas>
+<div class='vi' id='vi16'>touch the dark</div>
+<div class='vp'>the day is complete</div>
+</div>
+<script>
+(function(){
+var el=document.getElementById('vs16'),
+  cv=document.getElementById('vc16'),
+  cx=cv.getContext('2d'),
+  hint=document.getElementById('vi16'),
+  stars=[],mx=-999,my=-999,clicked=false,W,H;
+
+var ws=['rest','still','done','enough','deep','hold','warm','quiet','whole','near','far','slow','soft','breathe','close','here','hush','wait','calm','new','safe','full','low','last'];
+
+function size(){
+  W=cv.width=el.offsetWidth||window.innerWidth;
+  H=cv.height=el.offsetHeight||window.innerHeight;
+}
+size();
+window.addEventListener('resize',size);
+
+function word(x,y,txt){
+  var d=document.createElement('div');
+  d.className='vw';d.textContent=txt;
+  d.style.left=x+'px';d.style.top=(y-8)+'px';
+  el.appendChild(d);
+  var op=0,yy=y-8,ri=setInterval(function(){
+    op=Math.min(op+.022,.48);yy-=.3;
+    d.style.color='rgba(255,240,200,'+op+')';
+    d.style.top=yy+'px';
+    if(op>=.48)clearInterval(ri);
+  },18);
+  setTimeout(function(){
+    var fo=.48,fi=setInterval(function(){
+      fo=Math.max(fo-.006,0);
+      d.style.color='rgba(255,240,200,'+fo+')';
+      if(fo<=0){clearInterval(fi);d.remove();}
+    },28);
+  },3200);
+}
+
+function bloom(x,y){
+  var s={x:x,y:y,r:.35+Math.random()*1.15,o:0,ph:Math.random()*6.28,w:ws[Math.floor(Math.random()*ws.length)]};
+  stars.push(s);
+  word(x,y,s.w);
+}
+
+function draw(){
+  cx.clearRect(0,0,W,H);
+  // constellation lines near mouse
+  for(var i=0;i<stars.length;i++){
+    var a=stars[i];if(a.o<.2)continue;
+    for(var j=i+1;j<stars.length;j++){
+      var b=stars[j];if(b.o<.2)continue;
+      var dx=a.x-b.x,dy=a.y-b.y,dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist>155)continue;
+      var pa=Math.hypot(a.x-mx,a.y-my),pb=Math.hypot(b.x-mx,b.y-my);
+      var prox=Math.max(0,1-Math.min(pa,pb)/190);
+      if(prox<.04)continue;
+      cx.globalAlpha=prox*.14*(1-dist/155)*Math.min(a.o,b.o);
+      cx.strokeStyle='#9aaeff';cx.lineWidth=.55;
+      cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);cx.stroke();
+    }
+  }
+  cx.globalAlpha=1;
+  // stars
+  for(var k=0;k<stars.length;k++){
+    var s=stars[k];
+    s.o=Math.min(s.o+.013,1);
+    s.ph+=.007+Math.random()*.004;
+    var pulse=.87+.13*Math.sin(s.ph);
+    var rr=s.r*3.5*pulse;
+    var g=cx.createRadialGradient(s.x,s.y,0,s.x,s.y,rr);
+    g.addColorStop(0,'rgba(255,253,238,'+s.o+')');
+    g.addColorStop(.25,'rgba(210,220,255,'+(s.o*.55)+')');
+    g.addColorStop(1,'rgba(0,0,0,0)');
+    cx.fillStyle=g;
+    cx.beginPath();cx.arc(s.x,s.y,rr,0,6.2832);cx.fill();
+  }
+  requestAnimationFrame(draw);
+}
+
+el.addEventListener('click',function(e){
+  var r=el.getBoundingClientRect();
+  bloom(e.clientX-r.left,e.clientY-r.top);
+  if(!clicked){hint.style.opacity='0';clicked=true;}
+});
+el.addEventListener('mousemove',function(e){
+  var r=el.getBoundingClientRect();
+  mx=e.clientX-r.left;my=e.clientY-r.top;
+});
+
+// seed faint distant stars
+for(var i=0;i<14;i++){
+  stars.push({x:Math.random()*W,y:Math.random()*H,r:.25+Math.random()*.65,o:Math.random()*.28,ph:Math.random()*6.28,w:''});
+}
+draw();
+})();
+</script>
+</section>
