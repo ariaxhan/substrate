@@ -153,6 +153,7 @@
     {"file": "2026-04-16-morning.html", "date": "2026-04-16", "type": "morning", "timestamp": 1776348293},
     {"file": "2026-04-16-pulse.html", "date": "2026-04-16", "type": "pulse", "timestamp": 1776365889},
     {"file": "2026-04-16-reflection.html", "date": "2026-04-16", "type": "reflection", "timestamp": 1776395159},
-    {"file": "2026-04-17-morning.html", "date": "2026-04-17", "type": "morning", "timestamp": 1776435185}
+    {"file": "2026-04-17-morning.html", "date": "2026-04-17", "type": "morning", "timestamp": 1776435185},
+    {"file": "2026-04-17-spark.html", "date": "2026-04-17", "type": "spark", "timestamp": 1776441839}
   ]
 }
