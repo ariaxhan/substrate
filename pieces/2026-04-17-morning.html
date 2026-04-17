@@ -1,0 +1,71 @@
+<section data-date='2026-04-17' data-type='morning'>
+<style>
+section[data-date='2026-04-17']{position:fixed;inset:0;overflow:hidden;cursor:pointer;background:#07061a;transition:background 2.2s ease;font-family:Georgia,'Times New Roman',serif}
+#d17-glow{position:absolute;bottom:43%;left:50%;transform:translateX(-50%);border-radius:50%;pointer-events:none;transition:all 2.2s ease}
+#d17-line{position:absolute;bottom:43%;left:0;width:100%;height:1px;background:rgba(255,200,120,0);transition:background 2s,opacity 2s;pointer-events:none}
+.d17-w{position:absolute;pointer-events:none;opacity:0;transition:opacity 1.4s ease,transform 3.2s ease-out}
+#d17-hint{position:absolute;bottom:5%;width:100%;text-align:center;font-family:'Courier New',monospace;font-size:9px;letter-spacing:.3em;color:rgba(255,255,255,.16);transition:opacity 1.2s ease;pointer-events:none}
+#d17-final{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:clamp(20px,4vw,50px);letter-spacing:.4em;color:rgba(255,240,195,0);transition:color 3.5s ease;pointer-events:none}
+</style>
+<div id='d17-glow'></div>
+<div id='d17-line'></div>
+<div id='d17-hint'>touch to open</div>
+<div id='d17-final'>begin</div>
+<script>
+(function(){
+const S=document.querySelector("section[data-date='2026-04-17']"),
+G=document.getElementById('d17-glow'),
+L=document.getElementById('d17-line'),
+H=document.getElementById('d17-hint'),
+F=document.getElementById('d17-final');
+const words=['before','still','almost','tender','open','possible','waiting','whole','new','quiet'];
+const sky=[
+'#07061a',
+'linear-gradient(to top,#0c0a24 0%,#07061a 100%)',
+'linear-gradient(to top,#170f38 0%,#0c0a24 100%)',
+'linear-gradient(to top,#2a1248 0%,#15103a 100%)',
+'linear-gradient(to top,#3e1650 0%,#20104a 100%)',
+'linear-gradient(to top,#6a2048 0%,#30145c 100%)',
+'linear-gradient(to top,#b03850 0%,#5a1a60 0%,#22104e 100%)',
+'linear-gradient(to top,#e06040 0%,#b03458 0%,#4e1a5e 100%)',
+'linear-gradient(to top,#f8a045 0%,#e05840 15%,#902858 55%,#321460 100%)',
+'linear-gradient(to top,#ffd060 0%,#f89040 20%,#d84858 50%,#6a2458 80%,#2a1252 100%)'
+];
+let n=0,done=false;
+function word(step){
+const el=document.createElement('span');
+el.className='d17-w';
+el.textContent=words[step%words.length];
+const t=step/9,px=8+Math.random()*84,py=10+Math.random()*70;
+const sz=12+Math.random()*20;
+const a=.1+t*.42,r=255,g=~~(160+t*90),b=~~(70+t*155);
+el.style.cssText='left:'+px+'%;top:'+py+'%;font-size:'+sz+'px;color:rgba('+r+','+g+','+b+','+a+')';
+S.appendChild(el);
+requestAnimationFrame(function(){
+  el.style.opacity='1';
+  el.style.transform='translateY(-'+(12+~~(Math.random()*22))+'px)';
+});
+var hide=setTimeout(function(){el.style.opacity='0';setTimeout(function(){el.remove()},1500)},2600+~~(Math.random()*1400));
+}
+function advance(){
+if(done)return;
+H.style.opacity='0';
+S.style.background=sky[Math.min(n,9)];
+var t=n/9;
+var gw=40+n*14,gop=n>3?(.08+n*.055):0;
+G.style.width=gw+'px';
+G.style.height=gw+'px';
+G.style.background='radial-gradient(circle,rgba(255,'+(~~(155+n*8))+','+(~~(30+n*16))+','+gop+'),transparent 68%)';
+L.style.background='rgba(255,'+(~~(180+t*75))+','+(~~(80+t*140))+','+(t*.35)+')';
+var count=Math.min(n+1,3);
+for(var i=0;i<count;i++)(function(i){setTimeout(function(){word(n*3+i)},i*380)})(i);
+if(n===9){
+  done=true;
+  setTimeout(function(){F.style.color='rgba(255,240,195,.86)'},400);
+}
+n++;
+}
+S.addEventListener('click',advance);
+})();
+</script>
+</section>
