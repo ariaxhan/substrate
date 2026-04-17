@@ -1,0 +1,39 @@
+<section data-date='2026-04-17' data-type='digest'>
+<style>
+*{margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#eeebe0}
+canvas{position:fixed;top:0;left:0;cursor:crosshair}
+#h{position:fixed;bottom:1.8em;width:100%;text-align:center;font:10px/1 'Courier New',monospace;letter-spacing:.16em;color:rgba(80,52,18,.28);pointer-events:none;transition:opacity 2.5s}
+</style>
+<canvas id=c></canvas>
+<div id=h>click anywhere</div>
+<script>
+const cv=document.getElementById('c'),g=cv.getContext('2d'),hint=document.getElementById('h');
+let W,H,mx=-1,my=-1,step=0,first=false;
+function sz(){W=cv.width=innerWidth;H=cv.height=innerHeight}sz();onresize=sz;
+
+const poem=['before naming','a field of noise','attention','draws edges','naming','makes real','structure','was always there','waiting','to be seen'];
+const pts=Array.from({length:52},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight,vx:(Math.random()-.5)*.18,vy:(Math.random()-.5)*.18}));
+const bonds=[],drops=[];
+
+function frame(){
+  requestAnimationFrame(frame);
+  g.clearRect(0,0,W,H);
+  for(const b of bonds){b.age++;const o=Math.min(b.age/90,.17);g.beginPath();g.moveTo(b.ax,b.ay);g.lineTo(b.bx,b.by);g.strokeStyle=`rgba(72,48,16,${o})`;g.lineWidth=.65;g.stroke();}
+  for(const d of drops){d.age++;const f=d.age<28?d.age/28:d.age<200?1:Math.max(0,1-(d.age-200)/55);if(f>0){g.font='italic 12px Georgia,serif';g.fillStyle=`rgba(58,33,9,${f*.82})`;g.textAlign='center';g.fillText(d.word,d.x,d.y);g.textAlign='left';}}
+  if(mx>0){const R=130,nr=pts.filter(p=>Math.hypot(p.x-mx,p.y-my)<R);for(let i=0;i<nr.length;i++)for(let j=i+1;j<nr.length;j++){const dd=Math.hypot(nr[i].x-nr[j].x,nr[i].y-nr[j].y);if(dd<R){g.beginPath();g.moveTo(nr[i].x,nr[i].y);g.lineTo(nr[j].x,nr[j].y);g.strokeStyle=`rgba(140,90,30,${(1-dd/R)*.2})`;g.lineWidth=.5;g.stroke();}}}
+  for(const p of pts){const d=mx>0?Math.hypot(p.x-mx,p.y-my):999,gw=Math.max(0,1-d/85);if(gw>.04){g.beginPath();g.arc(p.x,p.y,11*gw,0,7);g.fillStyle=`rgba(155,105,42,${gw*.07})`;g.fill();}g.beginPath();g.arc(p.x,p.y,1.4,0,7);g.fillStyle=`rgba(22,14,6,${.24+gw*.55})`;g.fill();p.x+=p.vx;p.y+=p.vy;if(p.x<3||p.x>W-3)p.vx*=-1;if(p.y<3||p.y>H-3)p.vy*=-1;}
+}
+
+onmousemove=e=>{mx=e.clientX;my=e.clientY};
+onclick=e=>{
+  if(!first){hint.style.opacity='0';first=true;}
+  const R=130,nr=pts.filter(p=>Math.hypot(p.x-e.clientX,p.y-e.clientY)<R);
+  if(nr.length<2)return;
+  let cx=0,cy=0;for(const p of nr){cx+=p.x;cy+=p.y;}cx/=nr.length;cy/=nr.length;
+  for(let i=0;i<nr.length;i++)for(let j=i+1;j<nr.length;j++)if(Math.hypot(nr[i].x-nr[j].x,nr[i].y-nr[j].y)<R)bonds.push({ax:nr[i].x,ay:nr[i].y,bx:nr[j].x,by:nr[j].y,age:0});
+  if(step<poem.length)drops.push({x:cx,y:cy-10,word:poem[step++],age:0});
+};
+frame();
+</script>
+</section>
