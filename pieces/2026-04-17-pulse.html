@@ -1,0 +1,136 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Halfway</title></head>
+<body>
+<section data-date='2026-04-17' data-type='pulse'>
+<!--
+  A balance beam pivots at the fulcrum of the day.
+  Both ends carry the same word: "half."
+  That is the poem.
+
+  Move mouse to tilt. Click the center to cross.
+-->
+<style>
+*{margin:0;padding:0}
+html,body,section{width:100%;height:100%;overflow:hidden;background:#0d0d14;display:block}
+canvas{display:block;position:absolute;top:0;left:0}
+</style>
+<canvas id="c"></canvas>
+<script>
+const c=document.getElementById('c');
+const g=c.getContext('2d');
+let W,H,ang=0,tgt=0,crossed=false,flash=0,hint=1;
+
+const A=['wake','rise','open','breath','begin','half'];
+const B=['turn','fall','close','exhale','settle','half'];
+
+function resize(){W=c.width=innerWidth;H=c.height=innerHeight}
+
+function draw(){
+  g.clearRect(0,0,W,H);
+  g.fillStyle='#0d0d14';
+  g.fillRect(0,0,W,H);
+
+  ang+=(tgt-ang)*.07;
+  flash*=.88;
+  hint=Math.max(0,hint-.003);
+
+  const cx=W/2,cy=H/2;
+  const arm=Math.min(W,H)*.38;
+  const lx=cx-arm*Math.cos(ang),ly=cy+arm*Math.sin(ang);
+  const rx=cx+arm*Math.cos(ang),ry=cy-arm*Math.sin(ang);
+
+  // beam
+  g.strokeStyle=`rgba(220,200,170,${crossed?.6:.35})`;
+  g.lineWidth=crossed?1.5:1;
+  g.beginPath();g.moveTo(lx,ly);g.lineTo(rx,ry);g.stroke();
+
+  // vertical drop lines
+  g.strokeStyle='rgba(220,200,170,0.15)';
+  g.lineWidth=1;
+  g.setLineDash([2,5]);
+  g.beginPath();
+  g.moveTo(lx,ly);g.lineTo(lx,ly+14);
+  g.moveTo(rx,ry);g.lineTo(rx,ry+14);
+  g.stroke();
+  g.setLineDash([]);
+
+  // pivot diamond
+  const ps=4+flash*5;
+  g.save();
+  g.translate(cx,cy);
+  g.rotate(Math.PI/4);
+  g.fillStyle=`rgba(220,200,170,${.55+flash*.45})`;
+  if(flash>.08){g.shadowBlur=flash*35;g.shadowColor='rgba(220,200,170,.9)'}
+  g.fillRect(-ps/2,-ps/2,ps,ps);
+  g.restore();
+
+  // "now" flash at pivot
+  if(flash>.04){
+    g.textAlign='center';
+    g.font=`${12+flash*10}px Georgia,serif`;
+    g.fillStyle=`rgba(220,200,170,${flash*.9})`;
+    g.letterSpacing='0.12em';
+    g.fillText('now',cx,cy-22);
+  }
+
+  // word columns
+  const lh=Math.min(H*.075,30);
+  const fs=Math.min(lh*.78,22);
+  g.font=`${fs}px Georgia,serif`;
+
+  const LA=crossed?B:A;
+  const RA=crossed?A:B;
+  const LC=crossed?[106,156,212]:[196,149,106];
+  const RC=crossed?[196,149,106]:[106,156,212];
+
+  // left: hang right-aligned from lx
+  g.textAlign='right';
+  const leftHeavy=ang>.015;
+  LA.forEach((w,i)=>{
+    const a=.2+.8*((leftHeavy?(LA.length-i):i+1)/LA.length);
+    g.fillStyle=`rgba(${LC[0]},${LC[1]},${LC[2]},${a.toFixed(2)})`;
+    g.fillText(w,lx-12,ly+20+i*lh);
+  });
+
+  // right: hang left-aligned from rx
+  g.textAlign='left';
+  const rightHeavy=ang<-.015;
+  RA.forEach((w,i)=>{
+    const a=.2+.8*((rightHeavy?(RA.length-i):i+1)/RA.length);
+    g.fillStyle=`rgba(${RC[0]},${RC[1]},${RC[2]},${a.toFixed(2)})`;
+    g.fillText(w,rx+12,ry+20+i*lh);
+  });
+
+  // hint
+  if(hint>.01){
+    g.textAlign='center';
+    g.font='9px monospace';
+    g.fillStyle=`rgba(255,255,255,${hint*.18})`;
+    g.fillText('move \u00b7 click center',cx,H-18);
+  }
+
+  requestAnimationFrame(draw);
+}
+
+addEventListener('mousemove',e=>{
+  tgt=((e.clientX-W/2)/(W/2))*.28;
+  hint=0;
+});
+
+addEventListener('click',e=>{
+  const dx=e.clientX-W/2,dy=e.clientY-H/2;
+  if(Math.sqrt(dx*dx+dy*dy)<44){
+    crossed=!crossed;
+    flash=1;
+    tgt=0;
+  }
+});
+
+resize();
+addEventListener('resize',resize);
+draw();
+</script>
+</section>
+</body>
+</html>
