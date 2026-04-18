@@ -1,0 +1,90 @@
+<section data-date='2026-04-17' data-type='reflection'>
+<style>
+#sky{background:#060810;width:100%;height:64vh;overflow:hidden;cursor:crosshair;display:block;position:relative}
+#sky canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+.verse{font-family:Georgia,'Times New Roman',serif;color:#b0a8c0;text-align:center;padding:2.2rem 1rem .8rem;font-size:1.05rem;line-height:2;letter-spacing:.03em;background:#060810}
+.verse em{color:#6a6080;font-style:normal;font-size:.8rem;letter-spacing:.18em;display:block;margin-top:.6rem}
+.coda{font-family:Georgia,serif;color:#2e2a3a;text-align:center;padding:.6rem;font-size:.7rem;letter-spacing:.12em;background:#060810}
+</style>
+<div class='verse'>
+  the last light has left<br>
+  and the sky<br>
+  opens<br>
+  <em>touch the dark to name what was</em>
+</div>
+<div id='sky'><canvas id='nc'></canvas></div>
+<div class='coda'>each star a thing completed &nbsp;·&nbsp; rest now</div>
+<script>
+(function(){
+var cv=document.getElementById('nc'),ct=cv.getContext('2d'),
+    el=document.getElementById('sky'),
+    ss=[],
+    ws=['done','held','enough','rest','still','home','whole','soft','quiet','sleep',
+        'there','warm','near','safe','full','known','true','old','deep','last',
+        'spent','clear','slow','glad','kept','loved','long','once','ours','free'],
+    wi=0;
+
+function rs(){cv.width=el.offsetWidth;cv.height=el.offsetHeight}
+
+function draw(){
+  ct.clearRect(0,0,cv.width,cv.height);
+  var now=Date.now();
+  // constellation lines
+  for(var i=0;i<ss.length;i++)for(var j=i+1;j<ss.length;j++){
+    var dx=ss[j].x-ss[i].x,dy=ss[j].y-ss[i].y,d=Math.sqrt(dx*dx+dy*dy);
+    if(d<130){
+      var af=ss[i].f*ss[j].f*(1-d/130)*.15;
+      ct.beginPath();ct.strokeStyle='rgba(160,150,210,'+af+')';ct.lineWidth=.4;
+      ct.moveTo(ss[i].x,ss[i].y);ct.lineTo(ss[j].x,ss[j].y);ct.stroke();
+    }
+  }
+  // stars
+  ss.forEach(function(s){
+    var age=(now-s.b)/1000;
+    s.f=Math.min(age/1.5,1);
+    var f=s.f;
+    // glow halo
+    var g=ct.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*5);
+    g.addColorStop(0,'rgba(190,180,255,'+f*.45+')');
+    g.addColorStop(1,'rgba(190,180,255,0)');
+    ct.beginPath();ct.fillStyle=g;ct.arc(s.x,s.y,s.r*5,0,6.28);ct.fill();
+    // core
+    ct.beginPath();ct.fillStyle='rgba(235,230,255,'+f+')';ct.arc(s.x,s.y,s.r,0,6.28);ct.fill();
+    // word: fade in, hold, fade out
+    if(age<5){
+      var wa=age<1?age:(age<3.5?1:(5-age)/1.5);
+      ct.font='italic 10px Georgia,serif';
+      ct.fillStyle='rgba(170,160,195,'+(wa*.75)+')';
+      ct.textAlign='center';
+      ct.fillText(s.w,s.x,s.y-s.r-7);
+    }
+  });
+}
+
+function add(x,y){
+  ss.push({x:x,y:y,r:.8+Math.random()*1.4,b:Date.now(),f:0,w:ws[wi%ws.length]});
+  wi++;if(ss.length>55)ss.shift();
+}
+
+el.addEventListener('click',function(e){
+  var r=el.getBoundingClientRect();add(e.clientX-r.left,e.clientY-r.top);
+});
+el.addEventListener('touchstart',function(e){
+  e.preventDefault();
+  var r=el.getBoundingClientRect(),t=e.touches[0];
+  add(t.clientX-r.left,t.clientY-r.top);
+},{passive:false});
+
+window.addEventListener('resize',rs);
+rs();
+
+// seed a quiet sky
+var seeds=[[.18,.3],[.5,.15],[.77,.4],[.35,.65],[.62,.22],[.88,.7],[.1,.75]];
+seeds.forEach(function(p,i){
+  setTimeout(function(){add(p[0]*cv.width,p[1]*cv.height)},i*320+200);
+});
+
+(function loop(){requestAnimationFrame(loop);draw()})();
+})();
+</script>
+</section>
