@@ -1,0 +1,85 @@
+<section data-date='2026-04-18' data-type='morning'>
+<style>
+#dawn{position:fixed;top:0;left:0;width:100vw;height:100vh;overflow:hidden;cursor:crosshair}
+canvas{display:block;width:100%;height:100%}
+</style>
+<div id="dawn"><canvas id="c"></canvas></div>
+<script>
+const cv=document.getElementById('c'),x=cv.getContext('2d');
+let W,H,mx=0,my=0,t=0,woke=0;
+const ws=['begin','open','breath','light','yet','still','almost','now','rise','soft','new','yes','hold','first','quiet','clear','warm','unfold','wake','fresh','gentle','possible','tender','bare','true','here','day','bloom','loose','early'];
+const ps=[];
+
+function sz(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight}
+
+function sp(ox,oy,v){
+  ps.push({x:ox!=null?ox:W*(.08+Math.random()*.84),y:oy!=null?oy:H+10,
+    w:ws[Math.floor(Math.random()*ws.length)],
+    vx:(Math.random()-.5)*.35,vy:-(v||.35+Math.random()*.55),
+    a:0,sz:10+Math.random()*13,life:200+Math.random()*220,age:0});
+}
+
+function fr(){
+  t++;
+  const d=Math.min(1,woke/9);
+
+  const bg=x.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,`hsl(${248+d*18},${52+d*8}%,${3+d*9}%)`);
+  bg.addColorStop(.55,`hsl(${258+d*25},${44+d*12}%,${5+d*13}%)`);
+  bg.addColorStop(1,`hsl(${20+d*8},${d*28}%,${3+d*7}%)`);
+  x.fillStyle=bg;x.fillRect(0,0,W,H);
+
+  const hy=H*.67;
+  const hg=x.createRadialGradient(W/2,hy,0,W/2,hy,W*.52);
+  hg.addColorStop(0,`rgba(255,155,35,${.03+d*.16})`);
+  hg.addColorStop(1,'rgba(0,0,0,0)');
+  x.fillStyle=hg;x.fillRect(0,0,W,H);
+
+  const cg=x.createRadialGradient(mx,my,0,mx,my,110);
+  cg.addColorStop(0,'rgba(255,195,120,.055)');
+  cg.addColorStop(1,'rgba(0,0,0,0)');
+  x.fillStyle=cg;x.fillRect(0,0,W,H);
+
+  if(t%20===0)sp();
+
+  for(let i=ps.length-1;i>=0;i--){
+    const p=ps[i];
+    p.x+=p.vx;p.y+=p.vy;p.age++;
+    if(p.age<32)p.a=p.age/32;
+    else if(p.age>p.life-45)p.a=(p.life-p.age)/45;
+    if(p.age>p.life){ps.splice(i,1);continue;}
+    const near=Math.max(0,1-Math.abs(p.y/H-.67)*3.8);
+    const lum=28+d*38+near*28;
+    x.globalAlpha=p.a*(.22+d*.48);
+    x.font=`italic ${p.sz}px Georgia,serif`;
+    x.fillStyle=`hsl(${38+near*14},${28+near*38+d*18}%,${lum}%)`;
+    x.fillText(p.w,p.x,p.y);
+  }
+  x.globalAlpha=1;
+
+  if(t<200&&woke===0){
+    const fa=t<80?t/80:t<140?1:(200-t)/60;
+    x.globalAlpha=fa*.42;
+    x.font='italic 11px Georgia,serif';
+    x.fillStyle='rgb(160,140,175)';
+    x.textAlign='center';
+    x.fillText('click to wake',W/2,H*.84);
+    x.textAlign='left';
+    x.globalAlpha=1;
+  }
+
+  requestAnimationFrame(fr);
+}
+
+window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+window.addEventListener('click',e=>{
+  woke++;
+  for(let i=0;i<5;i++)
+    sp(e.clientX+(Math.random()-.5)*55,e.clientY,.9+Math.random()*1.4);
+});
+window.addEventListener('resize',sz);
+sz();
+for(let i=0;i<10;i++){sp();ps[i].y=Math.random()*H;ps[i].age=Math.random()*ps[i].life*.65;}
+fr();
+</script>
+</section>
