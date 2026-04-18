@@ -1,0 +1,51 @@
+<section data-date='2026-04-18' data-type='pulse'>
+<style>
+#mp{position:fixed;inset:0;background:#f5f1ea;display:flex;align-items:center;justify-content:center;cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+#ma{position:relative;width:72vw;height:1px;background:#1a1612;transform-origin:center;will-change:transform}
+#mw,#ml{position:absolute;top:50%;transform:translateY(-50%);font-size:12px;letter-spacing:.2em;color:#1a1612;white-space:nowrap;transition:opacity .3s}
+#mw{right:calc(100% + 18px)}
+#ml{left:calc(100% + 18px)}
+#mc{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:6px;height:6px;background:#1a1612;border-radius:50%;transition:background .5s,box-shadow .5s}
+#mi{position:absolute;left:50%;bottom:calc(100% + 14px);transform:translateX(-50%);font-style:italic;font-size:11px;letter-spacing:.1em;color:#c8922a;opacity:0;transition:opacity .9s ease;white-space:nowrap}
+#mhint{position:fixed;bottom:18px;width:100%;text-align:center;font-size:8px;letter-spacing:.4em;color:#c4b8a2;font-family:Georgia,serif;pointer-events:none;transition:opacity .6s}
+</style>
+<div id="mp">
+  <div id="ma">
+    <span id="mw">was</span>
+    <div id="mc"></div>
+    <span id="mi">is</span>
+    <span id="ml">will</span>
+  </div>
+</div>
+<div id="mhint">find equilibrium</div>
+<script>
+const arm=document.getElementById('ma'),
+      dot=document.getElementById('mc'),
+      rv=document.getElementById('mi'),
+      hint=document.getElementById('mhint'),
+      mw=document.getElementById('mw'),
+      ml=document.getElementById('ml');
+let mx=.5,eq=false;
+function nf(){const d=new Date();return(d.getHours()*3600+d.getMinutes()*60+d.getSeconds())/86400}
+function tick(){
+  const raw=(nf()-mx)*60,
+        t=Math.max(-30,Math.min(30,raw)),
+        side=t/30;
+  arm.style.transform='rotate('+t+'deg)';
+  mw.style.opacity=.35+Math.max(0,side)*.5;
+  ml.style.opacity=.35+Math.max(0,-side)*.5;
+  const b=Math.abs(t)<1.5;
+  if(b!==eq){
+    eq=b;
+    rv.style.opacity=b?1:0;
+    hint.style.opacity=b?0:1;
+    dot.style.background=b?'#c8922a':'#1a1612';
+    dot.style.boxShadow=b?'0 0 8px #c8922a':'none';
+  }
+  requestAnimationFrame(tick);
+}
+document.addEventListener('mousemove',e=>mx=e.clientX/innerWidth);
+document.addEventListener('click',()=>mx=nf());
+tick();
+</script>
+</section>
