@@ -1,0 +1,114 @@
+<!doctype html><html><head><meta charset=utf-8><title>Impact — 2026-04-19</title>
+<style>*{margin:0}body{background:#040407;overflow:hidden;width:100vw;height:100vh}</style>
+</head><body>
+<section data-date='2026-04-19' data-type='spark'>
+<canvas id=c></canvas>
+<script>
+const cv=document.getElementById('c'),g=cv.getContext('2d');
+cv.width=innerWidth;cv.height=innerHeight;
+
+const P=[
+  ['stranger','familiar','kin'],
+  ['fire','water','steam'],
+  ['question','answer','silence'],
+  ['chaos','order','pattern'],
+  ['longing','arrival','now'],
+  ['solitude','crowd','self']
+];
+
+let pi=0,phase='go',t=0,mx=.5,lx,rx,py,pts=[],sv=0,sw;
+
+function init(){
+  lx=cv.width*.06;rx=cv.width*.94;
+  py=cv.height/2;phase='go';t=0;pts=[];sv=0;
+}
+
+onmousemove=e=>mx=e.clientX/innerWidth;
+onclick=()=>{if(phase==='rest'){pi=(pi+1)%P.length;init()}};
+onresize=()=>{cv.width=innerWidth;cv.height=innerHeight;init()};
+init();
+
+function burst(cx,cy,word){
+  pts=[];
+  for(let i=0;i<word.length*9;i++){
+    const a=Math.random()*6.28,sp=.4+Math.random()*5.5;
+    pts.push({x:cx,y:cy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-1,
+      ch:word[~~(Math.random()*word.length)],l:1,
+      c:Math.random()>.5?'255,165,50':'50,195,255'});
+  }
+}
+
+function frame(){
+  t+=.014;
+  const W=cv.width,H=cv.height;
+  const CX=W*(.28+mx*.44);
+  const [wA,wB,wC]=P[pi];
+  const fs=Math.min(W,H)*.056;
+
+  g.fillStyle='rgba(4,4,7,.13)';
+  g.fillRect(0,0,W,H);
+
+  g.textBaseline='middle';
+  g.textAlign='center';
+
+  if(phase==='go'){
+    lx+=(CX-lx)*.026;
+    rx+=(CX-rx)*.026;
+
+    // approach trails
+    g.font=fs+'px monospace';
+    g.fillStyle='rgba(255,172,50,.94)';
+    g.fillText(wA,lx,py);
+    g.fillStyle='rgba(50,192,255,.94)';
+    g.fillText(wB,rx,py);
+
+    // line connecting them, fades as they close
+    const dist=Math.abs(lx-rx);
+    const prox=Math.max(0,1-dist/(W*.5));
+    if(prox>.1){
+      g.save();
+      g.strokeStyle=`rgba(200,200,200,${prox*.08})`;
+      g.setLineDash([1,6]);
+      g.beginPath();g.moveTo(lx,py);g.lineTo(rx,py);g.stroke();
+      g.restore();
+    }
+
+    if(dist<fs*1.8){sw=wC;burst(CX,py,wC);phase='burst';t=0;}
+  }
+
+  if(phase==='burst'){
+    let alive=false;
+    g.font=fs*.68+'px monospace';
+    pts.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;
+      p.vx*=.925;p.vy*=.925;p.vy+=.06;
+      p.l-=.017;
+      if(p.l>0){alive=true;g.fillStyle=`rgba(${p.c},${p.l})`;g.fillText(p.ch,p.x,p.y);}
+    });
+    if(t>.45){
+      sv=Math.min(1,sv+.028);
+      g.font=fs*1.18+'px monospace';
+      g.shadowColor='rgba(255,232,160,.85)';
+      g.shadowBlur=sv*28;
+      g.fillStyle=`rgba(255,248,210,${sv})`;
+      g.fillText(sw,CX,py);
+      g.shadowBlur=0;
+    }
+    if(!alive&&sv>=1)phase='rest';
+  }
+
+  if(phase==='rest'){
+    g.font=fs*1.18+'px monospace';
+    g.fillStyle='rgba(255,248,210,.9)';
+    g.fillText(sw,CX,py);
+    g.font='10px monospace';
+    g.fillStyle='rgba(255,255,255,.1)';
+    g.fillText('mouse to aim · click for next',W/2,H-14);
+  }
+
+  requestAnimationFrame(frame);
+}
+frame();
+</script>
+</section>
+</body></html>
