@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>morning</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden}
+body{
+  background:#060614;
+  display:flex;align-items:center;justify-content:center;
+  cursor:default;
+  transition:background 3s ease
+}
+#stage{
+  font-family:Georgia,'Times New Roman',serif;
+  font-size:clamp(1rem,2.5vw,1.5rem);
+  letter-spacing:.18em;
+  line-height:2.4;
+  color:#c8bfaa;
+  text-align:center;
+  user-select:none;
+  transition:color 3s ease
+}
+#stage span{display:block;min-height:1.5em}
+#cur{
+  display:inline-block;width:1px;height:.9em;
+  background:#c8bfaa;vertical-align:text-bottom;
+  animation:blink 1s step-end infinite;
+  transition:background 3s ease
+}
+@keyframes blink{50%{opacity:0}}
+#hint{
+  position:fixed;bottom:2.5rem;left:50%;
+  transform:translateX(-50%);
+  font-family:Georgia,serif;font-size:.6rem;
+  letter-spacing:.25em;color:#2a2a4a;
+  transition:opacity 1.5s,color 3s
+}
+</style>
+</head>
+<body>
+<section data-date='2026-04-19' data-type='morning'>
+<div id="stage">
+  <span id="l0"></span>
+  <span id="l1"></span>
+  <span id="l2"></span>
+</div>
+<div id="hint" style="opacity:0">— click —</div>
+<script>
+const poem=["before the light","there was only","the idea of morning"];
+const S=[document.getElementById('l0'),document.getElementById('l1'),document.getElementById('l2')];
+const hint=document.getElementById('hint');
+const cur=document.createElement('span');cur.id='cur';
+let li=0,ci=0,reach=0,erasing=false,broken=false,warmth=0;
+
+function warm(){
+  warmth=Math.min(warmth+1,12);
+  const t=warmth/12;
+  const r=Math.round(6+t*243),g=Math.round(6+t*218),b=Math.round(20+t*172);
+  document.body.style.background=`rgb(${r},${g},${b})`;
+  const tr=Math.round(200+t*50),tg=Math.round(191+t*21),tb=Math.round(170-t*52);
+  document.getElementById('stage').style.color=`rgb(${tr},${tg},${tb})`;
+  cur.style.background=`rgb(${tr},${tg},${tb})`;
+  hint.style.color=`rgba(${tr},${tg},${tb},0.4)`;
+}
+
+function step(){
+  if(broken)return;
+  if(!erasing){
+    const line=poem[li];
+    if(ci<line.length){
+      S[li].textContent=line.slice(0,ci+1);
+      if(li===reach&&ci===line.length-1){
+        S[li].appendChild(cur);
+      }
+      ci++;
+      setTimeout(step,65+Math.random()*55);
+    } else if(li<reach){
+      li++;ci=0;
+      setTimeout(step,220);
+    } else {
+      erasing=true;
+      setTimeout(step,1100);
+    }
+  } else {
+    if(ci>0){
+      ci--;
+      S[li].textContent=poem[li].slice(0,ci);
+      if(ci===0&&li>0){
+        setTimeout(()=>{li--;ci=poem[li].length;setTimeout(step,30)},15);
+      } else {
+        setTimeout(step,22+Math.random()*12);
+      }
+    } else {
+      S.forEach(s=>s.textContent='');
+      erasing=false;
+      reach=(reach+1)%poem.length;
+      if(reach===0)warm();
+      li=0;ci=0;
+      setTimeout(step,900);
+    }
+  }
+}
+
+setTimeout(()=>{hint.style.opacity='1'},2200);
+
+document.addEventListener('click',()=>{
+  if(broken)return;
+  broken=true;
+  poem.forEach((l,i)=>S[i].textContent=l);
+  document.body.style.background='#f0e0b8';
+  document.getElementById('stage').style.color='#1e1208';
+  hint.style.opacity='0';
+});
+
+step();
+</script>
+</section>
+</body>
+</html>
