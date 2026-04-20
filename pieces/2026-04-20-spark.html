@@ -1,0 +1,157 @@
+<section data-date='2026-04-20' data-type='spark'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+#cv{display:block;background:#0a0a0a;cursor:crosshair}
+</style>
+<canvas id="cv"></canvas>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+cv.width=420;cv.height=420;
+
+const W=cv.width,H=cv.height,CX=W/2,CY=H/2;
+
+// two word-bodies orbiting
+const A={
+  word:"strange",
+  x:CX-100,y:CY,
+  vx:0,vy:-0.4,
+  angle:0,r:110,
+  speed:0.009,
+  col:"#e8e0d0"
+};
+const B={
+  word:"familiar",
+  x:CX+100,y:CY,
+  vx:0,vy:0.4,
+  angle:Math.PI,r:110,
+  speed:-0.011,
+  col:"#b0c4d8"
+};
+
+// synthesis words that emerge at collision
+const syntheses=["known","home","almost","together","echo","merge","before","now"];
+let synthIdx=0;
+let synthAlpha=0,synthWord="",synthX=CX,synthY=CY;
+
+let pull=0; // 0=orbit, 1=pulled together
+let fused=0; // collision flash 0..1
+let fusedDecay=0;
+
+cv.addEventListener('mousedown',()=>{ pull=Math.min(pull+0.4,1) });
+cv.addEventListener('mousemove',(e)=>{
+  const r=cv.getBoundingClientRect();
+  const mx=e.clientX-r.left,my=e.clientY-r.top;
+  const dx=mx-CX,dy=my-CY;
+  const dist=Math.sqrt(dx*dx+dy*dy);
+  if(dist<80) pull=Math.min(pull+0.015,1);
+});
+cv.addEventListener('mouseleave',()=>{ pull=Math.max(pull-0.1,0) });
+
+let t=0;
+
+function lerp(a,b,f){return a+(b-a)*f}
+
+function drawWord(word,x,y,alpha,col,size){
+  ctx.save();
+  ctx.globalAlpha=alpha;
+  ctx.font=`${size}px "Courier New",monospace`;
+  ctx.fillStyle=col;
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  ctx.fillText(word,x,y);
+  ctx.restore();
+}
+
+function frame(){
+  // slow decay trail
+  ctx.fillStyle='rgba(10,10,10,0.18)';
+  ctx.fillRect(0,0,W,H);
+
+  // orbit radii contract under pull
+  const ra=lerp(110,30,pull);
+  const rb=lerp(110,30,pull);
+
+  A.angle+=A.speed*(1+pull*3);
+  B.angle+=B.speed*(1+pull*3);
+
+  A.x=CX+Math.cos(A.angle)*ra;
+  A.y=CY+Math.sin(A.angle)*ra*0.5;
+  B.x=CX+Math.cos(B.angle)*rb;
+  B.y=CY+Math.sin(B.angle)*rb*0.5;
+
+  const dx=B.x-A.x,dy=B.y-A.y;
+  const dist=Math.sqrt(dx*dx+dy*dy);
+
+  // collision detection
+  if(dist<28 && fusedDecay<=0){
+    fusedDecay=1;
+    synthWord=syntheses[synthIdx%syntheses.length];
+    synthIdx++;
+    synthX=(A.x+B.x)/2;
+    synthY=(A.y+B.y)/2;
+    pull=Math.max(pull-0.3,0);
+  }
+
+  if(fusedDecay>0){
+    fusedDecay=Math.max(fusedDecay-0.008,0);
+    const f=fusedDecay;
+    // flash ring
+    ctx.save();
+    ctx.globalAlpha=f*0.6;
+    ctx.strokeStyle='#f0c060';
+    ctx.lineWidth=1.5;
+    ctx.beginPath();
+    ctx.arc(synthX,synthY,(1-f)*60+4,0,Math.PI*2);
+    ctx.stroke();
+    // synthesis word
+    ctx.globalAlpha=Math.min(f*3,1)*0.95;
+    ctx.font=`${Math.round(lerp(10,22,f))}px "Courier New",monospace`;
+    ctx.fillStyle='#f0c060';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(synthWord,synthX,synthY);
+    ctx.restore();
+  }
+
+  // draw word A — faint particle trail
+  const aAlpha=lerp(0.55,0.9,pull);
+  drawWord(A.word,A.x,A.y,aAlpha,A.col,lerp(11,14,pull));
+
+  // draw word B
+  drawWord(B.word,B.x,B.y,aAlpha,B.col,lerp(11,14,pull));
+
+  // proximity line — ligature forming
+  if(dist<90){
+    const strength=(1-(dist/90));
+    ctx.save();
+    ctx.globalAlpha=strength*0.18;
+    ctx.strokeStyle='#ffffff';
+    ctx.lineWidth=0.5;
+    ctx.setLineDash([2,4]);
+    ctx.beginPath();
+    ctx.moveTo(A.x,A.y);
+    ctx.lineTo(B.x,B.y);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // center glyph — grows as they approach
+  if(pull>0.1){
+    const g=pull*(1-fusedDecay*0.5);
+    ctx.save();
+    ctx.globalAlpha=g*0.25;
+    ctx.font=`${Math.round(g*40)}px serif`;
+    ctx.fillStyle='#ffffff';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText('⊕',CX,CY);
+    ctx.restore();
+  }
+
+  t++;
+  requestAnimationFrame(frame);
+}
+
+frame();
+</script>
+</section>

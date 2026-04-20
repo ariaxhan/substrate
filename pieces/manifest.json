@@ -164,6 +164,7 @@
     {"file": "2026-04-19-morning.html", "date": "2026-04-19", "type": "morning", "timestamp": 1776607557},
     {"file": "2026-04-19-reflection.html", "date": "2026-04-19", "type": "reflection", "timestamp": 1776654455},
     {"file": "2026-04-19-spark.html", "date": "2026-04-19", "type": "spark", "timestamp": 1776614583},
-    {"file": "2026-04-20-morning.html", "date": "2026-04-20", "type": "morning", "timestamp": 1776694125}
+    {"file": "2026-04-20-morning.html", "date": "2026-04-20", "type": "morning", "timestamp": 1776694125},
+    {"file": "2026-04-20-spark.html", "date": "2026-04-20", "type": "spark", "timestamp": 1776700917}
   ]
 }
