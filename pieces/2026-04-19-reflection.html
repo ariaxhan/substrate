@@ -1,0 +1,37 @@
+<section data-date='2026-04-19' data-type='reflection'>
+<style>
+#sky{position:fixed;inset:0;background:radial-gradient(ellipse at 50% 65%,#080d1a 0%,#010307 100%);cursor:crosshair;overflow:hidden}
+.s{position:absolute;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;animation:breathe var(--d,3s) ease-in-out infinite alternate}
+@keyframes breathe{from{opacity:var(--lo,.4)}to{opacity:var(--hi,1);transform:translate(-50%,-50%) scale(1.4)}}
+#glow{position:absolute;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(160,185,255,.04) 0%,transparent 70%);transform:translate(-50%,-50%);pointer-events:none}
+#word{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font:300 italic 1rem Georgia,serif;letter-spacing:.55em;color:rgba(180,200,255,.55);opacity:0;transition:opacity 3.5s ease;pointer-events:none;white-space:nowrap}
+</style>
+<div id=sky><div id=glow></div><div id=word></div></div>
+<script>
+const sky=document.getElementById('sky'),
+      W=document.getElementById('word'),
+      G=document.getElementById('glow'),
+      C=['#b4c6ff','#ffd4b8','#c6deff','#d6c4ff','#b8e0d4'],
+      V=['still','enough','complete','held','rest','done','whole'];
+let k=0;
+
+sky.onmousemove=e=>{G.style.left=e.clientX+'px';G.style.top=e.clientY+'px'};
+
+sky.onclick=e=>{
+  const d=document.createElement('div');
+  d.className='s';
+  const r=1+Math.random()*2.2,c=C[k%C.length],lo=.35+Math.random()*.25;
+  d.style.cssText=`left:${e.clientX}px;top:${e.clientY}px;width:${r*2}px;height:${r*2}px;background:${c};box-shadow:0 0 ${r*5}px ${r*1.5}px ${c}70;--d:${2+Math.random()*4}s;--lo:${lo};--hi:${lo+.4}`;
+  sky.appendChild(d);k++;
+  if(k===6){W.textContent=V[~~(Math.random()*V.length)];W.style.opacity=1}
+  if(k>6&&k%5===0){W.style.opacity=0;setTimeout(()=>{W.textContent=V[~~(Math.random()*V.length)];W.style.opacity=1},3800)}
+};
+
+[{x:.18,y:.25},{x:.72,y:.12},{x:.88,y:.55},{x:.42,y:.8},{x:.6,y:.38}].forEach(p=>{
+  const d=document.createElement('div'),r=.6+Math.random()*.5,c='#8898cc';
+  d.className='s';
+  d.style.cssText=`left:${p.x*100}vw;top:${p.y*100}vh;width:${r*2}px;height:${r*2}px;background:${c};box-shadow:0 0 3px 1px ${c}50;--d:${4+Math.random()*5}s;--lo:.15;--hi:.4`;
+  sky.appendChild(d)
+});
+</script>
+</section>
