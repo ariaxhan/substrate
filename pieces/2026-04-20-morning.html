@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>before (morning / 2026-04-20)</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden}
+section{
+  width:100vw;height:100vh;cursor:pointer;position:relative;
+  transition:background 1.6s ease
+}
+.w{
+  position:absolute;
+  font-family:'Courier New',Courier,monospace;
+  pointer-events:none;user-select:none;
+  transition:color 1.6s ease,opacity 1.2s ease;
+  transform:translate(-50%,-50%);
+  white-space:nowrap
+}
+#h{
+  position:fixed;bottom:2rem;left:50%;
+  transform:translateX(-50%);
+  font-family:'Courier New',monospace;font-size:.55rem;
+  letter-spacing:.3em;
+  transition:opacity 1.5s,color 1.6s;
+  pointer-events:none
+}
+</style>
+</head>
+<body>
+<section data-date='2026-04-20' data-type='morning'>
+<div id="h" style="opacity:0;color:#2a2840">— click —</div>
+<script>
+const poem=[
+  {t:"before",       x:50, y:50, s:5.8, th:0,  d:"#14122e", l:"#d49830"},
+  {t:"the hour",     x:22, y:26, s:1.5, th:6,  d:"#0e0e24", l:"#b88828"},
+  {t:"has not",      x:72, y:20, s:1.4, th:12, d:"#100e22", l:"#c89030"},
+  {t:"named itself", x:76, y:38, s:1.9, th:20, d:"#12102a", l:"#d4a038"},
+  {t:"anything",     x:20, y:62, s:2.2, th:28, d:"#100e26", l:"#c89038"},
+  {t:"can happen",   x:64, y:74, s:2.5, th:36, d:"#14102c", l:"#ddb848"},
+  {t:"still",        x:38, y:86, s:3.4, th:46, d:"#14102e", l:"#e8c050"},
+  {t:"the body",     x:16, y:44, s:1.5, th:54, d:"#110e26", l:"#c89030"},
+  {t:"opens",        x:56, y:18, s:2.8, th:62, d:"#12102a", l:"#ddb840"},
+  {t:"like a door",  x:30, y:12, s:1.6, th:70, d:"#141030", l:"#e0bc48"},
+  {t:"to a room",    x:80, y:86, s:1.4, th:78, d:"#141232", l:"#d8b040"},
+  {t:"of light",     x:50, y:94, s:3.0, th:86, d:"#161232", l:"#f0cc60"},
+];
+
+const sky=[
+  [0,"#06061a"],[8,"#0a0a22"],[18,"#14103a"],
+  [30,"#261848"],[45,"#461e52"],[58,"#783050"],
+  [72,"#b85838"],[84,"#d48828"],[94,"#eebc3a"],[100,"#f5d050"]
+];
+
+const sec=document.querySelector('section');
+const hint=document.getElementById('h');
+let dawn=0;
+
+function h2r(h){return[1,3,5].map(i=>parseInt(h.slice(i,i+2),16))}
+function mix(a,b,t){
+  const A=h2r(a),B=h2r(b);
+  return'#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('')
+}
+function getBg(d){
+  for(let i=sky.length-2;i>=0;i--)
+    if(d>=sky[i][0])return mix(sky[i][1],sky[i+1][1],(d-sky[i][0])/(sky[i+1][0]-sky[i][0]));
+  return sky[0][1]
+}
+
+const els=poem.map(p=>{
+  const e=document.createElement('div');
+  e.className='w';e.textContent=p.t;
+  e.style.left=p.x+'vw';e.style.top=p.y+'vh';
+  e.style.fontSize=p.s+'vw';e.style.color=p.d;e.style.opacity='.06';
+  sec.appendChild(e);return{e,p}
+});
+
+function render(){
+  sec.style.background=getBg(Math.min(dawn,99));
+  hint.style.color=getBg(Math.min(dawn+22,99));
+  els.forEach(({e,p})=>{
+    const prog=dawn>=p.th?Math.min((dawn-p.th)/16,1):0;
+    e.style.color=mix(p.d,p.l,prog);
+    e.style.opacity=String(.06+prog*.94);
+  });
+}
+
+sec.addEventListener('click',()=>{
+  dawn=dawn>=100?0:Math.min(dawn+9,100);
+  render();
+  if(dawn===0)setTimeout(()=>hint.style.opacity='1',1200);
+  else hint.style.opacity='0';
+});
+
+setTimeout(()=>hint.style.opacity='1',2200);
+render();
+</script>
+</section>
+</body>
+</html>
