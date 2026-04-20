@@ -1,0 +1,50 @@
+<section data-date='2026-04-20' data-type='pulse'>
+<style>
+#p{position:fixed;top:0;left:0;width:100%;height:100%;background:#0c0c0e;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;user-select:none}
+#beam{position:relative;display:flex;align-items:center;width:340px;transform-origin:center}
+.h{flex:1;height:1px;background:rgba(200,169,110,.45)}
+#d{width:8px;height:8px;border-radius:50%;background:#c8a96e;box-shadow:0 0 16px rgba(200,169,110,.5);flex-shrink:0;transition:background .6s,box-shadow .6s}
+#lw{position:absolute;right:calc(100% + 1.8rem);white-space:nowrap;font:300 1.7rem/1 Georgia,serif;color:#e8dcc8;letter-spacing:.08em;opacity:1;transition:opacity .22s,color .6s}
+#rw{position:absolute;left:calc(100% + 1.8rem);white-space:nowrap;font:400 .9rem/1 'Courier New',monospace;color:#3a4a5c;letter-spacing:.28em;opacity:1;transition:opacity .22s,color .6s}
+</style>
+<div id='p'>
+  <div id='beam'>
+    <div id='lw'></div>
+    <div class='h'></div>
+    <div id='d'></div>
+    <div class='h'></div>
+    <div id='rw'></div>
+  </div>
+</div>
+<script>
+const W=['before','light','open','rise','east','dawn','wake','begin'],
+E=['after','dark','close','fall','west','dusk','sleep','end'];
+let fl=0,ti=0;
+const beam=document.getElementById('beam'),
+lw=document.getElementById('lw'),
+rw=document.getElementById('rw'),
+d=document.getElementById('d'),
+p=document.getElementById('p');
+function show(fade){
+  if(fade){lw.style.opacity=rw.style.opacity='0';}
+  setTimeout(()=>{
+    lw.textContent=fl?E[ti]:W[ti];
+    rw.textContent=fl?W[ti]:E[ti];
+    lw.style.opacity=rw.style.opacity='1';
+  },fade?220:0);
+}
+show(false);
+setInterval(()=>{ti=(ti+1)%W.length;show(true);},4200);
+document.addEventListener('mousemove',e=>{
+  beam.style.transform='rotate('+((0.5-e.clientX/innerWidth)*26)+'deg)';
+});
+p.addEventListener('click',()=>{
+  fl^=1;show(true);
+  p.style.background=fl?'#0f0c16':'#0c0c0e';
+  d.style.background=fl?'#8a7faa':'#c8a96e';
+  d.style.boxShadow=fl?'0 0 16px rgba(138,127,170,.5)':'0 0 16px rgba(200,169,110,.5)';
+  lw.style.color=fl?'#c4d4e8':'#e8dcc8';
+  rw.style.color=fl?'#5a4a6e':'#3a4a5c';
+});
+</script>
+</section>
