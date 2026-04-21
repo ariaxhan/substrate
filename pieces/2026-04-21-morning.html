@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>threshold (morning / 2026-04-21)</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;cursor:none;background:#0c0d18}
+section{width:100vw;height:100vh;position:relative}
+.f{
+  position:absolute;
+  font-family:Georgia,'Times New Roman',serif;
+  pointer-events:none;user-select:none;
+  transition:opacity 1.1s ease;
+  white-space:nowrap
+}
+#g{
+  position:fixed;width:70px;height:70px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(255,185,80,.13) 0%,transparent 70%);
+  transform:translate(-50%,-50%);
+  pointer-events:none
+}
+#hint{
+  position:fixed;bottom:1.8rem;left:50%;
+  transform:translateX(-50%);
+  font-family:Georgia,serif;font-size:.5rem;
+  letter-spacing:.35em;color:#4a3a2a;
+  opacity:0;transition:opacity 1.4s;pointer-events:none
+}
+</style>
+</head>
+<body>
+<section data-date='2026-04-21' data-type='morning'>
+<div id="g"></div>
+<div id="hint">move toward light — click to return</div>
+<script>
+const P=[
+  ['before',            8, 76,1.4,.05],
+  ['the first breath', 25, 67,.95,.18],
+  ['belongs to silence',51,58,.85,.28],
+  ['then',             77, 48,.62,.38],
+  ['light',            10, 40,3.9,.44],
+  ['does not arrive—',34,30,.9,.56],
+  ['it remembers',     59, 21,1.1,.68],
+  ['itself',           42,  9,2.7,.82],
+];
+
+const sky=[
+  [0,"#0c0d18"],[12,"#17142a"],[24,"#2a1838"],
+  [40,"#501e42"],[56,"#883848"],[70,"#c06840"],
+  [85,"#e89848"],[100,"#fdf0dc"]
+];
+
+const sec=document.querySelector('section');
+const G=document.getElementById('g');
+const hint=document.getElementById('hint');
+
+function h2r(h){return[1,3,5].map(i=>parseInt(h.slice(i,i+2),16))}
+function mix(a,b,t){
+  const A=h2r(a),B=h2r(b);
+  return'#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('')
+}
+function getBg(d){
+  const pct=d*100;
+  for(let i=sky.length-2;i>=0;i--)
+    if(pct>=sky[i][0])return mix(sky[i][1],sky[i+1][1],(pct-sky[i][0])/(sky[i+1][0]-sky[i][0]));
+  return sky[0][1]
+}
+
+const L=(a,b,t)=>a+(b-a)*t;
+let my=window.innerHeight;
+
+const els=P.map(([t,x,y,s,th])=>{
+  const e=document.createElement('div');
+  e.className='f';e.textContent=t;
+  e.style.left=x+'vw';e.style.top=y+'vh';
+  e.style.fontSize=s+'vw';e.style.opacity=0;
+  e.dataset.th=th;
+  sec.appendChild(e);
+  return e
+});
+
+function render(){
+  const d=Math.max(0,Math.min(1,1-my/window.innerHeight));
+  sec.style.background=getBg(d);
+
+  const tr=L(245,58,d)|0, tg=L(228,28,d)|0, tb=L(195,10,d)|0;
+  const col=`rgb(${tr},${tg},${tb})`;
+
+  els.forEach(el=>{
+    const th=+el.dataset.th;
+    const v=Math.max(0,Math.min(1,(d-th)/.13));
+    const glow=(1-d)*v;
+    el.style.opacity=v;
+    el.style.color=col;
+    el.style.textShadow=
+      `0 0 18px rgba(255,168,55,${(glow*.85).toFixed(2)}),`+
+      `0 0 40px rgba(255,130,35,${(glow*.4).toFixed(2)})`;
+  });
+  requestAnimationFrame(render);
+}
+
+addEventListener('mousemove',e=>{
+  my=e.clientY;
+  G.style.left=e.clientX+'px';G.style.top=e.clientY+'px';
+});
+addEventListener('click',()=>{my=window.innerHeight});
+
+setTimeout(()=>hint.style.opacity='1',2800);
+addEventListener('mousemove',()=>hint.style.opacity='0',{once:true});
+render();
+</script>
+</section>
+</body>
+</html>
