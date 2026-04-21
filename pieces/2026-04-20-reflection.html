@@ -1,0 +1,57 @@
+<!doctype html><html><head><meta charset=utf-8><title>2026-04-20 · reflection</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#020208;cursor:crosshair}
+canvas{position:absolute;top:0;left:0;display:block}
+#w{font:italic 1.05rem Georgia,serif;color:#d0c0a0;position:absolute;pointer-events:none;letter-spacing:.08em}
+</style></head><body>
+<section data-date='2026-04-20' data-type='reflection'>
+<canvas id=c></canvas>
+<div id=w style='opacity:0'></div>
+<script>
+const cv=document.getElementById('c'),cx=cv.getContext('2d'),wd=document.getElementById('w');
+let W,H,pts=[],wi=0,tid;
+function sz(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight}
+sz();window.addEventListener('resize',sz);
+
+const poem=['done','rest','still','held','whole','enough','home','breath','quiet','full','dark','soft','warm','true','spent','close','deep','free','safe','now'];
+
+function glow(x,y,a){
+  const g=cx.createRadialGradient(x,y,0,x,y,6);
+  g.addColorStop(0,`rgba(240,228,200,${a})`);
+  g.addColorStop(.45,`rgba(200,175,130,${a*.55})`);
+  g.addColorStop(1,'rgba(2,2,8,0)');
+  cx.fillStyle=g;cx.beginPath();cx.arc(x,y,6,0,6.283);cx.fill();
+  cx.fillStyle=`rgba(255,250,240,${a})`;
+  cx.beginPath();cx.arc(x,y,.9,0,6.283);cx.fill();
+}
+
+(function frame(){
+  cx.clearRect(0,0,W,H);
+  for(let i=0;i<pts.length;i++){
+    const p=pts[i];
+    p.a=Math.min(1,p.a+.008);
+    for(let j=i+1;j<pts.length;j++){
+      const q=pts[j],d=Math.hypot(p.x-q.x,p.y-q.y);
+      if(d<200){
+        cx.strokeStyle=`rgba(190,165,120,${(1-d/200)*.07})`;
+        cx.lineWidth=.6;cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(q.x,q.y);cx.stroke();
+      }
+    }
+    glow(p.x,p.y,p.a);
+  }
+  requestAnimationFrame(frame);
+})();
+
+window.addEventListener('click',function(e){
+  pts.push({x:e.clientX,y:e.clientY,a:0});
+  const word=poem[wi++%poem.length];
+  const ox=e.clientX+16,oy=e.clientY-6;
+  wd.textContent=word;
+  wd.style.cssText=`font:italic 1.05rem Georgia,serif;color:#d0c0a0;position:absolute;pointer-events:none;letter-spacing:.08em;left:${ox}px;top:${oy}px;opacity:1;transition:opacity 2.8s ease,top 3.2s ease`;
+  clearTimeout(tid);
+  tid=setTimeout(function(){wd.style.opacity=0;wd.style.top=(oy-18)+'px'},80);
+});
+</script>
+</section>
+</body></html>
