@@ -1,0 +1,94 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Fulcrum</title>
+<style>
+*{margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;cursor:none;user-select:none;background:#f0ebe0}
+#line{position:fixed;top:50%;left:7%;width:86%;height:1px;background:#1a1208;transform:translateY(-.5px);opacity:.55}
+#nub{position:fixed;top:50%;left:50%;width:5px;height:5px;background:#1a1208;border-radius:50%;transform:translate(-50%,-50%);transition:background .4s,box-shadow .4s}
+#above,#below{position:fixed;left:0;right:0;text-align:center;font:300 clamp(3.2rem,8.5vw,7.5rem)/1 Georgia,'Times New Roman',serif;letter-spacing:-.02em;color:#1a1208;pointer-events:none}
+#below{opacity:.17;transform:scaleY(-1)}
+#cur{position:fixed;width:7px;height:7px;border:1px solid #1a1208;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);opacity:.45}
+#hint{position:fixed;bottom:2.4rem;left:0;right:0;text-align:center;font:11px/1 Georgia,serif;color:#1a1208;opacity:.3;letter-spacing:.12em;pointer-events:none;transition:opacity 1s}
+</style>
+</head>
+<body>
+<section data-date='2026-04-21' data-type='pulse'>
+<div id="line"></div>
+<div id="nub"></div>
+<div id="above"></div>
+<div id="below"></div>
+<div id="cur"></div>
+<div id="hint">move toward center · click to hold</div>
+<script>
+const ws=['noon','still','even','level','pause','hinge','held','poise','between','suspend','rest','lull','breath'],
+A=document.getElementById('above'),
+B=document.getElementById('below'),
+N=document.getElementById('nub'),
+H=document.getElementById('hint'),
+CR=document.getElementById('cur');
+
+let wi=0,my=innerHeight/2,locked=false,fading=false;
+
+function setText(t){A.textContent=t;B.textContent=t}
+setText(ws[0]);
+
+function gap(){
+  if(locked)return 3;
+  const d=Math.abs(my-innerHeight/2);
+  return Math.max(8,d*.52);
+}
+
+function layout(){
+  const cy=innerHeight/2,h=A.offsetHeight||80,g=gap();
+  A.style.top=(cy-g-h)+'px';
+  B.style.top=(cy+g)+'px';
+  const near=g<32;
+  N.style.background=near?'#8a6a18':'#1a1208';
+  N.style.boxShadow=near?'0 0 0 5px rgba(138,106,24,.12)':'none';
+}
+
+document.addEventListener('mousemove',e=>{
+  my=e.clientY;
+  CR.style.left=e.clientX+'px';
+  CR.style.top=e.clientY+'px';
+});
+
+document.addEventListener('click',()=>{
+  if(locked||fading)return;
+  locked=true;
+  H.style.opacity='0';
+  N.style.background='#8a6a18';
+  N.style.boxShadow='0 0 0 9px rgba(138,106,24,.08)';
+  setTimeout(()=>{
+    locked=false;
+    N.style.background='#1a1208';
+    N.style.boxShadow='none';
+  },2200);
+});
+
+function cycle(){
+  if(locked)return;
+  fading=true;
+  A.style.transition=B.style.transition='opacity .55s';
+  A.style.opacity='0';
+  B.style.opacity='0';
+  setTimeout(()=>{
+    wi=(wi+1)%ws.length;
+    setText(ws[wi]);
+    A.style.opacity='1';
+    B.style.opacity='.17';
+    fading=false;
+  },550);
+}
+setInterval(cycle,4200);
+
+setTimeout(()=>H.style.opacity='0',5000);
+
+(function loop(){layout();requestAnimationFrame(loop)})();
+</script>
+</section>
+</body>
+</html>
