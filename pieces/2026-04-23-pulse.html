@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Halfway</title>
+<style>
+*{margin:0;padding:0}
+html,body{width:100%;height:100%;background:#0c0e13;overflow:hidden;cursor:crosshair;user-select:none}
+#tri{position:fixed;top:50%;left:50%;transform:translate(-50%,1px);
+  width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;
+  border-bottom:10px solid rgba(220,210,185,.3)}
+#sc{position:fixed;top:50%;left:50%;transform-origin:0 0}
+#arm{position:absolute;left:-30vw;top:0;width:60vw;height:1px;background:rgba(220,210,185,.4)}
+.w{position:absolute;font-family:Georgia,'Times New Roman',serif;color:#dcd2b9;
+  white-space:nowrap;transform:translateX(-50%);pointer-events:none;transition:opacity .25s}
+#fl{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-family:'Courier New',Courier,monospace;font-size:clamp(10px,1.3vw,18px);
+  color:#dcd2b9;letter-spacing:.5em;opacity:0;pointer-events:none}
+</style>
+</head>
+<body>
+<section data-date='2026-04-23' data-type='pulse'>
+<div id="tri"></div>
+<div id="sc"><div id="arm"></div></div>
+<div id="fl">12 : 00</div>
+<script>
+const arm=document.getElementById('arm'),
+sc=document.getElementById('sc'),
+fl=document.getElementById('fl');
+
+// [text, xPct along arm (0-100), topPx (neg=above beam), fontSize, baseOpacity]
+const ws=[
+  ['a.m.',   1, -14, '9px',   .30],
+  ['waking', 9,  27, '.85rem',.56],
+  ['still',  20, 52, '1rem',  .46],
+  ['before', 31, 18, '.74rem',.40],
+  ['·',      50,-11, '1rem',  .27],
+  ['after',  69, 18, '.74rem',.40],
+  ['almost', 80, 52, '1rem',  .46],
+  ['fading', 91, 27, '.85rem',.56],
+  ['p.m.',   99,-14, '9px',   .30],
+];
+
+const els=ws.map(([t,x,top,sz,op])=>{
+  const e=document.createElement('div');
+  e.className='w';e.textContent=t;
+  e.style.left=x+'%';
+  e.style.top=(top+1)+'px';
+  e.style.fontSize=sz;
+  e.style.opacity=op;
+  arm.appendChild(e);
+  return{e,x,op,side:x<50?-1:1};
+});
+
+let tilt=0,tar=0;
+
+addEventListener('mousemove',ev=>{
+  const dx=(ev.clientX/innerWidth-.5)*2;
+  tar=dx*13;
+  els.forEach(({e,x,op,side})=>{
+    if(x<3||x>97||x===50)return;
+    const p=dx*side;
+    e.style.opacity=Math.max(.11,Math.min(.82,op+p*.27)).toFixed(2);
+  });
+});
+
+addEventListener('click',()=>{
+  tar=0;
+  fl.style.transition='opacity 0s';
+  fl.style.opacity='1';
+  setTimeout(()=>{
+    fl.style.transition='opacity 1.4s ease-out';
+    fl.style.opacity='0';
+  },55);
+});
+
+(function loop(){
+  tilt+=(tar-tilt)*.09;
+  const drift=Math.sin(Date.now()/9000)*1.8;
+  sc.style.transform='rotate('+(tilt+drift).toFixed(3)+'deg)';
+  requestAnimationFrame(loop);
+})();
+</script>
+</section>
+</body>
+</html>
