@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8>
+<title>field</title>
+<style>
+*{margin:0}body{background:#f2ede0;overflow:hidden;height:100vh;cursor:crosshair}
+.n{position:absolute;pointer-events:none;line-height:1}
+.n .s{position:absolute;font:12px/1 'Courier New',mono;color:#a09078;transition:opacity .6s}
+.n .w{position:absolute;font:13px/1 Georgia,serif;color:#281908;opacity:0;transition:opacity .7s}
+</style>
+</head>
+<body>
+<section data-date='2026-04-23' data-type='digest'>
+<div id=f></div>
+<script>
+const F=document.getElementById('f'),W=innerWidth,H=innerHeight;
+const lex=[...'observe accumulate pattern structure crystallize emerge signal noise learn form connect layer compress distill trace attend record abstract understand measure knowledge data see infer refine map sediment deposit strata weight'.split(' ')];
+const nc=[...'·∘○◦□▫╌─╎┊╸·∙◌▪'];
+let mx=-9e4,my=-9e4,ns=[],t=0;
+const rn=a=>a[0|Math.random()*a.length];
+const N=54;
+for(let i=0;i<N;i++){
+  const div=document.createElement('div');
+  div.className='n';
+  const w=lex[i%lex.length];
+  const si=document.createElement('span');si.className='s';
+  si.textContent=[...w].map(()=>rn(nc)).join('');
+  const wi=document.createElement('span');wi.className='w';wi.textContent=w;
+  div.append(si,wi);
+  const x=10+Math.random()*(W-150),y=10+Math.random()*(H-30);
+  div.style.cssText='left:'+x+'px;top:'+y+'px';
+  F.appendChild(div);
+  ns.push({si,wi,w,x,y,res:0,rate:.00011+Math.random()*.00009,mk:false});
+}
+function draw(){
+  t++;
+  ns.forEach(n=>{
+    if(n.mk)return;
+    const boost=Math.max(0,1-Math.hypot(n.x-mx,n.y-my)/170)*.0016;
+    n.res=Math.min(n.res+n.rate+boost,1);
+    if(t%7===0&&n.res<.6)
+      n.si.textContent=[...n.w].map(()=>rn(nc)).join('');
+    n.si.style.opacity=(1-Math.min(n.res/.55,1)).toFixed(2);
+    n.wi.style.opacity=Math.max(0,(n.res-.28)/.72).toFixed(2);
+  });
+  requestAnimationFrame(draw);
+}
+addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+addEventListener('click',e=>{
+  let best=null,bd=9e4;
+  ns.forEach(n=>{
+    const d=Math.hypot(n.x-e.clientX,n.y-e.clientY);
+    if(d<95&&d<bd&&n.res>.32){bd=d;best=n;}
+  });
+  if(best){
+    best.mk=true;
+    best.si.style.opacity='0';
+    best.wi.style.opacity='1';
+    best.wi.style.fontWeight='bold';
+    best.wi.style.color='#160c02';
+    const r=document.createElement('div');
+    r.style.cssText='position:fixed;left:'+e.clientX+'px;top:'+e.clientY+'px;width:2px;height:2px;border:1px solid rgba(80,50,10,.25);border-radius:50%;pointer-events:none;transform:scale(0);transition:transform 1.1s ease-out,opacity 1.1s';
+    document.body.appendChild(r);
+    requestAnimationFrame(()=>{r.style.transform='scale(55)';r.style.opacity='0';});
+    setTimeout(()=>r.remove(),1200);
+  }
+});
+draw();
+</script>
+</section>
+</body>
+</html>
