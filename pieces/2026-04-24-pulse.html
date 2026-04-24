@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>fulcrum — 2026-04-24</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#f5f0e8;overflow:hidden;cursor:crosshair}
+canvas{display:block;width:100%;height:100%}
+</style>
+</head>
+<body>
+<section data-date='2026-04-24' data-type='pulse'>
+<canvas id="c"></canvas>
+<script>
+const cv = document.getElementById('c');
+const g = cv.getContext('2d');
+let W, H, mx = .5, ang = 0, vel = 0, ra = 0;
+
+function resize() { W = cv.width = innerWidth; H = cv.height = innerHeight; }
+resize();
+addEventListener('resize', resize);
+addEventListener('mousemove', e => { mx = e.clientX / W; });
+addEventListener('click', () => { ra = 1; });
+
+function draw() {
+  requestAnimationFrame(draw);
+  g.clearRect(0, 0, W, H);
+
+  const ta = (mx - .5) * .62;
+  vel = (vel + (ta - ang) * .045) * .88;
+  ang += vel;
+
+  const cx = W * .5, cy = H * .5;
+  const L = Math.min(W, H) * .38;
+  const cs = Math.cos(ang), sn = Math.sin(ang);
+
+  const lx = cx - L * cs, ly = cy - L * sn;
+  const rx = cx + L * cs, ry = cy + L * sn;
+
+  // vertical support
+  g.strokeStyle = 'rgba(184,149,106,.28)';
+  g.lineWidth = 1;
+  g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx, cy + 44); g.stroke();
+
+  // beam
+  g.strokeStyle = '#b8956a';
+  g.lineWidth = 1.4;
+  g.lineCap = 'round';
+  g.beginPath(); g.moveTo(lx, ly); g.lineTo(rx, ry); g.stroke();
+
+  // arm-end ticks (perpendicular to beam)
+  const tk = 7;
+  g.lineWidth = 1.2;
+  [[lx, ly], [rx, ry]].forEach(([ex, ey]) => {
+    g.beginPath();
+    g.moveTo(ex + sn * tk, ey - cs * tk);
+    g.lineTo(ex - sn * tk, ey + cs * tk);
+    g.stroke();
+  });
+
+  // fulcrum dot
+  g.fillStyle = '#b8956a';
+  g.beginPath(); g.arc(cx, cy, 3, 0, 6.283); g.fill();
+
+  // words: before / after — track arm endpoints, always horizontal
+  g.textAlign = 'center';
+  g.textBaseline = 'middle';
+  g.font = 'italic 1rem "Palatino Linotype", Palatino, Georgia, serif';
+  g.fillStyle = 'rgba(44,32,22,.68)';
+  g.fillText('before', lx, ly - 34);
+  g.fillText('after',  rx, ry + 34);
+
+  // "now" fades in when beam is near-balanced
+  const balance = 1 - Math.min(1, Math.abs(ang) / .07);
+  if (balance > .02) {
+    g.font = 'italic .82rem "Palatino Linotype", Palatino, Georgia, serif';
+    g.fillStyle = `rgba(184,149,106,${(balance * .9).toFixed(3)})`;
+    g.fillText('now', cx, cy - 22);
+  }
+
+  // click: reveal exact time in monospace at fulcrum
+  if (ra > .008) {
+    ra *= .965;
+    const n = new Date();
+    const t = `${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
+    g.font = '.7rem "Courier New", Courier, monospace';
+    g.fillStyle = `rgba(184,149,106,${ra.toFixed(3)})`;
+    g.fillText(t, cx, cy - 22);
+  } else if (ra <= .008) ra = 0;
+}
+
+draw();
+</script>
+</section>
+</body>
+</html>
