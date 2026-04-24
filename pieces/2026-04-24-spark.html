@@ -1,0 +1,93 @@
+<!doctype html>
+<html><head>
+<meta charset="utf-8">
+<title>collision</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#080808}
+section{display:block;width:100%;height:100%;position:relative;cursor:pointer;user-select:none}
+#a,#b{position:absolute;top:50%;left:50%;font-family:'Courier New',monospace;font-size:clamp(1.1rem,3.2vw,2.5rem);letter-spacing:.3em;pointer-events:none;opacity:0;text-transform:lowercase}
+#a{color:#b0a4f8}
+#b{color:#f8a4b8}
+#s{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Courier New',monospace;font-size:clamp(1.6rem,4.5vw,3.5rem);letter-spacing:.45em;opacity:0;color:#f4f0ff;pointer-events:none;text-transform:lowercase;text-shadow:0 0 30px rgba(200,180,255,.35)}
+#ring{position:absolute;top:50%;left:50%;width:0;height:0;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;opacity:0}
+#hint{position:absolute;bottom:1.4rem;width:100%;text-align:center;font-family:'Courier New',monospace;font-size:.62rem;color:#2a2a2a;letter-spacing:.25em;pointer-events:none;transition:opacity .8s}
+</style>
+</head>
+<body>
+<section data-date='2026-04-24' data-type='spark'>
+<div id="a"></div>
+<div id="b"></div>
+<div id="s"></div>
+<div id="ring"></div>
+<div id="hint">click to collide</div>
+</section>
+<script>(function(){
+var P=[
+  ['I','you','we'],
+  ['light','shadow','dusk'],
+  ['before','after','now'],
+  ['fire','water','steam'],
+  ['silence','sound','music'],
+  ['apart','together','whole'],
+  ['lost','found','here'],
+  ['ask','answer','know'],
+  ['always','never','once'],
+  ['stranger','stranger','known']
+],i=0,phase='idle',my=0;
+
+var C=document.querySelector('section'),
+    A=document.getElementById('a'),
+    B=document.getElementById('b'),
+    S=document.getElementById('s'),
+    R=document.getElementById('ring'),
+    H=document.getElementById('hint');
+
+function ease(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2}
+
+function go(){
+  if(phase!='idle')return;
+  phase='run';
+  H.style.opacity='0';
+  var p=P[i++%P.length];
+  A.textContent=p[0];B.textContent=p[1];S.textContent=p[2];
+  A.style.opacity=B.style.opacity='0';
+  S.style.opacity='0';
+  S.style.transition='none';
+  S.style.transform='translate(-50%,-50%)';
+  R.style.opacity='0';R.style.transition='none';
+  R.style.width=R.style.height='0';
+
+  var t=0,w=C.clientWidth*.44;
+  function f(){
+    t=Math.min(t+.013,1);
+    var e=ease(t),dist=w*(1-e),yo=(my*.07*(1-e)).toFixed(1);
+    A.style.transform='translate(calc(-50% - '+dist.toFixed(1)+'px),calc(-50% + '+yo+'px))';
+    B.style.transform='translate(calc(-50% + '+dist.toFixed(1)+'px),calc(-50% + '+yo+'px))';
+    A.style.opacity=B.style.opacity=Math.min(1,t*4.5).toFixed(3);
+    if(t<1){requestAnimationFrame(f);return}
+    // collision
+    A.style.opacity=B.style.opacity='0';
+    R.style.transition='width .5s ease-out,height .5s ease-out,opacity .5s ease-out';
+    R.style.border='1px solid rgba(200,180,255,.5)';
+    R.style.opacity='1';
+    R.style.width=R.style.height='180px';
+    setTimeout(function(){R.style.opacity='0'},300);
+    S.style.transition='opacity .22s,transform .55s cubic-bezier(.2,1.4,.4,1)';
+    S.style.opacity='1';
+    S.style.transform='translate(-50%,-50%) scale(1.22)';
+    setTimeout(function(){S.style.transform='translate(-50%,-50%) scale(1)'},300);
+    setTimeout(function(){
+      S.style.transition='opacity 1.1s';
+      S.style.opacity='0';
+    },2100);
+    setTimeout(function(){phase='idle';H.style.opacity='1'},3100);
+  }
+  requestAnimationFrame(f);
+}
+
+C.addEventListener('click',go);
+C.addEventListener('mousemove',function(e){my=e.clientY-C.clientHeight/2});
+})();
+</script>
+</body></html>
