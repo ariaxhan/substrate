@@ -1,0 +1,89 @@
+<!doctype html>
+<html><head>
+<meta charset="utf-8">
+<title>threshold</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#07071e;cursor:crosshair}
+section{display:block;width:100%;height:100%;position:relative}
+#f{position:absolute;inset:0;font-family:'Courier New',monospace;font-size:13px;line-height:19px;overflow:hidden;user-select:none}
+.c{position:absolute;color:#111130;transition:color .5s}
+#w{position:absolute;font-family:Georgia,'Times New Roman',serif;font-size:clamp(1.6rem,4.5vw,3.2rem);color:#f2b84b;opacity:0;pointer-events:none;letter-spacing:.25em;text-align:center;width:100%;top:50%;transform:translateY(-50%);transition:opacity 1.2s;text-shadow:0 0 40px rgba(242,160,60,.4)}
+#hint{position:absolute;bottom:18px;width:100%;text-align:center;font-family:'Courier New',monospace;font-size:11px;color:#222248;letter-spacing:.15em;transition:opacity 2s;pointer-events:none}
+</style>
+</head>
+<body>
+<section data-date='2026-04-24' data-type='morning'>
+<div id="f"></div>
+<div id="w"></div>
+<div id="hint">click to name the day</div>
+</section>
+<script>
+const S='0123456789abcdefghijklmnopqrstuvwxyz.,;!?-_=*#~^<>|%';
+const P=['begin','open','unwritten','becoming','still possible','not yet','first light','before','threshold','the door','wake','breathe','yes','today','unknown','potential','I have not yet','tender','almost','enough'];
+const f=document.getElementById('f'),w=document.getElementById('w'),hint=document.getElementById('hint');
+let cells=[],mx=-999,my=-999,busy=false,hinted=false;
+
+function rc(){return S[Math.floor(Math.random()*S.length)]}
+
+function build(){
+  f.innerHTML='';cells=[];
+  const cw=13,ch=19;
+  const cols=Math.ceil(innerWidth/cw)+1,rows=Math.ceil(innerHeight/ch)+1;
+  for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+    const e=document.createElement('span');
+    e.className='c';
+    e.style.cssText='left:'+c*cw+'px;top:'+r*ch+'px';
+    e.textContent=rc();
+    f.appendChild(e);
+    cells.push({e,x:c*cw+6,y:r*ch+9});
+  }
+}
+
+function light(){
+  cells.forEach(({e,x,y})=>{
+    const d=Math.hypot(x-mx,y-my);
+    const t=Math.max(0,1-d/200);
+    const t2=t*t;
+    e.style.color='rgb('+Math.round(17+t2*215)+','+Math.round(17+t2*125)+','+Math.round(48+t2*10)+')';
+  });
+}
+
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  light();
+  if(!hinted){hinted=true;hint.style.opacity='0';}
+});
+
+document.addEventListener('click',e=>{
+  if(busy)return;busy=true;
+  const cx=e.clientX,cy=e.clientY;
+
+  cells.forEach(({e:el,x,y})=>{
+    const d=Math.hypot(x-cx,y-cy);
+    if(d<130){
+      const delay=d*1.4;
+      setTimeout(()=>{el.textContent=' ';el.style.color='#07071e'},delay);
+      setTimeout(()=>{el.textContent=rc();},delay+700+Math.random()*300);
+    }
+  });
+
+  w.textContent=P[Math.floor(Math.random()*P.length)];
+  w.style.opacity='1';
+  setTimeout(()=>{
+    w.style.opacity='0';
+    setTimeout(()=>{busy=false;light();},1300);
+  },2400);
+});
+
+setInterval(()=>{
+  if(!cells.length)return;
+  const i=Math.floor(Math.random()*cells.length);
+  if(cells[i].e.textContent!==' ')cells[i].e.textContent=rc();
+},55);
+
+window.addEventListener('resize',build);
+build();
+</script>
+</body>
+</html>
