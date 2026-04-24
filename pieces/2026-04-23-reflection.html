@@ -1,0 +1,79 @@
+<!doctype html><html><head><meta charset=utf-8><title>2026-04-23 · reflection</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#06090f;cursor:crosshair}
+canvas{position:absolute;top:0;left:0}
+</style></head><body>
+<section data-date='2026-04-23' data-type='reflection'>
+<canvas id=c></canvas>
+<script>
+const cv=document.getElementById('c'),cx=cv.getContext('2d');
+let W,H;
+function sz(){W=cv.width=innerWidth;H=cv.height=innerHeight}sz();addEventListener('resize',sz);
+
+// 58 stars: born at 0 opacity, rising slowly to their own peak — the sky doing its own work
+const stars=[],words=['enough','done','rest','still','close','whole','breathe','let go','hush','settle','softer','the dark holds','almost','finished','you made it','quiet','held','tomorrow'];
+let wi=0,parts=[],labels=[];
+
+for(let i=0;i<58;i++) stars.push({
+  x:Math.random(),y:Math.random(),
+  r:.28+Math.random()*.95,
+  a:0,
+  da:.0005+Math.random()*.0018,     // slow emergence: 4–22 seconds to peak
+  peak:.45+Math.random()*.5,
+  ph:Math.random()*6.283            // phase offset for twinkle
+});
+
+// mousemove: scatter faint silver-blue dust
+addEventListener('mousemove',e=>{
+  if(Math.random()>.28) return;
+  parts.push({x:e.clientX,y:e.clientY,a:.38+Math.random()*.18,da:-.0045,r:.35+Math.random()*.85});
+});
+
+// click: a word rises and dissolves
+addEventListener('click',e=>{
+  labels.push({x:e.clientX,y:e.clientY,w:words[wi++%words.length],a:0,dy:0,f:0});
+});
+
+cx.textAlign='center';
+(function frame(t){
+  cx.clearRect(0,0,W,H);
+
+  // stars — autonomous, unhurried
+  stars.forEach(s=>{
+    if(s.a<s.peak) s.a=Math.min(s.peak,s.a+s.da);
+    const tw=s.a*(0.84+0.16*Math.sin(t*.00085+s.ph));  // slow breath
+    const sx=s.x*W,sy=s.y*H;
+    // soft halo
+    cx.fillStyle=`rgba(195,212,248,${tw*.45})`;
+    cx.beginPath();cx.arc(sx,sy,s.r*3.2,0,6.283);cx.fill();
+    // core
+    cx.fillStyle=`rgba(242,247,255,${Math.min(1,tw*1.35)})`;
+    cx.beginPath();cx.arc(sx,sy,s.r*.65,0,6.283);cx.fill();
+  });
+
+  // mouse traces — the act of looking up
+  parts=parts.filter(p=>p.a>0);
+  parts.forEach(p=>{
+    p.a+=p.da;p.y-=.1;
+    cx.fillStyle=`rgba(170,198,238,${Math.max(0,p.a)})`;
+    cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.283);cx.fill();
+  });
+
+  // words — last thoughts, releasing
+  labels=labels.filter(l=>l.a>-.01);
+  cx.font='12px "Courier New",monospace';
+  labels.forEach(l=>{
+    l.f++;
+    if(l.f<24){l.a=Math.min(.88,l.a+.04);l.dy-=.5;}       // rise into view
+    else if(l.dy>-42){l.dy-=.2;}                             // slow drift
+    else{l.a=Math.max(0,l.a-.009);}                          // dissolve
+    cx.fillStyle=`rgba(192,214,244,${Math.max(0,l.a)})`;
+    cx.fillText(l.w,l.x,l.y+l.dy);
+  });
+
+  requestAnimationFrame(frame);
+})(0);
+</script>
+</section>
+</body></html>
