@@ -1,0 +1,49 @@
+<section data-date='2026-04-25' data-type='morning'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{overflow:hidden;background:#0e0b07;cursor:none}
+.w{position:fixed;color:#c9b898;pointer-events:none;user-select:none}
+#v{position:fixed;inset:0;background:radial-gradient(circle at var(--tx,50%) var(--ty,50%),rgba(14,11,7,0) var(--r,55px),#0e0b07 calc(var(--r,55px) + 85px));z-index:2;pointer-events:none}
+#d{position:fixed;width:5px;height:5px;border-radius:50%;background:#e6a84a;box-shadow:0 0 10px 4px rgba(230,168,74,.4);transform:translate(-50%,-50%);z-index:9;pointer-events:none}
+</style>
+
+<div class=w style="top:11%;left:42%;font:.68rem/1 monospace;opacity:.5">before</div>
+<div class=w style="top:6%;left:60%;font:3.2rem/1 Georgia,serif;opacity:.27">—</div>
+<div class=w style="top:26%;left:8%;font:2.6rem/1 Georgia,serif">still</div>
+<div class=w style="top:37%;left:27%;font:1.2rem/1 Georgia,serif;letter-spacing:.45em;text-transform:uppercase;opacity:.62">threshold</div>
+<div class=w style="top:51%;left:5%;font:italic 1rem/1 Georgia,serif">the edge of</div>
+<div class=w style="top:22%;left:67%;font:2.3rem/1 Georgia,serif">open</div>
+<div class=w style="top:46%;left:55%;font:.68rem/1 monospace;letter-spacing:.35em;opacity:.52">unnamed</div>
+<div class=w style="top:61%;left:63%;font:italic .9rem/1 Georgia,serif;opacity:.68">what will be</div>
+<div class=w style="top:70%;left:10%;font:1.9rem/1 Georgia,serif">first</div>
+<div class=w style="top:77%;left:47%;font:1.1rem/1 monospace;letter-spacing:.2em">light</div>
+<div class=w style="top:64%;left:73%;font:1.65rem/1 Georgia,serif;opacity:.78">possible</div>
+
+<div id=v></div>
+<div id=d></div>
+
+<script>
+const v=document.getElementById('v'),d=document.getElementById('d');
+let r=55,t=55,max=Math.hypot(innerWidth,innerHeight);
+
+addEventListener('mousemove',e=>{
+  d.style.left=e.clientX+'px';
+  d.style.top=e.clientY+'px';
+  v.style.setProperty('--tx',e.clientX+'px');
+  v.style.setProperty('--ty',e.clientY+'px');
+});
+
+addEventListener('click',()=>{
+  t=Math.min(t+max*.22,max);
+  if(t>=max*.88)document.body.style.background='#120f0a';
+  step();
+});
+
+function step(){
+  if(Math.abs(r-t)<.5){r=t;v.style.setProperty('--r',r+'px');return}
+  r+=(t-r)*.1;
+  v.style.setProperty('--r',r+'px');
+  requestAnimationFrame(step);
+}
+</script>
+</section>
