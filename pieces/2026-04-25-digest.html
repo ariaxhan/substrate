@@ -1,0 +1,92 @@
+<section data-date='2026-04-25' data-type='digest'>
+<style>
+*{margin:0;padding:0}
+html,body{overflow:hidden;background:#f0ebe0;width:100%;height:100%}
+canvas{position:absolute;inset:0;cursor:crosshair}
+#h{position:absolute;bottom:15px;width:100%;text-align:center;font:italic 11px Georgia,serif;color:#9a8060;pointer-events:none;letter-spacing:.08em}
+</style>
+<canvas id="cv"></canvas>
+<div id="h">move to reveal &nbsp;·&nbsp; click to seed</div>
+<script>
+const cv=document.getElementById('cv'),g=cv.getContext('2d');
+let W=cv.width=innerWidth,H=cv.height=innerHeight;
+addEventListener('resize',()=>{W=cv.width=innerWidth;H=cv.height=innerHeight;draw()});
+
+const vocab=["signal","noise","pattern","threshold","attractor","cluster","lattice","density","gradient","field","weight","convergence","orbit","emergence","phase","transition","structure","order","edge","topology","fold","flow","entropy","information","encode","recognize","classify","embed","observe","accumulate","distill","crystallize","trace","record","collapse","basin","loop","residue","frequency","manifold","singular","dense","sparse","boundary","kernel","strange","local","global","witness"];
+
+let nodes=[],links=[];
+
+function scatter(px,py,n){
+  const pool=[...vocab].sort(()=>Math.random()-.5).slice(0,n);
+  pool.forEach((w,i)=>{
+    const a=(i/n)*Math.PI*2+Math.random()*.8;
+    const r=50+Math.random()*95;
+    nodes.push({x:Math.max(60,Math.min(W-60,px+Math.cos(a)*r)),
+                y:Math.max(40,Math.min(H-40,py+Math.sin(a)*r)),
+                w,h:0,o:0});
+  });
+}
+
+scatter(W/2,H/2,15);
+let mx=W/2,my=H/2;
+
+function draw(){
+  g.clearRect(0,0,W,H);
+
+  // decay + draw links
+  links=links.filter(l=>(l.a*=.973)>.025);
+  g.lineWidth=.6;
+  links.forEach(({x1,y1,x2,y2,a})=>{
+    g.strokeStyle=`rgba(185,145,58,${a*.28})`;
+    g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();
+  });
+
+  // update + draw nodes
+  nodes.forEach((n,i)=>{
+    const near=Math.hypot(n.x-mx,n.y-my)<155;
+    if(near){
+      n.o=Math.min(1,n.o+.04);
+      n.h=Math.min(1,n.h+.009);
+      // forge a link to another visible node
+      if(Math.random()<.045){
+        const vis=nodes.filter((_,j)=>j!==i&&nodes[j].o>.3);
+        if(vis.length){
+          const nb=vis[Math.floor(Math.random()*vis.length)];
+          links.push({x1:n.x,y1:n.y,x2:nb.x,y2:nb.y,a:.9});
+          if(links.length>90)links.shift();
+        }
+      }
+    } else {
+      n.o=Math.max(0,n.o-.007);
+    }
+    if(n.o<.012) return;
+    const t=n.h;
+    // typography: size + weight crystallize with heat
+    const sz=9+t*8;
+    const bold=t>.65?'bold ':'';
+    const italic=t<.3?'italic ':'';
+    g.font=`${italic}${bold}${sz}px Georgia,serif`;
+    // color: muted gray-mauve → deep indigo
+    const rv=Math.floor(110-t*85),gv=Math.floor(100-t*78),bv=Math.floor(105+t*50);
+    g.fillStyle=`rgba(${rv},${gv},${bv},${n.o})`;
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillText(n.w,n.x,n.y);
+    // halo glow when highly crystallized
+    if(t>.8&&n.o>.7){
+      g.font=`bold ${sz+.5}px Georgia,serif`;
+      g.fillStyle=`rgba(${rv},${gv},${bv},${n.o*.12})`;
+      g.fillText(n.w,n.x+.5,n.y+.5);
+    }
+  });
+
+  // cursor: small amber dot
+  g.beginPath();g.arc(mx,my,2.2,0,Math.PI*2);
+  g.fillStyle='rgba(185,145,58,.55)';g.fill();
+}
+
+addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;draw()});
+addEventListener('click',e=>{scatter(e.clientX,e.clientY,9);draw()});
+setInterval(draw,350);
+draw();
+</script>
+</section>
