@@ -1,0 +1,73 @@
+<section data-date='2026-04-26' data-type='morning'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{overflow:hidden;background:#f2ead8;cursor:none}
+section[data-date='2026-04-26']{
+  position:relative;width:100vw;height:100vh;
+  background:#f2ead8
+}
+.w{
+  position:absolute;
+  font-family:Georgia,'Times New Roman',serif;
+  color:rgba(35,26,14,0);
+  pointer-events:none;user-select:none
+}
+#k{
+  position:fixed;width:5px;height:5px;border-radius:50%;
+  background:#231a0e;transform:translate(-50%,-50%);
+  pointer-events:none;z-index:9
+}
+</style>
+
+<div id=k></div>
+
+<!-- poem: "the first hour / holds / what the rest / will become" -->
+<div class=w style="top:12%;left:8%;font-size:2.2vw" data-r=135>the first</div>
+<div class=w style="top:7%;left:40%;font-size:4.6vw;font-style:italic" data-r=165>hour</div>
+<div class=w style="top:28%;left:58%;font-size:3.3vw" data-r=145>holds</div>
+<div class=w style="top:44%;left:11%;font-size:2.9vw" data-r=140>what</div>
+<div class=w style="top:36%;left:37%;font-size:1.7vw;letter-spacing:.09em" data-r=122>the rest</div>
+<div class=w style="top:57%;left:27%;font-size:2.4vw;font-style:italic" data-r=142>will become</div>
+
+<!-- ambient: words of potential, require closer approach -->
+<div class=w style="top:69%;left:8%;font-size:3.8vw" data-r=88>open</div>
+<div class=w style="top:18%;left:75%;font-size:.9vw;letter-spacing:.4em;font-family:monospace" data-r=78>tender</div>
+<div class=w style="top:77%;left:57%;font-size:1.2vw;letter-spacing:.13em" data-r=80>unnamed</div>
+<div class=w style="top:47%;left:73%;font-size:1.6vw;font-style:italic" data-r=86>possible</div>
+<div class=w style="top:84%;left:40%;font-size:3.1vw" data-r=94>whole</div>
+<div class=w style="top:89%;left:70%;font-size:1.0vw;letter-spacing:.24em;font-family:monospace" data-r=72>still</div>
+<div class=w style="top:63%;left:83%;font-size:1.7vw" data-r=82>clear</div>
+
+<script>
+const W=document.querySelectorAll('.w'),k=document.getElementById('k');
+let mx=innerWidth/2,my=innerHeight/2,bloom=false,tid;
+
+function paint(){
+  W.forEach(e=>{
+    const b=e.getBoundingClientRect();
+    const d=Math.hypot(mx-b.left-b.width/2,my-b.top-b.height/2);
+    const v=Math.max(0,1-d/(+e.dataset.r||100));
+    e.style.color=`rgba(35,26,14,${(v*v).toFixed(3)})`
+  })
+}
+
+addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  k.style.left=mx+'px';k.style.top=my+'px';
+  if(!bloom)paint()
+});
+
+addEventListener('click',()=>{
+  clearTimeout(tid);
+  bloom=true;
+  W.forEach(e=>{e.style.transition='color 0s';e.style.color='rgba(35,26,14,1)'});
+  tid=setTimeout(()=>{
+    bloom=false;
+    W.forEach(e=>e.style.transition='color 1.9s ease');
+    paint()
+  },2500)
+});
+
+paint()
+</script>
+</section>
