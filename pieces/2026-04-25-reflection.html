@@ -1,0 +1,102 @@
+<section data-date='2026-04-25' data-type='reflection'>
+<style>
+#rf25{position:relative;width:100%;height:70vh;min-height:420px;
+  background:#06040e;overflow:hidden;cursor:crosshair}
+#rf25-glow{position:absolute;pointer-events:none;width:120px;height:120px;
+  border-radius:50%;transform:translate(-50%,-50%);opacity:0;
+  background:radial-gradient(circle,rgba(210,185,255,.09) 0%,transparent 70%)}
+#rf25-line{position:absolute;bottom:2.6rem;left:0;right:0;text-align:center;
+  font:italic 1rem 'Palatino Linotype',Palatino,Georgia,serif;
+  color:rgba(200,175,255,.1);letter-spacing:.45em;
+  pointer-events:none;transition:opacity 2.5s,color 2.5s}
+#rf25-hint{position:absolute;top:1.5rem;left:0;right:0;text-align:center;
+  font:400 9px monospace;color:rgba(200,175,255,.07);letter-spacing:.3em;
+  pointer-events:none;transition:opacity 3s}
+.rf25-w{position:absolute;transform:translate(-50%,-50%);
+  font:italic .68rem 'Palatino Linotype',Palatino,Georgia,serif;
+  color:rgba(195,170,255,.04);letter-spacing:.07em;user-select:none;
+  transition:color .25s,text-shadow .25s;cursor:pointer}
+.rf25-w.on{color:rgba(225,210,255,.48)!important;
+  text-shadow:0 0 10px rgba(190,160,255,.55),0 0 24px rgba(160,130,255,.2)}
+.rf25-w.set{color:rgba(225,212,255,.45)!important;
+  text-shadow:0 0 9px rgba(190,160,255,.5),0 0 22px rgba(155,125,255,.18);
+  animation:rf25tw 3s ease-in-out infinite alternate;cursor:default}
+@keyframes rf25tw{from{opacity:.38}to{opacity:.72}}
+</style>
+<div id="rf25">
+  <div id="rf25-glow"></div>
+  <p id="rf25-line">it was enough</p>
+  <p id="rf25-hint">move to find · click to keep</p>
+</div>
+<script>
+(function(){
+var wds=["held","breathed","tried","loved","made","wept","forgot","gave","stayed","watched",
+         "enough","still","almost","once","already","here","gone","whole",
+         "let go","was","began","ended","remained","faded","known"],
+  F=document.getElementById("rf25"),
+  G=document.getElementById("rf25-glow"),
+  L=document.getElementById("rf25-line"),
+  H=document.getElementById("rf25-hint"),
+  kept=0,done=false;
+
+wds.forEach(function(t,i){
+  var el=document.createElement("span");
+  el.className="rf25-w";
+  el.textContent=t;
+  el.style.left=(5+Math.random()*88)+"%";
+  el.style.top=(5+Math.random()*88)+"%";
+  el.style.transform="translate(-50%,-50%) rotate("+(Math.random()*18-9)+"deg)";
+  F.appendChild(el);
+  el.addEventListener("click",function(e){
+    e.stopPropagation();
+    if(!el.classList.contains("set")){
+      el.classList.remove("on");
+      el.classList.add("set");
+      kept++;
+      if(kept>=8&&!done){
+        done=true;
+        L.style.opacity="0";
+        setTimeout(function(){
+          L.textContent="now rest";
+          L.style.color="rgba(205,185,255,.18)";
+          L.style.opacity="1";
+        },2200);
+      }
+    }
+  });
+});
+
+F.addEventListener("mousemove",function(e){
+  var r=F.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+  G.style.left=mx+"px"; G.style.top=my+"px"; G.style.opacity="1";
+  F.querySelectorAll(".rf25-w:not(.set)").forEach(function(el){
+    var er=el.getBoundingClientRect(),
+      cx=er.left-r.left+er.width/2,cy=er.top-r.top+er.height/2,
+      d=Math.hypot(cx-mx,cy-my);
+    if(d<115){
+      var b=(1-d/115)*.58;
+      el.classList.add("on");
+      el.style.color="rgba(225,210,255,"+b.toFixed(2)+")";
+      el.style.textShadow="0 0 "+(Math.round(b*13))+"px rgba(195,165,255,"+(b*.85).toFixed(2)+")";
+    } else {
+      el.classList.remove("on");
+      el.style.color="rgba(195,170,255,.04)";
+      el.style.textShadow="none";
+    }
+  });
+  if(H.style.opacity!=="0") H.style.opacity="0";
+});
+
+F.addEventListener("mouseleave",function(){
+  G.style.opacity="0";
+  F.querySelectorAll(".rf25-w:not(.set)").forEach(function(el){
+    el.classList.remove("on");
+    el.style.color="rgba(195,170,255,.04)";
+    el.style.textShadow="none";
+  });
+});
+
+setTimeout(function(){H.style.opacity="0";},6000);
+})();
+</script>
+</section>
