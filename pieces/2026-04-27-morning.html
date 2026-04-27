@@ -1,0 +1,71 @@
+<section data-date='2026-04-27' data-type='morning'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#060810;overflow:hidden;cursor:pointer}
+section[data-date='2026-04-27']{
+  position:relative;width:100vw;height:100vh;overflow:hidden
+}
+#db{
+  position:absolute;inset:0;
+  background:linear-gradient(170deg,#07101e 0%,#0c1622 50%,#1c0d0d 100%);
+  opacity:0;transition:opacity 3.5s ease;pointer-events:none
+}
+#gl{
+  position:absolute;width:300px;height:300px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,180,80,.055) 0%,transparent 70%);
+  transform:translate(-50%,-50%);pointer-events:none;
+  transition:left .06s,top .06s
+}
+#cur{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  font-family:'Courier New',monospace;font-size:26px;
+  color:rgba(255,230,160,.55);
+  animation:bl 1.1s step-end infinite;
+  transition:opacity 1.2s ease
+}
+@keyframes bl{50%{opacity:0}}
+.w{
+  position:absolute;opacity:0;
+  transition:opacity 2.8s ease;
+  pointer-events:none;user-select:none;will-change:opacity
+}
+</style>
+
+<div id=db></div>
+<div id=gl></div>
+<div id=cur>_</div>
+
+<div class=w style="top:6%;left:14%;font-size:3.4vw;font-family:Georgia,serif;font-style:italic;color:#ffe8a0">before</div>
+<div class=w style="top:13%;left:63%;font-size:.9vw;font-family:'Courier New',monospace;letter-spacing:.55em;color:#c8b870">undefined</div>
+<div class=w style="top:23%;left:7%;font-size:2.1vw;font-family:Georgia,serif;color:#ffecca">unspoken</div>
+<div class=w style="top:31%;left:54%;font-size:5.2vw;font-family:Georgia,serif;font-style:italic;color:#ffd890">still</div>
+<div class=w style="top:41%;left:16%;font-size:1.8vw;font-family:Georgia,serif;letter-spacing:.05em;color:#ffe4b0">the hour before itself</div>
+<div class=w style="top:52%;left:60%;font-size:3.2vw;font-family:Georgia,serif;color:#ffd070">held</div>
+<div class=w style="top:61%;left:6%;font-size:5.8vw;font-family:Georgia,serif;font-style:italic;color:#ffc050">becoming</div>
+<div class=w style="top:72%;left:65%;font-size:1.1vw;font-family:'Courier New',monospace;letter-spacing:.28em;color:#ffc880">the first word</div>
+<div class=w style="top:81%;left:34%;font-size:2.8vw;font-family:Georgia,serif;color:#ffb840">open</div>
+<div class=w style="top:88%;left:68%;font-size:4.0vw;font-family:Georgia,serif;font-style:italic;color:#ff9820">begins</div>
+
+<script>
+const gl=document.getElementById('gl');
+const cur=document.getElementById('cur');
+const db=document.getElementById('db');
+const ws=[...document.querySelectorAll('.w')];
+let done=false;
+
+document.addEventListener('mousemove',e=>{
+  gl.style.left=e.clientX+'px';
+  gl.style.top=e.clientY+'px'
+});
+
+document.addEventListener('click',()=>{
+  if(done)return;done=true;
+  db.style.opacity='1';
+  cur.style.opacity='0';
+  [9,8,7,6,5,4,3,2,1,0].forEach((i,n)=>{
+    setTimeout(()=>{ws[i].style.opacity='1'},n*300+200)
+  })
+});
+</script>
+</section>
