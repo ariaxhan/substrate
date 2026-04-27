@@ -1,0 +1,103 @@
+<section data-date='2026-04-27' data-type='digest'>
+<style>
+*{margin:0;padding:0}
+html,body{overflow:hidden;background:#05050a;width:100%;height:100%}
+canvas{position:absolute;inset:0;cursor:none}
+#hint{position:absolute;bottom:14px;width:100%;text-align:center;
+font:10px/1 'Courier New',monospace;color:rgba(80,130,190,.28);
+pointer-events:none;letter-spacing:.15em;text-transform:uppercase}
+</style>
+<canvas id=cv></canvas>
+<div id=hint>move slowly to accumulate &nbsp;·&nbsp; click to seed</div>
+<script>
+const cv=document.getElementById('cv'),g=cv.getContext('2d');
+let W=cv.width=innerWidth,H=cv.height=innerHeight;
+addEventListener('resize',()=>{W=cv.width=innerWidth;H=cv.height=innerHeight});
+
+// vocabulary: the residue of attention — technical + spare
+const V=['signal','noise','threshold','weight','attention',
+'feature','latent','emerge','crystallize','accumulate',
+'persist','dissolve','trace','residue','becomes',
+'already','holds','remains','beneath','when',
+'enough','gathers','sediment','pattern','fragment',
+'cluster','density','sparse','boundary','memory',
+'gradient','depth','layer','fold','before',
+'structure','order','chaos','edge','field'];
+
+let trail=[],words=[],lx=-1,ly=-1,dist=0,tick=0;
+
+const rw=()=>V[0|Math.random()*V.length];
+const rn=(a,b)=>a+Math.random()*(b-a);
+
+function spawnWord(x,y,warm){
+  words.push({x:x+rn(-25,25),y:y+rn(-18,18),
+    w:rw(),born:tick,life:360+rn(0,240),warm:!!warm});
+}
+
+addEventListener('mousemove',e=>{
+  const x=e.clientX,y=e.clientY;
+  trail.push({x,y,t:tick});
+  if(trail.length>260) trail.shift();
+  if(lx>=0){
+    dist+=Math.hypot(x-lx,y-ly);
+    if(dist>42){ spawnWord((x+lx)/2,(y+ly)/2,false); dist=0; }
+  }
+  lx=x; ly=y;
+});
+
+addEventListener('click',e=>{
+  for(let i=0;i<6;i++){
+    const a=i/6*Math.PI*2, r=rn(18,70);
+    words.push({x:e.clientX+Math.cos(a)*r,y:e.clientY+Math.sin(a)*r,
+      w:rw(),born:tick,life:580+rn(0,320),warm:true});
+  }
+});
+
+function frame(){
+  tick++;
+  g.clearRect(0,0,W,H);
+
+  // draw trail: cold blue filament, fades in ~1s
+  for(let i=1;i<trail.length;i++){
+    const age=tick-trail[i].t;
+    const a=Math.max(0,1-age/72)*.18;
+    if(a<.005) continue;
+    g.strokeStyle=`rgba(75,140,215,${a})`;
+    g.lineWidth=.7;
+    g.beginPath();
+    g.moveTo(trail[i-1].x,trail[i-1].y);
+    g.lineTo(trail[i].x,trail[i].y);
+    g.stroke();
+  }
+
+  // draw cursor dot
+  if(lx>=0){
+    g.beginPath();g.arc(lx,ly,1.8,0,Math.PI*2);
+    g.fillStyle='rgba(75,140,215,.5)';g.fill();
+  }
+
+  // draw words: cold = movement-deposited, warm = click-seeded
+  g.textAlign='center';g.textBaseline='middle';
+  words=words.filter(w=>{
+    const f=(tick-w.born)/w.life;
+    if(f>=1) return false;
+    // envelope: rise 12%, plateau, fall last 18%
+    const env=f<.12?f/.12:f>.82?(1-f)/.18:1;
+    const op=env*(w.warm?.68:.48);
+    if(op<.008) return true;
+    if(w.warm){
+      g.font='italic 13px Georgia,serif';
+      g.fillStyle=`rgba(222,204,165,${op})`;
+    } else {
+      g.font='10px \'Courier New\',monospace';
+      g.fillStyle=`rgba(140,185,230,${op})`;
+    }
+    g.fillText(w.w,w.x,w.y);
+    return true;
+  });
+
+  requestAnimationFrame(frame);
+}
+frame();
+</script>
+</section>
