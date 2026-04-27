@@ -1,0 +1,93 @@
+<section data-date='2026-04-26' data-type='reflection'>
+<style>
+#ns{position:fixed;inset:0;background:#030712;overflow:hidden;cursor:crosshair}
+#ns-bg{position:absolute;inset:0;background:radial-gradient(ellipse 120% 60% at 50% 115%,#07102a,#030712 65%)}
+.ns-s{position:absolute;border-radius:50%;background:#e8eaff;pointer-events:none}
+#ns-w{position:fixed;pointer-events:none;font:italic 11px Georgia,serif;
+  color:rgba(110,127,160,0);letter-spacing:.08em;
+  transition:color .2s,opacity 1.9s;opacity:0}
+#ns-c{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  text-align:center;pointer-events:none;
+  font:12px/2.6 Georgia,serif;color:rgba(75,90,125,0.2);
+  letter-spacing:.28em;text-transform:lowercase;transition:opacity 2.5s}
+#ns-c span{font-size:9px;letter-spacing:.38em}
+#ns-h{position:fixed;bottom:22px;width:100%;text-align:center;
+  pointer-events:none;font:9px Georgia,serif;
+  letter-spacing:.22em;color:rgba(75,90,125,0.18);transition:opacity 2.5s}
+</style>
+<div id="ns">
+  <div id="ns-bg"></div>
+  <div id="ns-c">april 26<br><span>the day is complete</span></div>
+  <div id="ns-w"></div>
+  <div id="ns-h">touch the dark &middot; name the stars</div>
+</div>
+<script>
+(()=>{
+const ns=document.getElementById('ns'),
+      wd=document.getElementById('ns-w'),
+      h=document.getElementById('ns-h'),
+      c=document.getElementById('ns-c');
+const words=["the meeting","unread","noon","the list","the commute",
+  "what i meant","urgent","the open tab","the argument","the task",
+  "the question","what i forgot","the brightness","the unanswered",
+  "rushing","clatter","the hour i lost","the worry","still undone",
+  "the missed call","the draft unsent","tomorrow already"];
+let n=0,ft,shown=false,faded=false;
+
+function star(x,y,r,op,glow){
+  const s=document.createElement('div');
+  s.className='ns-s';
+  s.style.cssText=`left:${x-r}px;top:${y-r}px;width:${r*2}px;height:${r*2}px;opacity:${op};`
+    +(glow?`box-shadow:0 0 ${r*5}px ${r*2}px rgba(150,175,255,${(op*.3).toFixed(2)});`:'');
+  ns.appendChild(s);return s;
+}
+
+for(let i=0;i<58;i++)
+  star(Math.random()*window.innerWidth,Math.random()*window.innerHeight*.92,
+    .35+Math.random()*.55,.04+Math.random()*.14,false);
+
+ns.addEventListener('click',e=>{
+  if(!faded){
+    faded=true;
+    h.style.opacity='0';
+    c.style.opacity='0';
+  }
+  star(e.clientX,e.clientY,1.1+Math.random()*1.4,.55+Math.random()*.45,true);
+  const word=words[n%words.length];
+  n++;
+  wd.textContent=word;
+  wd.style.left=(e.clientX+15)+'px';
+  wd.style.top=(e.clientY-10)+'px';
+  wd.style.opacity='1';
+  wd.style.color='rgba(110,127,160,0.58)';
+  clearTimeout(ft);
+  ft=setTimeout(()=>{wd.style.opacity='0'},1750);
+  if(n===13&&!shown){
+    shown=true;
+    setTimeout(()=>{
+      const r=document.createElement('div');
+      r.style.cssText='position:fixed;bottom:22px;width:100%;text-align:center;'
+        +'font:9px Georgia,serif;letter-spacing:.32em;'
+        +'color:rgba(110,127,160,0.16);pointer-events:none;'
+        +'opacity:0;transition:opacity 4s';
+      r.textContent='rest now';
+      ns.appendChild(r);
+      setTimeout(()=>r.style.opacity='1',80);
+    },2200);
+  }
+});
+
+setInterval(()=>{
+  ns.querySelectorAll('.ns-s').forEach(s=>{
+    if(Math.random()<.055){
+      const cur=parseFloat(s.style.opacity)||0;
+      s.style.transition='opacity '+(1.8+Math.random()*2.5)+'s';
+      s.style.opacity=(cur>.28
+        ?(cur*.48+Math.random()*.06)
+        :Math.min(.95,cur*2.6+.04)).toFixed(2);
+    }
+  });
+},2100);
+})();
+</script>
+</section>
