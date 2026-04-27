@@ -1,0 +1,122 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>pulse · 2026-04-27</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;cursor:crosshair;background:#0b0b10;font-family:'Courier New',Courier,monospace}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#axis{position:fixed;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.04);transform:translateX(-50%);pointer-events:none}
+#col{display:flex;flex-direction:column;align-items:center;position:relative;z-index:2}
+.wd{
+  padding:3px 0;
+  text-align:center;
+  letter-spacing:.18em;
+  pointer-events:none;
+  user-select:none;
+  white-space:nowrap;
+  will-change:opacity,font-size,color;
+}
+#tick-l,#tick-r{
+  position:fixed;top:50%;height:1px;background:#c8963a;
+  pointer-events:none;z-index:3;
+  transition:width .5s cubic-bezier(.4,0,.2,1), opacity .5s;
+  opacity:0;
+}
+#tick-l{right:50%;transform:translateY(-50%)}
+#tick-r{left:50%;transform:translateY(-50%)}
+#dot{position:fixed;width:3px;height:3px;background:#c8963a;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:10;opacity:0;transition:opacity .3s}
+</style>
+</head>
+<body>
+<section data-date='2026-04-27' data-type='pulse'>
+<div id="axis"></div>
+<div id="stage"><div id="col"></div></div>
+<div id="tick-l"></div>
+<div id="tick-r"></div>
+<div id="dot"></div>
+</section>
+<script>
+const words=[
+  "3 a.m.","before dawn","the alarm",
+  "first light","morning","not yet",
+  "late morning","the cup cooling","almost noon",
+  "noon",
+  "just after","the long afternoon","three o'clock",
+  "the shift","last light","dusk",
+  "evening","after dark","midnight"
+];
+const NI=words.indexOf("noon");
+const col=document.getElementById('col');
+const tl=document.getElementById('tick-l');
+const tr=document.getElementById('tick-r');
+const dot=document.getElementById('dot');
+
+words.forEach((w,i)=>{
+  const d=document.createElement('div');
+  d.className='wd';
+  d.id='w'+i;
+  d.textContent=w;
+  col.appendChild(d);
+});
+
+let now=NI,frozen=false,ft=null,moved=false;
+
+function render(idx){
+  now=Math.max(0,Math.min(words.length-1,Math.round(idx)));
+  words.forEach((_,i)=>{
+    const el=document.getElementById('w'+i);
+    const d=i-now, a=Math.abs(d);
+    const fade=Math.max(0,1-a*.14);
+    if(d<0){
+      el.style.color='#6688aa';
+      el.style.opacity=String(fade*.6);
+      el.style.fontSize=Math.max(9,15-a*1.1)+'px';
+      el.style.letterSpacing='.1em';
+      el.style.fontStyle='normal';
+    } else if(d>0){
+      el.style.color='#b07030';
+      el.style.opacity=String(fade*.55);
+      el.style.fontSize=Math.max(9,15-a*1.1)+'px';
+      el.style.letterSpacing='.1em';
+      el.style.fontStyle='normal';
+    } else {
+      el.style.color='#f0ece4';
+      el.style.opacity='1';
+      el.style.fontSize='19px';
+      el.style.letterSpacing='.45em';
+      el.style.fontStyle='normal';
+    }
+  });
+  const atNoon=now===NI;
+  const hw=atNoon?'42vw':'0';
+  tl.style.width=hw; tr.style.width=hw;
+  tl.style.opacity=atNoon?'.7':'0';
+  tr.style.opacity=atNoon?'.7':'0';
+  const ny=document.getElementById('w'+now).getBoundingClientRect();
+  const mid=ny.top+ny.height/2;
+  tl.style.top=tr.style.top=mid+'px';
+}
+
+document.addEventListener('mousemove',e=>{
+  dot.style.left=e.clientX+'px';
+  dot.style.top=e.clientY+'px';
+  if(!moved){moved=true;dot.style.opacity='1'}
+  if(frozen)return;
+  const idx=(e.clientY/window.innerHeight)*(words.length-1);
+  render(idx);
+});
+
+document.addEventListener('click',()=>{
+  if(ft)clearTimeout(ft);
+  frozen=true;
+  render(NI);
+  ft=setTimeout(()=>{frozen=false},2600);
+});
+
+window.addEventListener('resize',()=>render(now));
+render(NI);
+</script>
+</body>
+</html>
