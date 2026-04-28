@@ -1,0 +1,92 @@
+<section data-date='2026-04-27' data-type='reflection'>
+<style>
+.sky{position:fixed;inset:0;background:#04040e;cursor:crosshair;overflow:hidden}
+canvas{position:absolute;inset:0}
+.w{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+.w p{color:#8080a8;font:italic 1.1rem/2.4 Georgia,serif;text-align:center;opacity:0;transition:opacity 3.5s;letter-spacing:.02em}
+.w p.on{opacity:1}
+.w em{font-style:normal;font-size:.72rem;letter-spacing:.22em;color:#3a3a5a;display:block;margin-top:.8rem}
+</style>
+<div class='sky' id='sky'>
+<canvas id='cv'></canvas>
+<div class='w'><p id='txt'>the day closes<br>its thousand eyes<br><br>one by one<br>the dark arrives<br><em>click to name a star</em></p></div>
+</div>
+<script>
+const cv=document.getElementById('cv'),
+  ctx=cv.getContext('2d'),
+  sky=document.getElementById('sky'),
+  txt=document.getElementById('txt');
+let W,H,t=0,mx=0,my=0,placed=0;
+const stars=[];
+const N=()=>Date.now();
+
+function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+resize();addEventListener('resize',resize);
+
+function mk(x,y,r,born,named){
+  return{x,y,r:r||(Math.random()*1.3+.4),born,phase:Math.random()*6.28,named}
+}
+
+for(let i=0;i<65;i++)
+  stars.push(mk(
+    Math.random()*innerWidth,Math.random()*innerHeight,
+    Math.random()*1.3+.4,
+    N()-Math.random()*7000,
+    false
+  ));
+
+sky.addEventListener('click',e=>{
+  stars.push(mk(e.clientX,e.clientY,Math.random()*1.6+1,N(),true));
+  placed++;
+  if(placed===1) setTimeout(()=>{txt.classList.remove('on');setTimeout(()=>{txt.innerHTML='this one<br>you chose<br><em>click to name another</em>';txt.classList.add('on')},600)},200);
+  if(placed===4) setTimeout(()=>{txt.classList.remove('on');setTimeout(()=>{txt.innerHTML='enough light<br>for tonight<br><em>rest now</em>';txt.classList.add('on')},600)},200);
+});
+sky.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+
+setTimeout(()=>txt.classList.add('on'),1800);
+
+function draw(){
+  requestAnimationFrame(draw);
+  ctx.clearRect(0,0,W,H);
+  t+=.007;
+  const n=N();
+
+  const near=stars.filter(s=>Math.hypot(s.x-mx,s.y-my)<160);
+  for(let i=0;i<near.length-1;i++)
+    for(let j=i+1;j<near.length;j++){
+      const d=Math.hypot(near[i].x-near[j].x,near[i].y-near[j].y);
+      if(d<110){
+        ctx.beginPath();
+        ctx.strokeStyle=`rgba(140,160,215,${.14*(1-d/110)})`;
+        ctx.lineWidth=.5;
+        ctx.moveTo(near[i].x,near[i].y);
+        ctx.lineTo(near[j].x,near[j].y);
+        ctx.stroke();
+      }
+    }
+
+  stars.forEach(s=>{
+    const age=n-s.born,
+      appear=Math.min(age/2500,1),
+      twinkle=.62+.38*Math.sin(t*1.9+s.phase),
+      alpha=appear*twinkle;
+
+    if(s.named&&age<6000){
+      const b=1-age/6000,r=s.r*16;
+      const g=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,r);
+      g.addColorStop(0,`rgba(190,215,255,${.38*b})`);
+      g.addColorStop(.5,`rgba(140,170,240,${.12*b})`);
+      g.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.beginPath();ctx.arc(s.x,s.y,r,0,6.28);
+      ctx.fillStyle=g;ctx.fill();
+    }
+
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,6.28);
+    ctx.fillStyle=`rgba(215,228,255,${alpha})`;
+    ctx.fill();
+  });
+}
+draw();
+</script>
+</section>
