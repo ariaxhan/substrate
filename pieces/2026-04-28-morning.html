@@ -1,0 +1,106 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>before — 2026-04-28</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#07070e;cursor:crosshair}
+section{width:100%;height:100%;position:relative;display:block}
+.w{position:absolute;font:italic 2vw Georgia,serif;color:rgba(255,190,110,0);
+   transition:color .55s;letter-spacing:.09em;pointer-events:none;user-select:none}
+#g{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
+#hint{position:fixed;bottom:1.8em;left:50%;transform:translateX(-50%);
+      font:11px/1 Georgia,serif;color:rgba(255,175,90,.22);
+      letter-spacing:.3em;transition:opacity 3s;pointer-events:none;z-index:2}
+</style>
+</head>
+<body>
+<canvas id="g"></canvas>
+<section data-date="2026-04-28" data-type="morning">
+  <p id="hint">move through the dark</p>
+</section>
+<script>
+const WORDS=["begin","open","first","light","yes","now","still","name",
+             "breathe","hold","soft","rise","here","new","day","wait","almost","find"],
+      sec=document.querySelector("section"),
+      gc=document.getElementById("g").getContext("2d");
+let els=[],mx=-999,my=-999,dawn=0,W=0,H=0;
+
+function resize(){
+  W=document.getElementById("g").width=window.innerWidth;
+  H=document.getElementById("g").height=window.innerHeight;
+}
+resize();window.addEventListener("resize",resize);
+
+// cursor glow on canvas
+function drawGlow(){
+  gc.clearRect(0,0,W,H);
+  if(mx<0)return;
+  const r=gc.createRadialGradient(mx,my,0,mx,my,160);
+  r.addColorStop(0,`rgba(255,165,60,.09)`);
+  r.addColorStop(1,`rgba(0,0,0,0)`);
+  gc.fillStyle=r;gc.fillRect(0,0,W,H);
+  requestAnimationFrame(drawGlow);
+}
+requestAnimationFrame(drawGlow);
+
+function scatter(){
+  sec.querySelectorAll(".w").forEach(e=>e.remove());
+  els=[];
+  WORDS.forEach(word=>{
+    const s=document.createElement("span");
+    s.className="w";s.textContent=word;
+    s.style.left=(7+Math.random()*82)+"%";
+    s.style.top=(5+Math.random()*86)+"%";
+    s.style.fontSize=(1.3+Math.random()*1.8)+"vw";
+    sec.appendChild(s);
+    els.push(s);
+  });
+}
+scatter();
+
+document.addEventListener("mousemove",e=>{
+  mx=e.clientX;my=e.clientY;
+  els.forEach(s=>{
+    const b=s.getBoundingClientRect(),
+          cx=b.left+b.width/2,cy=b.top+b.height/2,
+          d=Math.hypot(cx-mx,cy-my),
+          v=Math.max(0,1-d/135);
+    s.style.color=`rgba(255,${185+v*42|0},${78+v*95|0},${v*.9})`;
+  });
+});
+
+function applyBg(){
+  const d=dawn;
+  document.body.style.background=
+    `rgb(${7+d*22|0},${7+d*12|0},${14+d*9|0})`;
+}
+
+document.addEventListener("click",()=>{
+  // flash — crystallize the found words
+  els.forEach(s=>{
+    s.style.transition="color .05s";
+    s.style.color="rgba(255,248,222,1)";
+  });
+  dawn=Math.min(dawn+.08,1);
+  applyBg();
+  setTimeout(()=>{scatter();},300);
+});
+
+document.addEventListener("touchstart",e=>{
+  e.preventDefault();
+  mx=e.touches[0].clientX;my=e.touches[0].clientY;
+  document.dispatchEvent(new MouseEvent("click"));
+},{passive:false});
+
+// slow autonomous brightening — the night passing
+setInterval(()=>{
+  dawn=Math.min(dawn+.0007,1);
+  applyBg();
+},700);
+
+setTimeout(()=>{document.getElementById("hint").style.opacity="0";},5000);
+</script>
+</body>
+</html>
