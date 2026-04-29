@@ -1,0 +1,132 @@
+<section data-date='2026-04-29' data-type='morning'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+section[data-type='morning']{display:block;width:100vw;height:100vh;overflow:hidden;cursor:crosshair;position:relative;background:#06050f}
+canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+#poem{position:absolute;top:50%;left:50%;transform:translate(-50%,-52%);text-align:center;z-index:10;pointer-events:none;user-select:none}
+.ln{display:block;font-family:Georgia,serif;font-size:clamp(.9rem,2vw,1.3rem);letter-spacing:.25em;color:hsl(38,60%,80%);opacity:0;transition:opacity 2.4s ease,color 1.8s ease;line-height:2.2}
+.ln.on{opacity:1}
+#hint{position:absolute;bottom:2.2rem;left:50%;transform:translateX(-50%);font-family:monospace;font-size:.65rem;letter-spacing:.18em;color:hsl(220,20%,35%);opacity:.6;z-index:10;pointer-events:none;transition:opacity 1s}
+#hint.gone{opacity:0}
+</style>
+<canvas id="cvs"></canvas>
+<div id="poem">
+  <span class="ln" id="l0">before the word</span>
+  <span class="ln" id="l1">the breath</span>
+  <span class="ln" id="l2">the day unwritten</span>
+</div>
+<div id="hint">click to begin</div>
+<script>
+const cv=document.getElementById('cvs'),
+  ctx=cv.getContext('2d'),
+  hint=document.getElementById('hint'),
+  ls=[0,1,2].map(i=>document.getElementById('l'+i));
+
+let W,H,mx,my,clicks=0,warmth=0,horizon=0,raf;
+
+function resize(){
+  W=cv.width=window.innerWidth;
+  H=cv.height=window.innerHeight;
+  mx=W/2; my=H/2;
+}
+resize();
+
+const NIGHT=['still','before','dark','waiting','quiet','unbegun','held','vast','not yet','silent','unseen','slow'],
+  DAWN=['begin','open','possible','light','new','yet','becoming','awake','yes','rise','breath','now'];
+
+let pts=[];
+
+function seed(word,isDawn,x,y){
+  const op=isDawn?0:.18+Math.random()*.18;
+  return{
+    word,isDawn,
+    x:x??Math.random()*W,
+    y:y??(H*.1+Math.random()*H*.75),
+    vx:(Math.random()-.5)*.25,
+    vy:isDawn?-.3-.2*Math.random():-.08-.05*Math.random(),
+    op, tgt:isDawn?.75+Math.random()*.2:op,
+    sz:isDawn?10+Math.random()*7:8+Math.random()*5,
+    mono:!isDawn
+  };
+}
+
+NIGHT.forEach(w=>pts.push(seed(w,false)));
+
+function advance(){
+  clicks++;
+  horizon=Math.min(1,horizon+.13);
+  warmth=Math.min(1,warmth+.09);
+
+  const nw=pts.filter(p=>!p.isDawn&&p.tgt>0);
+  if(nw.length){
+    nw[Math.floor(Math.random()*nw.length)].tgt=0;
+  }
+
+  const dw=DAWN[clicks-1];
+  if(dw){
+    pts.push(seed(dw,true,W*.1+Math.random()*W*.8,H*.15+Math.random()*H*.6));
+  }
+
+  if(clicks===2) ls[0].classList.add('on');
+  if(clicks===4) ls[1].classList.add('on');
+  if(clicks===6) ls[2].classList.add('on');
+
+  const h=35+warmth*10,s2=55+warmth*25,l2=72+warmth*16;
+  ls.forEach(el=>el.style.color=`hsl(${h},${s2}%,${l2}%)`);
+
+  if(clicks===1) hint.classList.add('gone');
+}
+
+function frame(){
+  // bg: deep indigo → very dark umber
+  const r=Math.round(6+19*warmth),
+    g=Math.round(5+10*warmth),
+    b=Math.round(15+(-7)*warmth);
+  ctx.fillStyle=`rgb(${r},${g},${b})`;
+  ctx.fillRect(0,0,W,H);
+
+  // horizon bloom
+  if(horizon>0){
+    const gr=ctx.createRadialGradient(W/2,H*.98,0,W/2,H*.98,H*.85);
+    gr.addColorStop(0,`hsla(${30+warmth*20},${55+warmth*35}%,${45+warmth*22}%,${horizon*.4})`);
+    gr.addColorStop(.45,`hsla(25,40%,25%,${horizon*.12})`);
+    gr.addColorStop(1,'transparent');
+    ctx.fillStyle=gr;
+    ctx.fillRect(0,0,W,H);
+  }
+
+  // candle glow at cursor
+  const cg=ctx.createRadialGradient(mx,my,0,mx,my,90+warmth*50);
+  cg.addColorStop(0,`hsla(42,85%,65%,${.05+warmth*.04})`);
+  cg.addColorStop(1,'transparent');
+  ctx.fillStyle=cg;
+  ctx.fillRect(0,0,W,H);
+
+  // words
+  pts=pts.filter(p=>p.op>0.002||p.tgt>0);
+  pts.forEach(p=>{
+    p.x+=p.vx; p.y+=p.vy;
+    if(p.y<-30){p.y=H*.9;p.x=Math.random()*W;}
+    p.op+=(p.tgt-p.op)*.018;
+    if(p.op<.003&&p.tgt===0) return;
+    ctx.save();
+    ctx.globalAlpha=Math.max(0,p.op);
+    ctx.font=`${p.sz}px ${p.mono?'monospace':'Georgia,serif'}`;
+    if(p.isDawn){
+      ctx.fillStyle=`hsl(${35+warmth*18},${58+warmth*28}%,${68+warmth*22}%)`;
+    } else {
+      ctx.fillStyle='hsl(220,22%,60%)';
+    }
+    ctx.fillText(p.word,p.x,p.y);
+    ctx.restore();
+  });
+
+  raf=requestAnimationFrame(frame);
+}
+
+window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+window.addEventListener('click',advance);
+window.addEventListener('resize',resize);
+frame();
+</script>
+</section>
