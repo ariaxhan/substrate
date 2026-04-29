@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Pulse — 2026-04-29</title>
+<style>
+*{margin:0;padding:0}
+body{background:#0c0b0a;overflow:hidden;width:100vw;height:100vh;cursor:crosshair}
+canvas{display:block}
+</style>
+</head>
+<body>
+<section data-date='2026-04-29' data-type='pulse'>
+<canvas id=c></canvas>
+<script>
+const cv=document.getElementById('c'),g=cv.getContext('2d');
+let W,H,mx=.5,clicked=false,clickT=0,revealT=0;
+
+const AM=['waking','before','almost','rising','open','still','early','yet'];
+const PM=['sleeping','after','almost','falling','closed','already','late','still'];
+// note: "almost" and "still" appear on both sides — the threshold words
+
+function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+addEventListener('resize',resize);resize();
+addEventListener('mousemove',e=>{mx=e.clientX/W});
+addEventListener('click',()=>{
+  clicked=!clicked;
+  clickT=Date.now();
+  revealT=Date.now();
+});
+
+function ease(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2}
+
+function draw(){
+  const now=Date.now();
+  const revFrac=Math.min(1,(now-revealT)/800);
+  const revPulse=revFrac<1?Math.sin(revFrac*Math.PI)*.5:0;
+
+  g.clearRect(0,0,W,H);
+
+  const cx=W/2, cy=H/2;
+  // tilt: mouse left = left heavy (tips down), right = right heavy
+  const rawTilt=(mx-.5)*(clicked?-1:1);
+  const tilt=rawTilt*Math.PI/5.5; // max ~33°
+  const beam=Math.min(W*.42,H*.38);
+
+  // subtle background wash
+  const bg=g.createRadialGradient(cx,cy,0,cx,cy,Math.max(W,H)*.7);
+  bg.addColorStop(0,'rgba(22,18,14,1)');
+  bg.addColorStop(1,'rgba(8,8,10,1)');
+  g.fillStyle=bg;
+  g.fillRect(0,0,W,H);
+
+  g.save();
+  g.translate(cx,cy);
+  g.rotate(tilt);
+
+  // beam
+  g.strokeStyle='rgba(70,65,58,0.7)';
+  g.lineWidth=1;
+  g.beginPath();
+  g.moveTo(-beam,0);
+  g.lineTo(beam,0);
+  g.stroke();
+
+  // tick at center
+  g.strokeStyle='rgba(90,85,78,0.5)';
+  g.lineWidth=.5;
+  g.beginPath();g.moveTo(0,-5);g.lineTo(0,5);g.stroke();
+
+  // left side (AM) words — warm amber, fade with mx going right
+  const lW=clicked?PM:AM;
+  const lStrength=clicked?(mx):(1-mx); // heavier when mouse leans left
+  lW.forEach((w,i)=>{
+    const angle=-(Math.PI/2)*(1-i/lW.length)*.6; // fan upward-left
+    const dist=beam*.25+i*(beam*.08);
+    const x=-dist;
+    const y=-(20+i*18);
+    const alpha=(.18+lStrength*.72)*(1-i*.09)+revPulse*.3;
+    const sz=Math.round(15+lStrength*8-i*1.3);
+    g.font=`${sz}px Georgia,serif`;
+    g.fillStyle=`rgba(210,155,80,${Math.max(0,Math.min(1,alpha))})`;
+    g.textAlign='right';
+    g.fillText(w,x,y);
+  });
+
+  // right side (PM) words — cool slate, fade with mx going left
+  const rW=clicked?AM:PM;
+  const rStrength=clicked?(1-mx):mx;
+  rW.forEach((w,i)=>{
+    const x=beam*.25+i*(beam*.08);
+    const y=-(20+i*18);
+    const alpha=(.18+rStrength*.72)*(1-i*.09)+revPulse*.3;
+    const sz=Math.round(15+rStrength*8-i*1.3);
+    g.font=`${sz}px Georgia,serif`;
+    g.fillStyle=`rgba(90,145,210,${Math.max(0,Math.min(1,alpha))})`;
+    g.textAlign='left';
+    g.fillText(w,x,y);
+  });
+
+  g.restore();
+
+  // fulcrum triangle (below beam, fixed)
+  g.fillStyle='rgba(50,48,44,0.85)';
+  g.beginPath();
+  g.moveTo(cx,cy+3);
+  g.lineTo(cx-10,cy+28);
+  g.lineTo(cx+10,cy+28);
+  g.closePath();
+  g.fill();
+
+  // pivot dot
+  g.fillStyle='rgba(110,105,98,0.9)';
+  g.beginPath();
+  g.arc(cx,cy,2,0,Math.PI*2);
+  g.fill();
+
+  // center reveal: the word at the fulcrum
+  const PIVOT=['noon','half','now','here'];
+  const pi=Math.floor(now/4000)%PIVOT.length;
+  const cycFrac=(now%(4000))/4000;
+  const wAlpha=cycFrac<.85?(.12+revPulse*.35):((.12+revPulse*.35)*(1-(cycFrac-.85)/.15));
+  g.font='9px Georgia,serif';
+  g.fillStyle=`rgba(80,76,70,${wAlpha})`;
+  g.textAlign='center';
+  g.fillText(PIVOT[pi],cx,cy+42);
+
+  // axis label pair — whispered
+  const axA=.06+revPulse*.2;
+  g.font='8px monospace';
+  g.fillStyle=`rgba(200,148,80,${axA})`;
+  g.textAlign='right';
+  g.fillText('am',cx-beam*.97,cy+3);
+  g.fillStyle=`rgba(90,145,210,${axA})`;
+  g.textAlign='left';
+  g.fillText('pm',cx+beam*.97,cy+3);
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</section>
+</body>
+</html>
