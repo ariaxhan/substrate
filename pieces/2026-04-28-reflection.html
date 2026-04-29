@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>reflection · 2026-04-28</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#05050d;cursor:crosshair}
+#v{position:fixed;inset:0}
+.s{position:absolute;width:2px;height:2px;border-radius:50%;background:#c8d8ff;opacity:0;pointer-events:none;transition:opacity .35s}
+.w{position:absolute;font:300 12px/1.8 Georgia,serif;color:#7a9ab8;opacity:0;letter-spacing:.18em;pointer-events:none;transition:opacity 2.8s}
+#q{position:fixed;bottom:38px;width:100%;text-align:center;font:300 10px/2 Georgia,serif;color:#2a3a55;letter-spacing:.4em;opacity:0;pointer-events:none;transition:opacity 5s}
+</style>
+</head>
+<body>
+<section data-date='2026-04-28' data-type='reflection'>
+<div id="v"></div>
+<div id="q">rest</div>
+<script>
+const v=document.getElementById('v'),
+q=document.getElementById('q'),
+W=()=>window.innerWidth,
+H=()=>window.innerHeight,
+phrases=['the day is complete','lie still','enough','tomorrow begins here','the stars were always','let go','night keeps watch','you have done enough','this is the threshold','be still now'],
+stars=[];
+
+for(let i=0;i<88;i++){
+  const el=document.createElement('div');
+  el.className='s';
+  const px=Math.random()*W(),py=Math.random()*H();
+  el.style.left=px+'px';
+  el.style.top=py+'px';
+  const r=Math.random();
+  if(r<.08){el.style.width='3px';el.style.height='3px';}
+  v.appendChild(el);
+  stars.push({el,x:px,y:py,floor:0,pulse:0});
+}
+
+let clicks=0;
+
+window.addEventListener('mousemove',e=>{
+  const mx=e.clientX,my=e.clientY;
+  stars.forEach(s=>{
+    const d=Math.hypot(s.x-mx,s.y-my);
+    const g=d<100?Math.pow(1-d/100,1.8)*.9:0;
+    s.el.style.opacity=Math.max(s.floor,g);
+  });
+});
+
+window.addEventListener('click',e=>{
+  clicks++;
+  const dot=document.createElement('div');
+  dot.className='s';
+  dot.style.cssText=`left:${e.clientX}px;top:${e.clientY}px;opacity:.95;width:3px;height:3px;box-shadow:0 0 8px 3px rgba(160,190,255,.35);transition:opacity 9s,box-shadow 9s`;
+  v.appendChild(dot);
+  setTimeout(()=>{dot.style.opacity='.12';dot.style.boxShadow='none';},80);
+  setTimeout(()=>dot.remove(),10000);
+
+  if(clicks%2===0){
+    const w=document.createElement('div');
+    w.className='w';
+    w.textContent=phrases[Math.floor(Math.random()*phrases.length)];
+    const wx=Math.max(12,Math.min(e.clientX-56,W()-200));
+    const wy=Math.max(12,e.clientY-32);
+    w.style.left=wx+'px';
+    w.style.top=wy+'px';
+    v.appendChild(w);
+    setTimeout(()=>w.style.opacity='.55',40);
+    setTimeout(()=>{w.style.opacity='0';setTimeout(()=>w.remove(),3200)},4500);
+  }
+
+  if(clicks===5) setTimeout(()=>q.style.opacity='.22',600);
+});
+
+// ambient drift
+setInterval(()=>{
+  const s=stars[Math.floor(Math.random()*stars.length)];
+  s.floor=.05+Math.random()*.15;
+  s.el.style.opacity=s.floor;
+  setTimeout(()=>{s.floor=0;},2200+Math.random()*3500);
+},350);
+</script>
+</section>
+</body>
+</html>
