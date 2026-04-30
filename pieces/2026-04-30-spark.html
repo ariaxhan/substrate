@@ -1,0 +1,46 @@
+<section data-date='2026-04-30' data-type='spark'>
+<style>
+#s{background:#070710;width:100%;height:100vh;overflow:hidden;cursor:crosshair;position:relative}
+.w,.y{position:absolute;transform:translate(-50%,-50%);pointer-events:none;font-family:monospace;letter-spacing:.12em;user-select:none}
+.y{transition:opacity .8s}
+</style>
+<div id="s"></div>
+<script>
+(()=>{
+const v=document.getElementById('s'),
+P=[['strange','love','strangelove'],['half','life','half-life'],['dark','matter','dark matter'],['over','whelm','overwhelm'],['star','crossed','star-crossed'],['touch','stone','touchstone']];
+let mx=innerWidth/2,my=innerHeight/2,pi=0,hit=0,ax,ay,bx,by;
+const a=document.createElement('div'),b=document.createElement('div');
+a.className=b.className='w';v.appendChild(a);v.appendChild(b);
+function sp(){
+  const p=P[pi%6];pi++;ax=innerWidth*.1;bx=innerWidth*.9;
+  ay=by=innerHeight*.4+Math.random()*innerHeight*.2;
+  hit=0;a.style.opacity=b.style.opacity=1;a.textContent=p[0];b.textContent=p[1];
+}
+sp();
+v.onmousemove=e=>{mx=e.clientX;my=e.clientY;};
+v.onclick=()=>{if(!hit){mx=(ax+bx)/2;my=(ay+by)/2;}};
+function tk(){
+  if(!hit){
+    ax+=(mx-ax)*.014;ay+=(my-ay)*.014;
+    bx+=(mx-bx)*.014;by+=(my-by)*.014;
+    const d=Math.hypot(ax-bx,ay-by),t=Math.max(0,1-d/300),f=1+t*.4+'rem';
+    a.style.left=ax+'px';a.style.top=ay+'px';
+    a.style.color=`hsl(${220-t*60},${40+t*40}%,${50+t*20}%)`;a.style.fontSize=f;
+    b.style.left=bx+'px';b.style.top=by+'px';
+    b.style.color=`hsl(${340+t*30},${40+t*40}%,${50+t*20}%)`;b.style.fontSize=f;
+    if(d<36){
+      hit=1;a.style.opacity=b.style.opacity=0;
+      const el=document.createElement('div');el.className='y';
+      el.style.cssText=`left:${(ax+bx)/2}px;top:${(ay+by)/2}px;color:#e8d5a0;font-size:1.8rem;opacity:1`;
+      el.textContent=P[(pi-1)%6][2];v.appendChild(el);
+      setTimeout(()=>{el.style.opacity=0;setTimeout(()=>el.remove(),900);},1600);
+      setTimeout(sp,2600);
+    }
+  }
+  requestAnimationFrame(tk);
+}
+tk();
+})();
+</script>
+</section>
