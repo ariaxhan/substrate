@@ -1,0 +1,101 @@
+<!doctype html>
+<html>
+<head>
+<meta charset=utf-8>
+<title>Fulcrum</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#f4f1ea;height:100vh;overflow:hidden;cursor:crosshair}
+section{position:relative;width:100%;height:100%;display:block}
+#stage{position:absolute;inset:0}
+#arm-wrap{position:absolute;top:50%;left:50%;width:110vw;height:0;transform-origin:center center;transform:translateX(-50%) rotate(0deg);transition:transform .55s cubic-bezier(.25,.46,.45,.94)}
+#arm{position:absolute;top:0;left:0;width:100%;height:1px;background:#1c1810;transform:translateY(-50%)}
+#fulcrum{position:absolute;top:0;left:50%;transform:translateX(-50%) translateY(-50%);width:7px;height:7px;border-radius:50%;background:#1c1810}
+#pivot-word{position:absolute;top:-22px;left:50%;transform:translateX(-50%);font:11px/1 'Georgia',serif;letter-spacing:.28em;text-transform:uppercase;color:#1c1810;opacity:.6;white-space:nowrap;pointer-events:none;transition:opacity .4s,transform .4s}
+#base-line{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:1px;height:50vh;background:linear-gradient(to top,#1c1810 0%,transparent 100%);opacity:.18}
+.w{position:absolute;font-family:'Georgia',serif;color:#1c1810;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity 1.2s ease}
+.w.on{opacity:.5}
+#hint{position:absolute;bottom:28px;width:100%;text-align:center;font:9px/1 monospace;letter-spacing:.2em;color:#1c1810;opacity:.28;pointer-events:none;transition:opacity 1s}
+</style>
+</head>
+<body>
+<section data-date='2026-04-30' data-type='pulse'>
+<div id=stage>
+  <div id=base-line></div>
+  <div id=arm-wrap>
+    <div id=arm></div>
+    <div id=fulcrum></div>
+    <div id=pivot-word>now</div>
+  </div>
+  <div id=hint>move · click to find equilibrium</div>
+</div>
+</section>
+<script>
+const B=['before','unspent','still','possible','threshold','inhale','quiet','first light','open','gathering','tender','unread'],
+      A=['after','spent','used','real','residue','exhale','settled','last light','closed','scattered','dense','done'],
+      P=['now','here','this moment','the hinge','between','the turn','noon','and'],
+      wrap=document.getElementById('arm-wrap'),
+      stage=document.getElementById('stage'),
+      pw=document.getElementById('pivot-word'),
+      hint=document.getElementById('hint');
+let tilt=0,aim=0,eq=false,tick=0,pi=0,first=true;
+
+function word(side){
+  const d=document.createElement('div');
+  d.className='w';
+  const pool=side<0?B:A;
+  d.textContent=pool[Math.floor(Math.random()*pool.length)];
+  const dist=100+Math.random()*200;
+  const px=window.innerWidth/2+side*dist;
+  const off=-55+Math.random()*110;
+  const py=window.innerHeight/2+off;
+  const sz=10+Math.random()*5;
+  d.style.cssText=`left:${px}px;top:${py}px;transform:translate(-50%,-50%);font-size:${sz}px`;
+  stage.appendChild(d);
+  requestAnimationFrame(()=>d.classList.add('on'));
+  const life=3500+Math.random()*3000;
+  setTimeout(()=>{
+    d.classList.remove('on');
+    setTimeout(()=>d.remove(),1300);
+  },life);
+}
+
+document.addEventListener('mousemove',e=>{
+  if(eq)return;
+  aim=(e.clientX/window.innerWidth-.5)*20;
+});
+
+document.addEventListener('click',e=>{
+  if(Math.abs(e.clientX-window.innerWidth/2)>60)return;
+  eq=true;
+  aim=0;
+  pw.style.opacity=0;
+  pw.style.transform='translateX(-50%) scale(.85)';
+  if(first){hint.style.opacity=0;first=false;}
+  setTimeout(()=>{
+    pi=(pi+1)%P.length;
+    pw.textContent=P[pi];
+    pw.style.opacity=.6;
+    pw.style.transform='translateX(-50%) scale(1)';
+    eq=false;
+  },700);
+});
+
+let last=0,wt=0;
+(function loop(ts){
+  const dt=ts-last||16;last=ts;
+  tilt+=(aim-tilt)*.05;
+  wrap.style.transform=`translateX(-50%) rotate(${tilt}deg)`;
+  wt+=dt;
+  if(wt>2400){
+    wt=0;
+    const s=Math.random()<.5?-1:1;
+    word(s);
+  }
+  requestAnimationFrame(loop);
+})(0);
+
+word(-1);word(1);
+</script>
+</body>
+</html>
