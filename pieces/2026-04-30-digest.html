@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>digest — 2026-04-30</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#f0ebe2;width:100vw;height:100vh;overflow:hidden;cursor:crosshair}
+#s{position:absolute;inset:0}
+svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.n{
+  position:absolute;
+  font:11px/1 monospace;
+  color:#c0ad98;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+  transition:color 2s,font-size 2s,font-family 2s
+}
+.n.c{color:#2c1e0f;font:13px/1 Georgia,serif}
+#h{
+  position:absolute;bottom:20px;left:50%;
+  transform:translateX(-50%);
+  font:10px/1 monospace;color:#c8b8a8;
+  transition:opacity 1.2s;
+  white-space:nowrap
+}
+</style>
+</head>
+<body>
+<section data-date="2026-04-30" data-type="digest">
+<div id="s"></div>
+<svg id="v"></svg>
+<div id="h">move to seed &nbsp;&middot;&nbsp; click to crystallize</div>
+</section>
+<script>
+const V=[
+  'pattern','signal','noise','structure','emerge',
+  'layer','density','threshold','grain','nucleus',
+  'attractor','lattice','cluster','accrete','basin',
+  'weight','form','order','edge','field',
+  'knowing','latent','surface','dense','whole',
+  'fold','mass','flow','shape','residue'
+];
+
+const s=document.getElementById('s');
+const v=document.getElementById('v');
+const h=document.getElementById('h');
+const N=[];
+const D=80;
+let t0=0,shown=1;
+
+function add(x,y){
+  const w=V[Math.random()*V.length|0];
+  const e=document.createElement('span');
+  e.className='n';
+  e.textContent=w;
+  const nx=x+(Math.random()-.5)*52;
+  const ny=y+(Math.random()-.5)*52;
+  e.style.left=nx+'px';
+  e.style.top=ny+'px';
+  s.appendChild(e);
+  N.push({e,x:nx,y:ny});
+  if(N.length>110){
+    s.removeChild(s.firstChild);
+    N.shift();
+  }
+  if(N.length%4===0) sync();
+}
+
+function sync(){
+  v.innerHTML='';
+  const bonds=new Uint8Array(N.length);
+  for(let i=0;i<N.length;i++){
+    for(let j=i+1;j<N.length;j++){
+      const dx=N[i].x-N[j].x, dy=N[i].y-N[j].y;
+      if(dx*dx+dy*dy<D*D){
+        bonds[i]++;
+        bonds[j]++;
+        const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+        l.setAttribute('x1',N[i].x); l.setAttribute('y1',N[i].y);
+        l.setAttribute('x2',N[j].x); l.setAttribute('y2',N[j].y);
+        l.setAttribute('stroke','#c8a87a');
+        l.setAttribute('stroke-width',.4);
+        l.setAttribute('opacity',.45);
+        v.appendChild(l);
+      }
+    }
+  }
+  for(let i=0;i<N.length;i++){
+    N[i].e.className=bonds[i]>=2?'n c':'n';
+  }
+}
+
+document.addEventListener('mousemove',e=>{
+  const now=Date.now();
+  if(now-t0>110){
+    t0=now;
+    add(e.clientX,e.clientY);
+    if(shown){shown=0;h.style.opacity=0}
+  }
+});
+
+document.addEventListener('click',e=>{
+  for(let i=0;i<7;i++)
+    add(e.clientX+(Math.random()-.5)*90,e.clientY+(Math.random()-.5)*90);
+  sync();
+});
+
+for(let i=0;i<9;i++)
+  add(innerWidth/2+(Math.random()-.5)*320,innerHeight/2+(Math.random()-.5)*200);
+sync();
+</script>
+</body>
+</html>
