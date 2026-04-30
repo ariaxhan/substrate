@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>morning</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#050508;cursor:crosshair}
+canvas{display:block}
+#w{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+#t{font-family:'Georgia',serif;font-size:clamp(11px,1.4vw,16px);color:rgba(255,245,220,0);text-align:center;line-height:2.4;letter-spacing:.18em;text-transform:lowercase;transition:color 3s ease;white-space:pre;user-select:none}
+#hint{position:fixed;bottom:2.2em;width:100%;text-align:center;font-family:monospace;font-size:10px;letter-spacing:.3em;color:rgba(255,245,220,.18);pointer-events:none;transition:opacity 2s}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="w"><div id="t"></div></div>
+<div id="hint">click to begin</div>
+<script>
+const cv=document.getElementById('c'),
+  ctx=cv.getContext('2d'),
+  tw=document.getElementById('t'),
+  hint=document.getElementById('hint');
+
+let W,H,mx=.5,my=.5,phase=0,opened=false,wordIdx=0,wordTimer=null;
+
+const lines=[
+  "before the first word",
+  "there is only warmth",
+  "",
+  "the day holds itself",
+  "still",
+  "",
+  "waiting to be",
+  "written"
+];
+
+function resize(){
+  W=cv.width=window.innerWidth;
+  H=cv.height=window.innerHeight;
+}
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+
+  const cx=mx*W, cy=my*H;
+  const r=Math.min(W,H)*(opened?.82:.28);
+
+  // deep field
+  ctx.fillStyle='#050508';
+  ctx.fillRect(0,0,W,H);
+
+  // dawn glow
+  const g=ctx.createRadialGradient(cx,cy,0,cx,cy,r);
+  if(opened){
+    g.addColorStop(0,'rgba(255,210,140,.22)');
+    g.addColorStop(.3,'rgba(220,160,90,.10)');
+    g.addColorStop(.65,'rgba(160,100,60,.04)');
+    g.addColorStop(1,'rgba(0,0,0,0)');
+  } else {
+    g.addColorStop(0,'rgba(255,230,170,.10)');
+    g.addColorStop(.5,'rgba(200,140,80,.04)');
+    g.addColorStop(1,'rgba(0,0,0,0)');
+  }
+  ctx.fillStyle=g;
+  ctx.fillRect(0,0,W,H);
+
+  // horizon line
+  const hy=H*.62;
+  const lg=ctx.createLinearGradient(0,hy-1,0,hy+1);
+  const horiz=opened?.09:.03;
+  lg.addColorStop(0,'rgba(255,220,150,0)');
+  lg.addColorStop(.5,`rgba(255,220,150,${horiz})`);
+  lg.addColorStop(1,'rgba(255,220,150,0)');
+  ctx.fillStyle=lg;
+  ctx.fillRect(0,hy-1,W,3);
+
+  // pulse ring
+  phase+=.012;
+  const pulse=Math.sin(phase)*.5+.5;
+  const pr=Math.min(W,H)*(opened?.006:.004)*(1+pulse*.5);
+  ctx.beginPath();
+  ctx.arc(cx,cy,pr,0,Math.PI*2);
+  ctx.fillStyle=`rgba(255,240,200,${opened?.55:.28})`;
+  ctx.fill();
+
+  requestAnimationFrame(draw);
+}
+
+function revealWords(){
+  if(wordIdx>=lines.length){
+    clearInterval(wordTimer);
+    return;
+  }
+  const current=lines.slice(0,wordIdx+1).join('\n');
+  tw.textContent=current;
+  tw.style.color='rgba(255,245,220,.72)';
+  wordIdx++;
+  const delay=lines[wordIdx-1]===''?600:900+Math.random()*800;
+  wordTimer=setTimeout(revealWords,delay);
+}
+
+window.addEventListener('mousemove',e=>{
+  mx=e.clientX/W;
+  my=e.clientY/H;
+});
+
+window.addEventListener('click',()=>{
+  if(opened) return;
+  opened=true;
+  hint.style.opacity='0';
+  setTimeout(revealWords,1200);
+});
+
+window.addEventListener('resize',resize);
+resize();
+draw();
+</script>
+<section data-date='2026-04-30' data-type='morning'></section>
+</body>
+</html>
