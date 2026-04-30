@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>the day complete</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#04040f;overflow:hidden;width:100vw;height:100vh;cursor:crosshair}
+canvas{position:fixed;top:0;left:0}
+#l{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none}
+.w{position:absolute;font:italic 12px Georgia,serif;letter-spacing:.18em;color:rgba(180,200,255,0);white-space:nowrap;transition:color 2.5s,opacity 2.5s}
+.w.v{color:rgba(180,200,255,.5)}
+#h{position:fixed;bottom:28px;width:100%;text-align:center;font:10px/2 Georgia,serif;letter-spacing:.25em;color:rgba(130,150,200,.28);pointer-events:none;transition:opacity 4s}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="l"></div>
+<div id="h">touch to open the night</div>
+
+<section data-date='2026-04-29' data-type='reflection'>
+<script>
+const cv=document.getElementById('c'),cx=cv.getContext('2d'),
+      lyr=document.getElementById('l'),hint=document.getElementById('h');
+let W,H,stars=[],mx=.5,my=.5,t=0;
+
+const words=['still','done','rest','enough','held','here','quiet','now',
+             'complete','close','full','let go','safe','home','breathe','whole'];
+
+function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+resize();
+addEventListener('resize',resize);
+
+function Star(x,y,born){
+  this.x=x;this.y=y;
+  this.r=born?(.6+Math.random()*1.8):(.2+Math.random()*.7);
+  this.a=0;this.ta=.35+Math.random()*.55;
+  this.ph=Math.random()*Math.PI*2;
+  this.sp=.005+Math.random()*.008;
+  this.glow=born;
+  if(born&&Math.random()<.42){
+    const el=document.createElement('div');
+    el.className='w';
+    el.textContent=words[Math.floor(Math.random()*words.length)];
+    el.style.left=(x+10)+'px';el.style.top=(y-8)+'px';
+    lyr.appendChild(el);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('v')));
+    setTimeout(()=>{el.style.opacity='0';setTimeout(()=>el.remove(),2600)},7000);
+  }
+}
+
+function add(x,y,born){
+  if(stars.length>200)stars.shift();
+  stars.push(new Star(x,y,born));
+}
+
+for(let i=0;i<28;i++)
+  setTimeout(()=>add(Math.random()*innerWidth,Math.random()*innerHeight,false),i*180+400);
+
+setInterval(()=>{if(Math.random()<.25)add(Math.random()*W,Math.random()*H,false)},2400);
+
+function touch(x,y){add(x,y,true);hint.style.opacity='0'}
+addEventListener('click',e=>touch(e.clientX,e.clientY));
+addEventListener('touchstart',e=>{e.preventDefault();const t=e.touches[0];touch(t.clientX,t.clientY)},{passive:false});
+addEventListener('mousemove',e=>{mx=e.clientX/W;my=e.clientY/H});
+
+(function draw(){
+  t++;
+  cx.clearRect(0,0,W,H);
+  const px=(mx-.5)*12,py=(my-.5)*12;
+  stars.forEach(s=>{
+    s.a+=(s.ta-s.a)*.018;
+    s.ph+=s.sp;
+    const fl=s.a*(.82+.18*Math.sin(s.ph));
+    const sx=s.x+px*(s.r*.2),sy=s.y+py*(s.r*.2);
+    if(s.glow){
+      const g=cx.createRadialGradient(sx,sy,0,sx,sy,s.r*9);
+      g.addColorStop(0,`rgba(190,210,255,${fl*.35})`);
+      g.addColorStop(1,'rgba(0,0,16,0)');
+      cx.fillStyle=g;cx.beginPath();cx.arc(sx,sy,s.r*9,0,Math.PI*2);cx.fill();
+    }
+    cx.fillStyle=`rgba(215,228,255,${fl})`;
+    cx.beginPath();cx.arc(sx,sy,s.r,0,Math.PI*2);cx.fill();
+  });
+  requestAnimationFrame(draw);
+})();
+</script>
+</section>
+</body>
+</html>
