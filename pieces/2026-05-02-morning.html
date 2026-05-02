@@ -1,0 +1,149 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>threshold</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#07070e;cursor:none}
+</style>
+</head>
+<body>
+<section data-date='2026-05-02' data-type='morning'>
+<canvas id="c" style="position:fixed;top:0;left:0;width:100%;height:100%"></canvas>
+<div id="poem" style="position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none">
+  <span data-t="0.06" style="bottom:12%;left:48%">before</span>
+  <span data-t="0.24" style="bottom:28%;left:56%">you open your eyes</span>
+  <span data-t="0.44" style="bottom:44%;left:38%">the day already</span>
+  <span data-t="0.64" style="bottom:60%;left:51%;font-size:1.7rem">holds</span>
+  <span data-t="0.84" style="bottom:77%;left:42%">everything</span>
+</div>
+<div id="cursor" style="position:fixed;width:6px;height:6px;border-radius:50%;background:#e8cfa0;transform:translate(-50%,-50%);pointer-events:none;opacity:0;transition:opacity .3s"></div>
+</section>
+<style>
+#poem span{
+  position:absolute;
+  font:italic 1.15rem/1 Georgia,serif;
+  letter-spacing:.18em;
+  color:#e8cfa0;
+  opacity:0;
+  transition:opacity 1.3s ease;
+  white-space:nowrap
+}
+</style>
+<script>
+const cv=document.getElementById('c'),ctx=cv.getContext('2d');
+const spans=document.querySelectorAll('#poem span');
+const dot=document.getElementById('cursor');
+let t=0,tgt=0,flashing=false,mx=0,my=0;
+
+function resize(){cv.width=innerWidth;cv.height=innerHeight}
+
+function lerp(a,b,v){return a+(b-a)*v}
+
+function draw(){
+  const w=cv.width,h=cv.height;
+
+  // sky: near-black navy deepening to bruised pre-dawn purple at horizon
+  const bg=ctx.createLinearGradient(0,0,0,h);
+  bg.addColorStop(0,`rgb(${lerp(7,18,t)|0},${lerp(7,10,t)|0},${lerp(18,32,t)|0})`);
+  bg.addColorStop(0.6,`rgb(${lerp(10,45,t)|0},${lerp(8,20,t)|0},${lerp(28,48,t)|0})`);
+  bg.addColorStop(1,`rgb(${lerp(6,90,t)|0},${lerp(6,38,t)|0},${lerp(14,22,t)|0})`);
+  ctx.fillStyle=bg;
+  ctx.fillRect(0,0,w,h);
+
+  // horizon glow — amber sun below the edge
+  if(t>0.01){
+    const hy=h*0.74;
+    const a=Math.min(t*1.3,0.9);
+    const r=w*0.6*Math.sqrt(t);
+    const glow=ctx.createRadialGradient(w/2,hy,0,w/2,hy,r);
+    glow.addColorStop(0,`rgba(248,148,44,${a})`);
+    glow.addColorStop(0.3,`rgba(200,70,25,${a*0.55})`);
+    glow.addColorStop(0.7,`rgba(120,20,40,${a*0.2})`);
+    glow.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=glow;
+    ctx.fillRect(0,0,w,h);
+  }
+
+  // stars — deterministic positions, fade with dawn
+  const sf=Math.max(0,1-t/0.65);
+  if(sf>0.01){
+    for(let i=0;i<90;i++){
+      const sx=((Math.sin(i*127.1+3.1)*43758.5453)%1+1)%1;
+      const sy=((Math.sin(i*311.7+1.7)*43758.5453)%1+1)%1*0.68;
+      const sr=((Math.sin(i*512.3+0.9)*43758.5453)%1+1)%1*1.1+0.25;
+      const twinkle=0.4+0.6*((Math.sin(i*83.7+Date.now()*0.0008)*.5+.5));
+      ctx.beginPath();
+      ctx.arc(sx*w,sy*h,sr,0,Math.PI*2);
+      ctx.fillStyle=`rgba(255,252,240,${sf*twinkle*0.75})`;
+      ctx.fill();
+    }
+  }
+
+  // thin horizon line
+  const hl=h*0.74;
+  const la=0.12+t*0.5;
+  ctx.strokeStyle=`rgba(220,175,100,${la})`;
+  ctx.lineWidth=0.5;
+  ctx.beginPath();
+  ctx.moveTo(0,hl);
+  ctx.lineTo(w,hl);
+  ctx.stroke();
+
+  // mouse cursor as small sun
+  if(t>0.02){
+    const ca=Math.min(t*2,0.6);
+    const cr=ctx.createRadialGradient(mx,my,0,mx,my,18*t+4);
+    cr.addColorStop(0,`rgba(255,220,140,${ca})`);
+    cr.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=cr;
+    ctx.beginPath();
+    ctx.arc(mx,my,18*t+4,0,Math.PI*2);
+    ctx.fill();
+  }
+
+  // reveal poem
+  spans.forEach(s=>{
+    const thresh=parseFloat(s.dataset.t);
+    s.style.opacity=t>=thresh?Math.min((t-thresh)/0.14,1):0;
+  });
+}
+
+addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  dot.style.left=mx+'px';dot.style.top=my+'px';
+  dot.style.opacity='1';
+  if(!flashing){
+    tgt=1-(e.clientY/innerHeight);
+    tgt=Math.max(0,Math.min(1,tgt));
+  }
+});
+
+addEventListener('mouseleave',()=>{dot.style.opacity='0'});
+
+addEventListener('click',()=>{
+  if(flashing)return;
+  flashing=true;
+  // dawn breaks — then recedes
+  const flash=ctx.createRadialGradient(innerWidth/2,cv.height*0.74,0,innerWidth/2,cv.height*0.74,innerWidth*0.9);
+  flash.addColorStop(0,'rgba(255,235,185,0.92)');
+  flash.addColorStop(0.4,'rgba(240,160,60,0.5)');
+  flash.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=flash;
+  ctx.fillRect(0,0,cv.width,cv.height);
+  setTimeout(()=>{tgt=0;flashing=false},420);
+});
+
+function loop(){
+  t+=(tgt-t)*0.048;
+  draw();
+  requestAnimationFrame(loop);
+}
+
+addEventListener('resize',resize);
+resize();
+loop();
+</script>
+</body>
+</html>
