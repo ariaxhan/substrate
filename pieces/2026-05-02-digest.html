@@ -1,0 +1,41 @@
+<section data-date='2026-05-02' data-type='digest'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#08080e;cursor:crosshair}
+#f{position:absolute;inset:0}
+.n{position:absolute;transform:translate(-50%,-60%);font:10px/1 'Courier New',monospace;color:#a08cff;letter-spacing:.1em;pointer-events:none;opacity:0;transition:opacity 1s}
+.n b{display:block;text-align:center;font-size:20px;font-weight:normal;color:#6644cc;margin-bottom:3px;line-height:1}
+.n:hover{color:#d4c8ff}
+.e{position:absolute;height:1px;transform-origin:0 50%;pointer-events:none;opacity:0;transition:opacity 2s}
+#h{position:absolute;bottom:20px;left:0;right:0;text-align:center;font:10px/1 'Courier New',monospace;color:#333;letter-spacing:.2em;pointer-events:none;transition:opacity 2s}
+</style>
+<div id="f"><div id="h">click to deposit a datum</div></div>
+<script>
+const V=['observe','cluster','threshold','signal','noise','weight','classify','gradient','convergence','sparse','dense','attractor','residual','entropy','pattern','layer','latent','emerge','crystallize','cascade'];
+const F=document.getElementById('f'),H=document.getElementById('h');
+const N=[],D=170;
+function mkEdge(a,b){
+  const dx=b.x-a.x,dy=b.y-a.y,dist=Math.sqrt(dx*dx+dy*dy);
+  if(dist>D)return;
+  const e=document.createElement('div');
+  e.className='e';
+  const ang=Math.atan2(dy,dx)*180/Math.PI,str=(1-dist/D)*.55;
+  e.style.cssText=`left:${a.x}px;top:${a.y}px;width:${dist}px;transform:rotate(${ang}deg);background:linear-gradient(90deg,#6644cc00,#6644cc,#6644cc00)`;
+  F.appendChild(e);
+  requestAnimationFrame(()=>e.style.opacity=str);
+}
+F.addEventListener('click',ev=>{
+  const x=ev.clientX,y=ev.clientY;
+  const el=document.createElement('div');
+  el.className='n';
+  el.innerHTML=`<b>·</b>${V[N.length%V.length]}`;
+  el.style.left=x+'px';el.style.top=y+'px';
+  F.appendChild(el);
+  requestAnimationFrame(()=>el.style.opacity='1');
+  const nd={x,y,el};
+  N.forEach(n=>mkEdge(n,nd));
+  N.push(nd);
+  if(N.length===1)H.style.opacity='0';
+});
+</script>
+</section>
