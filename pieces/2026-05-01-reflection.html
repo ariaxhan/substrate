@@ -1,0 +1,66 @@
+<!doctype html><html><head>
+<meta charset="utf-8">
+<title>night — 2026-05-01</title>
+<style>
+*{margin:0;padding:0}
+html,body{height:100%;background:#03030b;overflow:hidden;cursor:crosshair}
+#c{position:fixed;inset:0}
+.s{position:absolute;pointer-events:none;border-radius:50%;background:#d8dcff}
+.s.dim{width:2px;height:2px;opacity:.25;animation:tw 4s infinite alternate}
+.s.dim:nth-child(3n+1){animation-duration:6s;opacity:.18}
+.s.dim:nth-child(5n+2){animation-duration:9s;width:1px;height:1px}
+@keyframes tw{to{opacity:.75}}
+.s.new{width:3px;height:3px;opacity:0;animation:bl 7s forwards}
+@keyframes bl{0%{opacity:0;transform:scale(0)}8%{opacity:1;transform:scale(2)}25%{opacity:.85;transform:scale(1)}100%{opacity:.35}}
+.w{position:absolute;color:rgba(205,212,238,0);font:italic 13px/1 Georgia,serif;letter-spacing:.1em;pointer-events:none;white-space:nowrap;transition:color 1.8s}
+.w.on{color:rgba(205,212,238,.42)}
+.w.fade{color:rgba(205,212,238,0);transition-duration:.7s}
+#rest{position:fixed;bottom:10vh;width:100%;text-align:center;color:rgba(170,178,210,0);font:11px/1 Georgia,serif;letter-spacing:.45em;transition:color 5s;pointer-events:none}
+</style>
+</head>
+<body>
+<section data-date='2026-05-01' data-type='reflection'>
+<div id="c"></div>
+<div id="rest">rest now</div>
+</section>
+<script>
+const c=document.getElementById('c'),r=document.getElementById('rest');
+
+// a fixed sky — positions chosen once, held
+const sky=[.12,.19,.34,.07,.56,.43,.77,.89,.05,.64,.39,.82,.18,.52,.71,.28,.88,.47,.02,.60,.45,.33,.91,.74,.22,.96,.63,.11,.84,.36];
+for(let i=0;i<sky.length-1;i+=2){
+  const s=document.createElement('div');
+  s.className='s dim';
+  s.style.left=sky[i]*100+'%';
+  s.style.top=sky[i+1]*100+'%';
+  c.appendChild(s);
+}
+
+// the vocabulary of a finished day
+const words=['done','held','let go','tried','breathed','wondered','enough','stayed','arrived','released','became','moved through','rested once','began'];
+let n=0,placed=0;
+
+document.addEventListener('click',e=>{
+  // a star where you touched
+  const s=document.createElement('div');
+  s.className='s new';
+  s.style.left=(e.clientX-1.5)+'px';
+  s.style.top=(e.clientY-1.5)+'px';
+  c.appendChild(s);
+
+  // a word surfaces nearby, then dissolves
+  const w=document.createElement('div');
+  w.className='w';
+  w.textContent=words[n%words.length]; n++;
+  const ox=(Math.random()-.5)*200, oy=(Math.random()-.5)*90;
+  w.style.left=Math.min(Math.max(e.clientX+ox,16),innerWidth-130)+'px';
+  w.style.top=Math.min(Math.max(e.clientY+oy,16),innerHeight-32)+'px';
+  c.appendChild(w);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>w.classList.add('on')));
+  setTimeout(()=>{ w.classList.add('fade'); setTimeout(()=>w.remove(),750); },2100);
+
+  placed++;
+  if(placed===7) r.style.color='rgba(170,178,210,.5)';
+});
+</script>
+</body></html>
