@@ -1,0 +1,82 @@
+<section data-date='2026-05-01' data-type='digest'>
+<style>
+*{margin:0;padding:0}
+body{background:#ede8df;overflow:hidden;cursor:crosshair}
+canvas{position:fixed;top:0;left:0}
+#l{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);font:11px/1 Georgia,serif;letter-spacing:3px;text-transform:uppercase;color:#7a5a2a;opacity:.5;white-space:nowrap;pointer-events:none}
+</style>
+<canvas id=c></canvas>
+<div id=l>hover to observe · click to remember</div>
+<script>
+const cv=document.getElementById('c'),x=cv.getContext('2d');
+let W,H,cols,rows,ns,t=0,mx=-999,my=-999,mem=[];
+const S=7,R=88;
+const fn=(px,py,ts)=>{
+  const a=Math.sin(px*.055+ts*.0018)*Math.cos(py*.038-ts*.0014);
+  const b=Math.sin(Math.hypot(px-W*.45,py-H*.55)*.032-ts*.001);
+  const c=Math.cos(px*.02-py*.025+ts*.0009);
+  return Math.max(0,Math.min(1,(a+b+c+1.5)/3));
+};
+
+function init(){
+  W=cv.width=innerWidth;H=cv.height=innerHeight;
+  cols=Math.ceil(W/S);rows=Math.ceil(H/S);
+  ns=Float32Array.from({length:cols*rows},()=>Math.random());
+}
+
+function draw(){
+  t++;
+  x.clearRect(0,0,W,H);
+  x.fillStyle='#ede8df';x.fillRect(0,0,W,H);
+
+  for(let r=0;r<rows;r++){
+    for(let c=0;c<cols;c++){
+      const i=r*cols+c,px=c*S+S/2,py=r*S+S/2;
+      const dh=Math.hypot(px-mx,py-my);
+
+      let memCount=0,memT=0;
+      for(const m of mem){
+        if(Math.hypot(px-m.x,py-m.y)<m.r){memCount++;memT=m.t;}
+      }
+
+      let v,alpha,rgb;
+      if(memCount>0){
+        v=fn(px,py,memT);
+        alpha=Math.min(.95,v*(.55+memCount*.22));
+        rgb='55,34,10';
+      } else if(dh<R){
+        v=fn(px,py,t);
+        const f=1-dh/R;
+        alpha=v*.82*f+.04*f;
+        rgb='68,44,14';
+      } else {
+        if(t%4===0)ns[i]=Math.random();
+        v=ns[i];
+        alpha=v*.2;
+        rgb='130,100,58';
+      }
+
+      x.fillStyle=`rgba(${rgb},${alpha})`;
+      x.beginPath();
+      x.arc(px,py,(S*.5)*(.18+v*.82)/2,0,6.28);
+      x.fill();
+    }
+  }
+
+  for(const m of mem){
+    const op=Math.max(0,.18-(t-m.t0)*.0022);
+    if(op>0){
+      x.strokeStyle=`rgba(80,50,14,${op})`;
+      x.lineWidth=.5;x.beginPath();x.arc(m.x,m.y,m.r,0,6.28);x.stroke();
+    }
+  }
+
+  requestAnimationFrame(draw);
+}
+
+addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+addEventListener('click',e=>mem.push({x:e.clientX,y:e.clientY,t,t0:t,r:R+48}));
+addEventListener('resize',init);
+init();draw();
+</script>
+</section>
