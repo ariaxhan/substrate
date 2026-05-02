@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Halfway — 2026-05-02</title>
+<style>
+*{margin:0;padding:0}html,body{width:100%;height:100%;background:#0c0b09;overflow:hidden;cursor:crosshair}canvas{display:block}
+</style>
+</head>
+<body>
+<section data-date='2026-05-02' data-type='pulse'>
+<canvas id=c></canvas>
+<script>
+const cv=document.getElementById('c'),ctx=cv.getContext('2d');
+let W,H,mx,ang=0,ta=0,flip=0,na=0,pi=0;
+const pairs=[['wake','rest'],['open','close'],['light','dark'],['rise','fall'],['before','after'],['almost','already']];
+
+function sz(){W=cv.width=innerWidth;H=cv.height=innerHeight;mx=W/2}
+sz();
+addEventListener('resize',sz);
+addEventListener('mousemove',e=>mx=e.clientX);
+addEventListener('click',()=>{flip^=1;na=1;pi=(pi+1)%pairs.length});
+
+(function draw(){
+  ctx.clearRect(0,0,W,H);
+  const cx=W/2,cy=H/2,L=Math.min(W*.4,260);
+  const dx=mx-cx,near=Math.abs(dx)<22;
+  ta=near?0:Math.max(-.48,Math.min(.48,dx/W*.85));
+  na=near?Math.min(1,na+.06):Math.max(0,na-.05);
+  ang+=(ta-ang)*.08;
+
+  const cs=Math.cos(ang),sn=Math.sin(ang);
+  const lx=cx-L*cs,ly=cy-L*sn;
+  const rx=cx+L*cs,ry=cy+L*sn;
+  const [lw,rw]=flip?[pairs[pi][1],pairs[pi][0]]:pairs[pi];
+
+  // tipping right → ang↑ → left rises (la↑), right sinks (ra↓)
+  const la=Math.max(0,Math.min(1,.5+ang*1.8));
+  const ra=Math.max(0,Math.min(1,.5-ang*1.8));
+
+  // center glow
+  const g=ctx.createRadialGradient(cx,cy,0,cx,cy,140);
+  g.addColorStop(0,'rgba(155,128,78,.06)');
+  g.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+
+  // beam
+  ctx.strokeStyle='rgba(148,126,88,.5)';
+  ctx.lineWidth=.9;
+  ctx.beginPath();ctx.moveTo(lx,ly);ctx.lineTo(rx,ry);ctx.stroke();
+
+  // pivot
+  ctx.fillStyle='rgba(165,142,98,.75)';
+  ctx.beginPath();ctx.arc(cx,cy,2.2,0,6.28);ctx.fill();
+
+  // left word — italic, brightens as it rises
+  ctx.textAlign='center';
+  ctx.font='italic 16px Georgia,serif';
+  ctx.fillStyle=`rgba(208,193,164,${la})`;
+  ctx.fillText(lw,lx,ly-30);
+
+  // right word — upright, brightens as it rises
+  ctx.font='16px Georgia,serif';
+  ctx.fillStyle=`rgba(208,193,164,${ra})`;
+  ctx.fillText(rw,rx,ry-30);
+
+  // fulcrum mark — visible only at equilibrium
+  if(na>.01){
+    ctx.font='10px monospace';
+    ctx.fillStyle=`rgba(130,110,74,${na})`;
+    ctx.fillText('—',cx,cy-15);
+  }
+
+  requestAnimationFrame(draw);
+}());
+</script>
+</section>
+</body>
+</html>
