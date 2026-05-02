@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>threshold — 2026-05-01</title>
+<style>
+*{margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;cursor:crosshair}
+#w{position:fixed;inset:0;pointer-events:none}
+</style>
+</head>
+<body>
+<section data-date="2026-05-01" data-type="morning">
+<canvas id="c" style="position:fixed;top:0;left:0"></canvas>
+<div id="w"></div>
+<script>
+const cv=document.getElementById('c'),
+  ctx=cv.getContext('2d'),
+  wd=document.getElementById('w');
+
+let W,H,mx,my,t=0,phase=0,wi=0;
+
+const vocab=['before','open','still','unwritten','first','breath','hold','yet',
+             'tender','pale','begin','possible','unnamed','turn','soft','clear'];
+
+function resize(){
+  W=cv.width=window.innerWidth;
+  H=cv.height=window.innerHeight;
+  if(mx==null){mx=W/2;my=H*0.55}
+}
+resize();
+window.addEventListener('resize',resize);
+window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+
+window.addEventListener('click',e=>{
+  const word=vocab[wi++%vocab.length];
+  const el=document.createElement('div');
+  el.textContent=word;
+  const sz=Math.round(13+Math.random()*11);
+  el.style.cssText='position:absolute;font:italic '+sz+'px Georgia,serif;'+
+    'color:rgba(235,190,110,.88);left:'+e.clientX+'px;top:'+e.clientY+'px;'+
+    'transform:translate(-50%,-50%);letter-spacing:.14em;'+
+    'transition:opacity 3s ease,top 3s ease;pointer-events:none;white-space:nowrap';
+  wd.appendChild(el);
+  setTimeout(()=>{
+    el.style.opacity='0';
+    el.style.top=(e.clientY-72)+'px';
+  },30);
+  setTimeout(()=>el.remove(),3200);
+});
+
+function lerp(a,b,n){return a+(b-a)*n}
+
+function draw(){
+  t++;
+  phase=Math.min(1,t/900);
+
+  // horizon: mouse y pulls it, constrained to middle third
+  const hY=lerp(H*0.38,H*0.68,my/H);
+
+  // sky
+  const sky=ctx.createLinearGradient(0,0,0,hY);
+  const r0=lerp(6,22,phase), g0=lerp(6,14,phase), b0=lerp(16,42,phase);
+  const r1=lerp(18,55,phase),g1=lerp(12,30,phase),b1=lerp(36,80,phase);
+  const r2=lerp(38,90,phase),g2=lerp(22,48,phase),b2=lerp(55,70,phase);
+  sky.addColorStop(0,`rgb(${r0|0},${g0|0},${b0|0})`);
+  sky.addColorStop(0.7,`rgb(${r1|0},${g1|0},${b1|0})`);
+  sky.addColorStop(1,`rgb(${r2|0},${g2|0},${b2|0})`);
+  ctx.fillStyle=sky;
+  ctx.fillRect(0,0,W,hY);
+
+  // horizon glow ellipse
+  const gx=W*0.5,gy=hY;
+  const glow=ctx.createRadialGradient(gx,gy,0,gx,gy,W*0.5);
+  const ga=0.03+phase*0.18;
+  glow.addColorStop(0,`rgba(${(195+phase*55)|0},${(130+phase*50)|0},${(55+phase*15)|0},${ga})`);
+  glow.addColorStop(0.5,`rgba(${(150+phase*40)|0},${(90+phase*30)|0},${(40+phase*10)|0},${ga*0.4})`);
+  glow.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=glow;
+  ctx.fillRect(0,0,W,hY);
+
+  // earth
+  const earth=ctx.createLinearGradient(0,hY,0,H);
+  earth.addColorStop(0,`rgb(${(10+phase*8)|0},${(6+phase*5)|0},${(4+phase*3)|0})`);
+  earth.addColorStop(1,'rgb(2,2,4)');
+  ctx.fillStyle=earth;
+  ctx.fillRect(0,hY,W,H-hY);
+
+  // horizon line — the threshold itself
+  const la=0.18+phase*0.52;
+  const lr=(215+phase*35)|0, lg=(158+phase*28)|0, lb=(72+phase*18)|0;
+  ctx.strokeStyle=`rgba(${lr},${lg},${lb},${la})`;
+  ctx.lineWidth=1;
+  ctx.beginPath();
+  ctx.moveTo(0,hY);
+  ctx.lineTo(W,hY);
+  ctx.stroke();
+
+  // hint text — fades after first 200 frames
+  if(t<200){
+    const ha=Math.max(0,1-(t-100)/100)*0.22;
+    ctx.fillStyle=`rgba(210,180,120,${ha})`;
+    ctx.font='10px monospace';
+    ctx.textAlign='center';
+    ctx.letterSpacing='0.3em';
+    ctx.fillText('move to hold the light — click to name it',W/2,H-28);
+  }
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</section>
+</body>
+</html>

@@ -1,0 +1,62 @@
+<section data-date='2026-05-01' data-type='pulse'>
+<style>
+body{margin:0;overflow:hidden;background:#0b0b14;cursor:crosshair}
+#w{position:fixed;inset:0}
+#bef,#aft{position:absolute;top:50%;font:italic clamp(18px,2.8vw,40px) Georgia,serif;letter-spacing:.05em;will-change:transform,opacity}
+#bef{left:12%;color:rgba(148,175,235,.88)}
+#aft{right:12%;color:rgba(235,178,108,.88);text-align:right}
+#mid{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font:11px/1 'Courier New',monospace;letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,0);transition:color .9s ease;pointer-events:none}
+#mid.vis{color:rgba(255,255,255,.6)}
+#beam{position:absolute;top:50%;left:50%;width:76%;height:1px;background:rgba(255,255,255,.4);transform:translate(-50%,0);transform-origin:center;will-change:transform}
+#dot{position:absolute;top:50%;left:50%;width:6px;height:6px;background:#fff;border-radius:50%;transform:translate(-50%,-50%);transition:box-shadow .3s,width .3s,height .3s,margin .3s}
+</style>
+<div id="w">
+  <div id="beam"></div>
+  <div id="dot"></div>
+  <div id="bef">morning</div>
+  <div id="aft">night</div>
+  <div id="mid">noon</div>
+</div>
+<script>
+const bef=document.getElementById('bef'),
+aft=document.getElementById('aft'),
+mid=document.getElementById('mid'),
+beam=document.getElementById('beam'),
+dot=document.getElementById('dot');
+let mx=.5,tilt=0,t0=0,locked=false;
+
+function frame(t){
+if(!t0)t0=t;
+const drift=Math.sin((t-t0)*.00028)*.022;
+const target=locked?0:(mx-.5)*.30+drift;
+tilt+=(target-tilt)*.052;
+
+beam.style.transform=`translate(-50%,0) rotate(${tilt}rad)`;
+
+const arm=innerWidth*.38,
+dL=Math.tan(tilt)*arm,
+dR=-Math.tan(tilt)*arm;
+
+bef.style.transform=`translate(0,calc(-50% + ${dL}px))`;
+aft.style.transform=`translate(0,calc(-50% + ${dR}px))`;
+
+// Words brighten on their heavy (descending) side
+bef.style.opacity=Math.min(.92,.4+Math.max(0,dL)*.0038);
+aft.style.opacity=Math.min(.92,.4+Math.max(0,dR)*.0038);
+
+// Pivot blooms at equilibrium; noon reveals
+const eq=Math.max(0,1-Math.abs(tilt)*7);
+const sz=4+eq*5;
+dot.style.width=dot.style.height=sz+'px';
+dot.style.margin=`-${sz/2}px 0 0 -${sz/2}px`;
+dot.style.boxShadow=`0 0 ${5+eq*22}px rgba(255,255,255,${.28+eq*.62})`;
+mid.classList.toggle('vis',Math.abs(tilt)<.028);
+
+requestAnimationFrame(frame);
+}
+
+document.addEventListener('mousemove',e=>{mx=e.clientX/innerWidth;locked=false});
+document.addEventListener('click',()=>{mx=.5;locked=true;setTimeout(()=>locked=false,3200)});
+requestAnimationFrame(frame);
+</script>
+</section>
