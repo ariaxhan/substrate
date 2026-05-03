@@ -1,0 +1,70 @@
+<section data-date='2026-05-03' data-type='spark'>
+<style>
+#v{position:fixed;top:0;left:0;width:100vw;height:100vh;background:#060609;overflow:hidden;cursor:crosshair}
+#h{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);color:#1e1e28;font:10px/1 'Courier New',monospace;letter-spacing:4px;user-select:none;transition:color 1s}
+#v:hover #h{color:#333344}
+</style>
+<div id='v'><canvas id='c'></canvas><div id='h'>approach · click</div></div>
+<script>
+const v=document.getElementById('v'),can=document.getElementById('c'),ctx=can.getContext('2d');
+const P=[['before','after','now'],['i','you','us'],['silence','voice','echo'],['touch','gone','trace'],['want','wait','ache'],['fire','water','steam'],['name','face','memory'],['reach','fall','longing'],['break','hold','scar'],['open','closed','door']];
+let W,H,mx=0,my=0,pi=0,tk=0,ph='d',tr=0;
+let A={x:0,y:0,vx:0,vy:0,w:'',a:1},B={x:0,y:0,vx:0,vy:0,w:'',a:1},S={x:0,y:0,a:0,w:'',s:0};
+let sp=[];
+function rsz(){W=can.width=v.clientWidth;H=can.height=v.clientHeight;mx=W/2;my=H/2;ini();}
+function ini(){
+  const[a,b,s]=P[pi%P.length],ang=Math.random()*Math.PI*2,r=Math.min(W,H)*.28;
+  A={x:W/2+Math.cos(ang)*r,y:H/2+Math.sin(ang)*r,vx:-.5+Math.random()*.3,vy:-.4+Math.random()*.3,w:a,a:1};
+  B={x:W/2-Math.cos(ang)*r,y:H/2-Math.sin(ang)*r,vx:.5-Math.random()*.3,vy:.4-Math.random()*.3,w:b,a:1};
+  S={x:W/2,y:H/2,a:0,w:s,s:0};ph='d';tr=0;sp=[];
+}
+function lp(){
+  tk++;ctx.clearRect(0,0,W,H);
+  const d=Math.hypot(A.x-B.x,A.y-B.y);
+  if(ph==='d'){
+    [A,B].forEach((w,i)=>{
+      w.vx+=(mx-w.x)*(i?.005:.008)*.08;w.vy+=(my-w.y)*(i?.005:.008)*.08;
+      w.vx*=.97;w.vy*=.97;
+      w.x+=w.vx+Math.sin(tk*.014+i*2)*.9;w.y+=w.vy+Math.cos(tk*.011+i*3)*.7;
+      if(w.x<55||w.x>W-55)w.vx*=-1;if(w.y<40||w.y>H-40)w.vy*=-1;
+    });
+    if(d<200){
+      ctx.save();ctx.strokeStyle=`rgba(180,155,230,${(1-d/200)*.22})`;
+      ctx.lineWidth=1;ctx.setLineDash([2,9]);
+      ctx.beginPath();ctx.moveTo(A.x,A.y);ctx.lineTo(B.x,B.y);ctx.stroke();ctx.restore();
+    }
+    if(d<65){
+      ph='c';S.x=(A.x+B.x)/2;S.y=(A.y+B.y)/2;
+      for(let i=0;i<18;i++){const a=Math.random()*Math.PI*2,r=1+Math.random()*3.5;sp.push({x:S.x,y:S.y,vx:Math.cos(a)*r,vy:Math.sin(a)*r,l:1});}
+    }
+  }
+  if(ph==='c'){
+    tr++;const t=tr/35;
+    A.x+=(S.x-A.x)*.18;A.y+=(S.y-A.y)*.18;B.x+=(S.x-B.x)*.18;B.y+=(S.y-B.y)*.18;
+    A.a=Math.max(0,1-t*2);B.a=Math.max(0,1-t*2);
+    if(tr>16)S.a=Math.min(1,(tr-16)/14),S.s=.3+S.a*.7;
+    if(tr>80)S.a=Math.max(0,1-(tr-80)/28);
+    if(tr>115){ph='x';pi++;setTimeout(ini,500);}
+  }
+  sp=sp.filter(s=>{
+    s.x+=s.vx;s.y+=s.vy;s.vx*=.88;s.vy*=.88;s.l-=.038;
+    if(s.l<=0)return false;
+    ctx.save();ctx.globalAlpha=s.l*.75;ctx.fillStyle='#b8a8f0';
+    ctx.beginPath();ctx.arc(s.x,s.y,1.4,0,Math.PI*2);ctx.fill();ctx.restore();return true;
+  });
+  const pu=.55+.45*Math.abs(Math.sin(tk*.032)),nr=d<200;
+  if(A.a>0){ctx.save();ctx.globalAlpha=A.a;ctx.font='bold 27px Courier New,monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='#c87a5a';ctx.shadowBlur=nr?12+pu*10:5;ctx.fillStyle='#d4855f';ctx.fillText(A.w,A.x,A.y);ctx.restore();}
+  if(B.a>0){ctx.save();ctx.globalAlpha=B.a;ctx.font='bold 27px Courier New,monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='#5a7acc';ctx.shadowBlur=nr?12+pu*10:5;ctx.fillStyle='#6080cc';ctx.fillText(B.w,B.x,B.y);ctx.restore();}
+  if(S.a>0){ctx.save();ctx.globalAlpha=S.a;ctx.translate(S.x,S.y);ctx.scale(S.s,S.s);ctx.font='bold 33px Courier New,monospace';ctx.textAlign='center';ctx.textBaseline='middle';ctx.shadowColor='rgba(220,210,255,.95)';ctx.shadowBlur=45;ctx.fillStyle='#ece6ff';ctx.fillText(S.w,0,0);ctx.restore();}
+  requestAnimationFrame(lp);
+}
+v.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+v.addEventListener('click',()=>{
+  if(ph!=='d')return;
+  const cx=(A.x+B.x)/2,cy=(A.y+B.y)/2;
+  A.vx=(cx-A.x)*.13;A.vy=(cy-A.y)*.13;B.vx=(cx-B.x)*.13;B.vy=(cy-B.y)*.13;
+});
+window.addEventListener('resize',rsz);
+rsz();lp();
+</script>
+</section>
