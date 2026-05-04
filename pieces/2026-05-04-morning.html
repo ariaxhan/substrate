@@ -1,0 +1,142 @@
+<section data-date='2026-05-04' data-type='morning'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#03050a}
+body{cursor:none}
+section[data-date='2026-05-04']{
+  position:absolute;inset:0;overflow:hidden
+}
+section[data-date='2026-05-04'] canvas{
+  position:absolute;inset:0;width:100%;height:100%
+}
+section[data-date='2026-05-04'] #f{
+  position:absolute;inset:0;pointer-events:none
+}
+section[data-date='2026-05-04'] .w{
+  position:absolute;
+  font:italic clamp(11px,1.5vw,17px)/1 Georgia,serif;
+  letter-spacing:.15em;
+  color:rgba(245,232,208,0);
+  transform:translate(-50%,-50%);
+  white-space:nowrap;pointer-events:none;user-select:none
+}
+section[data-date='2026-05-04'] #hl{
+  position:absolute;left:0;right:0;height:1px;pointer-events:none;
+  background:linear-gradient(90deg,
+    transparent 3%,
+    rgba(255,155,45,.12) 20%,
+    rgba(255,185,60,.32) 50%,
+    rgba(255,155,45,.12) 80%,
+    transparent 97%
+  );
+  filter:blur(.4px)
+}
+section[data-date='2026-05-04'] #hint{
+  position:absolute;bottom:28px;left:50%;transform:translateX(-50%);
+  font:italic 11px/1 Georgia,serif;letter-spacing:.18em;
+  color:rgba(245,232,208,.22);pointer-events:none;
+  transition:opacity 1.5s
+}
+</style>
+<canvas id="cv"></canvas>
+<div id="f"></div>
+<div id="hl"></div>
+<div id="hint">move to lift the dark</div>
+<script>
+(function(){
+var cv=document.getElementById('cv'),
+    ctx=cv.getContext('2d'),
+    f=document.getElementById('f'),
+    hl=document.getElementById('hl'),
+    hint=document.getElementById('hint');
+
+var vocab=['begin','speak','return','reach','open','rest','ask','stay','make','try','find','know','receive','listen','breathe','allow','wake','hold','release','see'];
+var pos=[[15,18],[72,12],[42,22],[88,30],[28,38],[60,45],[12,52],[78,55],[35,62],[54,70],[20,75],[65,78],[45,85],[82,20],[8,65]];
+
+var W=innerWidth,H=innerHeight,my=H*1.5,done=false,ws=[];
+
+function resize(){cv.width=W=innerWidth;cv.height=H=innerHeight;paint();}
+
+function plant(){
+  ws=pos.map(function(p,i){
+    var el=document.createElement('span');
+    el.className='w';el.textContent=vocab[i];
+    el.style.left=p[0]+'%';el.style.top=p[1]+'%';
+    f.appendChild(el);return{el:el,py:p[1]};
+  });
+}
+
+function paint(){
+  ctx.clearRect(0,0,W,H);
+  if(done){
+    var g=ctx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,'#03050a');
+    g.addColorStop(.32,'#0d0820');
+    g.addColorStop(.60,'#441535');
+    g.addColorStop(.80,'#a83520');
+    g.addColorStop(1,'#dc8828');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+    return;
+  }
+  ctx.fillStyle='#03050a';ctx.fillRect(0,0,W,H);
+  if(my<H){
+    var g2=ctx.createLinearGradient(0,my-60,0,my+40);
+    g2.addColorStop(0,'rgba(255,145,35,0)');
+    g2.addColorStop(.45,'rgba(255,145,35,.04)');
+    g2.addColorStop(.75,'rgba(180,60,30,.05)');
+    g2.addColorStop(1,'rgba(60,10,40,.02)');
+    ctx.fillStyle=g2;ctx.fillRect(0,my-60,W,100);
+  }
+}
+
+function refresh(){
+  ws.forEach(function(w){
+    if(done){w.el.style.color='rgba(245,232,208,1)';return;}
+    var ey=w.py/100*H;
+    var a=Math.max(0,Math.min(1,(ey-my)/90));
+    w.el.style.color='rgba(245,232,208,'+a+')';
+  });
+}
+
+addEventListener('mousemove',function(e){
+  if(done)return;
+  my=e.clientY;
+  hl.style.top=my+'px';
+  hint.style.opacity='0';
+  paint();refresh();
+});
+
+addEventListener('click',function(){
+  if(done)return;
+  done=true;
+  hl.style.display='none';
+  hint.style.display='none';
+  paint();
+  ws.forEach(function(w){
+    w.el.style.transition='color 1.1s ease';
+    w.el.style.color='rgba(245,232,208,1)';
+  });
+  setTimeout(function(){
+    ws.forEach(function(w){
+      if(w.el.textContent!=='begin'){
+        w.el.style.transition='color 2.8s ease';
+        w.el.style.color='rgba(245,232,208,0)';
+      }
+    });
+    var b=ws.find(function(w){return w.el.textContent==='begin';});
+    if(b){
+      var el=b.el;
+      el.style.transition='all 2.2s ease';
+      el.style.color='rgba(245,232,208,1)';
+      el.style.left='50%';el.style.top='50%';
+      el.style.fontSize='clamp(44px,9vw,96px)';
+      el.style.letterSpacing='.55em';
+    }
+  },2100);
+});
+
+addEventListener('resize',function(){resize();refresh();});
+plant();resize();refresh();
+})();
+</script>
+</section>
