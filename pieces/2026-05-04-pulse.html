@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Fulcrum — 2026-05-04</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;cursor:crosshair}
+#s{width:100%;height:100%;position:relative}
+#am{position:absolute;inset:0;background:#ede6d5}
+#pm{position:absolute;left:0;right:0;bottom:0;background:#0f1520}
+#ln{position:absolute;left:0;right:0;z-index:4}
+#ln::before{content:'';display:block;height:1px;background:linear-gradient(90deg,transparent,rgba(100,78,55,.65) 12%,rgba(100,78,55,.65) 88%,transparent)}
+#pv{position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:8px;height:8px;background:#9a7a55;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%)}
+#pv::after{content:'now';position:absolute;top:-18px;left:50%;transform:translateX(-50%);font:9px/1 Georgia,serif;letter-spacing:.2em;color:rgba(120,95,60,.45);white-space:nowrap}
+.w{position:absolute;font:italic 13px/1 Georgia,serif;letter-spacing:.14em;text-transform:lowercase;transform:translate(-50%,-50%);pointer-events:none;transition:color .55s,opacity .55s}
+</style>
+</head>
+<body>
+<section data-date='2026-05-04' data-type='pulse'>
+<div id="s">
+  <div id="am"></div>
+  <div id="pm"></div>
+  <div id="ln"><div id="pv"></div></div>
+</div>
+</section>
+<script>
+// [text, x%, y%, morning=1|evening=0]
+const D=[
+  ['first light',16,13,1],
+  ['not yet',46,21,1],
+  ['becoming',74,15,1],
+  ['before',29,35,1],
+  ['open',63,28,1],
+  ['recall',19,64,0],
+  ['the last',50,73,0],
+  ['worn',77,65,0],
+  ['nearly',36,82,0],
+  ['done',67,86,0]
+];
+
+const s=document.getElementById('s'),
+  am=document.getElementById('am'),
+  pm=document.getElementById('pm'),
+  ln=document.getElementById('ln');
+
+const ws=D.map(([t,x,y,m])=>{
+  const d=document.createElement('div');
+  d.className='w';
+  d.textContent=t;
+  d.style.left=x+'%';
+  d.style.top=y+'%';
+  s.appendChild(d);
+  return{d,y,m};
+});
+
+// line starts at time-correct position: midnight=0%, noon=50%, midnight=100%
+const h=new Date().getHours()+new Date().getMinutes()/60;
+let ty=h/24*100, tgt=ty, cur=ty, idle;
+
+addEventListener('mousemove',e=>{
+  tgt=e.clientY/innerHeight*100;
+  clearTimeout(idle);
+  // after stillness, drift back to the actual time
+  idle=setTimeout(()=>tgt=ty, 1800);
+});
+
+// click: flip to mirror position across center
+addEventListener('click',()=>{ tgt=100-cur; });
+
+(function loop(){
+  cur+=(tgt-cur)*.09;
+  am.style.height=cur+'%';
+  pm.style.top=cur+'%';
+  ln.style.top=cur+'%';
+  ws.forEach(({d,y,m})=>{
+    const above=y<cur; // word sits above the threshold line
+    d.style.color=above?'#6b4e32':'#5080a0';
+    // high opacity when word is in its native half; dim when displaced
+    d.style.opacity=(m&&above)||(!m&&!above)?'0.82':'0.2';
+  });
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
