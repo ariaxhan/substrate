@@ -1,0 +1,94 @@
+<section data-date='2026-05-04' data-type='digest'>
+<style>
+*{margin:0;padding:0}
+body{background:#f5f0e8;overflow:hidden;cursor:crosshair}
+canvas{position:fixed;top:0;left:0}
+#hint{position:fixed;bottom:18px;right:22px;font:10px/2 Georgia,serif;color:rgba(90,65,40,.22);text-align:right;letter-spacing:.1em;pointer-events:none;transition:opacity 2s}
+</style>
+<canvas id=cv></canvas>
+<div id=hint>move to warm<br>click to fix</div>
+<script>
+const cv=document.getElementById('cv'),cx=cv.getContext('2d');
+const W=cv.width=innerWidth,H=cv.height=innerHeight;
+const CW=21,CH=27;
+const COLS=Math.ceil(W/CW)+1,ROWS=Math.ceil(H/CH)+1,N=COLS*ROWS;
+const cr=new Float32Array(N),lk=new Uint8Array(N),ch=new Array(N),isNoise=new Uint8Array(N);
+const NS='·∙˙‧⁖∴·∙˙‧⋯˙',NL=NS.length;
+const WS=['noise','datum','signal','pattern','cluster','weight','meaning','intent','learn','know'];
+
+WS.forEach((w,ri)=>{
+  const row=Math.round(1.5+ri*(ROWS-3)/WS.length);
+  const col=Math.round((COLS-w.length)/2);
+  for(let i=0;i<w.length;i++){
+    const idx=row*COLS+col+i;
+    if(idx>=0&&idx<N)ch[idx]=w[i];
+  }
+});
+for(let i=0;i<N;i++){
+  if(!ch[i]){ch[i]=NS[Math.floor(Math.random()*NL)];isNoise[i]=1;cr[i]=.025;}
+  else cr[i]=.02;
+}
+
+let mx=W/2,my=H/2,moved=false;
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  if(!moved){moved=true;document.getElementById('hint').style.opacity='0';}
+});
+document.addEventListener('click',e=>{
+  const gc=Math.floor(e.clientX/CW),gr=Math.floor(e.clientY/CH);
+  for(let dr=-2;dr<=2;dr++)for(let dc=-2;dc<=2;dc++){
+    const i=(gr+dr)*COLS+(gc+dc);
+    if(i>=0&&i<N&&Math.hypot(dr,dc)<2.9){cr[i]=1;lk[i]=1;}
+  }
+});
+
+const tmp=new Float32Array(N);
+let tick=0;
+function frame(){
+  requestAnimationFrame(frame);
+  tick++;
+  const mc=mx/CW,mr=my/CH;
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      const i=r*COLS+c;
+      if(lk[i]){tmp[i]=1;continue;}
+      let v=cr[i];
+      const d=Math.hypot(c-mc,r-mr);
+      if(d<5.5)v=Math.min(1,v+(5.5-d)/5.5*.055);
+      v=Math.max(isNoise[i]?.025:.02,v*.993);
+      if(r>0)v=Math.max(v,cr[i-COLS]*.92);
+      if(r<ROWS-1)v=Math.max(v,cr[i+COLS]*.92);
+      if(c>0)v=Math.max(v,cr[i-1]*.92);
+      if(c<COLS-1)v=Math.max(v,cr[i+1]*.92);
+      tmp[i]=v;
+    }
+  }
+  cr.set(tmp);
+  // slowly cycle noise chars for texture
+  if(tick%7===0){
+    const ri=Math.floor(Math.random()*N);
+    if(isNoise[ri]&&!lk[ri])ch[ri]=NS[Math.floor(Math.random()*NL)];
+  }
+  cx.fillStyle='#f5f0e8';cx.fillRect(0,0,W,H);
+  cx.textBaseline='middle';
+  for(let r=0;r<ROWS;r++){
+    for(let c=0;c<COLS;c++){
+      const i=r*COLS+c,v=cr[i];
+      if(v<.016)continue;
+      if(lk[i]){
+        cx.font=`bold ${CW}px Georgia,serif`;
+        cx.fillStyle=`rgba(145,75,12,${Math.min(1,v)})`;
+      }else if(!isNoise[i]){
+        cx.font=`${CW}px Georgia,serif`;
+        cx.fillStyle=`rgba(28,18,10,${v*.96})`;
+      }else{
+        cx.font=`${CW-5}px Georgia,serif`;
+        cx.fillStyle=`rgba(120,100,78,${v*.55})`;
+      }
+      cx.fillText(ch[i],c*CW,r*CH+CH*.5);
+    }
+  }
+}
+frame();
+</script>
+</section>
