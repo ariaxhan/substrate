@@ -1,0 +1,68 @@
+<section data-date='2026-05-04' data-type='spark'>
+<style>
+*{margin:0;padding:0}
+#g{width:100%;height:100vh;background:#080808;overflow:hidden;cursor:crosshair;position:relative;font-family:Georgia,serif}
+.w{position:absolute;pointer-events:none;user-select:none;white-space:nowrap;letter-spacing:.2em;transition:opacity .5s}
+#z{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);opacity:0;pointer-events:none;letter-spacing:.35em;color:#f0ece4;font-family:Georgia,serif;font-size:clamp(2rem,6vw,3.8rem);transition:opacity 1.2s}
+</style>
+<div id="g">
+  <div class="w" id="a" style="color:#7aaece;font-size:clamp(1.1rem,2.5vw,2.1rem)"></div>
+  <div class="w" id="b" style="color:#ceaa44;font-size:clamp(1.1rem,2.5vw,2.1rem)"></div>
+  <div id="z"></div>
+</div>
+<script>
+const G=document.getElementById('g'),
+  A=document.getElementById('a'),
+  B=document.getElementById('b'),
+  Z=document.getElementById('z'),
+  PP=[['reach','receive','touch'],['before','after','now'],['I','you','we'],['signal','noise','music'],['word','silence','breath']];
+let n=0,t=0,mx=.5,my=.5,hot=0;
+let dax=0,day=0,dbx=0,dby=0;
+let vdax=0,vday=0,vdbx=0,vdby=0;
+
+function reset(){
+  A.textContent=PP[n][0];A.style.opacity=1;
+  B.textContent=PP[n][1];B.style.opacity=1;
+  dax=0;day=0;dbx=0;dby=0;
+  vdax=0;vday=0;vdbx=0;vdby=0;
+}
+reset();
+
+G.addEventListener('mousemove',e=>{
+  const r=G.getBoundingClientRect();
+  mx=(e.clientX-r.left)/r.width;
+  my=(e.clientY-r.top)/r.height;
+});
+
+G.addEventListener('click',()=>{
+  if(hot)return;
+  vdax+=(mx-.22)*.09;vday+=(my-.5)*.09;
+  vdbx+=(mx-.78)*.09;vdby+=(my-.5)*.09;
+});
+
+function collide(){
+  hot=1;A.style.opacity=0;B.style.opacity=0;
+  Z.textContent=PP[n][2];Z.style.opacity=1;
+  setTimeout(()=>Z.style.opacity=0,1400);
+  setTimeout(()=>{n=(n+1)%PP.length;reset();hot=0},2800);
+}
+
+(function frame(){
+  t+=.007;
+  if(!hot){
+    const oax=.22+.12*Math.cos(t),oay=.5+.18*Math.sin(t*1.3);
+    const obx=.78+.12*Math.cos(t*1.1+1),oby=.5+.18*Math.sin(t*.9+2);
+    vdax+=(mx-oax-dax)*.003;vday+=(my-oay-day)*.003;
+    vdbx+=(mx-obx-dbx)*.003;vdby+=(my-oby-dby)*.003;
+    vdax*=.88;vday*=.88;vdbx*=.88;vdby*=.88;
+    dax+=vdax;day+=vday;dbx+=vdbx;dby+=vdby;
+    const ax=oax+dax,ay=oay+day,bx=obx+dbx,by=oby+dby;
+    const W=G.offsetWidth,H=G.offsetHeight;
+    A.style.left=ax*W+'px';A.style.top=ay*H+'px';A.style.transform='translate(-50%,-50%)';
+    B.style.left=bx*W+'px';B.style.top=by*H+'px';B.style.transform='translate(-50%,-50%)';
+    if(Math.hypot((bx-ax)*W,(by-ay)*H)<68)collide();
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</section>
