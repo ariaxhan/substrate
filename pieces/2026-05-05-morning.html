@@ -1,0 +1,56 @@
+<section data-date='2026-05-05' data-type='morning'>
+<style>
+*{margin:0;padding:0}
+#c{width:100%;height:100vh;background:#05030e;overflow:hidden;cursor:crosshair;position:relative}
+#hl{position:absolute;left:0;right:0;height:1px;top:68%;background:linear-gradient(90deg,transparent 3%,#d96e32 35%,#f0b84a 50%,#d96e32 65%,transparent 97%);opacity:.06;filter:blur(1px)}
+#gl{position:absolute;left:0;right:0;height:200px;top:calc(68% - 195px);background:linear-gradient(to top,rgba(185,75,35,.18) 0%,transparent 100%);opacity:.15}
+.w{position:absolute;pointer-events:none;font:italic 1.3rem/1 Georgia,serif;color:rgba(245,215,165,.88);transform:translateX(-50%);animation:up 4s ease-out forwards;white-space:nowrap}
+@keyframes up{0%{opacity:0;transform:translateX(-50%) translateY(0)}10%{opacity:.88}72%{opacity:.5}100%{opacity:0;transform:translateX(-50%) translateY(-120px)}}
+#h{position:absolute;bottom:1.6rem;left:50%;transform:translateX(-50%);font:.58rem/1.5 'Courier New',mono;color:rgba(255,255,255,.1);letter-spacing:.14em;pointer-events:none;transition:opacity 2s;text-align:center;white-space:nowrap}
+</style>
+<div id="c">
+  <div id="gl"></div>
+  <div id="hl"></div>
+  <div id="h">move to raise the light &nbsp;·&nbsp; click to name it</div>
+</div>
+<script>
+const C=document.getElementById('c'),
+  HL=document.getElementById('hl'),
+  GL=document.getElementById('gl'),
+  HT=document.getElementById('h');
+const W=['tender','open','unwritten','still','possible','first','quiet','becoming','begin','new','waiting','nascent','unnamed','before'];
+let n=0;
+
+function lit(b){
+  HL.style.opacity=.04+b*.78;
+  HL.style.filter=`blur(${.6+b*3.5}px)`;
+  GL.style.opacity=.08+b*.65;
+}
+
+C.addEventListener('mousemove',e=>{
+  lit(1-(e.clientY/C.offsetHeight));
+});
+
+C.addEventListener('click',e=>{
+  n++;
+  if(n===1)HT.style.opacity='0';
+  const el=document.createElement('div');
+  el.className='w';
+  el.textContent=W[Math.floor(Math.random()*W.length)];
+  el.style.left=e.clientX+'px';
+  el.style.top=(e.clientY-6)+'px';
+  C.appendChild(el);
+  el.addEventListener('animationend',()=>el.remove());
+  if(n%8===0){
+    setTimeout(()=>{
+      const f=document.createElement('div');
+      f.className='w';
+      f.style.cssText='left:50%;top:65%;font-size:.95rem;letter-spacing:.2em;color:rgba(250,232,195,.5)';
+      f.textContent='all of it, yours';
+      C.appendChild(f);
+      f.addEventListener('animationend',()=>f.remove());
+    },300);
+  }
+});
+</script>
+</section>
