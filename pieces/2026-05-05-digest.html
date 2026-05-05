@@ -1,0 +1,101 @@
+<section data-date='2026-05-05' data-type='digest'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#050810;overflow:hidden;height:100vh;cursor:crosshair}
+canvas{position:fixed;inset:0}
+#h{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+font:10px/1 'Courier New',monospace;color:#1a3060;letter-spacing:.22em;
+text-transform:uppercase;pointer-events:none;transition:opacity 2s}
+</style>
+<canvas id=c></canvas>
+<div id=h>move to scatter · click to crystallize</div>
+<script>
+const cv=document.getElementById('c'),
+      g=cv.getContext('2d'),
+      hi=document.getElementById('h');
+let W,H,pts=[],crs=[],mx=0;
+const WD=['trace','signal','node','lattice','pattern','cluster',
+'fold','bind','weight','index','memory','vector','path','root',
+'layer','seed','drift','flux','chain','edge','form','field','emerge','phase'];
+const GL='·×+∘◦▸01▹';
+
+function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+resize();addEventListener('resize',resize);
+
+function scatter(px,py){
+  if(pts.length>700)pts.splice(0,50);
+  pts.push({
+    x:px+(Math.random()-.5)*52,
+    y:py+(Math.random()-.5)*52,
+    ch:GL[Math.floor(Math.random()*GL.length)],
+    l:1,cr:null
+  });
+}
+
+addEventListener('mousemove',e=>{
+  if(!mx++)hi.style.opacity=0;
+  if(Math.random()<.38)scatter(e.clientX,e.clientY);
+});
+
+addEventListener('click',e=>{
+  const near=pts.filter(p=>!p.cr&&
+    Math.hypot(p.x-e.clientX,p.y-e.clientY)<100);
+  if(near.length<3)return;
+  const cx=near.reduce((s,p)=>s+p.x,0)/near.length;
+  const cy=near.reduce((s,p)=>s+p.y,0)/near.length;
+  const cr={
+    w:WD[Math.floor(Math.random()*WD.length)],
+    cx,cy,
+    sz:Math.min(34,9+near.length*2),
+    born:Date.now(),
+    pts:near
+  };
+  near.forEach(p=>p.cr=cr);
+  crs.push(cr);
+});
+
+function frame(){
+  requestAnimationFrame(frame);
+
+  // slow fade — sediment accumulates in the dark
+  g.fillStyle='rgba(5,8,16,.13)';
+  g.fillRect(0,0,W,H);
+
+  // crystals: lines + word
+  crs=crs.filter(cr=>{
+    const age=(Date.now()-cr.born)/1000;
+    const a=Math.min(1,age*5)*Math.max(0,1-age*.11);
+    if(a<.01)return false;
+    g.strokeStyle=`rgba(200,165,60,${a*.38})`;
+    g.lineWidth=.5;
+    cr.pts.forEach(p=>{
+      g.beginPath();g.moveTo(p.x,p.y);g.lineTo(cr.cx,cr.cy);g.stroke();
+    });
+    g.font=`${cr.sz|0}px Georgia,serif`;
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillStyle=`rgba(238,202,82,${a})`;
+    g.fillText(cr.w,cr.cx,cr.cy);
+    return true;
+  });
+
+  // particles
+  g.font='9px Courier New,monospace';
+  g.textAlign='left';g.textBaseline='alphabetic';
+  pts=pts.filter(p=>{
+    let a;
+    if(p.cr){
+      const age=(Date.now()-p.cr.born)/1000;
+      a=Math.max(0,.48-age*.14);
+    } else {
+      p.l-=.0022;
+      a=p.l*.62;
+    }
+    if(a<.01)return false;
+    g.fillStyle=`rgba(58,148,218,${a})`;
+    g.fillText(p.ch,p.x,p.y);
+    return true;
+  });
+}
+frame();
+</script>
+</section>
