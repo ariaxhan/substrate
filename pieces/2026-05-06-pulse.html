@@ -1,0 +1,53 @@
+<section data-date='2026-05-06' data-type='pulse'>
+<style>
+#h{position:fixed;inset:0;background:#f7f2e8;display:flex;align-items:center;justify-content:center;cursor:crosshair;overflow:hidden;user-select:none}
+#g{position:relative;width:76vw;height:0}
+#ln{position:absolute;left:0;right:0;top:0;height:1px;background:#2b2419;opacity:.22;transform-origin:center center}
+#pv{position:absolute;left:50%;top:0;width:5px;height:5px;border-radius:50%;background:#2b2419;opacity:.45;transform:translate(-50%,-50%)}
+.w{position:absolute;top:0;font:italic max(1.5rem,5vw)/1 Palatino,'Book Antiqua',Georgia,serif;white-space:nowrap;letter-spacing:.01em}
+#wl{left:0;color:#8da8bc;transform:translateY(-50%)}
+#wr{right:0;color:#c07840;text-align:right;transform:translateY(-50%)}
+#wn{left:50%;transform:translate(-50%,-50%);color:#8a8075;font-size:max(.9rem,2.6vw);opacity:0;transition:opacity .5s;font-style:normal;letter-spacing:.12em;text-transform:lowercase}
+</style>
+<div id='h'>
+<div id='g'>
+<div id='ln'></div>
+<div id='pv'></div>
+<div class='w' id='wl'>before</div>
+<div class='w' id='wn'>now</div>
+<div class='w' id='wr'>after</div>
+</div>
+</div>
+<script>
+(function(){
+var ln=document.getElementById('ln'),
+    wl=document.getElementById('wl'),
+    wr=document.getElementById('wr'),
+    wn=document.getElementById('wn'),
+    g=document.getElementById('g'),
+    ang=0,tgt=0,lk=0;
+function upd(){
+  ang+=(tgt-ang)*.09;
+  var r=ang*Math.PI/180,
+      hw=g.offsetWidth*.36,
+      dl=Math.sin(r)*hw;
+  ln.style.transform='rotate('+ang+'deg)';
+  wl.style.transform='translateY(calc(-50% + '+(-dl)+'px))';
+  wr.style.transform='translateY(calc(-50% + '+dl+'px))';
+  requestAnimationFrame(upd);
+}
+document.addEventListener('mousemove',function(e){
+  if(lk)return;
+  var x=e.clientX/innerWidth-.5;
+  tgt=x*22;
+  wn.style.opacity=Math.abs(x)<.046?'1':'0';
+});
+document.addEventListener('click',function(){
+  lk=!lk;
+  if(lk){tgt=0;wn.style.opacity='1'}
+  else{wn.style.opacity='0'}
+});
+upd();
+})();
+</script>
+</section>
