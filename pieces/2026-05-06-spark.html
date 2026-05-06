@@ -1,0 +1,83 @@
+<section data-date='2026-05-06' data-type='spark'>
+<style>*{margin:0;padding:0}#c{display:block;background:#060606;cursor:crosshair}</style>
+<canvas id=c width=500 height=280></canvas>
+<script>
+const v=document.getElementById('c'),x=v.getContext('2d');
+let t=0,M={x:250,y:140};
+let A={x:105,y:140,vx:0,vy:0},B={x:395,y:140,vx:0,vy:0};
+let fuse=0;
+
+v.addEventListener('mousemove',e=>{
+  const r=v.getBoundingClientRect();
+  M.x=e.clientX-r.left;M.y=e.clientY-r.top;
+});
+v.addEventListener('click',()=>{A.vx+=11;B.vx-=11});
+
+function tick(w,hx,hy){
+  w.vx+=(hx-w.x)*.015+(M.x-w.x)*.026;
+  w.vy+=(hy-w.y)*.015+(M.y-w.y)*.026;
+  w.vx*=.88;w.vy*=.88;
+  w.x+=w.vx;w.y+=w.vy;
+}
+
+function loop(){
+  t++;
+  const hax=105+Math.sin(t*.019)*26,hay=140+Math.sin(t*.028)*38;
+  const hbx=395+Math.cos(t*.019)*26,hby=140+Math.cos(t*.028)*38;
+  tick(A,hax,hay);tick(B,hbx,hby);
+
+  const dx=B.x-A.x,dy=B.y-A.y,d=Math.sqrt(dx*dx+dy*dy);
+  fuse=d<130?Math.min(fuse+.024,1):Math.max(fuse-.014,0);
+
+  x.fillStyle='rgba(6,6,6,.17)';
+  x.fillRect(0,0,500,280);
+
+  if(fuse>0){
+    x.save();x.globalAlpha=fuse*.55;
+    const g=x.createLinearGradient(A.x,A.y,B.x,B.y);
+    g.addColorStop(0,'#4aaeff');g.addColorStop(.5,`hsl(${t%360},70%,70%)`);g.addColorStop(1,'#ffaa44');
+    x.strokeStyle=g;x.lineWidth=fuse*2.5+.5;
+    x.beginPath();x.moveTo(A.x,A.y);x.lineTo(B.x,B.y);x.stroke();
+    x.restore();
+  }
+
+  x.save();x.textAlign='center';x.textBaseline='middle';x.font='20px monospace';
+  x.globalAlpha=Math.max(.08,1-fuse*.75);
+  x.fillStyle='#4aaeff';
+  if(Math.random()<.06)x.translate((Math.random()-.5)*3,0);
+  x.fillText('signal',A.x,A.y);x.restore();
+
+  x.save();x.textAlign='center';x.textBaseline='middle';x.font='20px monospace';
+  x.globalAlpha=Math.max(.08,1-fuse*.75);
+  x.fillStyle='#ffaa44';
+  if(Math.random()<.06)x.translate((Math.random()-.5)*3,0);
+  x.fillText('noise',B.x,B.y);x.restore();
+
+  if(fuse>.12){
+    const cx=(A.x+B.x)/2,cy=(A.y+B.y)/2,f=(fuse-.12)/.88;
+    x.save();
+    x.textAlign='center';x.textBaseline='middle';
+    x.globalAlpha=f;
+    x.font=`bold ${15+f*14|0}px monospace`;
+    x.fillStyle='#fff';
+    x.shadowBlur=28*f;
+    x.shadowColor=`hsl(${t*1.8%360},90%,78%)`;
+    x.fillText('music',cx,cy);
+    if(fuse>.48){
+      x.lineWidth=.8;
+      for(let i=0;i<8;i++){
+        const a=i*.785+t*.022;
+        x.globalAlpha=(fuse-.48)*.55;
+        x.strokeStyle=`hsl(${(t*2+i*45)%360},85%,72%)`;
+        x.beginPath();x.moveTo(cx,cy);
+        x.lineTo(cx+Math.cos(a)*f*38,cy+Math.sin(a)*f*38);x.stroke();
+      }
+    }
+    x.restore();
+  }
+
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</section>
