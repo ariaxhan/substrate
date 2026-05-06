@@ -1,0 +1,38 @@
+<section data-date='2026-05-05' data-type='reflection'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body,html{width:100%;height:100%;overflow:hidden;background:radial-gradient(ellipse at 38% 28%,#0e0b2c 0%,#050318 55%,#000 100%);cursor:crosshair}
+.star{position:absolute;transform:translate(-50%,-50%);pointer-events:none}
+.dot{width:3px;height:3px;background:#fff;border-radius:50%;box-shadow:0 0 5px 2px rgba(190,210,255,.75),0 0 12px 4px rgba(160,180,240,.25);margin:0 auto;opacity:0;animation:ap 2s ease forwards}
+@keyframes ap{0%{opacity:0;transform:scale(0)}55%{opacity:1;transform:scale(1.6)}100%{opacity:.9;transform:scale(1)}}
+.word{font:italic 11px/1 Georgia,serif;color:rgba(195,215,255,.7);letter-spacing:.22em;text-align:center;margin-top:9px;white-space:nowrap;opacity:0;animation:wf 6s ease forwards}
+@keyframes wf{0%{opacity:0;transform:translateY(4px)}12%{opacity:.7;transform:translateY(0)}65%{opacity:.55}100%{opacity:.06;transform:translateY(-3px)}}
+#msg{position:fixed;bottom:21%;left:0;right:0;text-align:center;font:italic 15px/2 Georgia,serif;letter-spacing:.28em;color:rgba(175,195,235,0);transition:color 6s ease 1s;pointer-events:none}
+#hint{position:fixed;bottom:6%;left:0;right:0;text-align:center;font:10px/1 Georgia,serif;letter-spacing:.2em;color:rgba(255,255,255,.18);animation:hf 2.5s ease 2.5s both;transition:opacity 1s}
+@keyframes hf{from{opacity:0}to{opacity:1}}
+</style>
+<div id="msg">the night asks nothing of you</div>
+<div id="hint">click to place a star</div>
+<script>
+const ws=["done","held","tried","breathed","enough","stayed","found","began","waited","left","almost","remembered","given","kept","let go","passed","asked","whole"],
+msg=document.getElementById('msg'),
+hint=document.getElementById('hint');
+let n=0;
+document.addEventListener('click',e=>{
+  const w=ws[n%ws.length];n++;
+  if(n===1)hint.style.opacity='0';
+  const el=document.createElement('div');
+  el.className='star';
+  el.style.left=e.clientX+'px';
+  el.style.top=e.clientY+'px';
+  el.innerHTML='<div class="dot"></div><div class="word">'+w+'</div>';
+  document.body.appendChild(el);
+  if(n===7)msg.style.color='rgba(175,195,235,.48)';
+});
+setTimeout(()=>{
+  const x=innerWidth*.3+Math.random()*innerWidth*.4,
+        y=innerHeight*.25+Math.random()*innerHeight*.35;
+  document.dispatchEvent(new MouseEvent('click',{clientX:x,clientY:y}));
+},2200);
+</script>
+</section>
