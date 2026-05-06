@@ -1,0 +1,80 @@
+<section data-date='2026-05-06' data-type='digest'>
+<style>
+*{margin:0;padding:0}body{background:#f4efe6;overflow:hidden}
+#tip{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);font:10px/1 Georgia,serif;color:#c8b8a8;letter-spacing:.1em;pointer-events:none;transition:opacity 2s}
+</style>
+<canvas id=c></canvas>
+<p id=tip>hover · click</p>
+<script>
+const cv=document.getElementById('c'),X=cv.getContext('2d');
+let W,H,mx=-9999,my=-9999,nodes=[],hn=null,frame=0,shown=true;
+const V=[
+['sense','sense what repeats'],['note','note the exception'],
+['hold','hold until it yields'],['name','name and it crystallizes'],
+['link','link without collapsing'],['see','see through the pattern'],
+['form','form finds the formless'],['layer','layer upon slow layer'],
+['map','map is not the territory'],['trace','trace to origin'],
+['cluster','cluster implies center'],['know','know unknow know'],
+['drift','drift toward coherence'],['emerge','emerge without intention'],
+['signal','signal within noise'],['order','order costs energy'],
+['settle','settle before moving'],['mark','mark what returns'],
+['ask','ask what persists'],['weigh','weigh before discarding'],
+];
+function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+function spawn(px,py){
+  const v=V[Math.floor(Math.random()*V.length)];
+  nodes.push({
+    x:px??W*.12+Math.random()*W*.76,
+    y:py??H*.12+Math.random()*H*.76,
+    vx:(Math.random()-.5)*.26,vy:(Math.random()-.5)*.26,
+    s:v[0],f:v[1],a:0
+  });
+}
+function loop(){
+  frame++;
+  X.fillStyle='rgba(244,239,230,.13)';X.fillRect(0,0,W,H);
+  if(frame%92===0&&nodes.length<54)spawn();
+  // update + find hover
+  hn=null;
+  nodes.forEach(n=>{
+    n.a=Math.min(1,n.a+.006);
+    n.vx+=(W*.5-n.x)*.000028+(mx-n.x)*.000048;
+    n.vy+=(H*.5-n.y)*.000028+(my-n.y)*.000048;
+    n.vx*=.984;n.vy*=.984;
+    n.x+=n.vx;n.y+=n.vy;
+    if(n.x<6)n.x=W-6;if(n.x>W-6)n.x=6;
+    if(n.y<6)n.y=H-6;if(n.y>H-6)n.y=6;
+    if(Math.abs(mx-n.x)<52&&Math.abs(my-n.y)<9)hn=n;
+  });
+  // connections
+  for(let i=0;i<nodes.length;i++)for(let j=i+1;j<nodes.length;j++){
+    const d=Math.hypot(nodes[i].x-nodes[j].x,nodes[i].y-nodes[j].y);
+    if(d<135){
+      const a=(1-d/135)*(nodes[i].a*nodes[j].a)*.42;
+      const hi=nodes[i]===hn||nodes[j]===hn;
+      X.strokeStyle=hi?`rgba(50,30,12,${a*2.2})`:`rgba(150,128,108,${a})`;
+      X.lineWidth=hi?.65:.28;
+      X.beginPath();X.moveTo(nodes[i].x,nodes[i].y);
+      X.lineTo(nodes[j].x,nodes[j].y);X.stroke();
+    }
+  }
+  // words
+  nodes.forEach(n=>{
+    const hi=n===hn;
+    X.font=(hi?'italic 12px':'10px')+' Georgia,serif';
+    X.fillStyle=hi?`rgba(22,10,2,${n.a})`:`rgba(88,68,52,${n.a*.72})`;
+    X.fillText(hi?n.f:n.s,n.x,n.y);
+  });
+  requestAnimationFrame(loop);
+}
+window.addEventListener('resize',resize);
+cv.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  if(shown){shown=false;document.getElementById('tip').style.opacity='0'}
+});
+cv.addEventListener('click',e=>spawn(e.clientX,e.clientY));
+resize();
+for(let i=0;i<22;i++)spawn();
+loop();
+</script>
+</section>
