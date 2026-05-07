@@ -1,0 +1,95 @@
+<section data-date='2026-05-06' data-type='reflection'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#030c1e;cursor:crosshair}
+canvas{position:absolute;inset:0}
+#poem{position:absolute;inset:0;pointer-events:none}
+.line{position:absolute;font:italic clamp(9px,1.1vw,14px)/1 Georgia,serif;color:rgba(200,222,255,0);letter-spacing:.22em;transition:color 5s ease;white-space:nowrap;transform:translate(-50%,-50%)}
+.line.lg{font-size:clamp(13px,1.6vw,20px);letter-spacing:.15em}
+#hint{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);font:8px/1 monospace;letter-spacing:.3em;color:rgba(255,255,255,.14);text-transform:uppercase;pointer-events:none;transition:opacity 2s}
+</style>
+<canvas id="c"></canvas>
+<div id="poem"></div>
+<div id="hint">click to place a star</div>
+<script>
+const cv=document.getElementById('c'),
+      ctx=cv.getContext('2d'),
+      poem=document.getElementById('poem'),
+      hint=document.getElementById('hint');
+
+// [text, left%, top%, reveal_at_n, large?]
+const lines=[
+  ['the day',50,17,3,1],
+  ['is complete',50,24,6,1],
+  ['what you left unfinished',22,46,10,0],
+  ['will wait',22,53,14,0],
+  ['what you carried',78,46,18,0],
+  ['was enough',78,53,22,0],
+  ['rest',50,68,27,1],
+  ['is not surrender',50,75,32,0],
+  ['it is where',50,84,38,0],
+  ['the next first light',50,90,45,0],
+  ['already waits',50,95,52,0],
+];
+
+let W,H,stars=[],mx,my,t=0,n=0;
+
+function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;mx=W/2;my=H/2}
+resize();
+window.addEventListener('resize',resize);
+
+lines.forEach(([text,x,y,,lg])=>{
+  const el=document.createElement('div');
+  el.className='line'+(lg?' lg':'');
+  el.textContent=text;
+  el.style.left=x+'%';
+  el.style.top=y+'%';
+  poem.appendChild(el);
+});
+const els=[...poem.querySelectorAll('.line')];
+
+function reveal(count){
+  lines.forEach(([,,, thresh,,],i)=>{
+    if(count>=thresh){
+      const p=Math.min(1,(count-thresh)/5);
+      els[i].style.color=`rgba(200,222,255,${(0.52*p).toFixed(2)})`;
+    }
+  });
+}
+
+function addStar(x,y,ambient){
+  const max=ambient?0.3+Math.random()*0.5:1.2+Math.random()*1.4;
+  stars.push({x,y,r:ambient?max:0,max,tw:Math.random()*6.28,sp:0.08+Math.random()*(ambient?.15:.45),ambient:!!ambient});
+  if(!ambient){n++;if(n===1)hint.style.opacity='0';reveal(n);}
+}
+
+for(let i=0;i<55;i++)addStar(Math.random()*window.innerWidth,Math.random()*window.innerHeight,true);
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  t+=0.01;
+  const ox=(mx-W/2)*.018,oy=(my-H/2)*.018;
+  stars.forEach(s=>{
+    if(s.r<s.max)s.r=Math.min(s.max,s.r+.06);
+    const ax=s.ambient?.3:.9,
+          bx=s.x+ox*ax,
+          by=s.y+oy*ax,
+          tw=Math.sin(t*s.sp+s.tw)*.18+.82,
+          rad=s.r*5,
+          g=ctx.createRadialGradient(bx,by,0,bx,by,rad);
+    g.addColorStop(0,`rgba(225,238,255,${(.92*tw).toFixed(2)})`);
+    g.addColorStop(.35,`rgba(180,210,255,${(.28*tw).toFixed(2)})`);
+    g.addColorStop(1,'rgba(3,12,30,0)');
+    ctx.beginPath();
+    ctx.arc(bx,by,rad,0,6.283);
+    ctx.fillStyle=g;
+    ctx.fill();
+  });
+  requestAnimationFrame(draw);
+}
+
+document.addEventListener('click',e=>addStar(e.clientX,e.clientY,false));
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+draw();
+</script>
+</section>
