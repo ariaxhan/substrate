@@ -1,0 +1,61 @@
+<section data-date='2026-05-07' data-type='pulse'>
+<style>
+#fulcrum-wrap{position:fixed;inset:0;background:#090909;cursor:crosshair;overflow:hidden;font-family:Georgia,serif;user-select:none}
+.f-half{position:absolute;width:100%;height:50%;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:1.8vw;padding:0 10vw;box-sizing:border-box}
+.f-top{top:0;align-items:flex-end;padding-bottom:7vh}
+.f-bot{bottom:0;align-items:flex-start;padding-top:7vh}
+.f-word{letter-spacing:.14em;text-transform:lowercase;opacity:.4;transition:opacity .45s ease,transform .45s ease;will-change:opacity,transform}
+.f-top .f-word{color:#b8d4e8}
+.f-bot .f-word{color:#e8cfa0}
+.f-line{position:absolute;top:50%;left:0;width:100%;height:1px;background:linear-gradient(to right,transparent 0%,#c0c0c0 12%,#fff 50%,#c0c0c0 88%,transparent 100%);transform-origin:50% 0;transition:transform .04s linear}
+.f-dot{position:absolute;top:50%;left:50%;width:5px;height:5px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);z-index:5;box-shadow:0 0 6px #ffffff88}
+.f-label{position:absolute;top:50%;left:50%;transform:translate(-50%,calc(-50% - 17px));font-size:9px;letter-spacing:.45em;color:#555;font-family:'Courier New',monospace;pointer-events:none;transition:color .4s,opacity .4s}
+</style>
+<div id="fulcrum-wrap">
+  <div class="f-half f-top" id="fw-top"></div>
+  <div class="f-line" id="fw-line"></div>
+  <div class="f-dot"></div>
+  <div class="f-label" id="fw-label">12 : 00</div>
+  <div class="f-half f-bot" id="fw-bot"></div>
+</div>
+<script>
+!function(){
+const AM=['before','waking','unnamed','cold','open','hunger','first','still','possible','empty'],
+PM=['after','spent','named','warm','closing','fed','last','moving','done','full'],
+SZ=['1.3vw','2.1vw','1.6vw','1vw','2.4vw','1.4vw','1.8vw','1.1vw','2vw','1.5vw'],
+top=document.getElementById('fw-top'),
+bot=document.getElementById('fw-bot'),
+line=document.getElementById('fw-line'),
+lbl=document.getElementById('fw-label');
+
+AM.forEach((w,i)=>{const s=document.createElement('span');s.className='f-word';s.textContent=w;s.style.fontSize=SZ[i];top.appendChild(s);});
+PM.forEach((w,i)=>{const s=document.createElement('span');s.className='f-word';s.textContent=w;s.style.fontSize=SZ[i];bot.appendChild(s);});
+
+const aw=[...top.querySelectorAll('.f-word')],pw=[...bot.querySelectorAll('.f-word')];
+let locked=false;
+
+function upd(t){
+  line.style.transform=`rotate(${t}deg)`;
+  const a=Math.min(1,Math.abs(t)/20),right=t>0;
+  aw.forEach(el=>{el.style.opacity=Math.max(.04,right?.4-a*.33:.4+a*.38);el.style.transform=`translateY(${right?a*12:-a*6}px)`;});
+  pw.forEach(el=>{el.style.opacity=Math.max(.04,right?.4+a*.38:.4-a*.33);el.style.transform=`translateY(${right?-a*6:a*12}px)`;});
+  const near=Math.abs(t)<1.2;
+  lbl.textContent=near?'12 : 00':right?'after noon':'before noon';
+  lbl.style.color=near?'#777':right?'#c8a070':'#70a0c8';
+  lbl.style.opacity=near?.9:.6;
+}
+
+document.getElementById('fulcrum-wrap').addEventListener('mousemove',e=>{
+  if(locked)return;
+  upd((e.clientX-window.innerWidth/2)/(window.innerWidth/2)*20);
+});
+
+document.getElementById('fulcrum-wrap').addEventListener('click',()=>{
+  locked=true;
+  line.style.transition='transform .65s cubic-bezier(.22,1,.36,1)';
+  upd(0);
+  setTimeout(()=>{locked=false;line.style.transition='transform .04s linear';},750);
+});
+}();
+</script>
+</section>
