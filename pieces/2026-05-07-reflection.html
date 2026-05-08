@@ -1,0 +1,89 @@
+<section data-date='2026-05-07' data-type='reflection'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#090910;cursor:crosshair}
+canvas{position:absolute;inset:0}
+#v{position:fixed;bottom:2.8rem;right:2.8rem;font:10px/1.9 'Courier New',monospace;color:rgba(255,230,170,0);letter-spacing:.14em;text-align:right;pointer-events:none;transition:color 5s ease}
+#v.on{color:rgba(255,230,170,.24)}
+#h{position:fixed;bottom:2.8rem;left:50%;transform:translateX(-50%);font:8px/1 'Courier New',monospace;letter-spacing:.38em;color:rgba(255,255,255,.1);text-transform:uppercase;pointer-events:none;transition:opacity 2.5s}
+</style>
+<canvas id="c"></canvas>
+<div id="v">rest.<br>this was enough.</div>
+<div id="h">click to place a star</div>
+<script>
+const cv=document.getElementById('c'),
+      ctx=cv.getContext('2d'),
+      verse=document.getElementById('v'),
+      hint=document.getElementById('h');
+let W,H,stars=[],mx=0,my=0,n=0;
+
+function rsz(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+rsz();window.addEventListener('resize',rsz);
+
+const palettes=[
+  'rgba(255,244,200,','rgba(255,222,150,','rgba(255,200,130,',  // warm gold
+  'rgba(210,230,255,','rgba(185,210,255,'                        // cool blue
+];
+
+function addStar(x,y){
+  stars.push({
+    x,y,
+    r:.6+Math.random()*1.3,
+    pal:palettes[Math.floor(Math.random()*palettes.length)],
+    ph:Math.random()*6.283,
+    sp:.35+Math.random()*.65,
+    born:performance.now()
+  });
+  n++;
+  if(n===1)hint.style.opacity='0';
+  if(n>=5)verse.classList.add('on');
+}
+
+document.addEventListener('click',e=>addStar(e.clientX,e.clientY));
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+
+function draw(t){
+  ctx.clearRect(0,0,W,H);
+
+  // constellation lines — visible only when mouse nears the gap between stars
+  for(let i=0;i<stars.length;i++){
+    for(let j=i+1;j<stars.length;j++){
+      const dx=stars[i].x-stars[j].x, dy=stars[i].y-stars[j].y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<170){
+        const midx=(stars[i].x+stars[j].x)*.5, midy=(stars[i].y+stars[j].y)*.5;
+        const md=Math.sqrt((mx-midx)**2+(my-midy)**2);
+        const a=(1-md/190)*(1-d/170)*.32;
+        if(a>.006){
+          ctx.beginPath();
+          ctx.moveTo(stars[i].x,stars[i].y);
+          ctx.lineTo(stars[j].x,stars[j].y);
+          ctx.strokeStyle=`rgba(255,235,190,${a.toFixed(3)})`;
+          ctx.lineWidth=.35;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  // stars
+  stars.forEach(s=>{
+    const age=Math.min((t-s.born)/1400,1);
+    const pulse=.76+.24*Math.sin(t*.0009*s.sp+s.ph);
+    const a=(age*pulse);
+    const glow=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*8);
+    glow.addColorStop(0,s.pal+(a*.9).toFixed(3)+')');
+    glow.addColorStop(.38,s.pal+(a*.14).toFixed(3)+')');
+    glow.addColorStop(1,'rgba(9,9,16,0)');
+    ctx.beginPath();ctx.arc(s.x,s.y,s.r*8,0,6.283);
+    ctx.fillStyle=glow;ctx.fill();
+    ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,6.283);
+    ctx.fillStyle=s.pal+(a*.97).toFixed(3)+')';
+    ctx.fill();
+  });
+
+  requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+</script>
+</section>
