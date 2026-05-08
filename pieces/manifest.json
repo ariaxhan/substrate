@@ -235,6 +235,7 @@
     {"file": "2026-05-07-morning.html", "date": "2026-05-07", "type": "morning", "timestamp": 1778164176},
     {"file": "2026-05-07-pulse.html", "date": "2026-05-07", "type": "pulse", "timestamp": 1778191651},
     {"file": "2026-05-07-reflection.html", "date": "2026-05-07", "type": "reflection", "timestamp": 1778209774},
-    {"file": "2026-05-07-spark.html", "date": "2026-05-07", "type": "spark", "timestamp": 1778189418}
+    {"file": "2026-05-07-spark.html", "date": "2026-05-07", "type": "spark", "timestamp": 1778189418},
+    {"file": "2026-05-08-morning.html", "date": "2026-05-08", "type": "morning", "timestamp": 1778249427}
   ]
 }

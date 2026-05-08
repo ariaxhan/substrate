@@ -1,0 +1,50 @@
+<section data-date='2026-05-08' data-type='morning'>
+<style>
+*{margin:0;padding:0}
+body,html{width:100%;height:100%;overflow:hidden;background:#07091c}
+.r{position:fixed;font-family:Georgia,'Times New Roman',serif;color:#e2c98a;pointer-events:none;user-select:none;white-space:nowrap}
+#h{position:fixed;bottom:2.5vh;width:100%;text-align:center;font:italic 10px Georgia,serif;letter-spacing:.2em;color:rgba(180,150,80,.3);pointer-events:none;transition:color .8s}
+</style>
+<div id="h">move to alter time &middot; click to hold</div>
+<script>
+const V=window,rnd=Math.random;
+const ws=["before","the first hour","still","possible","not yet","already","open","becoming","threshold","waiting","unwritten","begin","tender","held","the gap","breath","permission","first light","morning","quiet"];
+let paused=false,mul=1;
+const items=ws.map(t=>{
+  const e=document.createElement('div');
+  e.className='r';
+  e.textContent=t;
+  e.style.fontSize=(.68+rnd()*.92)+'rem';
+  e.style.letterSpacing=(.04+rnd()*.14)+'em';
+  if(rnd()>.58)e.style.fontStyle='italic';
+  document.body.appendChild(e);
+  return{e,x:(6+rnd()*80)/100*V.innerWidth,y:V.innerHeight+rnd()*V.innerHeight*2.6,sp:.13+rnd()*.24};
+});
+function tick(){
+  if(!paused){
+    const h=V.innerHeight;
+    items.forEach(o=>{
+      o.y-=o.sp*mul;
+      if(o.y<-90){
+        o.y=h+24+rnd()*h;
+        o.x=(6+rnd()*80)/100*V.innerWidth;
+      }
+      const f=1-o.y/h;
+      const op=Math.max(0,Math.sin(Math.PI*Math.min(1,Math.max(0,f))));
+      o.e.style.left=o.x+'px';
+      o.e.style.top=o.y+'px';
+      o.e.style.opacity=op*.88;
+    });
+  }
+  requestAnimationFrame(tick);
+}
+V.addEventListener('mousemove',e=>{
+  mul=.1+(1-e.clientY/V.innerHeight)*3.4;
+});
+V.addEventListener('click',()=>{
+  paused=!paused;
+  document.getElementById('h').textContent=paused?'held \xb7 click to release':'move to alter time \xb7 click to hold';
+});
+tick();
+</script>
+</section>
