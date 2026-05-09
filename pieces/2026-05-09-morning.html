@@ -1,0 +1,24 @@
+<section data-date='2026-05-09' data-type='morning'>
+<style>
+#dn{position:fixed;inset:0;background:#06080f;overflow:hidden;cursor:crosshair;font:13px/1 Georgia,serif}
+#dg{position:absolute;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(255,145,45,.11),rgba(255,100,20,.04) 45%,transparent 70%);pointer-events:none;transform:translate(-50%,-50%);transition:width .6s,height .6s}
+#dh{position:absolute;top:50%;width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,185,80,.18),transparent);transform:translateY(-50%)}
+.dw{position:absolute;color:rgba(255,228,155,.72);letter-spacing:.2em;font-size:11px;pointer-events:none;animation:df 4.5s ease-out forwards;white-space:nowrap}
+@keyframes df{0%{opacity:0;transform:translateX(-50%)}12%{opacity:1}100%{opacity:0;transform:translateX(-50%) translateY(-70px)}}
+</style>
+<div id=dn><div id=dg></div><div id=dh></div></div>
+<script>
+let n=0,q=document,D=q.getElementById('dn'),G=q.getElementById('dg'),
+W=['open','still','before','possible','first','unnamed','tender','begin','whole','becoming','now','quiet','almost','held','yes','unwritten','here'];
+D.addEventListener('mousemove',e=>{G.style.left=e.clientX+'px';G.style.top=e.clientY+'px'});
+D.addEventListener('click',e=>{
+n++;
+let v=Math.min(n*3,44);
+D.style.background=`rgb(${~~(v*.28)},${~~(v*.38)},${v+6})`;
+G.style.width=G.style.height=Math.min(420+n*18,760)+'px';
+let s=q.createElement('span');s.className='dw';s.textContent=W[n%W.length];
+s.style.cssText=`left:${e.clientX}px;top:${e.clientY}px`;
+D.appendChild(s);s.addEventListener('animationend',()=>s.remove())
+})
+</script>
+</section>
