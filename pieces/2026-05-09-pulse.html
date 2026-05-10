@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>halfway</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#f6f1e8;
+  height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+  cursor:none;
+  font-family:Georgia,'Times New Roman',serif;
+}
+#post{
+  position:absolute;
+  left:50%;top:50%;
+  width:1px;height:52vh;
+  background:linear-gradient(to bottom,transparent,#2a1a0a 20%,#2a1a0a 80%,transparent);
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+}
+#dot{
+  position:absolute;
+  left:50%;top:50%;
+  width:6px;height:6px;
+  border-radius:50%;
+  background:#2a1a0a;
+  transform:translate(-50%,-50%);
+  z-index:10;
+  pointer-events:none;
+}
+#arm{
+  position:relative;
+  display:flex;align-items:center;
+  gap:13vw;
+  transform-origin:center center;
+  will-change:transform;
+  user-select:none;
+}
+.col{
+  display:flex;flex-direction:column;
+  gap:1.05em;
+  font-size:clamp(13px,1.7vw,21px);
+  letter-spacing:0.04em;
+  line-height:1.2;
+}
+#left{text-align:right;color:#2a1a0a}
+#right{text-align:left;color:#9b6035}
+#now{
+  font-family:'Courier New',monospace;
+  font-size:clamp(8px,0.8vw,11px);
+  letter-spacing:0.4em;
+  color:#2a1a0a;
+  opacity:0;
+  transition:opacity 0.55s;
+  white-space:nowrap;
+  text-align:center;
+  min-width:5em;
+}
+</style>
+</head>
+<body>
+<section data-date='2026-05-09' data-type='pulse'>
+  <div id="post"></div>
+  <div id="dot"></div>
+  <div id="arm">
+    <div class="col" id="left"></div>
+    <div id="now">now</div>
+    <div class="col" id="right"></div>
+  </div>
+</section>
+<script>
+const b=['woke','was','still','almost','rising','before'],
+      a=['sleep','will','yet','nearly','falling','after'];
+let flip=false,tgt=0,cur=0;
+
+function fill(){
+  const L=flip?a:b,R=flip?b:a;
+  document.getElementById('left').innerHTML=L.map(w=>`<div>${w}</div>`).join('');
+  document.getElementById('right').innerHTML=R.map(w=>`<div>${w}</div>`).join('');
+}
+fill();
+
+const arm=document.getElementById('arm'),
+      now=document.getElementById('now'),
+      body=document.body;
+
+window.addEventListener('mousemove',e=>{
+  const dx=(e.clientX/window.innerWidth-0.5)*2;
+  tgt=dx*13;
+  now.style.opacity=Math.abs(dx)<0.04?'1':'0';
+});
+
+window.addEventListener('click',()=>{
+  flip=!flip;
+  tgt=0;
+  fill();
+  body.style.transition='background 0.12s';
+  body.style.background=flip?'#ede5d4':'#f6f1e8';
+});
+
+(function tick(){
+  cur+=(tgt-cur)*0.07;
+  arm.style.transform=`rotate(${cur.toFixed(3)}deg)`;
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
