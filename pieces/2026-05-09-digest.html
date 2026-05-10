@@ -1,0 +1,144 @@
+<section data-date='2026-05-09' data-type='digest'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#f7f4ed;overflow:hidden;cursor:crosshair;font-family:Georgia,serif}
+#stage{position:fixed;inset:0}
+canvas{position:fixed;inset:0;pointer-events:none}
+.w{
+  position:absolute;
+  transform:translate(-50%,-50%);
+  font-size:13px;
+  color:rgba(80,55,30,0.13);
+  white-space:nowrap;
+  pointer-events:none;
+  user-select:none;
+  transition:color 1.4s;
+}
+.w.lit{
+  color:rgba(90,50,15,0.82);
+  pointer-events:auto;
+  cursor:default;
+}
+.w .d{
+  display:block;
+  font-size:9px;
+  font-family:'Courier New',monospace;
+  color:rgba(110,70,30,0);
+  margin-top:4px;
+  text-align:center;
+  transition:color 0.5s;
+}
+.w.lit:hover .d{color:rgba(110,70,30,0.65)}
+.pulse{
+  position:absolute;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  border:1px solid rgba(110,70,30,0.35);
+  width:6px;height:6px;
+  pointer-events:none;
+  transition:width 1s,height 1s,opacity 1s;
+}
+</style>
+<canvas id="cv"></canvas>
+<div id="stage"></div>
+<script>
+const W=innerWidth,H=innerHeight,st=document.getElementById('stage');
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+cv.width=W;cv.height=H;
+
+const vocab=[
+  {w:'signal',d:'what persists through interference'},
+  {w:'noise',d:'the medium before the message'},
+  {w:'pattern',d:'repetition that remembers itself'},
+  {w:'threshold',d:'where quantity becomes quality'},
+  {w:'emergence',d:'the surplus of combination'},
+  {w:'memory',d:'the past shaping the present'},
+  {w:'structure',d:'constraint that enables'},
+  {w:'boundary',d:'where one thing ends knowing'},
+  {w:'resonance',d:'frequency finding frequency'},
+  {w:'syntax',d:'the order that carries meaning'},
+  {w:'depth',d:'what resists the surface'},
+  {w:'trace',d:'evidence of passage'},
+  {w:'lattice',d:'the invisible made structural'}
+];
+
+let falling=[],seeds=[],crystals=[];
+
+function spawn(){
+  const v=vocab[Math.floor(Math.random()*vocab.length)];
+  const x=Math.random()*W;
+  const el=document.createElement('div');
+  el.className='w';
+  el.innerHTML=v.w+'<span class="d">'+v.d+'</span>';
+  el.style.left=x+'px';
+  el.style.top='-20px';
+  st.appendChild(el);
+  falling.push({el,x,y:-20,vy:0.35+Math.random()*0.5,v});
+}
+
+for(let i=0;i<20;i++) setTimeout(spawn,i*280+Math.random()*150);
+setInterval(spawn,700);
+
+document.addEventListener('click',e=>{
+  seeds.push({x:e.clientX,y:e.clientY});
+  const p=document.createElement('div');
+  p.className='pulse';
+  p.style.left=e.clientX+'px';
+  p.style.top=e.clientY+'px';
+  st.appendChild(p);
+  requestAnimationFrame(()=>{p.style.width='90px';p.style.height='90px';p.style.opacity='0';});
+  setTimeout(()=>p.remove(),1100);
+});
+
+function frame(){
+  ctx.clearRect(0,0,W,H);
+
+  for(let i=falling.length-1;i>=0;i--){
+    const f=falling[i];
+    let caught=false;
+    for(const s of seeds){
+      const dx=s.x-f.x,dy=s.y-f.y,dist=Math.hypot(dx,dy);
+      if(dist<130){
+        f.x+=dx/dist*1.5;
+        f.y+=dy/dist*1.0;
+        f.vy*=0.82;
+        if(dist<20){
+          const a=Math.random()*Math.PI*2,r=22+Math.random()*50;
+          const cx=s.x+Math.cos(a)*r,cy=s.y+Math.sin(a)*r;
+          f.el.style.left=cx+'px';
+          f.el.style.top=cy+'px';
+          f.el.classList.add('lit');
+          crystals.push({x:cx,y:cy});
+          falling.splice(i,1);
+          caught=true;
+          break;
+        }
+      }
+    }
+    if(!caught){
+      f.y+=f.vy;
+      f.el.style.left=f.x+'px';
+      f.el.style.top=f.y+'px';
+      if(f.y>H+30){f.el.remove();falling.splice(i,1);}
+    }
+  }
+
+  for(let i=0;i<crystals.length;i++){
+    for(let j=i+1;j<crystals.length;j++){
+      const d=Math.hypot(crystals[i].x-crystals[j].x,crystals[i].y-crystals[j].y);
+      if(d<160){
+        ctx.beginPath();
+        ctx.moveTo(crystals[i].x,crystals[i].y);
+        ctx.lineTo(crystals[j].x,crystals[j].y);
+        ctx.strokeStyle=`rgba(100,60,20,${(1-d/160)*0.12})`;
+        ctx.lineWidth=0.6;
+        ctx.stroke();
+      }
+    }
+  }
+
+  requestAnimationFrame(frame);
+}
+frame();
+</script>
+</section>
