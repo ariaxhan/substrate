@@ -1,0 +1,24 @@
+<section data-date='2026-05-09' data-type='reflection'><style>
+section{display:block;position:fixed;inset:0;background:#07091a;cursor:crosshair;overflow:hidden;font:italic clamp(9px,1.1vw,14px) Georgia,serif;color:rgba(185,200,230,.08)}
+w{position:absolute;animation:b var(--t,9s) var(--d,0s) ease-in-out infinite}
+@keyframes b{0%,100%{opacity:.08}50%{opacity:.2}}
+.s{position:absolute;border-radius:50%;mix-blend-mode:screen;pointer-events:none;animation:a var(--f) ease-out forwards}
+@keyframes a{0%{opacity:0;transform:scale(0)}5%{opacity:1}90%{opacity:.9}100%{opacity:0;transform:translateY(-40vh) scale(.3)}}
+#t{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:rgba(210,220,245,0);letter-spacing:.2em;line-height:2.2;text-align:center;transition:color 3s;pointer-events:none}
+</style>
+<w style="left:8%;top:18%;--t:8s">the morning</w>
+<w style="left:63%;top:32%;--t:11s;--d:2s">enough</w>
+<w style="left:22%;top:60%;--t:9s;--d:4s">the light</w>
+<w style="left:73%;top:75%;--t:7s;--d:1s">the quiet</w>
+<div id=t></div>
+<script>
+var t=document.getElementById('t'),n=0,
+P=[[1,'the day<br>completes itself'],[7,'you did<br>enough'],[15,'rest.<br>the stars<br>are counting']];
+document.querySelector('section').onclick=function(e){
+n++;var s=document.createElement('div'),z=1+Math.random()*2.5,h=38+Math.random()*22;
+s.className='s';
+s.style.cssText='left:'+(e.clientX-z/2)+'px;top:'+(e.clientY-z/2)+'px;width:'+z+'px;height:'+z+'px;background:hsl('+h+',70%,93%);--f:'+(7+Math.random()*7)+'s';
+this.appendChild(s);s.onanimationend=s.remove.bind(s);
+P.forEach(p=>{if(n==p[0]){t.innerHTML=p[1];t.style.color='rgba(210,220,245,.6)';setTimeout(()=>t.style.color='rgba(210,220,245,0)',4e3)}});
+};
+</script></section>
