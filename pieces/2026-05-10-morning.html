@@ -1,0 +1,42 @@
+<section data-date='2026-05-10' data-type='morning'>
+<style>
+#t{position:fixed;inset:0;background:#080610;overflow:hidden;cursor:crosshair}
+#h{position:absolute;top:62%;left:0;width:100%;height:1px;background:rgba(90,60,130,.4);transition:box-shadow .35s,height .15s,background .5s}
+#w{position:absolute;inset:0;pointer-events:none}
+.a{position:absolute;font:11px/1 Georgia,serif;letter-spacing:.2em;color:rgba(175,150,215,.09);text-transform:lowercase;pointer-events:auto;cursor:default;transition:color .6s}
+.a:hover{color:rgba(255,215,165,.4)}
+.r{position:absolute;font:13px/1 Georgia,serif;letter-spacing:.24em;text-transform:lowercase;pointer-events:none;white-space:nowrap;animation:up 4s ease-out forwards}
+@keyframes up{0%{opacity:.9;transform:translateX(-50%) translateY(0)}8%{opacity:.95}100%{opacity:0;transform:translateX(-50%) translateY(-48vh)}}
+</style>
+<div id=t><div id=h></div><div id=w></div></div>
+<script>
+let n=0,
+W=['write','open','begin','breathe','hold','remember','choose','reach','speak','tend','allow','notice','stay','move','release','wonder','give','try','name','wake','trust','become','rest','feel','know','see','ask','find','return','start'],
+T=document.getElementById('t'),H=document.getElementById('h'),WC=document.getElementById('w');
+W.slice(0,20).forEach(w=>{
+  let e=document.createElement('div');
+  e.className='a';e.textContent=w;
+  e.style.left=(4+Math.random()*88)+'%';
+  e.style.top=(2+Math.random()*56)+'%';
+  WC.appendChild(e);
+});
+T.addEventListener('mousemove',e=>{
+  let x=e.clientX/innerWidth,
+    r=~~(75+x*185),g=~~(30+x*85),b=~~(125-x*65);
+  H.style.boxShadow=`0 0 ${8+x*30}px rgba(${r},${g},${b},${.22+x*.48})`;
+  H.style.background=`rgba(${r},${g},${b},.42)`;
+});
+T.addEventListener('click',e=>{
+  n++;
+  let d=Math.min(n*.045,.88),rv=~~(8+d*38),gv=~~(6+d*20),bv=~~(16+d*30);
+  T.style.background=`rgb(${rv},${gv},${bv})`;
+  H.style.height='2px';setTimeout(()=>H.style.height='1px',160);
+  let el=document.createElement('div');
+  el.className='r';el.textContent=W[~~(Math.random()*W.length)];
+  el.style.left=e.clientX+'px';el.style.top='61%';
+  el.style.color=`hsl(${~~(155+Math.random()*75)},${~~(55+Math.random()*28)}%,72%)`;
+  T.appendChild(el);
+  el.addEventListener('animationend',()=>el.remove());
+});
+</script>
+</section>
