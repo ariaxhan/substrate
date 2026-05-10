@@ -1,0 +1,58 @@
+<section data-date='2026-05-10' data-type='spark'>
+<style>
+#s{position:relative;width:100%;height:100vh;background:#080808;overflow:hidden;cursor:none}
+.w{position:absolute;font:300 2.5vw/1 Georgia,serif;color:rgba(255,255,255,.28);pointer-events:none;transform:translate(-50%,-50%);letter-spacing:.12em;transition:color .25s,text-shadow .25s}
+.w.hot{color:rgba(255,255,255,.8);text-shadow:0 0 20px rgba(255,255,255,.2)}
+#z{position:absolute;font:300 3.8vw/1 Georgia,serif;color:#fff;pointer-events:none;opacity:0;transform:translate(-50%,-50%);letter-spacing:.18em;text-shadow:0 0 50px #fff,0 0 100px rgba(255,255,255,.25)}
+#h{position:absolute;bottom:1.4em;width:100%;text-align:center;font:10px/1 monospace;color:rgba(255,255,255,.1);letter-spacing:.18em}
+</style>
+<div id=s>
+<div class=w id=wa></div>
+<div class=w id=wb></div>
+<div id=z></div>
+<div id=h>move · draw together · collision · synthesis</div>
+</div>
+<script>
+const P=[["you","I","we"],["fire","water","steam"],["grief","time","scar"],["north","south","horizon"],["ask","answer","echo"],["light","shadow","dusk"],["word","silence","meaning"],["before","after","now"],["strange","strange","familiar"],["two","two","one"]];
+let mx,my,ax,ay,bx,by,avx=0,avy=0,bvx=0,bvy=0,pi=0,busy=0;
+const st=document.getElementById('s'),wa=document.getElementById('wa'),wb=document.getElementById('wb'),sy=document.getElementById('z');
+
+function r(n){return Math.random()*n}
+function go(){
+  const w=st.offsetWidth||window.innerWidth,h=st.offsetHeight||window.innerHeight;
+  if(!mx){mx=w/2;my=h/2}
+  ax=w*.18+r(w*.08); ay=h*.3+r(h*.4);
+  bx=w*.82-r(w*.08); by=h*.3+r(h*.4);
+  avx=avy=bvx=bvy=0;
+  wa.textContent=P[pi][0]; wb.textContent=P[pi][1];
+  wa.style.opacity=wb.style.opacity='1'; sy.style.opacity='0'; busy=0;
+}
+function hit(){
+  if(busy)return; busy=1;
+  const cx=(ax+bx)/2, cy=(ay+by)/2;
+  sy.style.left=cx+'px'; sy.style.top=cy+'px'; sy.textContent=P[pi][2];
+  sy.style.transition='opacity .15s'; sy.style.opacity='1';
+  wa.style.opacity=wb.style.opacity='0';
+  setTimeout(()=>{sy.style.transition='opacity 1.5s';sy.style.opacity='0'},950);
+  setTimeout(()=>{pi=(pi+1)%P.length;go()},2500);
+}
+function loop(){
+  if(!busy){
+    const k=.015,d=.88;
+    avx+=(mx-ax)*k; avy+=(my-ay)*k;
+    bvx+=(mx-bx)*k; bvy+=(my-by)*k;
+    avx*=d; avy*=d; bvx*=d; bvy*=d;
+    ax+=avx; ay+=avy; bx+=bvx; by+=bvy;
+    const dist=Math.hypot(bx-ax,by-ay),thr=(st.offsetWidth||window.innerWidth)*.07;
+    wa.style.left=ax+'px'; wa.style.top=ay+'px';
+    wb.style.left=bx+'px'; wb.style.top=by+'px';
+    wa.classList.toggle('hot',dist<thr*3);
+    wb.classList.toggle('hot',dist<thr*3);
+    if(dist<thr)hit();
+  }
+  requestAnimationFrame(loop);
+}
+st.addEventListener('mousemove',e=>{const r=st.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top});
+go(); loop();
+</script>
+</section>
