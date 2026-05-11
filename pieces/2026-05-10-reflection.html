@@ -1,0 +1,88 @@
+<section data-date='2026-05-10' data-type='reflection'>
+<style>
+#vl{position:relative;background:#04040d;height:80vh;overflow:hidden;cursor:crosshair;font-family:Georgia,serif;user-select:none}
+#vt{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:rgba(200,215,240,.35);font-size:.8rem;letter-spacing:.5em;text-transform:lowercase;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 3s}
+#vh{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);color:rgba(200,215,240,.12);font-size:.6rem;letter-spacing:.3em;pointer-events:none;opacity:0;transition:opacity 2s}
+@keyframes appear{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(0)}
+  55%{opacity:var(--hi,1);transform:translate(-50%,-50%) scale(2.4)}
+  100%{opacity:var(--lo,.6);transform:translate(-50%,-50%) scale(1)}
+}
+@keyframes tw{0%,100%{opacity:var(--lo,.5)}50%{opacity:var(--hi,.95)}}
+.st{position:absolute;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%)}
+#cn{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+</style>
+<div id="vl">
+  <svg id="cn"></svg>
+  <div id="vt">the day is complete</div>
+  <div id="vh">touch the dark</div>
+</div>
+<script>
+(function(){
+  var c=document.getElementById('vl'),
+      svg=document.getElementById('cn'),
+      vt=document.getElementById('vt'),
+      vh=document.getElementById('vh'),
+      stars=[],ns='http://www.w3.org/2000/svg',touched=false;
+
+  setTimeout(function(){vt.style.opacity='1'},600);
+  setTimeout(function(){vh.style.opacity='1'},3000);
+
+  function mkstar(x,y){
+    var s=document.createElement('div'),
+        sz=1+Math.random()*2.5,
+        lo=(.28+Math.random()*.2).toFixed(2),
+        hi=(.72+Math.random()*.28).toFixed(2),
+        d=(3+Math.random()*6).toFixed(1),
+        dl=(Math.random()*2).toFixed(1);
+    s.className='st';
+    s.style.left=x+'px';
+    s.style.top=y+'px';
+    s.style.width=sz+'px';
+    s.style.height=sz+'px';
+    s.style.background='#cce0ff';
+    s.style.boxShadow='0 0 '+(sz*5)+'px '+(sz*2)+'px rgba(140,195,255,.4)';
+    s.style.setProperty('--lo',lo);
+    s.style.setProperty('--hi',hi);
+    s.style.animation='appear .85s ease-out forwards';
+    c.appendChild(s);
+    setTimeout(function(){
+      s.style.animation='tw '+d+'s ease-in-out '+dl+'s infinite';
+    },900);
+    stars.push({x:x,y:y});
+    if(stars.length>=5) drawLines();
+  }
+
+  function drawLines(){
+    svg.innerHTML='';
+    var th=Math.min(c.offsetWidth,c.offsetHeight)*.3;
+    for(var i=0;i<stars.length;i++)
+      for(var j=i+1;j<stars.length;j++){
+        var dx=stars[i].x-stars[j].x,
+            dy=stars[i].y-stars[j].y;
+        if(dx*dx+dy*dy<th*th){
+          var l=document.createElementNS(ns,'line');
+          l.setAttribute('x1',stars[i].x);
+          l.setAttribute('y1',stars[i].y);
+          l.setAttribute('x2',stars[j].x);
+          l.setAttribute('y2',stars[j].y);
+          l.setAttribute('stroke','rgba(110,155,235,.1)');
+          l.setAttribute('stroke-width','1');
+          svg.appendChild(l);
+        }
+      }
+  }
+
+  c.addEventListener('click',function(e){
+    if(!touched){
+      touched=true;
+      vt.style.transition='opacity 2.5s';
+      vt.style.opacity='0';
+      vh.style.opacity='0';
+    }
+    var r=c.getBoundingClientRect();
+    mkstar(e.clientX-r.left,e.clientY-r.top);
+  });
+})();
+</script>
+</section>
