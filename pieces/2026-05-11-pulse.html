@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Halfway</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0e0e10;width:100vw;height:100vh;overflow:hidden;cursor:crosshair}
+#stage{position:relative;width:100%;height:100%}
+#beam{position:absolute;top:50%;left:8vw;width:84vw;height:1px;background:#e8e4dc;opacity:.18;transform-origin:50% 0;will-change:transform;transition:opacity .3s}
+#pivot{position:absolute;top:50%;left:50%;width:6px;height:6px;background:#e8e4dc;opacity:.35;transform:translate(-50%,-50%) rotate(45deg);transition:opacity .3s}
+#cw{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) translateY(-14px);font:10px/1 'Courier New',monospace;letter-spacing:.45em;color:#e8e4dc;text-transform:uppercase;opacity:0;white-space:nowrap;transition:opacity .6s;pointer-events:none}
+.w{position:absolute;font:13px/1.5 Georgia,serif;pointer-events:none;will-change:top;transition:opacity .4s}
+.wa{color:#8fa0b8;opacity:.55}
+.wb{color:#b88c5a;opacity:.45}
+</style>
+</head>
+<body>
+<section data-date='2026-05-11' data-type='pulse'>
+<div id="stage">
+  <div id="beam"></div>
+  <div id="pivot"></div>
+  <div id="cw">now</div>
+</div>
+</section>
+<script>
+const S=document.getElementById('stage'),
+  BM=document.getElementById('beam'),
+  PV=document.getElementById('pivot'),
+  CW=document.getElementById('cw');
+
+const WA=['first light','before speaking','the cup, still full','half-remembered','a held breath','the unread message','opening','what persists'];
+const WB=['the long blue','after the last train','what wasn\'t said','cooling','residue','the kept secret','closing','what shifts'];
+const CWS=['now','noon','equinox','still','the line','halfway','here','threshold'];
+
+let cwi=0, flipped=false, tilt=0, targetTilt=0, elems=[];
+
+function place(){
+  elems.forEach(e=>e.remove()); elems=[];
+  const W=window.innerWidth, H=window.innerHeight, mid=H/2;
+  WA.forEach((t,i)=>{
+    const el=document.createElement('div');
+    el.className='w wa'; el.textContent=t;
+    const bx=W*.1+i/(WA.length-1)*W*.8;
+    const by=mid-52-(i%3)*30;
+    el.style.cssText='left:'+bx+'px;top:'+by+'px';
+    el.dataset.bx=bx; el.dataset.by=by;
+    S.appendChild(el); elems.push(el);
+  });
+  WB.forEach((t,i)=>{
+    const el=document.createElement('div');
+    el.className='w wb'; el.textContent=t;
+    const bx=W*.1+i/(WB.length-1)*W*.8;
+    const by=mid+32+(i%3)*30;
+    el.style.cssText='left:'+bx+'px;top:'+by+'px';
+    el.dataset.bx=bx; el.dataset.by=by;
+    S.appendChild(el); elems.push(el);
+  });
+}
+place();
+window.addEventListener('resize',place);
+
+window.addEventListener('mousemove',e=>{
+  const nx=(e.clientX/window.innerWidth-.5)*2;
+  targetTilt=nx*11;
+  const near=Math.abs(nx)<.06;
+  CW.style.opacity=near?'1':'0';
+  BM.style.opacity=near?.35:.18;
+  PV.style.opacity=near?.7:.35;
+  elems.forEach(el=>{
+    const lx=(parseFloat(el.dataset.bx)/window.innerWidth-.5)*2;
+    const by=parseFloat(el.dataset.by);
+    el.style.top=(by+lx*targetTilt*3.5)+'px';
+  });
+});
+
+window.addEventListener('click',()=>{
+  flipped=!flipped;
+  cwi=(cwi+1)%CWS.length;
+  CW.textContent=CWS[cwi];
+  CW.style.opacity='1';
+  setTimeout(()=>{CW.style.opacity='0'},1800);
+  targetTilt*=-1.4;
+  document.querySelectorAll('.wa').forEach(el=>{el.style.opacity=flipped?'.15':'.55'});
+  document.querySelectorAll('.wb').forEach(el=>{el.style.opacity=flipped?'.65':'.45'});
+});
+
+(function tick(){
+  tilt+=(targetTilt-tilt)*.07;
+  BM.style.transform='rotate('+tilt+'deg)';
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
