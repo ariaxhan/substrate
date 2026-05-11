@@ -1,0 +1,99 @@
+<section data-date='2026-05-11' data-type='digest'>
+<style>
+*{margin:0;padding:0}
+html,body{width:100%;height:100%;background:#f7f3eb;overflow:hidden;cursor:crosshair}
+canvas{display:block}
+#st{position:fixed;bottom:16px;right:18px;font:italic 9px Georgia,serif;color:#c9bfa6;letter-spacing:1.2px;pointer-events:none;transition:opacity 1.2s}
+</style>
+<canvas id=c></canvas>
+<div id=st>hover to observe · click to fix</div>
+<script>
+const cv=document.getElementById('c'),g=cv.getContext('2d');
+cv.width=window.innerWidth;cv.height=window.innerHeight;
+const W=cv.width,H=cv.height,SZ=26;
+const cols=Math.ceil(W/SZ),rows=Math.ceil(H/SZ);
+
+const NOISE='01∴∵⋯≡∼∈∧⊕∂∑¬abxyz01∴∵⋯'.split('');
+const PHRASE='knowledge  becomes  structure';
+const pc=Math.floor((cols-PHRASE.length)/2),pr=Math.floor(rows/2);
+
+const cells=[];
+for(let r=0;r<rows;r++){
+  for(let c=0;c<cols;c++){
+    const pi=c-pc;
+    const isP=r===pr&&pi>=0&&pi<PHRASE.length;
+    cells.push({r,c,isP,char:isP?PHRASE[pi]:NOISE[~~(Math.random()*NOISE.length)],res:0,fixed:false});
+  }
+}
+
+let mx=-1,my=-1,revealed=0,fixedCount=0;
+
+cv.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+cv.addEventListener('mouseleave',()=>{mx=-1;my=-1;});
+cv.addEventListener('click',e=>{
+  fixedCount++;
+  cells.forEach(cell=>{
+    if(!cell.fixed){
+      const d=Math.hypot(cell.c*SZ+SZ/2-e.clientX,cell.r*SZ+SZ/2-e.clientY);
+      if(d<52)cell.fixed=true;
+    }
+  });
+});
+
+const BG='#f7f3eb';
+function frame(){
+  g.fillStyle=BG;g.fillRect(0,0,W,H);
+
+  revealed=0;
+  cells.forEach(cell=>{
+    const px=cell.c*SZ+SZ/2,py=cell.r*SZ+SZ/2;
+    const near=mx>=0&&Math.hypot(px-mx,py-my)<72;
+
+    if(cell.fixed)cell.res=Math.min(1,cell.res+.12);
+    else if(near)cell.res=Math.min(1,cell.res+.06);
+    else cell.res=Math.max(0,cell.res-.025);
+
+    if(!cell.isP&&Math.random()<.002)cell.char=NOISE[~~(Math.random()*NOISE.length)];
+
+    const s=cell.res;
+    if(cell.isP&&s>.4)revealed++;
+
+    // phrase chars hide in noise until resolved
+    let alpha,serif=false;
+    if(cell.fixed){
+      alpha=.72;serif=cell.isP;
+    } else if(cell.isP){
+      // at s=0: camouflaged as noise (.05); at s=1: fully legible (.75)
+      alpha=.05+s*.7;serif=s>.45;
+    } else {
+      alpha=.04+s*.08;
+    }
+
+    if(alpha<.01)return;
+
+    const isFixed=cell.fixed;
+    const inked=isFixed?'rgba(18,10,2,':'rgba(52,32,8,';
+    const muted='rgba(172,152,128,';
+
+    g.font=serif?`italic 13px Georgia,serif`:`10px "Courier New",monospace`;
+    g.fillStyle=(cell.isP&&s>.3)||isFixed?`${isFixed?inked:inked}${alpha})`:muted+alpha+')';
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillText(cell.isP&&cell.char===' '?'·':cell.char,px,py);
+  });
+
+  // faint amber halo follows cursor
+  if(mx>=0){
+    const grad=g.createRadialGradient(mx,my,0,mx,my,72);
+    grad.addColorStop(0,'rgba(196,150,52,.07)');
+    grad.addColorStop(1,'rgba(196,150,52,0)');
+    g.fillStyle=grad;g.beginPath();g.arc(mx,my,72,0,Math.PI*2);g.fill();
+  }
+
+  // hint fades once user has clicked twice
+  if(fixedCount>1)document.getElementById('st').style.opacity='0';
+
+  requestAnimationFrame(frame);
+}
+frame();
+</script>
+</section>
