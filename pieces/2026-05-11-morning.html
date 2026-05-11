@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>threshold</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}html,body{width:100%;height:100%;overflow:hidden;cursor:crosshair}</style>
+</head>
+<body>
+<section data-date='2026-05-11' data-type='morning'>
+<style>
+#s{position:fixed;inset:0;background:#05070e;font-family:Georgia,serif;transition:background 4s ease}
+#s.day{background:linear-gradient(180deg,#f6e8c2 0%,#f0be58 48%,#e07234 100%)}
+#h{position:absolute;left:0;right:0;height:1px;top:70%;background:rgba(230,170,60,.2);transition:top 3.5s ease,opacity 2s ease}
+@keyframes breathe{0%,100%{box-shadow:0 0 4px rgba(230,170,60,.15)}50%{box-shadow:0 0 10px rgba(230,170,60,.35)}}
+#h{animation:breathe 4s ease-in-out infinite}
+.w{position:absolute;text-transform:lowercase;letter-spacing:.09em;color:#9a7040;opacity:0;transition:opacity .35s,color 3.5s ease,text-shadow .2s;pointer-events:none}
+#g{position:fixed;width:260px;height:260px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(230,170,50,.09) 0%,transparent 68%);transform:translate(-50%,-50%);left:-500px;top:-500px}
+#hint{position:fixed;bottom:7%;width:100%;text-align:center;color:rgba(180,130,50,.3);font:10px/1 Georgia,serif;letter-spacing:.28em;text-transform:lowercase;transition:opacity 2.5s}
+</style>
+<div id="s">
+  <div id="h"></div>
+  <div id="g"></div>
+  <div id="hint">touch to open</div>
+</div>
+<script>
+const lines=[
+  ["before the birds","3%","8%","18px"],
+  ["a held breath","11%","55%","13px"],
+  ["not yet","18%","28%","22px"],
+  ["still","7%","72%","15px"],
+  ["the first edge","24%","14%","14px"],
+  ["what could be","30%","60%","17px"],
+  ["opening","40%","38%","20px"],
+  ["tender","14%","45%","12px"],
+  ["48%","50%","19%","16px"],// placeholder replaced below
+  ["you don't know yet","52%","62%","13px"],
+  ["what this day","58%","22%","15px"],
+  ["will make of you","63%","44%","14px"],
+  ["almost","44%","80%","18px"],
+  ["unmade","34%","7%","12px"],
+  ["yours","56%","8%","24px"]
+];
+
+// fix the malformed entry
+lines[8]=["the window","48%","19%","16px"];
+
+const S=document.getElementById('s'),H=document.getElementById('h'),G=document.getElementById('g'),hint=document.getElementById('hint');
+let broken=false,ws=[];
+
+lines.forEach(([txt,top,left,fs],i)=>{
+  const d=document.createElement('div');
+  d.className='w';
+  d.textContent=txt;
+  d.style.top=top; d.style.left=left; d.style.fontSize=fs;
+  S.appendChild(d); ws.push(d);
+  setTimeout(()=>{ d.style.opacity='0.09'; },i*160+500);
+});
+
+document.addEventListener('mousemove',e=>{
+  G.style.left=e.clientX+'px'; G.style.top=e.clientY+'px';
+  const yp=e.clientY/innerHeight*100;
+  const dh=Math.abs(yp-70);
+  const bright=Math.max(0,1-dh/20);
+  if(!broken){
+    H.style.background=`rgba(230,170,60,${.18+.5*bright})`;
+    H.style.animationPlayState=bright>.3?'paused':'running';
+  }
+  ws.forEach(w=>{
+    const r=w.getBoundingClientRect();
+    const dist=Math.hypot(e.clientX-(r.left+r.width/2),e.clientY-(r.top+r.height/2));
+    const g=Math.max(0,1-dist/155);
+    if(!broken){
+      w.style.opacity=String(.06+.78*g);
+      w.style.textShadow=g>.2?`0 0 ${Math.round(10*g)}px rgba(230,170,50,${(.5*g).toFixed(2)})`:'';
+    } else {
+      w.style.opacity=String(.5+.5*g);
+    }
+  });
+});
+
+document.addEventListener('click',()=>{
+  if(broken) return;
+  broken=true;
+  hint.style.opacity='0';
+  S.classList.add('day');
+  H.style.animation='none';
+  let top=70;
+  const rise=setInterval(()=>{
+    top-=.6; H.style.top=top+'%';
+    if(top<-2){ clearInterval(rise); H.style.opacity='0'; }
+  },22);
+  ws.forEach((w,i)=>{
+    setTimeout(()=>{
+      w.style.color='#3b1e08';
+      w.style.opacity='.6';
+      w.style.textShadow='none';
+    },i*55+80);
+  });
+});
+</script>
+</section>
+</body>
+</html>
