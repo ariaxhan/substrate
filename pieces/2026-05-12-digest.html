@@ -1,0 +1,113 @@
+<section data-date='2026-05-12' data-type='digest'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#06060c;overflow:hidden}
+section[data-type=digest]{position:relative;width:100%;height:100%;cursor:crosshair}
+canvas{position:absolute;inset:0;pointer-events:none}
+#fd{position:absolute;inset:0}
+.n{
+  position:absolute;
+  transform:translate(-50%,-50%);
+  font:13px Georgia,serif;
+  color:rgba(215,198,172,.72);
+  white-space:nowrap;
+  user-select:none;
+  transition:color .25s;
+  pointer-events:all
+}
+.n:hover{color:rgba(255,215,148,1)}
+.s{
+  display:block;
+  font:italic 9px Georgia,serif;
+  opacity:0;
+  color:rgba(255,178,58,.85);
+  transition:opacity .5s;
+  margin-top:4px;
+  text-align:center;
+  letter-spacing:.04em
+}
+.n:hover .s{opacity:1}
+#ht{
+  position:absolute;
+  bottom:16px;right:18px;
+  font:italic 9px Georgia,serif;
+  color:rgba(160,140,110,.4);
+  letter-spacing:1.2px;
+  pointer-events:none;
+  transition:opacity 1.2s
+}
+#em{
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  font:11px Georgia,serif;
+  letter-spacing:.24em;
+  color:rgba(255,178,58,0);
+  pointer-events:none;
+  transition:color 2.8s
+}
+</style>
+<canvas id=cv></canvas>
+<div id=fd></div>
+<div id=ht>click anywhere · hover to look deeper</div>
+<div id=em></div>
+<script>
+const W=['observe','notice','record','compare','correlate','weigh','pattern','signal','noise','threshold','edge','node','cluster','infer','emerge','converge','density','structure','form','crystallize','know','trace','residue','index','weight','attend'];
+const S=['what remains','when noise clears','not yet named','already true','waiting to be said','the same thing twice','almost a rule','sufficient evidence','one more confirms it','before language','the shape of knowing','between readings','still forming','the thing under the thing'];
+const M=[{n:5,t:'pattern'},{n:13,t:'structure'},{n:24,t:'emergence'}];
+
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const fd=document.getElementById('fd'),ht=document.getElementById('ht'),em=document.getElementById('em');
+const nodes=[];const seen=new Set();let t=0;
+
+function resize(){cv.width=innerWidth;cv.height=innerHeight}
+
+function loop(){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const T=165;
+  for(let i=0;i<nodes.length;i++){
+    for(let j=i+1;j<nodes.length;j++){
+      const dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y;
+      const d=Math.sqrt(dx*dx+dy*dy);
+      if(d<T){
+        const base=1-d/T;
+        const a=base*(.45+.2*Math.sin(t*.9+i*.8+j*.6));
+        ctx.strokeStyle=`rgba(255,175,52,${a.toFixed(2)})`;
+        ctx.lineWidth=base*1.7;
+        ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.stroke();
+      }
+    }
+  }
+  t+=.016;requestAnimationFrame(loop);
+}
+
+function flash(word){
+  em.textContent=word;
+  em.style.color='rgba(255,175,52,.48)';
+  setTimeout(()=>em.style.color='rgba(255,175,52,0)',2800);
+}
+
+function add(x,y){
+  if(!nodes.length)ht.style.opacity='0';
+  const el=document.createElement('div');
+  el.className='n';
+  const sp=document.createElement('span');sp.className='s';
+  sp.textContent=S[~~(Math.random()*S.length)];
+  el.textContent=W[~~(Math.random()*W.length)];
+  el.appendChild(sp);
+  el.style.left=x+'px';el.style.top=y+'px';
+  fd.appendChild(el);nodes.push({x,y});
+  M.forEach(m=>{
+    if(nodes.length===m.n&&!seen.has(m.n)){seen.add(m.n);flash(m.t)}
+  });
+}
+
+fd.addEventListener('click',e=>{
+  if(e.target.closest('.n'))return;
+  add(e.clientX,e.clientY);
+});
+
+window.addEventListener('resize',resize);
+resize();loop();
+</script>
+</section>
