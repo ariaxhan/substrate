@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>reflection · 2026-05-11</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#07080d;overflow:hidden;cursor:crosshair}
+#sky{position:fixed;inset:0;font-family:Georgia,serif}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hint{position:absolute;bottom:2rem;width:100%;text-align:center;
+  font-size:.62rem;letter-spacing:.38em;color:#252940;
+  text-transform:lowercase;transition:opacity 2s}
+.star{position:absolute;border-radius:50%;background:#dce5f8;
+  transform:translate(-50%,-50%);opacity:0;
+  box-shadow:0 0 5px 1px #8fa2de,0 0 14px 3px #4d68c0;
+  transition:opacity 1.6s}
+.lbl{position:absolute;font-size:.55rem;letter-spacing:.25em;
+  color:#484f70;transform:translate(-50%,-300%);opacity:0;
+  transition:opacity 2s .5s;pointer-events:none;white-space:nowrap}
+.moon{position:fixed;pointer-events:none;width:160px;height:160px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(110,125,200,.035) 0%,transparent 68%);
+  transform:translate(-50%,-50%);
+  transition:left .12s ease-out,top .12s ease-out}
+#verse{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  text-align:center;color:#7a8bac;opacity:0;
+  transition:opacity 3.5s ease-in;pointer-events:none;
+  letter-spacing:.38em;text-transform:lowercase;line-height:2.4}
+#verse em{display:block;font-style:normal;font-size:1rem;color:#8898ba}
+#verse small{display:block;font-size:.48rem;letter-spacing:.55em;
+  color:#333a56;margin-top:.9rem}
+</style>
+</head>
+<body>
+<section data-date="2026-05-11" data-type="reflection">
+<div id="sky">
+  <div class="moon" id="moon"></div>
+  <p class="hint" id="hint">touch the dark to begin</p>
+  <div id="verse">
+    <em>rest now</em>
+    <small>morning knows the way back</small>
+  </div>
+</div>
+</section>
+<script>
+const sky=document.getElementById('sky'),
+      hint=document.getElementById('hint'),
+      verse=document.getElementById('verse'),
+      moon=document.getElementById('moon'),
+      words=['still','enough','whole','soft','done','close',
+             'held','quiet','full','safe','here','warm','slow','deep','clear','long'],
+      offsets=[[-1,-3],[1,-3],[2,-2],[-2,-2],[0,-3.5],[1.5,-2.5],[-1.5,-2.5]];
+let n=0,lit=false;
+
+document.addEventListener('mousemove',e=>{
+  moon.style.left=e.clientX+'px';
+  moon.style.top=e.clientY+'px';
+});
+
+sky.addEventListener('click',e=>{
+  if(verse.contains(e.target))return;
+
+  const sz=1.8+Math.random()*2.4;
+  const star=document.createElement('div');
+  star.className='star';
+  star.style.cssText=`left:${e.clientX}px;top:${e.clientY}px;width:${sz}px;height:${sz}px`;
+  const bright=0.55+Math.random()*0.45;
+  star.style.boxShadow=`0 0 ${4+sz}px ${sz*.5}px rgba(143,162,222,${bright}),0 0 ${14+sz*2}px ${sz*1.5}px rgba(77,104,192,${bright*.6})`;
+  sky.appendChild(star);
+  requestAnimationFrame(()=>star.style.opacity=bright.toFixed(2));
+
+  const off=offsets[n%offsets.length];
+  const lbl=document.createElement('span');
+  lbl.className='lbl';
+  lbl.style.left=`calc(${e.clientX}px + ${off[0]}em)`;
+  lbl.style.top=`calc(${e.clientY}px + ${off[1]}em)`;
+  lbl.textContent=words[n%words.length];
+  sky.appendChild(lbl);
+  requestAnimationFrame(()=>lbl.style.opacity='1');
+
+  n++;
+  if(n===1)hint.style.opacity='0';
+  if(n>=7&&!lit){lit=true;verse.style.opacity='1';}
+});
+</script>
+</body>
+</html>
