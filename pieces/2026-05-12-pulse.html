@@ -1,0 +1,49 @@
+<section data-date='2026-05-12' data-type='pulse'>
+<style>
+section[data-date='2026-05-12']{position:fixed;inset:0;background:#07070f;cursor:crosshair;user-select:none;overflow:hidden}
+#p12{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+#b12{width:60vw;height:1px;background:linear-gradient(90deg,transparent,#b89a5a 20%,#e0cc9a 50%,#b89a5a 80%,transparent);transform-origin:50% 50%}
+#pv12{width:5px;height:5px;border-radius:50%;background:#e0cc9a;margin:-2px auto 0;transition:box-shadow .4s}
+#am12,#pm12{position:absolute;left:50%;white-space:nowrap;transition:font-size .22s,opacity .22s}
+#am12{font:300 italic 5vw Georgia,serif;color:#6a8fb0;bottom:calc(50% + 3.5vw);transform:translateX(-50%)}
+#pm12{font:700 4.5vw 'Courier New',monospace;color:#b86c22;top:calc(50% + 3.5vw);transform:translateX(-50%)}
+#nw12{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:100 .75vw Georgia,serif;color:#c8b070;letter-spacing:.8em;text-transform:uppercase;opacity:0;transition:opacity .7s;pointer-events:none}
+#bl12{position:absolute;left:19vw;top:50%;transform:translateY(-50%);font:300 .55vw sans-serif;letter-spacing:.35em;text-transform:uppercase;color:#26200e}
+#br12{position:absolute;right:19vw;top:50%;transform:translateY(-50%);font:300 .55vw sans-serif;letter-spacing:.35em;text-transform:uppercase;color:#26200e}
+</style>
+<span id="bl12">before</span>
+<div id="p12"><div id="b12"></div><div id="pv12"></div></div>
+<div id="am12"></div>
+<div id="pm12"></div>
+<div id="nw12">now</div>
+<span id="br12">after</span>
+<script>
+const pairs=[['wake','sleep'],['rise','fall'],['open','close'],['clear','settle'],['first','last'],['begin','end'],['light','dim'],['still','drift'],['fresh','worn'],['gather','scatter']];
+let idx=Math.floor(Math.random()*pairs.length),tilt=0,goal=0;
+const b=document.getElementById('b12'),
+  pv=document.getElementById('pv12'),
+  am=document.getElementById('am12'),
+  pm=document.getElementById('pm12'),
+  nw=document.getElementById('nw12');
+function trueGoal(){const d=new Date(),m=d.getHours()*60+d.getMinutes();return(m-720)/1440}
+function set(j){am.textContent=pairs[j][0];pm.textContent=pairs[j][1]}
+function draw(){
+  tilt+=(goal-tilt)*.07;
+  b.style.transform=`rotate(${tilt*22}deg)`;
+  const lt=Math.max(0,-tilt),rt=Math.max(0,tilt);
+  am.style.fontSize=`${4.5+lt*4}vw`;
+  am.style.opacity=.4+lt*.55;
+  pm.style.fontSize=`${4+rt*4}vw`;
+  pm.style.opacity=.4+rt*.55;
+  const eq=Math.abs(tilt);
+  nw.style.opacity=Math.max(0,1-eq*16);
+  pv.style.boxShadow=eq<.04?'0 0 18px #e0cc9a':'0 0 8px #e0cc9a60';
+  requestAnimationFrame(draw)
+}
+document.addEventListener('mousemove',e=>{goal=(e.clientX/innerWidth-.5)*1.3});
+document.addEventListener('click',()=>{idx=(idx+1)%pairs.length;set(idx);goal=trueGoal()});
+goal=trueGoal();
+set(idx);
+draw();
+</script>
+</section>
