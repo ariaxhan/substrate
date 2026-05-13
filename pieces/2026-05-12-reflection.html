@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Night, 2026-05-12</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#06080f;overflow:hidden;cursor:crosshair}
+.s{position:absolute;border-radius:50%;pointer-events:none;animation:ap var(--d,2s) ease-out forwards}
+@keyframes ap{
+  0%{opacity:0;transform:scale(0)}
+  35%{opacity:var(--o,.6)}
+  100%{opacity:calc(var(--o,.6)*.55);transform:scale(1)}
+}
+.w{position:absolute;font:300 12px/1 Georgia,'Times New Roman',serif;letter-spacing:.3em;text-transform:lowercase;
+  color:rgba(210,220,245,.0);pointer-events:none;animation:wf 10s ease-in-out forwards}
+@keyframes wf{
+  0%{opacity:0;transform:translateY(0)}
+  12%{opacity:1;color:rgba(210,220,245,.28)}
+  70%{opacity:.8;color:rgba(210,220,245,.22)}
+  100%{opacity:0;transform:translateY(-60px);color:rgba(210,220,245,0)}
+}
+</style>
+</head>
+<body>
+<section data-date='2026-05-12' data-type='reflection'>
+<script>
+const B=document.body,rnd=Math.random;
+const C=['#e8edf8','#c9d9f2','#f5f0dc','#d8e8ff','#eef0fa'];
+
+function mkStar(x,y,sz,bright){
+  const el=document.createElement('div'),c=C[~~(rnd()*C.length)];
+  el.className='s';
+  el.style.cssText=`left:${x}px;top:${y}px;width:${sz}px;height:${sz}px;background:${c};`+
+    `box-shadow:0 0 ${sz*3}px ${c},0 0 ${sz*6}px ${c}55;--d:${.8+rnd()*2.4}s;--o:${bright}`;
+  B.appendChild(el);
+  setTimeout(()=>el.remove(),25000+rnd()*35000);
+}
+
+let n=0;
+(function auto(){
+  if(n++<85){
+    mkStar(rnd()*innerWidth,rnd()*innerHeight,.4+rnd()*1.8,.35+rnd()*.45);
+    setTimeout(auto,120+rnd()*900);
+  }
+})();
+
+B.addEventListener('click',e=>{
+  mkStar(e.clientX-.5,e.clientY-.5,1.8+rnd()*2.2,.92);
+  for(let i=0;i<4;i++)
+    mkStar(e.clientX+(-10+rnd()*20),e.clientY+(-10+rnd()*20),.4+rnd()*.9,.5+rnd()*.3);
+});
+
+const words=['done','still','enough','rest','held','quiet','whole'];
+let wi=0;
+(function word(){
+  const d=document.createElement('div');
+  d.className='w';
+  d.textContent=words[wi++%words.length];
+  d.style.cssText=`left:${12+rnd()*68}%;bottom:${18+rnd()*44}%`;
+  B.appendChild(d);
+  setTimeout(()=>d.remove(),10500);
+  setTimeout(word,6500+rnd()*9000);
+})();
+</script>
+</section>
+</body>
+</html>
