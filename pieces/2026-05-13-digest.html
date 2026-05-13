@@ -1,0 +1,117 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>digest — 2026-05-13</title>
+<style>
+*{margin:0;padding:0}
+body{background:#06090e;overflow:hidden;cursor:crosshair}
+canvas{display:block}
+</style>
+</head>
+<body>
+<section data-date="2026-05-13" data-type="digest">
+<canvas id="c"></canvas>
+</section>
+<script>
+const cv=document.getElementById('c'),
+  cx=cv.getContext('2d');
+let W=cv.width=innerWidth,H=cv.height=innerHeight;
+window.onresize=()=>{W=cv.width=innerWidth;H=cv.height=innerHeight};
+
+const words=['signal','noise','pattern','data','form','order',
+  'cluster','network','emerge','structure','memory',
+  'attention','observe','connect','meaning','know',
+  'threshold','drift','accumulate','crystallize'];
+
+let nodes=words.map(w=>({
+  w,
+  x:50+Math.random()*(W-100),
+  y:50+Math.random()*(H-100),
+  vx:(Math.random()-.5)*.32,
+  vy:(Math.random()-.5)*.32,
+  locked:false,pulse:0,
+  alpha:.22+Math.random()*.28
+}));
+
+let mx=-1,my=-1,touched=false,allLocked=false;
+
+window.onmousemove=e=>{mx=e.clientX;my=e.clientY};
+window.onclick=e=>{
+  touched=true;
+  let free=nodes.filter(n=>!n.locked);
+  if(!free.length)return;
+  free.sort((a,b)=>Math.hypot(a.x-e.clientX,a.y-e.clientY)-Math.hypot(b.x-e.clientX,b.y-e.clientY));
+  free.slice(0,3).forEach(n=>{n.locked=true;n.vx=0;n.vy=0;n.pulse=1});
+  if(nodes.every(n=>n.locked))allLocked=true;
+};
+
+let t0=performance.now();
+
+function frame(ts){
+  requestAnimationFrame(frame);
+  cx.fillStyle='rgba(6,9,14,.13)';
+  cx.fillRect(0,0,W,H);
+
+  nodes.forEach(n=>{
+    if(!n.locked){
+      n.x+=n.vx;n.y+=n.vy;
+      if(n.x<24||n.x>W-24)n.vx*=-1;
+      if(n.y<18||n.y>H-18)n.vy*=-1;
+    }
+    if(n.pulse>0)n.pulse-=.018;
+  });
+
+  // lattice between locked nodes
+  let locked=nodes.filter(n=>n.locked);
+  for(let i=0;i<locked.length;i++)for(let j=i+1;j<locked.length;j++){
+    let a=locked[i],b=locked[j];
+    let d=Math.hypot(a.x-b.x,a.y-b.y);
+    if(d<260){
+      cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);
+      cx.strokeStyle=`rgba(80,190,255,${.38-d/750})`;
+      cx.lineWidth=.55;cx.stroke();
+    }
+  }
+
+  // mouse tendrils toward free nodes
+  if(mx>=0)nodes.filter(n=>!n.locked).forEach(n=>{
+    let d=Math.hypot(n.x-mx,n.y-my);
+    if(d<160){
+      cx.beginPath();cx.moveTo(mx,my);cx.lineTo(n.x,n.y);
+      cx.strokeStyle=`rgba(140,195,235,${(1-d/160)*.09})`;
+      cx.lineWidth=.5;cx.stroke();
+    }
+  });
+
+  // draw words
+  nodes.forEach(n=>{
+    let d=mx<0?999:Math.hypot(n.x-mx,n.y-my);
+    let hov=!n.locked&&d<160?(1-d/160)*.55:0;
+    let al=n.locked?.88:n.alpha+hov;
+    cx.font=(n.locked?'bold ':'')+'11px monospace';
+    cx.fillStyle=n.locked
+      ?`rgba(130,215,255,${al})`
+      :`rgba(100,145,165,${al})`;
+    let glow=n.pulse+hov*1.2;
+    if(glow>.06){cx.shadowColor='#45aaee';cx.shadowBlur=10*glow}
+    cx.fillText(n.w,n.x,n.y);
+    cx.shadowBlur=0;
+  });
+
+  // hint / completion text
+  cx.font='10px monospace';
+  if(!touched){
+    cx.fillStyle='rgba(75,110,130,.48)';
+    cx.fillText('click to crystallize',W/2-56,H-26);
+  } else if(allLocked){
+    let age=(ts-t0)/1000-nodes.reduce((m,n)=>n._lt||0,0);
+    cx.fillStyle='rgba(100,185,230,.38)';
+    cx.fillText('structure complete',W/2-54,H-26);
+  }
+}
+
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
