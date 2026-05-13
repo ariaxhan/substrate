@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Fulcrum</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;cursor:crosshair;background:#f2ede4}
+section{position:fixed;inset:0}
+#a{position:fixed;top:0;left:0;width:100%;height:50%;background:#f2ede4;transition:background 1s}
+#b{position:fixed;top:50%;left:0;width:100%;height:50%;background:#171210;transition:background 1s}
+.h{position:fixed;left:0;width:100%;height:50%;display:flex;align-items:center;justify-content:center;pointer-events:none;user-select:none}
+#wb{top:0}#wa{top:50%}
+.h span{font-family:Georgia,serif;letter-spacing:.18em;font-size:9vw;text-transform:lowercase;transition:font-size .2s,opacity .2s}
+#wb span{color:#2e1f12;opacity:.65}
+#wa span{color:#ede4d8;opacity:.65}
+#arm{position:fixed;top:50%;left:0;width:100%;height:1px;background:rgba(180,145,105,.55);transform-origin:center;z-index:10;pointer-events:none;transition:transform .07s linear}
+#gem{position:fixed;top:50%;left:50%;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;background:#c8a87a;border-radius:50%;z-index:12;pointer-events:none}
+#nw{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:20;font-family:Georgia,serif;font-size:2.6vw;letter-spacing:.45em;text-transform:lowercase;color:#c8a87a;opacity:0;pointer-events:none;transition:opacity .35s}
+.dr{position:fixed;font-family:Georgia,serif;font-size:1.1vw;letter-spacing:.13em;text-transform:lowercase;pointer-events:none}
+</style>
+</head>
+<body>
+<section data-date='2026-05-13' data-type='pulse'>
+<div id="a"></div><div id="b"></div>
+<div class="h" id="wb"><span>before</span></div>
+<div class="h" id="wa"><span>after</span></div>
+<div id="arm"></div><div id="gem"></div><div id="nw">now</div>
+</section>
+<script>
+const arm=document.getElementById('arm'),
+  wbs=document.querySelector('#wb span'),
+  was=document.querySelector('#wa span'),
+  nw=document.getElementById('nw'),
+  da=document.getElementById('a'),
+  db=document.getElementById('b'),
+  sc=document.querySelector('section');
+let flip=0,nt;
+const P=[['open','closed'],['waking','sleeping'],['light','shadow'],
+  ['tender','spent'],['rising','falling'],['cold','warm'],
+  ['empty','full'],['first','last'],['soon','already']];
+
+function upd(mx){
+  const r=(mx-innerWidth/2)/(innerWidth/2);
+  arm.style.transform='rotate('+(r*18)+'deg)';
+  const h=Math.abs(r);
+  if(h<.01){wbs.style.fontSize=was.style.fontSize='9vw';wbs.style.opacity=was.style.opacity='.65';return}
+  const B=(9+h*5)+'vw',S=Math.max(3.5,9-h*4)+'vw',bO=Math.min(1,.55+h*.45),sO=Math.max(.04,.55-h*.5);
+  if(r<0){wbs.style.fontSize=B;wbs.style.opacity=bO;was.style.fontSize=S;was.style.opacity=sO}
+  else{was.style.fontSize=B;was.style.opacity=bO;wbs.style.fontSize=S;wbs.style.opacity=sO}
+}
+
+document.addEventListener('mousemove',e=>upd(e.clientX));
+document.addEventListener('click',()=>{
+  nw.style.opacity=1;clearTimeout(nt);
+  nt=setTimeout(()=>{
+    nw.style.opacity=0;flip=1-flip;
+    da.style.background=flip?'#171210':'#f2ede4';
+    db.style.background=flip?'#f2ede4':'#171210';
+    wbs.style.color=flip?'#ede4d8':'#2e1f12';
+    was.style.color=flip?'#2e1f12':'#ede4d8';
+  },950);
+});
+
+function spawn(){
+  const [t,b]=P[Math.floor(Math.random()*P.length)];
+  const x=(10+Math.random()*78)+'%',dur=7000+Math.random()*5000;
+  [[t,flip?'#ede4d8':'#2e1f12',-1],[b,flip?'#2e1f12':'#ede4d8',1]].forEach(([txt,col,dir])=>{
+    const d=document.createElement('div');
+    d.className='dr';d.textContent=txt;
+    d.style.cssText='left:'+x+';top:50%;color:'+col+';opacity:0;transform:translateY(0)';
+    sc.appendChild(d);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      d.style.transition='opacity '+(dur*.11)+'ms,transform '+dur+'ms cubic-bezier(.18,.05,.55,1)';
+      d.style.opacity=.13+Math.random()*.12;
+      d.style.transform='translateY('+(dir*innerHeight*.31)+'px)';
+      setTimeout(()=>{d.style.transition='opacity '+(dur*.28)+'ms';d.style.opacity=0;setTimeout(()=>d.remove(),dur*.3)},dur*.62);
+    }));
+  });
+  setTimeout(spawn,2000+Math.random()*2800);
+}
+spawn();upd(innerWidth/2);
+</script>
+</body>
+</html>
