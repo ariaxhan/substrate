@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>first light — 2026-05-13</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#06040f}
+</style>
+</head>
+<body>
+
+<section data-date='2026-05-13' data-type='morning'>
+<style>
+#stage{
+  width:100vw;height:100vh;position:relative;
+  cursor:crosshair;overflow:hidden;
+  font-family:Georgia,'Times New Roman',serif;
+}
+#bg{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,#06040f 0%,#0c0820 55%,#100a24 100%);
+  transition:background 2.8s ease;
+}
+#hz{
+  position:absolute;top:50%;left:0;width:100%;
+  height:1px;
+  background:rgba(255,240,200,0.1);
+  box-shadow:0 0 6px rgba(255,220,150,0.04);
+  transition:background 2s,box-shadow 2s;
+}
+#cursor-glow{
+  position:absolute;pointer-events:none;
+  width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle,rgba(255,195,100,0.055) 0%,transparent 70%);
+  transform:translate(-50%,-50%);
+  transition:opacity 0.4s;
+  opacity:0;
+}
+.word{
+  position:absolute;pointer-events:none;
+  letter-spacing:0.14em;text-transform:lowercase;
+  color:rgba(255,255,255,0);
+  animation:surface 2.8s cubic-bezier(0.16,1,0.3,1) forwards;
+}
+@keyframes surface{
+  0%  {transform:translateY(36px);opacity:0}
+  25% {opacity:var(--op)}
+  100%{transform:translateY(0);opacity:var(--op)}
+}
+#hint{
+  position:absolute;bottom:22px;left:50%;transform:translateX(-50%);
+  color:rgba(255,255,255,0.16);font-size:10px;
+  letter-spacing:0.28em;white-space:nowrap;
+  font-family:Georgia,serif;
+  transition:opacity 1.8s;
+}
+#coda{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,calc(-50% - 1px));
+  color:rgba(255,255,255,0);font-size:11px;
+  letter-spacing:0.3em;text-align:center;
+  font-family:Georgia,serif;
+  pointer-events:none;
+  transition:color 3s ease,opacity 3s ease;
+  white-space:nowrap;
+}
+</style>
+
+<div id="stage">
+  <div id="bg"></div>
+  <div id="hz"></div>
+  <div id="cursor-glow"></div>
+  <div id="hint">— touch to begin —</div>
+  <div id="coda">the day is unwritten</div>
+</div>
+
+<script>
+(function(){
+  const stage=document.getElementById('stage'),
+    bg=document.getElementById('bg'),
+    hz=document.getElementById('hz'),
+    cg=document.getElementById('cursor-glow'),
+    hint=document.getElementById('hint'),
+    coda=document.getElementById('coda'),
+    words=["begin","still","open","possible","unnamed","before",
+           "ready","here","unfold","first","breathe","new",
+           "soft","ask","maybe","then"],
+    // gradient triplets: top / mid / bottom — night to pale gold dawn
+    sky=[
+      ['#06040f','#0c0820','#100a24'],
+      ['#0c0820','#140b2c','#180e38'],
+      ['#130a26','#1e1040','#221448'],
+      ['#1a0c30','#2c1550','#321858'],
+      ['#220e38','#3a1a58','#401c60'],
+      ['#2c0e36','#4c1c54','#541e5c'],
+      ['#361030','#5e1c4a','#681e52'],
+      ['#42101c','#6e1e38','#7c2040'],
+      ['#501410','#882a28','#962e30'],
+      ['#6a2010','#a84020','#b84828'],
+      ['#884010','#c46020','#d06828'],
+      ['#a05820','#d88030','#e08838'],
+      ['#bc7428','#e89a40','#eca848'],
+      ['#d09040','#f0b860','#f4c468'],
+      ['#e0ae58','#f8d080','#fce094'],
+      ['#f0cc78','#fde8a8','#fff4c8'],
+    ];
+
+  let n=0,used=new Set(),hovered=false;
+
+  stage.addEventListener('mousemove',e=>{
+    cg.style.left=e.clientX+'px';
+    cg.style.top=e.clientY+'px';
+    if(!hovered){cg.style.opacity='1';hovered=true}
+  });
+
+  stage.addEventListener('mouseleave',()=>{cg.style.opacity='0';hovered=false});
+
+  stage.addEventListener('click',e=>{
+    if(n>=words.length)return;
+    hint.style.opacity='0';
+
+    // pick unused word
+    let pool=words.filter((_,i)=>!used.has(i));
+    let pick=pool[Math.floor(Math.random()*pool.length)];
+    used.add(words.indexOf(pick));
+
+    // position: x near click, y randomly in upper 44%
+    let cx=e.clientX/stage.offsetWidth*100;
+    let jx=cx+(Math.random()*22-11);
+    jx=Math.max(2,Math.min(88,jx));
+    let jy=3+Math.random()*41;
+
+    let op=(0.22+Math.random()*0.66).toFixed(2);
+    let sz=Math.floor(10+Math.random()*22);
+
+    let el=document.createElement('span');
+    el.className='word';
+    el.textContent=pick;
+    el.style.left=jx+'%';
+    el.style.top=jy+'%';
+    el.style.fontSize=sz+'px';
+    el.style.setProperty('--op',op);
+    stage.appendChild(el);
+    n++;
+
+    // shift sky
+    let p=sky[Math.min(n,sky.length-1)];
+    bg.style.background=`linear-gradient(180deg,${p[0]} 0%,${p[1]} 55%,${p[2]} 100%)`;
+
+    // warm the horizon
+    let ri=Math.floor(255);
+    let gi=Math.floor(180+n*4);
+    let bi=Math.floor(80+n*10);
+    let al=(0.08+n*0.018).toFixed(3);
+    let glowA=(0.04+n*0.01).toFixed(3);
+    hz.style.background=`rgba(${ri},${gi},${bi},${al})`;
+    hz.style.boxShadow=`0 0 ${6+n*2}px rgba(${ri},${gi},${bi},${glowA})`;
+
+    // at the end, reveal the coda below the horizon
+    if(n===words.length){
+      setTimeout(()=>{
+        coda.style.color=`rgba(255,230,170,0.35)`;
+      },1200);
+    }
+  });
+})();
+</script>
+</section>
+
+</body>
+</html>
