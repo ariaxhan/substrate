@@ -1,0 +1,109 @@
+<!doctype html><html><head><meta charset="utf-8"><title>pulse</title>
+<style>*{margin:0;padding:0}html,body{width:100%;height:100%;overflow:hidden;cursor:crosshair}canvas{display:block}</style>
+</head><body>
+<section data-date='2026-05-14' data-type='pulse'>
+<canvas id="c"></canvas>
+<script>
+// The day balanced on its noon.
+// Move to tip the scale. Click to lock which way you lean.
+const cv=document.getElementById('c'),g=cv.getContext('2d');
+let W,H,tl=0,frozen=0,fl=0,t0=0,mx=0,my=0;
+
+// "half" appears in both — the shared word, the noon word
+const A=[['dawn',0.10],['begin',0.26],['open',0.44],['light',0.62],['half',0.80],
+         ['breathe',0.18],['still',0.36],['almost',0.54],['rise',0.70],['become',0.88]];
+const B=[['dusk',0.18],['end',0.34],['close',0.52],['dark',0.68],['half',0.84],
+         ['release',0.10],['full',0.28],['nearly',0.46],['rest',0.64],['remain',0.82]];
+
+function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight;mx=W/2;my=H/2}
+
+function lineY(wx){
+  const a=frozen?fl:tl;
+  return H/2+a*W*.15*(wx/W*2-1);
+}
+
+function frame(now){
+  if(!t0)t0=now;
+  const t=(now-t0)/1e3;
+  g.clearRect(0,0,W,H);
+
+  const ly=lineY(0),ry=lineY(W);
+
+  // Above: warm cream (morning)
+  g.beginPath();g.moveTo(0,0);g.lineTo(W,0);
+  g.lineTo(W,ry);g.lineTo(0,ly);g.closePath();
+  g.fillStyle='#f0e8d5';g.fill();
+
+  // Below: near-black (evening)
+  g.beginPath();g.moveTo(0,ly);g.lineTo(W,ry);
+  g.lineTo(W,H);g.lineTo(0,H);g.closePath();
+  g.fillStyle='#120e08';g.fill();
+
+  // Above words — Georgia serif, ink-dark
+  A.forEach(([w,fx],i)=>{
+    const bx=W*fx,by=lineY(bx),row=i<5?0:1;
+    const wy=by-(H*.10+row*H*.14)+Math.sin(t*.28+i)*(H*.007);
+    g.globalAlpha=.13+.24*Math.abs(Math.sin(t*.15+i*.9));
+    g.fillStyle='#1c1408';
+    g.font=`${12+i%4*4}px Georgia,serif`;
+    g.fillText(w,bx,wy);
+  });
+
+  // Below words — Courier mono, pale amber
+  B.forEach(([w,fx],i)=>{
+    const bx=W*fx,by=lineY(bx),row=i<5?0:1;
+    const wy=by+(H*.09+row*H*.13)+Math.sin(t*.28+i+5)*(H*.007);
+    g.globalAlpha=.11+.21*Math.abs(Math.sin(t*.15+i*.9+2.5));
+    g.fillStyle='#c4b080';
+    g.font=`${10+i%4*3}px 'Courier New',monospace`;
+    g.fillText(w,bx,wy);
+  });
+
+  g.globalAlpha=1;
+
+  // Proximity glow: how close is cursor to the line
+  const dist=Math.abs(my-lineY(mx));
+  const near=Math.max(0,1-dist/28);
+
+  // The horizon — the noon meridian
+  g.beginPath();g.moveTo(0,ly);g.lineTo(W,ry);
+  const base=frozen?.72:.28+near*.44;
+  g.strokeStyle=frozen
+    ?`rgba(184,148,72,${base})`
+    :`rgba(120,100,64,${base})`;
+  g.lineWidth=.6+near*2.4+(frozen?.6:0);
+  g.stroke();
+
+  // Fulcrum point at center
+  const fc=lineY(W/2);
+  const fr=frozen?5:2+near*3;
+  g.beginPath();g.arc(W/2,fc,fr,0,Math.PI*2);
+  g.fillStyle=frozen?'#b89050':'#7a6640';
+  g.globalAlpha=frozen?1:.4+near*.6;
+  g.fill();
+  g.globalAlpha=1;
+
+  // "noon" label — visible only near center or when frozen
+  if(near>.3||frozen){
+    g.globalAlpha=(frozen?.5:near*.4);
+    g.fillStyle=frozen?'#b89050':'#8a7450';
+    g.font='9px monospace';
+    g.fillText('noon',W/2+8,fc+4);
+    g.globalAlpha=1;
+  }
+
+  requestAnimationFrame(frame);
+}
+
+addEventListener('resize',resize);
+addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  if(!frozen)tl=(e.clientX/W-.5)*.9;
+});
+addEventListener('click',()=>{frozen^=1;if(frozen)fl=tl;});
+
+resize();
+requestAnimationFrame(frame);
+</script>
+</section>
+</body></html>
