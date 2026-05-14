@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>lattice</title>
+<style>
+*{margin:0;padding:0}
+body{background:#f7f4ef;overflow:hidden}
+section{display:block;width:100vw;height:100vh;cursor:crosshair;position:relative}
+canvas{position:absolute;inset:0}
+#hint{position:absolute;bottom:1.6em;width:100%;text-align:center;
+  font:italic 11px/1 Georgia,serif;color:#c8bfb0;letter-spacing:.2em;
+  pointer-events:none;transition:opacity 2.5s}
+</style>
+</head>
+<body>
+<section data-date="2026-05-14" data-type="digest">
+<canvas id="c"></canvas>
+<div id="hint">move to wake &nbsp;&middot;&nbsp; click to name</div>
+</section>
+<script>
+const S=document.querySelector('section'),
+      cv=document.getElementById('c'),
+      ct=cv.getContext('2d');
+
+function resize(){cv.width=S.offsetWidth;cv.height=S.offsetHeight}
+resize();
+addEventListener('resize',()=>{resize();seed()});
+
+const VOCAB=['pattern','signal','noise','threshold','emergence',
+             'lattice','datum','cluster','attractor','edge',
+             'weight','gradient','fold','residue','encoding',
+             'trace','field','basin','topology','crystallize'];
+
+let pts=[],named=[],mx=-1,my=-1,used=new Set;
+
+function seed(){
+  pts=[];
+  const n=Math.floor(S.offsetWidth*S.offsetHeight/2800);
+  for(let i=0;i<n;i++)
+    pts.push({x:Math.random()*S.offsetWidth,
+              y:Math.random()*S.offsetHeight,a:0,t:0});
+}
+seed();
+
+S.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  document.getElementById('hint').style.opacity='0';
+});
+
+S.addEventListener('click',e=>{
+  const near=pts.filter(p=>
+    Math.hypot(p.x-e.clientX,p.y-e.clientY)<95&&p.a>.28);
+  if(near.length<2)return;
+  const cx=near.reduce((s,p)=>s+p.x,0)/near.length,
+        cy=near.reduce((s,p)=>s+p.y,0)/near.length;
+  const avail=VOCAB.filter(w=>!used.has(w));
+  if(!avail.length)return;
+  const word=avail[Math.floor(Math.random()*avail.length)];
+  used.add(word);
+  named.push({x:cx,y:cy,word,pts:[...near],a:0});
+});
+
+(function frame(){
+  requestAnimationFrame(frame);
+  ct.clearRect(0,0,cv.width,cv.height);
+
+  pts.forEach(p=>{
+    const d=Math.hypot(p.x-mx,p.y-my);
+    p.t=d<115?Math.max(0,(115-d)/115):0;
+    p.a+=(p.t-p.a)*.07;
+  });
+
+  // live connections
+  for(let i=0;i<pts.length;i++){
+    if(pts[i].a<.04)continue;
+    for(let j=i+1;j<pts.length;j++){
+      if(pts[j].a<.04)continue;
+      const d=Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y);
+      if(d>88)continue;
+      const a=pts[i].a*pts[j].a*(1-d/88)*.65;
+      ct.beginPath();
+      ct.moveTo(pts[i].x,pts[i].y);
+      ct.lineTo(pts[j].x,pts[j].y);
+      ct.strokeStyle=`rgba(28,22,16,${a})`;
+      ct.lineWidth=.5;
+      ct.stroke();
+    }
+  }
+
+  // live nodes
+  pts.forEach(p=>{
+    if(p.a<.03)return;
+    ct.beginPath();
+    ct.arc(p.x,p.y,1.8,0,6.283);
+    ct.fillStyle=`rgba(28,22,16,${p.a*.85})`;
+    ct.fill();
+  });
+
+  // named clusters — amber, fixed, language-bearing
+  named.forEach(n=>{
+    n.a=Math.min(1,n.a+.013);
+
+    n.pts.forEach(p=>{
+      ct.beginPath();
+      ct.moveTo(p.x,p.y);
+      ct.lineTo(n.x,n.y);
+      ct.strokeStyle=`rgba(148,108,48,${n.a*.22})`;
+      ct.lineWidth=.6;
+      ct.stroke();
+    });
+
+    n.pts.forEach(p=>{
+      ct.beginPath();
+      ct.arc(p.x,p.y,2,0,6.283);
+      ct.fillStyle=`rgba(148,108,48,${n.a*.65})`;
+      ct.fill();
+    });
+
+    ct.font=`italic 13px Georgia,serif`;
+    ct.fillStyle=`rgba(28,22,16,${n.a*.82})`;
+    ct.textAlign='center';
+    ct.fillText(n.word,n.x,n.y+5);
+  });
+})();
+</script>
+</body>
+</html>
