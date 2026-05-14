@@ -1,0 +1,114 @@
+<section data-date='2026-05-14' data-type='morning'>
+<style>
+section[data-date='2026-05-14']{
+  display:block;position:relative;width:100%;height:100vh;
+  background:#05040d;overflow:hidden;cursor:none
+}
+section[data-date='2026-05-14'] canvas{position:absolute;inset:0;pointer-events:none}
+section[data-date='2026-05-14'] #ws{position:absolute;inset:0}
+section[data-date='2026-05-14'] .w{
+  position:absolute;font:italic clamp(.85rem,1.8vw,1.5rem) Georgia,serif;
+  opacity:.04;color:#3d2f55;pointer-events:none;
+  transition:opacity .4s,color .4s,text-shadow .4s;user-select:none;white-space:nowrap
+}
+section[data-date='2026-05-14'] #hint{
+  position:absolute;bottom:2rem;width:100%;text-align:center;
+  font:10px/1 'Courier New',monospace;letter-spacing:.35em;
+  color:#1a152a;text-transform:uppercase;transition:opacity 2s
+}
+</style>
+<canvas id="mc"></canvas>
+<div id="ws"></div>
+<div id="hint">touch to keep a word</div>
+<script>
+(function(){
+const root=document.querySelector('section[data-date="2026-05-14"]');
+const cv=root.querySelector('#mc'),ws=root.querySelector('#ws'),hint=root.querySelector('#hint');
+const ctx=cv.getContext('2d');
+const vocab=["threshold","open","still","first","unnamed","tender","almost","now","before","begins","light","breath","morning","whole","soft","empty","ready","new","quiet","always","once","here","witness","become","after","rise","clear","held","free","barely"];
+let W,H,mx,my,pool=[],kept=0,glow=0;
+
+function sz(){W=root.offsetWidth;H=root.offsetHeight;cv.width=W;cv.height=H;mx=W/2;my=H/2}
+sz();new ResizeObserver(sz).observe(root);
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  let hg=ctx.createRadialGradient(W/2,H*.92,0,W/2,H*.92,H*.55);
+  hg.addColorStop(0,`rgba(110,60,12,${.03+glow*.13})`);
+  hg.addColorStop(.6,`rgba(60,20,5,${glow*.04})`);
+  hg.addColorStop(1,'transparent');
+  ctx.fillStyle=hg;ctx.fillRect(0,0,W,H);
+  if(mx!==undefined){
+    let cg=ctx.createRadialGradient(mx,my,0,mx,my,100);
+    cg.addColorStop(0,'rgba(245,185,55,.06)');
+    cg.addColorStop(1,'transparent');
+    ctx.fillStyle=cg;ctx.fillRect(0,0,W,H);
+  }
+  requestAnimationFrame(draw);
+}
+
+function spawn(){
+  if(pool.length>22)return;
+  const el=document.createElement('div');
+  el.className='w';
+  el.textContent=vocab[Math.random()*vocab.length|0];
+  const x=W*.07+Math.random()*W*.86;
+  const y=H*.06+Math.random()*H*.8;
+  el.style.left=x+'px';el.style.top=y+'px';
+  el.style.fontSize=(.8+Math.random()*.95)+'rem';
+  el._x=x+40;el._y=y+10;el._k=false;
+  ws.appendChild(el);pool.push(el);
+  requestAnimationFrame(()=>el.style.opacity='.04');
+  el._t=setTimeout(()=>{
+    if(el._k)return;
+    el.style.opacity='0';
+    setTimeout(()=>{if(!el._k){el.remove();pool=pool.filter(p=>p!==el)}},1600);
+  },5500+Math.random()*5000);
+}
+
+function illuminate(ex,ey){
+  pool.forEach(el=>{
+    if(el._k)return;
+    const d=Math.hypot(el._x-ex,el._y-ey);
+    if(d<140){
+      const v=1-d/140;
+      el.style.opacity=.04+v*.82;
+      el.style.color=`rgb(${195+v*45|0},${100+v*105|0},${35+v*30|0})`;
+      el.style.textShadow=`0 0 ${v*20|0}px rgba(220,135,25,.45)`;
+    } else {
+      el.style.opacity='.04';el.style.color='#3d2f55';el.style.textShadow='none';
+    }
+  });
+}
+
+function move(ex,ey){mx=ex;my=ey;illuminate(ex,ey)}
+root.addEventListener('mousemove',e=>{const r=root.getBoundingClientRect();move(e.clientX-r.left,e.clientY-r.top)});
+root.addEventListener('touchmove',e=>{e.preventDefault();const r=root.getBoundingClientRect();move(e.touches[0].clientX-r.left,e.touches[0].clientY-r.top)},{passive:false});
+
+function pin(ex,ey){
+  let best=null,bd=1e9;
+  pool.forEach(el=>{
+    if(el._k)return;
+    const d=Math.hypot(el._x-ex,el._y-ey);
+    if(d<bd){bd=d;best=el}
+  });
+  if(!best||bd>160)return;
+  clearTimeout(best._t);best._k=true;
+  best.style.cssText+=';opacity:1;color:#f0c455;text-shadow:0 0 26px rgba(240,165,30,.65);transition:all .8s';
+  kept++;glow=Math.min(1,kept/10);
+  if(kept===1)hint.style.opacity='0';
+  if(kept>=8){
+    root.style.transition='background 4s';
+    root.style.background='#0c0904';
+  }
+}
+
+root.addEventListener('click',e=>{const r=root.getBoundingClientRect();pin(e.clientX-r.left,e.clientY-r.top)});
+root.addEventListener('touchend',e=>{const r=root.getBoundingClientRect();const t=e.changedTouches[0];pin(t.clientX-r.left,t.clientY-r.top)});
+
+for(let i=0;i<6;i++)setTimeout(spawn,i*480+80);
+setInterval(spawn,2400);
+draw();
+})();
+</script>
+</section>
