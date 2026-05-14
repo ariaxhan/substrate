@@ -1,0 +1,63 @@
+<section data-date='2026-05-14' data-type='spark'>
+<style>*{margin:0;padding:0}#c{display:block;background:#080808;cursor:crosshair}</style>
+<canvas id=c></canvas>
+<script>
+const v=document.getElementById('c'),x=v.getContext('2d');
+v.width=400;v.height=300;
+const P=[["signal","noise","static"],["I","you","we"],["before","after","now"],
+["dark","light","dusk"],["word","silence","breath"],["lost","found","here"],
+["ask","answer","open"],["fall","rise","hover"],["skin","air","close"],
+["pull","yield","lean"],["almost","there","arrived"],["alone","together","changed"]];
+let n=0,mx=200,my=150,ax=25,bx=375,ay=150,by=150,ph=0,sa=0,sy=150,done=0,tr=[];
+
+function rst(){
+  ax=25;bx=375;ay=150+(Math.random()-.5)*24;by=ay;
+  ph=0;sa=0;sy=150;done=0;
+}
+
+v.addEventListener('mousemove',e=>{const r=v.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top});
+v.addEventListener('click',()=>{n++;rst()});
+
+(function loop(){
+  x.fillStyle='rgba(8,8,8,.16)';x.fillRect(0,0,400,300);
+  const p=P[n%P.length];
+
+  // past syntheses — sediment of prior meetings
+  x.font='13px monospace';x.textAlign='center';
+  tr.forEach(t=>{t.a=Math.max(t.a-.003,.08);x.globalAlpha=t.a;x.fillStyle='#fff';x.fillText(t.w,200,t.y)});
+
+  if(ph===0){
+    const spd=1.1+Math.max(0,1-Math.abs(mx-200)/200)*2.8;
+    ax+=spd;bx-=spd;
+    ay+=(my-ay)*.025;by+=(my-by)*.025;
+    const d=bx-ax;
+
+    const pulse=d<90?1+Math.sin(Date.now()*.025)*.07:1;
+    const fs=Math.round(16*pulse);
+    x.font=`bold ${fs}px monospace`;
+    x.globalAlpha=.78;
+    x.fillStyle='#c4762a';x.textAlign='right';x.fillText(p[0],ax,ay);
+    x.fillStyle='#3a7eb5';x.textAlign='left';x.fillText(p[1],bx,by);
+
+    if(d>0&&d<160){
+      x.globalAlpha=((160-d)/160)*.16;x.strokeStyle='#999';x.lineWidth=1;
+      x.setLineDash([3,9]);x.beginPath();x.moveTo(ax,ay);x.lineTo(bx,by);x.stroke();x.setLineDash([]);
+    }
+    if(d<=1)ph=1;
+  } else {
+    sa=Math.min(sa+.032,1);
+    const fl=Math.max(0,1-sa*4);
+    if(fl>0){x.globalAlpha=fl;x.fillStyle='#fff';x.fillRect(0,0,400,300);}
+    sy-=sa*.45;
+    x.globalAlpha=sa;x.font='bold 22px monospace';x.fillStyle='#fff';
+    x.textAlign='center';x.fillText(p[2],200,sy);
+    x.globalAlpha=sa*.1;x.strokeStyle='#fff';x.lineWidth=1;
+    x.beginPath();x.arc(200,sy,28*sa,0,6.28);x.stroke();
+    if(sa>=1&&!done){done=1;tr.push({w:p[2],y:sy,a:.75});setTimeout(()=>{n++;rst()},1500);}
+  }
+
+  x.globalAlpha=1;
+  requestAnimationFrame(loop);
+})();
+</script>
+</section>
