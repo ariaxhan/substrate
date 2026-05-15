@@ -1,0 +1,110 @@
+<!doctype html>
+<html><head>
+<meta charset="utf-8">
+<title>2026-05-14 — reflection</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#04040a;overflow:hidden;cursor:crosshair}
+section{display:block;width:100%;height:100%;position:relative}
+canvas{display:block;width:100%;height:100%}
+</style>
+</head><body>
+<section data-date='2026-05-14' data-type='reflection'>
+<canvas id='c'></canvas>
+</section>
+<script>
+const WORDS=['still','enough','done','rest','soft','held','close','known','whole','quiet','breathe','safe','over','complete','once'];
+const c=document.getElementById('c');
+const x=c.getContext('2d');
+function resize(){c.width=window.innerWidth;c.height=window.innerHeight}
+resize();
+window.addEventListener('resize',resize);
+
+// pre-place stars — they exist already, hidden in the dark
+const N=210;
+const stars=Array.from({length:N},()=>({
+  px:Math.random(), py:Math.random(),
+  r:Math.random()*1.4+0.25,
+  phase:Math.random()*Math.PI*2,
+  rate:Math.random()*0.0006+0.0002,
+  vis:0, fixed:false
+}));
+
+let mx=-1,my=-1;
+const floating=[];
+
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+
+document.addEventListener('click',e=>{
+  // fix the closest star permanently — it was always there
+  const W=c.width,H=c.height;
+  const nx=e.clientX/W, ny=e.clientY/H;
+  let best=null,bd=1e9;
+  stars.forEach(s=>{
+    if(s.fixed)return;
+    const d=Math.hypot(s.px-nx,s.py-ny);
+    if(d<bd){bd=d;best=s}
+  });
+  if(best){best.fixed=true;best.vis=1}
+
+  // a word surfaces from the dark, then lets go
+  floating.push({
+    word:WORDS[Math.floor(Math.random()*WORDS.length)],
+    x:e.clientX, y:e.clientY, age:0, life:160
+  });
+});
+
+let t=0;
+(function draw(){
+  t++;
+  const W=c.width,H=c.height;
+  x.clearRect(0,0,W,H);
+
+  const rr=90/Math.max(W,H); // reveal radius (normalized)
+  const rx=mx/W, ry=my/H;
+
+  stars.forEach(s=>{
+    if(!s.fixed){
+      const d=Math.hypot(s.px-rx,s.py-ry);
+      const target=d<rr?Math.max(0,1-(d/rr))*0.9:0;
+      s.vis+=(target-s.vis)*0.07;
+    }
+    if(s.vis<0.008)return;
+
+    const tw=s.fixed
+      ?0.65+0.35*Math.sin(t*s.rate*6.28+s.phase)
+      :s.vis;
+    const a=s.vis*tw;
+    const sx=s.px*W, sy=s.py*H;
+    const gw=s.r*5+2;
+
+    // soft glow halo
+    const g=x.createRadialGradient(sx,sy,0,sx,sy,gw);
+    g.addColorStop(0,`rgba(210,225,255,${a*0.8})`);
+    g.addColorStop(1,`rgba(120,160,255,0)`);
+    x.fillStyle=g;
+    x.beginPath();x.arc(sx,sy,gw,0,6.28);x.fill();
+
+    // hard core
+    x.fillStyle=`rgba(245,248,255,${a})`;
+    x.beginPath();x.arc(sx,sy,s.r,0,6.28);x.fill();
+  });
+
+  // floating words — rise and fade
+  x.font='italic 11px Georgia,serif';
+  x.textAlign='center';
+  for(let i=floating.length-1;i>=0;i--){
+    const f=floating[i];
+    f.age++;
+    if(f.age>=f.life){floating.splice(i,1);continue}
+    const p=f.age/f.life;
+    // fade in quickly, hold, fade out slowly
+    const a=p<0.15?p/0.15:p>0.55?1-(p-0.55)/0.45:1;
+    x.fillStyle=`rgba(185,205,240,${a*0.65})`;
+    x.fillText(f.word,f.x,f.y-f.age*0.28);
+  }
+
+  requestAnimationFrame(draw);
+})();
+</script>
+</body></html>
