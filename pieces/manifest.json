@@ -264,6 +264,7 @@
     {"file": "2026-05-14-morning.html", "date": "2026-05-14", "type": "morning", "timestamp": 1778768752},
     {"file": "2026-05-14-pulse.html", "date": "2026-05-14", "type": "pulse", "timestamp": 1778782236},
     {"file": "2026-05-14-reflection.html", "date": "2026-05-14", "type": "reflection", "timestamp": 1778814394},
-    {"file": "2026-05-14-spark.html", "date": "2026-05-14", "type": "spark", "timestamp": 1778774686}
+    {"file": "2026-05-14-spark.html", "date": "2026-05-14", "type": "spark", "timestamp": 1778774686},
+    {"file": "2026-05-15-morning.html", "date": "2026-05-15", "type": "morning", "timestamp": 1778854217}
   ]
 }

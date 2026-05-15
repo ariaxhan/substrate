@@ -1,0 +1,96 @@
+<section data-date='2026-05-15' data-type='morning'>
+<style>
+section[data-date='2026-05-15']{
+  display:block;position:relative;width:100%;height:100vh;
+  overflow:hidden;cursor:crosshair;background:#040310
+}
+section[data-date='2026-05-15'] canvas{position:absolute;inset:0;pointer-events:none}
+section[data-date='2026-05-15'] #hint15{
+  position:absolute;bottom:2.5vh;width:100%;text-align:center;
+  font:10px/1 'Courier New',monospace;letter-spacing:.3em;
+  color:rgba(120,90,50,.35);text-transform:uppercase;
+  pointer-events:none;transition:opacity 2.5s
+}
+</style>
+<canvas id="c15"></canvas>
+<div id="hint15">click to name the light</div>
+<script>
+(function(){
+const root=document.querySelector('section[data-date="2026-05-15"]');
+const cv=root.querySelector('#c15'),hint=root.querySelector('#hint15');
+const ctx=cv.getContext('2d');
+const V='open still begin light soft new clear warm rise breathe hold become first wait almost bloom quiet tender possible threshold nascent arrive yield'.split(' ');
+let W,H,mx,my,words=[],clicks=0,t0=performance.now();
+
+function sz(){
+  W=root.offsetWidth;H=root.offsetHeight;cv.width=W;cv.height=H;
+  if(mx===undefined){mx=W/2;my=H/2}
+}
+sz();
+new ResizeObserver(sz).observe(root);
+
+root.addEventListener('mousemove',e=>{
+  const r=root.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;
+});
+root.addEventListener('touchmove',e=>{
+  e.preventDefault();const r=root.getBoundingClientRect();
+  mx=e.touches[0].clientX-r.left;my=e.touches[0].clientY-r.top;
+},{passive:false});
+
+function addWord(ex,ey){
+  clicks++;
+  if(clicks===1)hint.style.opacity='0';
+  words.push({x:ex,y:ey,w:V[~~(Math.random()*V.length)],age:0,vy:-.28-.18*Math.random()});
+}
+root.addEventListener('click',e=>{const r=root.getBoundingClientRect();addWord(e.clientX-r.left,e.clientY-r.top)});
+root.addEventListener('touchend',e=>{const r=root.getBoundingClientRect();const t=e.changedTouches[0];addWord(t.clientX-r.left,t.clientY-r.top)});
+
+function frame(ts){
+  const d=Math.min((ts-t0)/90000,1);
+
+  const sky=ctx.createLinearGradient(0,0,0,H);
+  sky.addColorStop(0,`hsl(240,${42+d*18}%,${2+d*7}%)`);
+  sky.addColorStop(.5,`hsl(235,${38+d*22}%,${4+d*11}%)`);
+  sky.addColorStop(.78,`hsl(${215+d*25|0},${30+d*32}%,${5+d*16}%)`);
+  sky.addColorStop(1,`hsl(${200+d*30|0},${25+d*35}%,${3+d*9}%)`);
+  ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+
+  const hy=H*.56;
+
+  const hw=ctx.createLinearGradient(0,hy-60,0,hy+40);
+  hw.addColorStop(0,'rgba(0,0,0,0)');
+  hw.addColorStop(.5,`rgba(${180+d*60|0},${90+d*55|0},${20+d*15|0},${.05+d*.12})`);
+  hw.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=hw;ctx.fillRect(0,hy-60,W,100);
+
+  ctx.strokeStyle=`rgba(${150+d*80|0},${80+d*60|0},25,${.08+d*.22})`;
+  ctx.lineWidth=.5;
+  ctx.beginPath();ctx.moveTo(0,hy);ctx.lineTo(W,hy);ctx.stroke();
+
+  const cg=ctx.createRadialGradient(mx,my,0,mx,my,130);
+  cg.addColorStop(0,`rgba(215,175,90,${.055+d*.03})`);
+  cg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=cg;ctx.fillRect(0,0,W,H);
+
+  const pulse=(Math.sin(ts/2800)*.5+.5)*.32+.12;
+  ctx.font=`italic ${14+d*4|0}px Georgia,serif`;
+  ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillStyle=`rgba(${170+d*50|0},${120+d*40|0},${60+d*20|0},${pulse})`;
+  ctx.fillText('before',W/2,hy);
+
+  for(let i=words.length-1;i>=0;i--){
+    const w=words[i];
+    w.age+=.008;w.y+=w.vy;
+    const a=Math.max(0,1-w.age*.65);
+    if(a<=0){words.splice(i,1);continue}
+    ctx.font=`italic ${11+a*9|0}px Georgia,serif`;
+    ctx.fillStyle=`rgba(${200+d*35|0},${155+d*30|0},${85+d*15|0},${a*.88})`;
+    ctx.fillText(w.w,w.x,w.y);
+  }
+
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+})();
+</script>
+</section>
