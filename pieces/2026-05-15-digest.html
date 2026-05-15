@@ -1,0 +1,71 @@
+<section data-date='2026-05-15' data-type='digest'>
+<style>
+#cv{display:block;background:#06080f;cursor:crosshair}
+#lb{position:fixed;bottom:12px;width:100%;text-align:center;font:10px monospace;color:#1c2c3c;letter-spacing:.3em;pointer-events:none;transition:opacity 2s}
+</style>
+<canvas id=cv></canvas>
+<div id=lb>click to seed</div>
+<script>
+var cv=document.getElementById('cv'),
+g=cv.getContext('2d'),
+W,H,nd=[],mx=0,my=0,tk=0,
+ws=['observe','pattern','relate','signal','noise','bind','form','know','link','seek','hold','map','drift','lock','root','edge','learn','sense','weight','emerge','cluster','threshold'];
+
+function rs(){cv.width=W=innerWidth;cv.height=H=innerHeight}
+rs();onresize=rs;
+onmousemove=function(e){mx=e.clientX;my=e.clientY};
+onclick=function(e){
+  nd.push({x:e.clientX,y:e.clientY,w:ws[nd.length%ws.length],t:tk});
+  if(nd.length==2)document.getElementById('lb').style.opacity=0;
+};
+
+function frame(){
+  tk++;
+  g.fillStyle='rgba(6,8,15,.18)';
+  g.fillRect(0,0,W,H);
+  var i,j,n,m,dx,dy,d,a,p,gr;
+
+  for(i=0;i<nd.length;i++){
+    n=nd[i];
+    for(j=i+1;j<nd.length;j++){
+      m=nd[j];
+      dx=n.x-m.x;dy=n.y-m.y;
+      d=Math.sqrt(dx*dx+dy*dy);
+      if(d<220){
+        a=(1-d/220)*.75;
+        g.strokeStyle='rgba(70,170,230,'+a+')';
+        g.lineWidth=.3+(1-d/220)*1.4;
+        g.beginPath();g.moveTo(n.x,n.y);g.lineTo(m.x,m.y);g.stroke();
+      }
+    }
+    dx=n.x-mx;dy=n.y-my;d=Math.sqrt(dx*dx+dy*dy);
+    if(d<110){
+      a=(1-d/110)*.35;
+      g.strokeStyle='rgba(130,210,255,'+a+')';
+      g.lineWidth=.5;
+      g.beginPath();g.moveTo(n.x,n.y);g.lineTo(mx,my);g.stroke();
+    }
+  }
+
+  for(i=0;i<nd.length;i++){
+    n=nd[i];
+    p=Math.sin((tk-n.t)*.038)*.2+.8;
+    gr=g.createRadialGradient(n.x,n.y,0,n.x,n.y,16);
+    gr.addColorStop(0,'rgba(100,200,255,'+(p*.3)+')');
+    gr.addColorStop(1,'rgba(0,0,0,0)');
+    g.fillStyle=gr;
+    g.beginPath();g.arc(n.x,n.y,16,0,6.28);g.fill();
+    g.fillStyle='rgba(210,240,255,'+p+')';
+    g.beginPath();g.arc(n.x,n.y,2,0,6.28);g.fill();
+    g.fillStyle='rgba(130,195,230,'+(p*.65)+')';
+    g.font='9px monospace';
+    g.fillText(n.w,n.x+6,n.y-5);
+  }
+
+  g.fillStyle='rgba(90,170,240,.45)';
+  g.beginPath();g.arc(mx,my,1.5,0,6.28);g.fill();
+  requestAnimationFrame(frame);
+}
+frame();
+</script>
+</section>
