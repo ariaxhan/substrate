@@ -1,0 +1,51 @@
+<section data-date='2026-05-15' data-type='spark'>
+<style>canvas#c{display:block;background:#080808;cursor:crosshair}</style>
+<canvas id=c width=400 height=400></canvas>
+<script>
+const cv=document.getElementById('c'),x=cv.getContext('2d');
+const P=[['I','you','we'],['signal','noise','meaning'],['word','silence','poem'],['self','other','contact'],['known','unknown','knowing'],['fire','water','steam']];
+let pi=0,t=0,mx=200,my=200,ph='orbit',st=0;
+let a={x:110,y:200,vx:0,vy:0},b={x:290,y:200,vx:0,vy:0};
+cv.addEventListener('mousemove',e=>{const r=cv.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top});
+cv.addEventListener('click',()=>{if(ph==='hold'){pi=(pi+1)%P.length;a={x:110,y:200,vx:0,vy:0};b={x:290,y:200,vx:0,vy:0};ph='orbit'}});
+function att(p,tx,ty,s){const dx=tx-p.x,dy=ty-p.y,d=Math.sqrt(dx*dx+dy*dy)||1;p.vx+=dx/d*s;p.vy+=dy/d*s}
+function wd(w,px,py,al,sz){x.save();x.globalAlpha=Math.max(0,al);x.font=sz+'px Courier New,monospace';x.fillStyle='#ddd8cc';x.textAlign='center';x.textBaseline='middle';x.fillText(w,px,py);x.restore()}
+function draw(){
+requestAnimationFrame(draw);
+x.fillStyle='rgba(8,8,8,.13)';x.fillRect(0,0,400,400);
+t++;
+const[wa,wb,ws]=P[pi];
+if(ph==='orbit'){
+const ang=t*.008;
+att(a,200+Math.cos(ang)*88,200+Math.sin(ang*.65)*44,.05);
+att(b,200-Math.cos(ang)*88,200-Math.sin(ang*.65)*44,.05);
+att(a,mx,my,.028);att(b,mx,my,.028);
+a.vx*=.87;a.vy*=.87;b.vx*=.87;b.vy*=.87;
+a.x+=a.vx;a.y+=a.vy;b.x+=b.vx;b.y+=b.vy;
+const dx=b.x-a.x,dy=b.y-a.y,dist=Math.sqrt(dx*dx+dy*dy);
+if(dist<120){
+x.save();x.globalAlpha=(1-dist/120)*.28;x.strokeStyle='#ddd8cc';x.lineWidth=.5;
+x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();x.restore()
+}
+wd(wa,a.x,a.y,.88,15);wd(wb,b.x,b.y,.88,15);
+if(dist<46){ph='collide';st=t}
+}else if(ph==='collide'){
+const p=Math.min((t-st)/26,1);
+const cx=(a.x+b.x)/2,cy=(a.y+b.y)/2;
+wd(wa,a.x+(cx-a.x)*p,a.y+(cy-a.y)*p,1-p,15);
+wd(wb,b.x+(cx-b.x)*p,b.y+(cy-b.y)*p,1-p,15);
+if(p>.65){x.save();x.globalAlpha=(p-.65)/.35*.2;x.fillStyle='#fff';x.beginPath();x.arc(cx,cy,58,0,6.28);x.fill();x.restore()}
+if(t-st>=26){a.x=b.x=cx;a.y=b.y=cy;ph='show';st=t}
+}else if(ph==='show'){
+const e=t-st,al=Math.min(e/16,1);
+wd(ws,200,200,al,17+Math.sin(e*.05)*2.5);
+if(e>55){ph='hold';st=t}
+}else{
+const e=t-st;
+wd(ws,200,200,.78+Math.sin(e*.024)*.14,17);
+x.save();x.globalAlpha=.22;x.font='8px Courier New,monospace';x.fillStyle='#888';x.textAlign='center';x.textBaseline='middle';x.fillText('click',200,390);x.restore()
+}
+}
+draw();
+</script>
+</section>
