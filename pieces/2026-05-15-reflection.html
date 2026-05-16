@@ -1,0 +1,76 @@
+<section data-date="2026-05-15" data-type="reflection">
+<style>
+#r-sky,#r-poem{position:fixed;inset:0}
+#r-sky{background:#06060d;cursor:crosshair;z-index:0}
+#r-poem{display:flex;align-items:center;justify-content:center;z-index:1;pointer-events:none}
+.r-v{font:1.2rem Georgia,serif;color:#a8b2cc;line-height:2.8;text-align:left;letter-spacing:.06em;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.r-w{opacity:0;transition:opacity 2.8s ease;display:inline}
+.r-star{position:fixed;border-radius:50%;background:#e8eeff;pointer-events:none;z-index:0;animation:r-pulse var(--d) ease-in-out infinite}
+@keyframes r-pulse{0%,100%{opacity:var(--a);transform:scale(1)}50%{opacity:.1;transform:scale(.5)}}
+</style>
+<div id="r-sky"></div>
+<div id="r-poem"><div class="r-v" id="r-vr"></div></div>
+<script>
+(()=>{
+const L=[
+ ["the","day"],
+ [" "," "," ","closes"],
+ ["like","a","hand"],
+ [" "," "," "," "," ","releasing"],
+ [],
+ ["all","that","effort"],
+ [" "," "," ","all","that","wanting"],
+ [],
+ ["now"],
+ [" "," ","only","this"],
+ [],
+ ["dark"],
+ [],
+ ["and","the","stars"],
+ [" "," "," "," ","finding","you"]
+];
+const vr=document.getElementById("r-vr");
+const sky=document.getElementById("r-sky");
+let words=[];
+L.forEach(line=>{
+ const d=document.createElement("div");
+ if(!line.length){d.style.lineHeight="1";d.innerHTML="&nbsp;";vr.appendChild(d);return}
+ line.forEach((w,i)=>{
+  const s=document.createElement("span");
+  s.className="r-w";
+  s.textContent=w+(i<line.length-1?" ":"");
+  d.appendChild(s);
+  words.push([s,w===" "]);
+ });
+ vr.appendChild(d);
+});
+let idx=0;
+function next(){
+ if(idx>=words.length)return;
+ const[s,space]=words[idx++];
+ s.style.opacity=1;
+ setTimeout(next,space?40:280+Math.random()*440);
+}
+setTimeout(next,900);
+document.addEventListener("click",e=>{
+ const el=document.createElement("div");
+ el.className="r-star";
+ const sz=.8+Math.random()*2.4;
+ const a=(.35+Math.random()*.65).toFixed(2);
+ const dur=(3+Math.random()*6).toFixed(1)+"s";
+ el.style.cssText=`width:${sz}px;height:${sz}px;left:${e.clientX-sz/2}px;top:${e.clientY-sz/2}px;--d:${dur};--a:${a};box-shadow:0 0 ${(sz*3).toFixed(1)}px ${sz}px rgba(160,180,255,${a})`;
+ sky.appendChild(el);
+ const life=7000+Math.random()*6000;
+ setTimeout(()=>{
+  el.style.transition="opacity 3s ease";
+  el.style.opacity=0;
+  setTimeout(()=>el.remove(),3000);
+ },life);
+});
+document.addEventListener("mousemove",e=>{
+ const x=e.clientX/innerWidth-.5,y=e.clientY/innerHeight-.5;
+ vr.style.transform=`translate(${(x*12).toFixed(1)}px,${(y*8).toFixed(1)}px)`;
+});
+})();
+</script>
+</section>
