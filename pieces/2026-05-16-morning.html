@@ -1,0 +1,114 @@
+<section data-date='2026-05-16' data-type='morning'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+#s{
+  position:fixed;inset:0;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  cursor:pointer;
+  transition:background 1.4s ease,color 1.4s ease;
+  font-family:Georgia,"Times New Roman",serif;
+  user-select:none;
+}
+#poem{
+  text-align:center;
+  transition:transform 0.6s ease;
+}
+.ln{
+  font-size:clamp(1rem,2.8vw,1.75rem);
+  letter-spacing:0.06em;
+  line-height:2;
+  opacity:0;
+  transform:translateY(10px);
+  transition:opacity 1.2s ease,transform 1.2s ease;
+}
+.ln.v{opacity:1;transform:translateY(0)}
+#blink{
+  display:inline-block;
+  width:2px;height:1.4em;
+  vertical-align:middle;
+  background:currentColor;
+  margin-left:3px;
+  animation:bl 1s step-end infinite;
+}
+@keyframes bl{50%{opacity:0}}
+#hint{
+  position:fixed;bottom:1.8rem;
+  font-family:"Courier New",monospace;
+  font-size:0.65rem;letter-spacing:0.2em;
+  text-transform:uppercase;
+  opacity:0.25;
+  transition:opacity 1s ease;
+}
+@keyframes bloom{
+  0%{text-shadow:none}
+  40%{text-shadow:0 0 30px rgba(240,180,60,0.7),0 0 60px rgba(240,140,20,0.3)}
+  100%{text-shadow:none}
+}
+.bloom{animation:bloom 2.2s ease forwards}
+</style>
+
+<div id="s">
+  <div id="poem"></div>
+  <span id="blink"></span>
+</div>
+<div id="hint">touch anywhere</div>
+
+<script>
+const lines=[
+  "before the first word",
+  "the mouth opens",
+  "light enters like a question",
+  "you have not answered yet",
+  "the window holds its gray",
+  "your hands still empty",
+  "everything possible",
+  "this is the only",
+  "unwritten hour"
+];
+
+const bgs=[
+  "#07071a","#0c0b24","#13102f",
+  "#1e173b","#2e1d48","#4a2754",
+  "#7a3e50","#b06238","#e89040"
+];
+const cols=[
+  "#606090","#7878aa","#9898c4",
+  "#b4aed0","#cebede","#e0cec4",
+  "#ecd8b0","#f0e298","#faf4d8"
+];
+
+let n=0;
+const s=document.getElementById('s');
+const poem=document.getElementById('poem');
+const hint=document.getElementById('hint');
+const blink=document.getElementById('blink');
+
+s.style.background=bgs[0];
+s.style.color=cols[0];
+
+s.addEventListener('click',()=>{
+  if(n===0) hint.style.opacity='0';
+  if(n>=lines.length){
+    document.querySelectorAll('.ln').forEach(el=>el.classList.add('bloom'));
+    blink.style.display='none';
+    return;
+  }
+  const d=document.createElement('div');
+  d.className='ln';
+  d.textContent=lines[n];
+  poem.appendChild(d);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>d.classList.add('v')));
+  const i=Math.min(n,bgs.length-1);
+  s.style.background=bgs[i];
+  s.style.color=cols[i];
+  n++;
+});
+
+s.addEventListener('mousemove',e=>{
+  const x=(e.clientX/innerWidth-0.5)*10;
+  const y=(e.clientY/innerHeight-0.5)*5;
+  poem.style.transform=`translate(${x}px,${y}px)`;
+});
+</script>
+</section>
