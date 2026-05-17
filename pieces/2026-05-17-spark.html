@@ -1,0 +1,57 @@
+<section data-date='2026-05-17' data-type='spark'>
+<style>*{margin:0;padding:0}#c{display:block;background:#000;cursor:crosshair}</style>
+<canvas id=c width=400 height=400></canvas>
+<script>
+const C=document.getElementById('c'),X=C.getContext('2d');
+const P=[['fire','water','steam'],['night','day','dusk'],['I','you','we'],['wound','time','scar'],['silence','sound','echo'],['stranger','familiar','almost'],['known','lost','found'],['before','after','now']];
+let pi=0,mx=200,my=200,ax=110,ay=200,bx=290,by=200,vax=0,vay=0,vbx=0,vby=0,fl=0,cd=0,gs=[];
+
+C.addEventListener('mousemove',e=>{const r=C.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top});
+C.addEventListener('click',()=>{if(!fl&&!cd){const cx=(ax+bx)/2,cy=(ay+by)/2;fl=100;gs.push([P[pi][2],cx,cy])}});
+
+function loop(){
+  X.fillStyle='rgba(0,0,0,.13)';X.fillRect(0,0,400,400);
+
+  if(cd>0){cd--;if(!cd){pi=(pi+1)%P.length;ax=110;ay=200;bx=290;by=200;vax=vay=vbx=vby=0}}
+  else if(!fl){
+    vax+=(mx-ax)*.008+(110-ax)*.004;
+    vay+=(my-ay)*.008+(200-ay)*.004;
+    vbx+=(mx-bx)*.008+(290-bx)*.004;
+    vby+=(my-by)*.008+(200-by)*.004;
+    vax*=.86;vay*=.86;vbx*=.86;vby*=.86;
+    ax+=vax;ay+=vay;bx+=vbx;by+=vby;
+    if(Math.hypot(bx-ax,by-ay)<70){fl=100;gs.push([P[pi][2],(ax+bx)/2,(ay+by)/2])}
+  } else {
+    ax+=(200-ax)*.05;bx+=(200-bx)*.05;
+    ay+=(200-ay)*.05;by+=(200-by)*.05;
+  }
+
+  const[wa,wb]=P[pi];
+  X.textAlign='center';X.textBaseline='middle';
+
+  gs.forEach(([w,gx,gy])=>{
+    X.globalAlpha=.15;X.fillStyle='#fff';
+    X.font='14px monospace';X.fillText(w,gx,gy)
+  });
+
+  X.font='20px monospace';
+  if(fl>0){
+    fl--;
+    const t=fl/100;
+    X.globalAlpha=t*.9;X.fillStyle='#7bf';X.fillText(wa,ax,ay);
+    X.fillStyle='#fc9';X.fillText(wb,bx,by);
+    const cx=(ax+bx)/2,cy=(ay+by)/2;
+    X.globalAlpha=Math.sin((1-t)*Math.PI);
+    X.fillStyle='#fff';X.font=`${18+(1-t)*8}px monospace`;
+    X.fillText(P[pi][2],cx,cy);
+    if(!fl)cd=70;
+  } else {
+    X.globalAlpha=.85;X.fillStyle='#7bf';X.fillText(wa,ax,ay);
+    X.fillStyle='#fc9';X.fillText(wb,bx,by);
+  }
+  X.globalAlpha=1;
+  requestAnimationFrame(loop)
+}
+loop()
+</script>
+</section>
