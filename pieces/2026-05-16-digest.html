@@ -1,0 +1,91 @@
+<!doctype html><html><head><meta charset=utf-8><title>crystallization</title>
+<style>*{margin:0;padding:0}body{background:#04060f;overflow:hidden;height:100vh;cursor:crosshair}</style>
+</head><body>
+<section data-date='2026-05-16' data-type='digest'>
+<canvas id=c></canvas>
+<script>
+const cv=document.getElementById('c'),
+ctx=cv.getContext('2d'),
+W=cv.width=innerWidth,
+H=cv.height=innerHeight,
+ws=['observe','pattern','signal','cluster','emerge','structure','connect','threshold','noise','phase','order','lattice','infer','weight','encode','index'];
+let mx=W/2,my=H/2;
+
+const pts=ws.map(w=>({
+  x:W*.1+Math.random()*W*.8,
+  y:H*.1+Math.random()*H*.8,
+  vx:(Math.random()-.5)*.22,
+  vy:(Math.random()-.5)*.22,
+  w,h:0
+}));
+
+const bh={},bk=(i,j)=>i<j?i+'~'+j:j+'~'+i;
+
+onmousemove=e=>{mx=e.clientX;my=e.clientY};
+onclick=e=>{
+  pts.push({x:e.clientX,y:e.clientY,
+    vx:(Math.random()-.5)*.22,vy:(Math.random()-.5)*.22,
+    w:ws[Math.random()*ws.length|0],h:0});
+};
+
+(function frame(){
+  ctx.fillStyle='rgba(4,6,15,.12)';
+  ctx.fillRect(0,0,W,H);
+
+  for(const p of pts){
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<12||p.x>W-12)p.vx*=-1;
+    if(p.y<12||p.y>H-12)p.vy*=-1;
+  }
+
+  // amber bonds: crystallized permanent structure
+  for(const k in bh){
+    const v=bh[k];if(v<10)continue;
+    const[i,j]=k.split('~').map(Number);
+    const a=pts[i],b=pts[j];if(!a||!b)continue;
+    ctx.strokeStyle='rgba(210,155,50,'+Math.min((v-10)/50,.45)+')';
+    ctx.lineWidth=.7;
+    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+  }
+
+  // mouse field: reveal latent connections
+  const near=pts
+    .map((p,i)=>({p,i,d:Math.hypot(p.x-mx,p.y-my)}))
+    .filter(o=>o.d<190).sort((a,b)=>a.d-b.d).slice(0,7);
+
+  for(let a=0;a<near.length;a++)for(let b=a+1;b<near.length;b++){
+    const A=near[a],B=near[b];
+    const d=Math.hypot(A.p.x-B.p.x,A.p.y-B.p.y);
+    if(d>230)continue;
+    const al=(1-d/230)*(1-Math.max(A.d,B.d)/190)*.75;
+    ctx.strokeStyle='rgba(80,185,255,'+al+')';
+    ctx.lineWidth=.9;
+    ctx.beginPath();ctx.moveTo(A.p.x,A.p.y);ctx.lineTo(B.p.x,B.p.y);ctx.stroke();
+    const k=bk(A.i,B.i);
+    bh[k]=(bh[k]||0)+.07;
+    pts[A.i].h+=.008;pts[B.i].h+=.008;
+  }
+
+  // mouse origin pulse
+  ctx.strokeStyle='rgba(80,185,255,.08)';
+  ctx.lineWidth=1;
+  ctx.beginPath();ctx.arc(mx,my,190,0,6.28);ctx.stroke();
+
+  // nodes and words
+  for(let i=0;i<pts.length;i++){
+    const p=pts[i];
+    const d=Math.hypot(p.x-mx,p.y-my),hot=d<190,cr=p.h>2.5;
+    const al=hot?1:cr?.72:.18;
+    const col=cr?`rgba(215,160,55,${al})`:`rgba(80,185,255,${al})`;
+    ctx.fillStyle=col;
+    ctx.beginPath();ctx.arc(p.x,p.y,hot?2.8:cr?2:1.4,0,6.28);ctx.fill();
+    ctx.font=(hot||cr?'10':'8')+'px "Courier New",monospace';
+    ctx.fillStyle=cr?`rgba(215,160,55,${al*.85})`:`rgba(110,195,255,${al*.75})`;
+    ctx.fillText(p.w,p.x+6,p.y-5);
+  }
+
+  requestAnimationFrame(frame);
+})();
+</script>
+</section>
+</body></html>
