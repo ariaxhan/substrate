@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>halfway · 2026-05-17</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;cursor:none;background:#111520}
+#top{position:fixed;top:0;left:0;right:0;background:#f7f3ec}
+#ax{position:fixed;left:0;right:0;height:1px;background:rgba(200,147,58,0.45);z-index:10}
+#clk{position:absolute;left:50%;top:-0.55em;transform:translateX(-50%);font-family:'Courier New',monospace;font-size:0.62rem;color:#c8933a;letter-spacing:0.45em;white-space:nowrap;user-select:none}
+#bd{position:absolute;top:0;width:8px;height:8px;border-radius:50%;background:#c8933a;transform:translate(-50%,-50%);z-index:11;box-shadow:0 0 6px rgba(200,147,58,0.5)}
+#hw{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:30}
+#hw span{font-family:Georgia,'Times New Roman',serif;font-size:clamp(4rem,10vw,8rem);color:#c8933a;opacity:0;transition:opacity 0.55s;letter-spacing:0.06em;font-weight:400}
+#cr{position:fixed;width:4px;height:4px;border-radius:50%;background:#c8933a;pointer-events:none;z-index:50;transform:translate(-50%,-50%);opacity:0.6}
+</style>
+</head>
+<body>
+<section data-date="2026-05-17" data-type="pulse">
+<div id="top"></div>
+<div id="ax"><div id="clk"></div><div id="bd"></div></div>
+<div id="hw"><span id="hs">here</span></div>
+<div id="cr"></div>
+<script>
+const top=document.getElementById('top'),
+  ax=document.getElementById('ax'),
+  clk=document.getElementById('clk'),
+  bd=document.getElementById('bd'),
+  hs=document.getElementById('hs'),
+  cr=document.getElementById('cr');
+
+let sp=50,tg=50,fr=false,ht;
+
+function split(p){
+  p=Math.max(14,Math.min(86,p));
+  sp=p;
+  top.style.height=p+'vh';
+  ax.style.top=p+'vh';
+}
+
+function fmt(n){return String(n).padStart(2,'0')}
+function tick(){
+  const d=new Date();
+  clk.textContent=fmt(d.getHours())+':'+fmt(d.getMinutes())+':'+fmt(d.getSeconds());
+}
+
+function frame(){
+  tg+=(50-tg)*0.025;
+  sp+=(tg-sp)*0.09;
+  split(sp);
+  if(!fr)tick();
+  requestAnimationFrame(frame);
+}
+
+document.addEventListener('mousemove',e=>{
+  tg=(e.clientY/window.innerHeight)*100;
+  bd.style.left=e.clientX+'px';
+  cr.style.left=e.clientX+'px';
+  cr.style.top=e.clientY+'px';
+});
+
+document.addEventListener('click',()=>{
+  fr=true;
+  clk.textContent='·';
+  hs.style.opacity='1';
+  clearTimeout(ht);
+  ht=setTimeout(()=>{
+    hs.style.opacity='0';
+    setTimeout(()=>{ fr=false; },550);
+  },1100);
+});
+
+split(50);
+tick();
+frame();
+</script>
+</section>
+</body>
+</html>
