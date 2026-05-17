@@ -1,0 +1,95 @@
+<section data-date='2026-05-17' data-type='morning'>
+<style>
+*{margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;cursor:none;background:#e8edf5}
+#c{position:fixed;inset:0;width:100%;height:100%}
+</style>
+<canvas id=c></canvas>
+<script>
+const cv=document.getElementById('c'),ctx=cv.getContext('2d');
+let W,H,mx=innerWidth/2,my=innerHeight/2,words=[],n=0,warm=0,t=0;
+
+const vocab='light still open whole clear breath here soft ready yes possible unwritten enough quiet rise emerge warm yours hold see know tender slow free'.split(' ');
+
+function sz(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+sz();onresize=sz;
+onmousemove=e=>{mx=e.clientX;my=e.clientY};
+onclick=e=>{
+  const w=n===0?'first':vocab[~~(Math.random()*vocab.length)];
+  words.push({x:e.clientX,y:e.clientY,w,a:0,s:15+Math.random()*20,d:(Math.random()-.5)*.5});
+  n++;
+};
+
+function lerp(a,b,t){return a+(b-a)*t}
+const cold=[[232,237,245],[148,170,210]],morn=[[250,246,240],[210,165,95]];
+
+function draw(){
+  t++;
+  if(n>0&&warm<1)warm=Math.min(1,warm+.007);
+
+  const bg=cold[0].map((v,i)=>~~lerp(v,morn[0][i],warm));
+  const gl=cold[1].map((v,i)=>~~lerp(v,morn[1][i],warm));
+
+  // background
+  const g=ctx.createRadialGradient(mx,my,0,mx,my,Math.max(W,H)*.85);
+  g.addColorStop(0,`rgb(${bg.map(v=>Math.min(255,v+10))})`);
+  g.addColorStop(1,`rgb(${bg})`);
+  ctx.fillStyle=g;
+  ctx.fillRect(0,0,W,H);
+
+  // cursor warmth halo
+  const halo=ctx.createRadialGradient(mx,my,0,mx,my,180);
+  halo.addColorStop(0,`rgba(${gl},.09)`);
+  halo.addColorStop(1,`rgba(${gl},0)`);
+  ctx.fillStyle=halo;
+  ctx.fillRect(0,0,W,H);
+
+  // horizon — appears as dawn warms
+  if(warm>.05){
+    const hy=H*.6;
+    const hr=ctx.createLinearGradient(0,hy-40,0,hy+20);
+    hr.addColorStop(0,`rgba(${morn[1]},0)`);
+    hr.addColorStop(.5,`rgba(${morn[1]},${(warm*.18).toFixed(2)})`);
+    hr.addColorStop(1,`rgba(${morn[1]},0)`);
+    ctx.fillStyle=hr;
+    ctx.fillRect(0,hy-40,W,60);
+  }
+
+  // center cursor blink — pre-click
+  if(n===0){
+    if(t%70<35){
+      ctx.fillStyle=`rgba(${cold[1]},.55)`;
+      ctx.fillRect(W/2-1,H/2-11,2,18);
+    }
+    ctx.font='12px Georgia,serif';
+    ctx.fillStyle=`rgba(${cold[1]},.28)`;
+    ctx.textAlign='center';
+    ctx.fillText('the day is unwritten',W/2,H/2+44);
+  }
+
+  // rising words
+  for(let i=words.length-1;i>=0;i--){
+    const p=words[i];
+    p.a+=.45;p.y-=.28;p.x+=p.d;
+    if(p.a>210){words.splice(i,1);continue}
+    const op=p.a<35?p.a/35:p.a>140?Math.max(0,1-(p.a-140)/70):1;
+    const ink=warm>.5?[42,31,15]:[70,90,130];
+    ctx.globalAlpha=op*.82;
+    ctx.font=`${p.s}px Georgia,serif`;
+    ctx.fillStyle=`rgb(${ink})`;
+    ctx.textAlign='center';
+    ctx.fillText(p.w,p.x,p.y);
+    ctx.globalAlpha=1;
+  }
+
+  // cursor dot
+  ctx.beginPath();
+  ctx.arc(mx,my,2.5,0,Math.PI*2);
+  ctx.fillStyle=`rgba(${gl},.65)`;
+  ctx.fill();
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</section>
