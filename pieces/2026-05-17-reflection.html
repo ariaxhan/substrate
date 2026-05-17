@@ -1,0 +1,49 @@
+<section data-date='2026-05-17' data-type='reflection' style="display:block;position:fixed;top:0;left:0;width:100%;height:100%;background:#06060f;overflow:hidden;cursor:none">
+<style>
+*{margin:0;padding:0}
+.word{position:fixed;font:300 4vw Georgia,serif;letter-spacing:.12em;color:rgba(228,212,178,.65);pointer-events:none;transform:translate(-50%,-50%);animation:bloom 5s ease-out forwards}
+#anchor{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);font:200 13px/1 'Courier New',mono;letter-spacing:.5em;color:rgba(140,155,180,.1);pointer-events:none;text-transform:uppercase;animation:arrive 4s ease-out forwards}
+@keyframes bloom{0%{opacity:0;transform:translate(-50%,-50%) scale(.88)}12%{opacity:.85}60%{opacity:.55}100%{opacity:0;transform:translate(-50%,-60%)}}
+@keyframes arrive{from{opacity:0}to{opacity:1}}
+</style>
+<canvas id=c></canvas>
+<div id=anchor>enough</div>
+<script>
+const cv=document.getElementById('c'),cx=cv.getContext('2d'),
+ws=['still','whole','good','rest','done','soft','held','home','here','full','last','deep','safe','quiet','over','now','warm','dark','close'],
+st=[],tr=[];
+let W=cv.width=innerWidth,H=cv.height=innerHeight,wi=0;
+addEventListener('resize',()=>{W=cv.width=innerWidth;H=cv.height=innerHeight});
+function addStar(x,y,r,life){st.push({x,y,r,o:0,pk:.3+Math.random()*.5,life,age:0})}
+setInterval(()=>addStar(Math.random()*W,Math.random()*H*.75,1+Math.random()*1.3,5e3+Math.random()*5e3),3e3);
+for(let i=0;i<14;i++)setTimeout(()=>addStar(Math.random()*W,Math.random()*H*.78,.5+Math.random()*1.2,6e3+Math.random()*6e3),i*600+200);
+addEventListener('mousemove',e=>tr.push({x:e.clientX,y:e.clientY,t:Date.now(),r:.6+Math.random()*.5}));
+addEventListener('click',e=>{
+  const d=document.createElement('div');
+  d.className='word';d.textContent=ws[wi++%ws.length];
+  d.style.left=e.clientX+'px';d.style.top=e.clientY+'px';
+  document.body.appendChild(d);
+  setTimeout(()=>d.remove(),5500);
+  for(let i=0;i<5;i++)addStar(e.clientX+(Math.random()-.5)*30,e.clientY+(Math.random()-.5)*30,.5+Math.random()*.7,2e3+Math.random()*1e3);
+});
+!function loop(){
+  cx.clearRect(0,0,W,H);
+  const now=Date.now();
+  for(let i=tr.length-1;i>=0;i--){
+    const p=tr[i],a=(now-p.t)/2e3;
+    if(a>=1){tr.splice(i,1);continue}
+    cx.beginPath();cx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    cx.fillStyle=`rgba(165,190,255,${.28*(1-a)})`;cx.fill();
+  }
+  for(let i=st.length-1;i>=0;i--){
+    const s=st[i];s.age+=16;
+    if(s.age>=s.life){st.splice(i,1);continue}
+    const p=s.age/s.life;
+    s.o=p<.2?s.pk*(p/.2):s.pk*(1-(p-.2)/.8);
+    cx.beginPath();cx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    cx.fillStyle=`rgba(208,218,250,${s.o})`;cx.fill();
+  }
+  requestAnimationFrame(loop);
+}();
+</script>
+</section>
