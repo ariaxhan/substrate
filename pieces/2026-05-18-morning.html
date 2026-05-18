@@ -1,0 +1,96 @@
+<section data-date='2026-05-18' data-type='morning'>
+<style>
+section[data-date='2026-05-18']{
+  display:block;position:relative;width:100%;height:100vh;
+  background:#07091c;overflow:hidden;cursor:crosshair;
+  font-family:Georgia,'Times New Roman',serif
+}
+section[data-date='2026-05-18'] #sky-bg{
+  position:absolute;inset:0;background:#07091c;
+  transition:background 10s ease
+}
+section[data-date='2026-05-18'] #horizon{
+  position:absolute;left:0;right:0;top:64%;height:1px;
+  background:linear-gradient(90deg,transparent 0%,#4a7ab5 20%,#8ab2d4 50%,#c87c42 80%,transparent 100%);
+  box-shadow:0 0 14px 2px #4a7ab5;
+  opacity:.45;
+  animation:breathe 5s ease-in-out infinite
+}
+@keyframes breathe{0%,100%{opacity:.35}50%{opacity:.6}}
+section[data-date='2026-05-18'] #glow-floor{
+  position:absolute;bottom:0;left:0;right:0;height:36%;
+  background:linear-gradient(to top,#0c0505,transparent);
+  opacity:0;transition:opacity 12s ease;pointer-events:none
+}
+@keyframes ascend{
+  0%{transform:translateY(0) scale(1);opacity:.8}
+  100%{transform:translateY(-200px) scale(.9);opacity:0}
+}
+section[data-date='2026-05-18'] .word{
+  position:absolute;pointer-events:none;font-style:italic;
+  letter-spacing:.07em;animation:ascend linear forwards
+}
+section[data-date='2026-05-18'] #prompt{
+  position:absolute;bottom:16%;left:50%;transform:translateX(-50%);
+  font-size:10px;color:#1e2540;letter-spacing:.35em;
+  text-transform:lowercase;transition:opacity 2.5s ease;
+  white-space:nowrap
+}
+</style>
+<div id='sky-bg'></div>
+<div id='horizon'></div>
+<div id='glow-floor'></div>
+<div id='prompt'>touch to begin</div>
+<script>(function(){
+var sec=document.querySelector("section[data-date='2026-05-18']");
+var hor=sec.querySelector('#horizon');
+var sky=sec.querySelector('#sky-bg');
+var gf=sec.querySelector('#glow-floor');
+var prompt=sec.querySelector('#prompt');
+var words=['begin','perhaps','open','today','still','becoming','not yet','first','again','slowly','enough','here','now','breathe','almost','whole','clear','let go','tender','new','yes','maybe','this morning','hold','dare','light','once','soft','already','soon'];
+var n=0;
+
+sec.addEventListener('mousemove',function(e){
+  var r=sec.getBoundingClientRect();
+  var t=(e.clientX-r.left)/r.width;
+  var h1='hsl('+(210+t*30)+',55%,52%)';
+  var h2='hsl('+(22+t*18)+',70%,54%)';
+  hor.style.background='linear-gradient(90deg,transparent 0%,'+h1+' 20%,'+h2+' 80%,transparent 100%)';
+  hor.style.boxShadow='0 0 '+(10+t*12)+'px 2px '+h1;
+});
+
+sec.addEventListener('click',function(e){
+  prompt.style.opacity='0';
+  n++;
+  var t=Math.min(n/18,1);
+  var ri=Math.round(7+t*16);
+  var gi=Math.round(9+t*20);
+  var bi=Math.round(28+t*38);
+  sky.style.background='rgb('+ri+','+gi+','+bi+')';
+  hor.style.opacity=0.4+t*0.35;
+  gf.style.opacity=t*0.7;
+
+  var r=sec.getBoundingClientRect();
+  var x=e.clientX-r.left;
+  var y=e.clientY-r.top;
+  var vy=y/r.height;
+  var w=document.createElement('span');
+  w.className='word';
+  var sz=12+Math.floor(Math.random()*19);
+  var dur=(5+Math.random()*4).toFixed(1);
+  var hue=vy>0.55?(22+Math.random()*20):(195+Math.random()*25);
+  var sat=vy>0.55?62:18;
+  var lit=72+Math.random()*18;
+  w.style.fontSize=sz+'px';
+  w.style.left=(x+Math.random()*24-12-sz*1.8)+'px';
+  w.style.top=(y-8)+'px';
+  w.style.color='hsl('+hue+','+sat+'%,'+lit+'%)';
+  w.style.fontWeight=Math.random()<0.25?'300':'400';
+  w.style.animationDuration=dur+'s';
+  w.style.animationTimingFunction='cubic-bezier(.2,.6,.4,1)';
+  w.textContent=words[Math.floor(Math.random()*words.length)];
+  sec.appendChild(w);
+  w.addEventListener('animationend',function(){w.remove()});
+});
+})();</script>
+</section>
