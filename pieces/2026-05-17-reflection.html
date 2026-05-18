@@ -1,49 +1,96 @@
-<section data-date='2026-05-17' data-type='reflection' style="display:block;position:fixed;top:0;left:0;width:100%;height:100%;background:#06060f;overflow:hidden;cursor:none">
+<section data-date='2026-05-17' data-type='reflection' style="display:block;position:fixed;top:0;left:0;width:100%;height:100%;background:#08060e;overflow:hidden;cursor:crosshair">
 <style>
 *{margin:0;padding:0}
-.word{position:fixed;font:300 4vw Georgia,serif;letter-spacing:.12em;color:rgba(228,212,178,.65);pointer-events:none;transform:translate(-50%,-50%);animation:bloom 5s ease-out forwards}
-#anchor{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);font:200 13px/1 'Courier New',mono;letter-spacing:.5em;color:rgba(140,155,180,.1);pointer-events:none;text-transform:uppercase;animation:arrive 4s ease-out forwards}
-@keyframes bloom{0%{opacity:0;transform:translate(-50%,-50%) scale(.88)}12%{opacity:.85}60%{opacity:.55}100%{opacity:0;transform:translate(-50%,-60%)}}
-@keyframes arrive{from{opacity:0}to{opacity:1}}
+.p{position:fixed;pointer-events:none;white-space:nowrap;font:300 italic 1em Georgia,serif;
+   color:rgba(212,222,255,1);transition:opacity .55s ease;will-change:opacity}
+#c{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none}
+#h{position:fixed;bottom:22px;width:100%;text-align:center;font:.6em 'Courier New',mono;
+   letter-spacing:.38em;text-transform:uppercase;color:rgba(170,188,235,.2);
+   pointer-events:none;transition:opacity 2s}
 </style>
 <canvas id=c></canvas>
-<div id=anchor>enough</div>
+<p id=h>move to find &nbsp;·&nbsp; press to keep</p>
 <script>
-const cv=document.getElementById('c'),cx=cv.getContext('2d'),
-ws=['still','whole','good','rest','done','soft','held','home','here','full','last','deep','safe','quiet','over','now','warm','dark','close'],
-st=[],tr=[];
-let W=cv.width=innerWidth,H=cv.height=innerHeight,wi=0;
-addEventListener('resize',()=>{W=cv.width=innerWidth;H=cv.height=innerHeight});
-function addStar(x,y,r,life){st.push({x,y,r,o:0,pk:.3+Math.random()*.5,life,age:0})}
-setInterval(()=>addStar(Math.random()*W,Math.random()*H*.75,1+Math.random()*1.3,5e3+Math.random()*5e3),3e3);
-for(let i=0;i<14;i++)setTimeout(()=>addStar(Math.random()*W,Math.random()*H*.78,.5+Math.random()*1.2,6e3+Math.random()*6e3),i*600+200);
-addEventListener('mousemove',e=>tr.push({x:e.clientX,y:e.clientY,t:Date.now(),r:.6+Math.random()*.5}));
-addEventListener('click',e=>{
+const sc=document.currentScript.parentElement,
+  cv=document.getElementById('c'),
+  cx=cv.getContext('2d');
+
+const resize=()=>{cv.width=innerWidth;cv.height=innerHeight};
+resize();addEventListener('resize',resize);
+
+const phrases=[
+  "the day is complete","you were enough","what held you",
+  "let the weight down","it was real","rest now",
+  "tomorrow does not exist yet","you were here",
+  "the work was enough","stillness is allowed",
+  "the last light has gone","you made it through"
+];
+
+let mx=innerWidth/2, my=innerHeight/2;
+const planted=[], els=[];
+
+phrases.forEach(txt=>{
   const d=document.createElement('div');
-  d.className='word';d.textContent=ws[wi++%ws.length];
-  d.style.left=e.clientX+'px';d.style.top=e.clientY+'px';
-  document.body.appendChild(d);
-  setTimeout(()=>d.remove(),5500);
-  for(let i=0;i<5;i++)addStar(e.clientX+(Math.random()-.5)*30,e.clientY+(Math.random()-.5)*30,.5+Math.random()*.7,2e3+Math.random()*1e3);
+  d.className='p';
+  d.textContent=txt;
+  d.style.left=`${12+Math.random()*76}%`;
+  d.style.top=`${8+Math.random()*82}%`;
+  d.style.opacity='.04';
+  d.style.fontSize=`${.82+Math.random()*.42}em`;
+  sc.appendChild(d);
+  els.push(d);
 });
-!function loop(){
-  cx.clearRect(0,0,W,H);
-  const now=Date.now();
-  for(let i=tr.length-1;i>=0;i--){
-    const p=tr[i],a=(now-p.t)/2e3;
-    if(a>=1){tr.splice(i,1);continue}
-    cx.beginPath();cx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    cx.fillStyle=`rgba(165,190,255,${.28*(1-a)})`;cx.fill();
-  }
-  for(let i=st.length-1;i>=0;i--){
-    const s=st[i];s.age+=16;
-    if(s.age>=s.life){st.splice(i,1);continue}
-    const p=s.age/s.life;
-    s.o=p<.2?s.pk*(p/.2):s.pk*(1-(p-.2)/.8);
-    cx.beginPath();cx.arc(s.x,s.y,s.r,0,Math.PI*2);
-    cx.fillStyle=`rgba(208,218,250,${s.o})`;cx.fill();
-  }
+
+const sweep=()=>{
+  els.forEach(el=>{
+    const r=el.getBoundingClientRect(),
+      cx2=r.left+r.width/2, cy=r.top+r.height/2,
+      d=Math.hypot(cx2-mx, cy-my);
+    el.style.opacity=Math.max(.04,Math.min(.84,1-d/155)).toFixed(3);
+  });
+};
+
+addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;sweep()});
+
+addEventListener('click',e=>{
+  planted.push({x:e.clientX,y:e.clientY,r:0,max:.55+Math.random()*.9,born:performance.now()});
+  document.getElementById('h').style.opacity='0';
+});
+
+const ambient=Array.from({length:95},()=>({
+  x:Math.random()*innerWidth,
+  y:Math.random()*innerHeight*.88,
+  r:.12+Math.random()*.85,
+  o:0,
+  pk:.1+Math.random()*.32,
+  delay:Math.random()*38000,
+  ph:Math.random()*6.28
+}));
+
+!function loop(now){
+  cx.clearRect(0,0,innerWidth,innerHeight);
+
+  ambient.forEach(s=>{
+    const age=now-s.delay;
+    if(age<0)return;
+    const fade=Math.min(1,age/3000);
+    const twink=.82+.18*Math.sin(now*.0009+s.ph);
+    cx.beginPath();
+    cx.arc(s.x,s.y,s.r,0,6.28);
+    cx.fillStyle=`rgba(205,215,255,${(s.pk*fade*twink).toFixed(3)})`;
+    cx.fill();
+  });
+
+  planted.forEach(s=>{
+    const age=(now-s.born)/350;
+    if(s.r<s.max)s.r=Math.min(s.max,age*s.max);
+    cx.beginPath();cx.arc(s.x,s.y,s.r,0,6.28);
+    cx.fillStyle='rgba(228,234,255,.92)';cx.fill();
+    cx.beginPath();cx.arc(s.x,s.y,s.r*3.2,0,6.28);
+    cx.fillStyle='rgba(200,215,255,.055)';cx.fill();
+  });
+
   requestAnimationFrame(loop);
-}();
+}(performance.now());
 </script>
 </section>
