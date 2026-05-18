@@ -1,0 +1,85 @@
+<section data-date='2026-05-18' data-type='spark'>
+<style>
+#ts-wrap{position:relative;width:100%;height:100vh;background:#080810;overflow:hidden;cursor:none}
+#ts-wrap .w{position:absolute;font-family:Georgia,serif;font-size:1.7rem;pointer-events:none;user-select:none;transition:opacity .5s;will-change:left,top}
+#wa{color:#a8c4e0;text-shadow:0 0 18px #4488cc88}
+#wb{color:#e0c0a8;text-shadow:0 0 18px #cc884488}
+#syn{position:absolute;font-family:Georgia,serif;font-size:2.2rem;font-style:italic;color:#d4c090;text-shadow:0 0 28px #d4c09088;pointer-events:none;user-select:none;transform:translate(-50%,-50%);opacity:0;transition:opacity .7s}
+#glow{position:absolute;border-radius:50%;pointer-events:none;background:radial-gradient(circle,#fff6 0,transparent 70%);width:120px;height:120px;transform:translate(-50%,-50%);opacity:0;transition:opacity .4s}
+#dot{position:absolute;width:5px;height:5px;border-radius:50%;background:#ffffff44;transform:translate(-50%,-50%);pointer-events:none}
+</style>
+<div id="ts-wrap">
+  <div id="dot"></div>
+  <div id="glow"></div>
+  <div class="w" id="wa"></div>
+  <div class="w" id="wb"></div>
+  <div id="syn"></div>
+</div>
+<script>
+(function(){
+var sc=document.getElementById('ts-wrap'),
+    wa=document.getElementById('wa'),
+    wb=document.getElementById('wb'),
+    gw=document.getElementById('glow'),
+    sy=document.getElementById('syn'),
+    dt=document.getElementById('dot');
+var A=['I','alone','self','mine','still','one','closed','inward'];
+var B=['you','apart','other','yours','moving','two','open','outward'];
+var C=['we','ours','between','both','new','born','changed','made'];
+var ax,ay,avx,avy,bx,by,bvx,bvy,mx,my,W,H,dead=false;
+function rp(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function init(){
+  dead=false;sy.style.opacity=0;wa.style.opacity=1;wb.style.opacity=1;
+  W=sc.offsetWidth;H=sc.offsetHeight;
+  mx=W/2;my=H/2;
+  ax=W*.2+Math.random()*W*.15;ay=H*.2+Math.random()*H*.6;
+  bx=W*.65+Math.random()*W*.15;by=H*.2+Math.random()*H*.6;
+  avx=(Math.random()-.5)*.5;avy=(Math.random()-.5)*.5;
+  bvx=(Math.random()-.5)*.5;bvy=(Math.random()-.5)*.5;
+  wa.textContent=rp(A);wb.textContent=rp(B);
+}
+function merge(){
+  if(dead)return;dead=true;
+  var cx=(ax+bx)/2,cy=(ay+by)/2;
+  gw.style.left=cx+'px';gw.style.top=cy+'px';gw.style.opacity=1;
+  setTimeout(function(){gw.style.opacity=0},500);
+  wa.style.opacity=0;wb.style.opacity=0;
+  sy.style.left=cx+'px';sy.style.top=cy+'px';
+  sy.textContent=rp(C);sy.style.opacity=1;
+  setTimeout(function(){sy.style.opacity=0;setTimeout(init,800)},2000);
+}
+sc.addEventListener('mousemove',function(e){
+  var r=sc.getBoundingClientRect();
+  mx=e.clientX-r.left;my=e.clientY-r.top;
+  dt.style.left=mx+'px';dt.style.top=my+'px';
+});
+sc.addEventListener('click',function(e){
+  var r=sc.getBoundingClientRect();
+  mx=e.clientX-r.left;my=e.clientY-r.top;
+  avx+=(mx-ax)/80;avy+=(my-ay)/80;
+  bvx+=(mx-bx)/80;bvy+=(my-by)/80;
+});
+function frame(){
+  if(!dead){
+    W=sc.offsetWidth;H=sc.offsetHeight;
+    var pull=.05;
+    avx+=(mx-ax)/W*pull*6;avy+=(my-ay)/H*pull*6;
+    bvx+=(mx-bx)/W*pull*6;bvy+=(my-by)/H*pull*6;
+    avx*=.978;avy*=.978;bvx*=.978;bvy*=.978;
+    ax+=avx;ay+=avy;bx+=bvx;by+=bvy;
+    var pw=80,ph=30;
+    if(ax<pw){avx=Math.abs(avx);ax=pw}else if(ax>W-pw){avx=-Math.abs(avx);ax=W-pw}
+    if(ay<ph){avy=Math.abs(avy);ay=ph}else if(ay>H-ph){avy=-Math.abs(avy);ay=H-ph}
+    if(bx<pw){bvx=Math.abs(bvx);bx=pw}else if(bx>W-pw){bvx=-Math.abs(bvx);bx=W-pw}
+    if(by<ph){bvy=Math.abs(bvy);by=ph}else if(by>H-ph){bvy=-Math.abs(bvy);by=H-ph}
+    wa.style.left=ax+'px';wa.style.top=ay+'px';
+    wb.style.left=bx+'px';wb.style.top=by+'px';
+    var d=Math.hypot(bx-ax,by-ay);
+    if(d<55)merge();
+  }
+  requestAnimationFrame(frame);
+}
+init();frame();
+})();
+</script>
+</section>
