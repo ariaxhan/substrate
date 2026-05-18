@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Halfway</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#f6f1e8;font-family:Georgia,serif}
+#b{position:fixed;left:-8%;width:116%;top:50%;height:1px;background:#2e2415;opacity:.3;transform-origin:50% 50%;transition:transform .9s cubic-bezier(.15,.85,.25,1)}
+#p{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);font-size:.95rem;letter-spacing:.45em;color:#2e2415;opacity:.7;cursor:pointer;user-select:none;padding:.5em 1.4em;transition:letter-spacing .5s ease,opacity .25s}
+#p:hover{opacity:1;letter-spacing:.72em}
+.w{position:fixed;pointer-events:none;font-size:.78rem;letter-spacing:.09em;font-family:Georgia,serif}
+</style>
+</head>
+<body>
+<section data-date='2026-05-18' data-type='pulse'>
+<div id="b"></div>
+<div id="p">noon</div>
+</section>
+<script>
+const ps=['noon','now','still','here','breath','hinge','even','noon'],
+  ab=['before','woke','light','rose','began','was','cool','spoke','opening'],
+  be=['after','sleep','dark','set','ends','will','warm','hush','closing'];
+let pi=0;
+const pv=document.getElementById('p'),bm=document.getElementById('b'),sc=document.querySelector('section');
+
+pv.onclick=()=>{
+  pv.style.opacity='0';
+  setTimeout(()=>{pi=(pi+1)%ps.length;pv.textContent=ps[pi];pv.style.opacity='.7';},160);
+};
+
+document.onmousemove=e=>{
+  bm.style.transform=`rotate(${(e.clientX/innerWidth-.5)*20}deg)`;
+};
+
+function drop(){
+  const up=Math.random()>.5,ws=up?ab:be,w=document.createElement('span');
+  w.className='w';
+  w.textContent=ws[0|Math.random()*ws.length];
+  w.style.cssText=`left:${12+Math.random()*76}%;top:50%;opacity:0;color:${up?'#3a4e6e':'#6e3a2a'}`;
+  sc.appendChild(w);
+  const d=innerHeight*.43*(up?-1:1),t=3e3+Math.random()*2200;
+  w.animate([
+    {opacity:0,transform:'translateY(0)'},
+    {opacity:.52,transform:`translateY(${d*.3}px)`},
+    {opacity:0,transform:`translateY(${d}px)`}
+  ],{duration:t,easing:'ease-in'}).onfinish=()=>w.remove();
+}
+
+setInterval(drop,720);
+for(let i=0;i<7;i++)setTimeout(drop,i*160);
+</script>
+</body>
+</html>
