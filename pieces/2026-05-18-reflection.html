@@ -1,0 +1,66 @@
+<section data-date='2026-05-18' data-type='reflection' style="display:block;position:fixed;top:0;left:0;width:100%;height:100%;background:#060408;overflow:hidden;cursor:crosshair">
+<style>
+*{margin:0;padding:0}
+.g{position:fixed;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%)}
+.w{position:fixed;pointer-events:none;font:italic .78em Georgia,serif;letter-spacing:.09em;transform:translateX(-50%)}
+#hint{position:fixed;bottom:1.9em;width:100%;text-align:center;font:.56em 'Courier New',mono;letter-spacing:.42em;text-transform:uppercase;color:rgba(230,205,155,.19);pointer-events:none;transition:opacity 3s}
+@keyframes glow{0%,100%{opacity:.5}50%{opacity:.9}}
+</style>
+<div id=hint>touch the dark</div>
+<script>
+const sc=document.currentScript.parentElement;
+const cv=document.createElement('canvas');
+cv.style.cssText='position:fixed;top:0;left:0;pointer-events:none;transition:transform .18s ease';
+cv.width=innerWidth;cv.height=innerHeight;
+sc.insertBefore(cv,sc.firstChild);
+const ctx=cv.getContext('2d');
+for(let i=0;i<88;i++){
+  ctx.beginPath();
+  ctx.arc(Math.random()*innerWidth,Math.random()*innerHeight,.3+Math.random()*.9,0,6.28);
+  ctx.fillStyle=`rgba(240,222,192,${(.03+Math.random()*.09).toFixed(3)})`;
+  ctx.fill();
+}
+
+const ws=['rest','still','done','whole','soft','deep','slow','hush','held','home','true','real','good','here','now','warm','keep','known','safe','breathe'];
+let n=0;
+
+sc.addEventListener('click',e=>{
+  document.getElementById('hint').style.opacity='0';
+  const sz=26+Math.random()*20;
+  const dur=(2.3+Math.random()*1.2).toFixed(1);
+  const g=document.createElement('div');
+  g.className='g';
+  g.style.cssText=`left:${e.clientX}px;top:${e.clientY}px;width:${sz}px;height:${sz}px;background:radial-gradient(circle,rgba(255,190,80,.22),transparent 66%);animation:glow ${dur}s ease-in-out infinite;animation-delay:${(Math.random()*.4).toFixed(2)}s`;
+  sc.appendChild(g);
+  const dot=document.createElement('div');
+  dot.style.cssText=`position:fixed;left:${e.clientX}px;top:${e.clientY}px;width:2px;height:2px;border-radius:50%;background:rgba(255,238,192,.88);transform:translate(-50%,-50%);pointer-events:none`;
+  sc.appendChild(dot);
+  const word=ws[n++%ws.length];
+  const w=document.createElement('div');
+  w.className='w';
+  w.style.left=`${e.clientX}px`;
+  w.style.top=`${e.clientY-46}px`;
+  w.style.color='rgba(255,238,188,0)';
+  sc.appendChild(w);
+  let i=0;
+  const t=setInterval(()=>{
+    w.textContent=word.slice(0,++i);
+    w.style.color=`rgba(255,238,188,${(i/word.length*.78).toFixed(2)})`;
+    if(i>=word.length){
+      clearInterval(t);
+      setTimeout(()=>{
+        w.style.transition='color 7s';
+        w.style.color='rgba(255,238,188,.09)';
+      },4800);
+    }
+  },115);
+});
+
+sc.style.perspective='1400px';
+addEventListener('mousemove',e=>{
+  const rx=((e.clientY/innerHeight)-.5)*1.8;
+  const ry=((e.clientX/innerWidth)-.5)*-1.8;
+  cv.style.transform=`rotateX(${rx}deg) rotateY(${ry}deg)`;
+});
+</script>
+</section>
