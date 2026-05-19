@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Halfway</title>
+<style>
+*{margin:0;padding:0}
+html,body{width:100%;height:100%;background:#0c0b09;overflow:hidden}
+#s{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transform-origin:50% 50%}
+#b{position:relative;width:min(520px,90vw);height:min(480px,84vh)}
+#ax{position:absolute;top:50%;left:-10%;width:120%;height:0;border-top:.5px solid #27241c}
+#pv{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:4px;height:4px;border-radius:50%;background:#3c3830;transition:background .4s}
+.w{position:absolute;font:italic 13px/1 Georgia,serif;letter-spacing:.03em;pointer-events:none;transform:translate(-50%,-50%)}
+.am{color:#7090aa}
+.pm{color:#aa8848}
+</style>
+</head>
+<body>
+<section data-date='2026-05-19' data-type='pulse'>
+<div id="s"><div id="b">
+<div id="ax"></div>
+<div id="pv"></div>
+</div></div>
+</section>
+<script>
+const s=document.getElementById('s'),
+      b=document.getElementById('b'),
+      pv=document.getElementById('pv');
+
+// [text, x(-1..1), y(-1..1 from center), fontSize, class]
+// "still" appears on both sides at the same x — the mirror word
+const W=[
+  ['almost', -.40, -.68, 11, 'am'],
+  ['before', -.10, -.48, 14, 'am'],
+  ['quiet',   .32, -.58, 10, 'am'],
+  ['still',  -.18, -.22, 17, 'am'],
+  ['new',     .16, -.34, 10, 'am'],
+  ['cool',    .42, -.16, 10, 'am'],
+  ['still',  -.18,  .18, 17, 'pm'],
+  ['after',  -.10,  .44, 14, 'pm'],
+  ['amber',   .32,  .54, 10, 'pm'],
+  ['spent',   .10,  .28, 10, 'pm'],
+  ['long',   -.40,  .64, 11, 'pm'],
+  ['enough', -.50,  .24, 10, 'pm'],
+];
+
+W.forEach(([t,x,y,sz,c])=>{
+  const e=document.createElement('span');
+  e.className='w '+c;
+  e.textContent=t;
+  e.style.cssText=`left:${50+x*50}%;top:${50+y*44}%;font-size:${sz}px`;
+  b.appendChild(e);
+});
+
+// seed tilt from actual time — the day knows where it is
+const h=new Date().getHours()+new Date().getMinutes()/60;
+let tgt=Math.max(-4,Math.min(4,(h-12)/3)),
+    cur=tgt,
+    flip=false;
+
+document.addEventListener('mousemove',e=>{
+  if(!flip) tgt=(e.clientX/innerWidth-.5)*10;
+});
+
+// click: tip the balance to its mirror
+document.addEventListener('click',()=>{
+  flip=!flip;
+  if(flip){ tgt=-cur; pv.style.background='#707060'; }
+  else { pv.style.background='#3c3830'; }
+});
+
+!function L(){
+  cur+=(tgt-cur)*.07;
+  s.style.transform=`rotate(${cur}deg)`;
+  requestAnimationFrame(L);
+}();
+</script>
+</body>
+</html>
