@@ -1,0 +1,64 @@
+<section data-date='2026-05-19' data-type='spark'>
+<style>
+#s{background:#070708;width:100vw;height:100vh;overflow:hidden;position:relative;cursor:col-resize;user-select:none}
+#wa,#wb{position:absolute;top:46%;left:50%;transform:translate(-50%,-50%);font-family:Georgia,serif;font-size:4.5vw;letter-spacing:.12em;pointer-events:none;white-space:nowrap;will-change:opacity}
+#wa{color:#4488cc;mix-blend-mode:screen}
+#wb{color:#cc4422;mix-blend-mode:screen}
+#wc{position:absolute;top:62%;left:50%;transform:translate(-50%,-50%);font-family:Georgia,serif;font-size:2vw;letter-spacing:.55em;color:#cdc6b8;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity .25s}
+#ln{position:absolute;top:0;width:1px;height:100%;background:#ffffff09;pointer-events:none;transition:left .05s}
+#h{position:fixed;bottom:2.5vh;width:100%;text-align:center;color:#141414;font:10px/1 sans-serif;letter-spacing:.28em;pointer-events:none}
+</style>
+<div id=s>
+<div id=wa></div>
+<div id=wb></div>
+<div id=wc></div>
+<div id=ln></div>
+<div id=h>find the threshold · click to renew</div>
+</div>
+<script>
+const P=[
+  ["absence","presence","recognition"],
+  ["signal","noise","resonance"],
+  ["question","answer","threshold"],
+  ["particle","wave","interference"],
+  ["dark","light","eclipse"],
+  ["before","after","contact"]
+];
+const g=document.getElementById('s'),
+      wa=document.getElementById('wa'),
+      wb=document.getElementById('wb'),
+      wc=document.getElementById('wc'),
+      ln=document.getElementById('ln');
+let W=innerWidth,mx=W/2,idx=0;
+
+function set(i){
+  wa.textContent=P[i][0];
+  wb.textContent=P[i][1];
+  wc.textContent=P[i][2];
+}
+
+function frame(){
+  W=g.offsetWidth||innerWidth;
+  const t=mx/W;
+  const oa=Math.max(0,Math.min(1,1.5-t*2));
+  const ob=Math.max(0,Math.min(1,t*2-.5));
+  wa.style.opacity=oa;
+  wb.style.opacity=ob;
+  wc.style.opacity=Math.max(0,Math.min(oa,ob)*3-.5);
+  ln.style.left=mx+'px';
+  requestAnimationFrame(frame);
+}
+
+g.addEventListener('mousemove',e=>{
+  const r=g.getBoundingClientRect();
+  mx=e.clientX-r.left;
+});
+g.addEventListener('click',()=>{
+  idx=(idx+1)%P.length;
+  set(idx);
+});
+
+set(0);
+frame();
+</script>
+</section>
