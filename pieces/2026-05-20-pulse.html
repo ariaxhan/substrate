@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>pulse — 2026-05-20</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#f7f1e3;cursor:crosshair}
+canvas{position:fixed;top:0;left:0;pointer-events:none}
+.w{position:fixed;font-family:Georgia,serif;font-size:clamp(.6rem,.8vw,.78rem);line-height:2;text-align:center;width:10vw;min-width:88px;pointer-events:none;white-space:pre-line;letter-spacing:.04em;transition:color .9s,opacity .7s}
+#hi{position:fixed;bottom:8%;left:50%;transform:translateX(-50%);font-family:Georgia,serif;font-style:italic;font-size:.68rem;letter-spacing:.22em;color:#ccc;pointer-events:none;transition:color .9s;white-space:nowrap}
+</style></head>
+<body>
+<section data-date='2026-05-20' data-type='pulse'>
+<canvas id=c></canvas>
+<div id=lw class=w></div>
+<div id=rw class=w></div>
+<div id=hi>the hinge of noon</div>
+<script>
+const cv=document.getElementById('c'),X=cv.getContext('2d');
+const M=['dawn','waking','quiet','before','possible','first light','unspent','the plan','threshold','open'],
+      A=['heat','already','narrowed','past','the fact','late','done','remainder','after','spent'];
+const lw=document.getElementById('lw'),rw=document.getElementById('rw'),hi=document.getElementById('hi');
+let a=0,tg=0,fl=0,W,H,cx,cy;
+function sz(){cv.width=W=innerWidth;cv.height=H=innerHeight;cx=W/2;cy=H/2}
+sz();addEventListener('resize',sz);
+function pk(arr){return[...arr].sort(()=>Math.random()-.5).slice(0,4).join('\n')}
+lw.textContent=pk(M);lw.style.color='#6e93b5';
+rw.textContent=pk(A);rw.style.color='#b8693a';
+function draw(){
+  X.clearRect(0,0,W,H);
+  const r=a*Math.PI/180,BL=W*.29;
+  const lx=cx-Math.cos(r)*BL,ly=cy-Math.sin(r)*BL;
+  const rx=cx+Math.cos(r)*BL,ry=cy+Math.sin(r)*BL;
+  X.strokeStyle='#241408';X.lineWidth=1;
+  X.beginPath();X.moveTo(lx,ly);X.lineTo(rx,ry);X.stroke();
+  X.fillStyle='#241408';
+  X.beginPath();X.moveTo(cx,cy);X.lineTo(cx-8,cy+14);X.lineTo(cx+8,cy+14);X.closePath();X.fill();
+  X.beginPath();X.moveTo(cx-12,cy+14);X.lineTo(cx+12,cy+14);X.stroke();
+  const pw=5,pr=r+Math.PI/2,px=Math.cos(pr)*pw,py=Math.sin(pr)*pw;
+  X.beginPath();X.moveTo(lx-px,ly-py);X.lineTo(lx+px,ly+py);X.stroke();
+  X.beginPath();X.moveTo(rx-px,ry-py);X.lineTo(rx+px,ry+py);X.stroke();
+  lw.style.left=lx+'px';lw.style.top=(ly+20)+'px';lw.style.transform='translateX(-50%)';
+  rw.style.left=rx+'px';rw.style.top=(ry+20)+'px';rw.style.transform='translateX(-50%)';
+}
+function loop(){a+=(tg-a)*.07;draw();requestAnimationFrame(loop)}
+addEventListener('mousemove',e=>{tg=((e.clientX-cx)/cx)*22});
+addEventListener('click',()=>{
+  fl^=1;
+  const[tl,tc]=[lw.textContent,lw.style.color];
+  lw.textContent=rw.textContent;lw.style.color=rw.style.color;
+  rw.textContent=tl;rw.style.color=tc;
+  hi.textContent=fl?'already past':'the hinge of noon';
+  hi.style.color=fl?'#b8693a':'#ccc';
+  tg*=-.4;
+});
+loop();
+</script>
+</section>
+</body></html>
