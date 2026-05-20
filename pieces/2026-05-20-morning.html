@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>first light — 2026-05-20</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#07071a;cursor:crosshair;transition:background 2s ease}
+#horizon{position:absolute;width:100%;top:61%;height:1px;background:linear-gradient(90deg,transparent 5%,#b07030 30%,#e8c060 50%,#b07030 70%,transparent 95%);opacity:.18;transition:opacity 1.8s ease,top .4s ease}
+#horizon::after{content:'';position:absolute;inset:-24px 0;background:linear-gradient(180deg,transparent,rgba(180,110,40,.05),transparent)}
+#glow{position:absolute;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(220,170,80,.07) 0%,transparent 70%);pointer-events:none;transform:translate(-50%,-50%);transition:opacity .3s}
+.word{position:absolute;font-family:Georgia,'Times New Roman',serif;font-size:1rem;letter-spacing:.22em;text-transform:lowercase;color:rgba(210,200,185,.0);pointer-events:none;white-space:nowrap;animation:rise 3.4s ease-out forwards}
+@keyframes rise{
+  0%{opacity:0;transform:translateY(4px)}
+  12%{opacity:1;color:rgba(210,200,185,.8)}
+  55%{opacity:.6}
+  100%{opacity:0;transform:translateY(-72px);letter-spacing:.38em}
+}
+#hint{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-family:Georgia,serif;font-size:.6rem;letter-spacing:.28em;color:rgba(180,160,130,.22);text-transform:lowercase;transition:opacity 1.4s ease;pointer-events:none}
+</style>
+</head>
+<body>
+<section data-date='2026-05-20' data-type='morning'>
+<div id="horizon"></div>
+<div id="glow"></div>
+<div id="hint">touch&nbsp;the&nbsp;dark</div>
+<script>
+const pool=['first','open','begin','still','before','breath','possible','unnamed','empty','whole','tender','new','unspent','waiting','unknown','clear','soft','ready','untouched','quiet','held','vast','arising','becoming','nascent','latent','waking','unwritten','threshold','brink'],
+hz=document.getElementById('horizon'),
+gl=document.getElementById('glow'),
+ht=document.getElementById('hint'),
+bd=document.body;
+let clicks=0,hBase=61;
+
+document.addEventListener('mousemove',e=>{
+  const mx=e.clientX/innerWidth,my=e.clientY/innerHeight;
+  gl.style.left=e.clientX+'px';
+  gl.style.top=e.clientY+'px';
+  hz.style.top=(hBase+my*3.5-1.5)+'%';
+  hz.style.opacity=(.18+mx*.22*(clicks*.08+1))+'';
+});
+
+document.addEventListener('click',e=>{
+  clicks++;
+  if(clicks===1)ht.style.opacity='0';
+
+  const p=Math.min(clicks/20,1),
+    ri=Math.round(7+p*16),
+    gi=Math.round(7+p*13),
+    bi=Math.round(26+p*18);
+  bd.style.background=`rgb(${ri},${gi},${bi})`;
+
+  if(p>.4){
+    hz.style.opacity=(.18+p*.55)+'';
+    hBase=61-p*2;
+  }
+
+  const w=document.createElement('div');
+  w.className='word';
+  w.textContent=pool[Math.floor(Math.random()*pool.length)];
+  const sz=.78+Math.random()*.55;
+  w.style.fontSize=sz+'rem';
+  w.style.left=(e.clientX+(Math.random()*50-25)-30)+'px';
+  w.style.top=(e.clientY-8)+'px';
+  w.style.animationDuration=(2.8+Math.random()*.9)+'s';
+  bd.appendChild(w);
+  w.addEventListener('animationend',()=>w.remove());
+});
+</script>
+</section>
+</body>
+</html>
