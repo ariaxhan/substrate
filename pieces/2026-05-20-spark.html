@@ -1,0 +1,116 @@
+<section data-date='2026-05-20' data-type='spark'>
+<!--
+  "IMPACT"
+
+  Two words begin on opposite shores of the screen.
+  The mouse draws them together.
+  Past a certain threshold they cannot stop.
+  At the moment of contact a third word erupts —
+  the thing that only exists because of the collision.
+
+  Move right to bring them together.
+  They will meet when you let them.
+  Click to advance.
+-->
+<style>
+#sp{background:#070808;width:100vw;height:100vh;position:relative;overflow:hidden;cursor:crosshair;user-select:none}
+#wA,#wB,#wC{position:absolute;font:700 clamp(2rem,7.5vw,5.5rem)/1 'Courier New',monospace;letter-spacing:.06em;pointer-events:none;white-space:nowrap;will-change:left,top}
+#wA{color:#4a7fc1}
+#wB{color:#c1664a}
+#wC{color:#f0ead8;font-size:clamp(1.8rem,6.5vw,5rem);letter-spacing:.18em;opacity:0}
+#bar{position:absolute;top:0;width:1px;height:100%;background:#ffffff06;pointer-events:none}
+#legend{position:absolute;bottom:2.5vh;width:100%;text-align:center;font:10px/1 sans-serif;color:#1a1a1a;letter-spacing:.28em;pointer-events:none}
+@keyframes burst{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}40%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}70%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+@keyframes recoil{0%,100%{opacity:1}50%{opacity:.15}}
+</style>
+<div id=sp>
+  <div id=wA></div>
+  <div id=wB></div>
+  <div id=wC></div>
+  <div id=bar></div>
+  <div id=legend>move right · collide · click to advance</div>
+</div>
+<script>
+(function(){
+const P=[
+  ['IRON','FIRE','STEEL'],
+  ['RAIN','EARTH','BLOOM'],
+  ['BREATH','BREATH','KISS'],
+  ['NIGHT','DAWN','EDGE'],
+  ['HAND','HAND','HELD'],
+  ['I','I','WE'],
+  ['WAVE','SHORE','FOAM'],
+  ['SILENCE','WORD','MEANING']
+];
+const g=document.getElementById('sp'),
+      wA=document.getElementById('wA'),
+      wB=document.getElementById('wB'),
+      wC=document.getElementById('wC'),
+      bar=document.getElementById('bar');
+let idx=0,mx=0,prog=0,coll=false;
+
+function set(i){
+  wA.textContent=P[i][0];
+  wB.textContent=P[i][1];
+  wC.textContent=P[i][2];
+  wC.style.animation='none';
+  wC.style.opacity=0;
+  wA.style.animation='none';
+  wB.style.animation='none';
+  wA.style.color='#4a7fc1';
+  wB.style.color='#c1664a';
+  coll=false;
+  prog=0; mx=0;
+}
+
+function hit(){
+  if(coll)return; coll=true;
+  wA.style.animation='recoil .4s ease';
+  wB.style.animation='recoil .4s ease';
+  wC.style.animation='burst 1.6s ease forwards';
+  setTimeout(()=>{idx=(idx+1)%P.length; set(idx);},1700);
+}
+
+function frame(){
+  const W=g.offsetWidth||innerWidth,H=g.offsetHeight||innerHeight;
+  prog=Math.max(0,Math.min(1,mx/W));
+
+  const margin=W*.06;
+  const lw=wA.offsetWidth||100, rw=wB.offsetWidth||100;
+  const cx=W/2;
+
+  const ax=margin+(cx-lw-margin)*prog;
+  const bx=(W-margin-rw)-(W-margin-rw-cx)*prog;
+
+  const mid=H*0.46;
+  wA.style.left=ax+'px';
+  wA.style.top=(mid-wA.offsetHeight/2)+'px';
+  wB.style.left=bx+'px';
+  wB.style.top=(mid-wB.offsetHeight/2)+'px';
+  wC.style.left=(cx-wC.offsetWidth/2)+'px';
+  wC.style.top=(mid-wC.offsetHeight/2)+'px';
+
+  const bright=.5+prog*.5;
+  wA.style.filter=`brightness(${bright})`;
+  wB.style.filter=`brightness(${bright})`;
+
+  bar.style.left=mx+'px';
+
+  if(prog>.87&&!coll) hit();
+  requestAnimationFrame(frame);
+}
+
+g.addEventListener('mousemove',e=>{
+  const r=g.getBoundingClientRect();
+  mx=e.clientX-r.left;
+});
+g.addEventListener('mouseleave',()=>{ if(!coll) mx=0; });
+g.addEventListener('click',()=>{
+  if(!coll){ mx=g.offsetWidth*.92; hit(); }
+  else{ idx=(idx+1)%P.length; set(idx); }
+});
+
+set(0); frame();
+})();
+</script>
+</section>
