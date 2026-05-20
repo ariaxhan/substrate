@@ -1,0 +1,43 @@
+<section data-date='2026-05-19' data-type='reflection'>
+<style>
+#sky{position:relative;width:100%;min-height:72vh;background:radial-gradient(ellipse at 50% 30%,#0d0f1e 0%,#030308 100%);overflow:hidden;cursor:crosshair;user-select:none}
+.s{position:absolute;border-radius:50%;background:#e8ecff;transform:translate(-50%,-50%);pointer-events:none;animation:appear .4s ease-out}
+@keyframes appear{0%{opacity:0;transform:translate(-50%,-50%) scale(0)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.w{position:absolute;font-family:Georgia,serif;color:rgba(200,210,240,1);pointer-events:none;transform:translate(-50%,-50%);white-space:nowrap;animation:lift 3.5s ease-out forwards}
+@keyframes lift{0%{opacity:0;transform:translate(-50%,-30%)}15%{opacity:1}70%{opacity:.7}100%{opacity:0;transform:translate(-50%,-150%)}}
+#hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:Georgia,serif;font-size:.85rem;color:rgba(140,150,180,.55);letter-spacing:.25em;animation:fade 5s 1s ease-out forwards;pointer-events:none;text-align:center}
+@keyframes fade{0%{opacity:1}70%{opacity:.4}100%{opacity:0}}
+#coda{position:absolute;bottom:11%;width:100%;text-align:center;font-family:Georgia,serif;font-size:.95rem;letter-spacing:.45em;color:rgba(160,170,210,0);transition:color 3s ease-in;pointer-events:none;font-style:italic}
+.show{color:rgba(160,170,210,.6)!important}
+</style>
+<div id='sky'>
+  <div id='hint'>touch the dark</div>
+  <div id='coda'>the day is complete</div>
+</div>
+<script>
+const lines=['done','the last','light folds','into night','the world','breathes out','the stars','one by one','remember','you','were here','rest now'];
+let n=0,sky=document.getElementById('sky'),coda=document.getElementById('coda');
+sky.addEventListener('click',e=>{
+  let b=sky.getBoundingClientRect(),x=e.clientX-b.left,y=e.clientY-b.top;
+  let sz=1+Math.random()*2.5;
+  let s=document.createElement('div');
+  s.className='s';
+  s.style.cssText='left:'+x+'px;top:'+y+'px;width:'+sz+'px;height:'+sz+'px;box-shadow:0 0 '+(sz*3)+'px '+sz+'px rgba(200,215,255,.45)';
+  sky.appendChild(s);
+  let w=document.createElement('div');
+  w.className='w';
+  w.style.cssText='left:'+x+'px;top:'+y+'px;font-size:'+(0.75+Math.random()*0.3)+'rem';
+  w.textContent=lines[n%lines.length];
+  sky.appendChild(w);
+  setTimeout(()=>w.remove(),3600);
+  if(++n>=8)coda.className='show';
+});
+sky.addEventListener('mousemove',e=>{
+  let b=sky.getBoundingClientRect(),mx=(e.clientX-b.left)/b.width-.5;
+  [...sky.querySelectorAll('.s')].forEach((s,i)=>{
+    let d=(i%5-2)*.14;
+    s.style.transform='translate(calc(-50% + '+(mx*d*22)+'px),-50%)';
+  });
+});
+</script>
+</section>
