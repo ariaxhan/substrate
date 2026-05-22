@@ -1,0 +1,36 @@
+<section data-date='2026-05-22' data-type='spark'>
+<style>
+#cv{position:fixed;inset:0;background:#000;cursor:none;overflow:hidden}
+.wd{position:absolute;top:50%;transform:translateY(-50%);font:clamp(2rem,4.5vw,3.5rem)/1 Georgia,serif;color:#777;letter-spacing:.08em;transition:left .1s,opacity .3s;pointer-events:none;user-select:none}
+#mg{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font:clamp(2rem,4.5vw,3.5rem)/1 Georgia,serif;color:#fff;opacity:0;letter-spacing:.22em;transition:opacity .4s;pointer-events:none;user-select:none;text-shadow:0 0 20px #fffa,0 0 55px #fff5}
+#ht{position:absolute;bottom:2em;width:100%;text-align:center;font:10px sans-serif;color:#222;letter-spacing:.25em;text-transform:uppercase}
+#cr{position:absolute;border-radius:50%;background:#333;width:3px;height:3px;transform:translate(-50%,-50%);pointer-events:none;transition:transform .12s,background .2s}
+</style>
+<div id=cv>
+<span class=wd id=wa style=left:8%></span>
+<span class=wd id=wb style=left:72%></span>
+<span id=mg></span>
+<div id=ht>move to center · click to cycle</div>
+<div id=cr></div>
+</div>
+<script>
+const P=[['i','you','we'],['fire','water','steam'],['self','other','us'],['dark','light','dusk'],['alone','together','whole'],['silence','sound','song'],['wound','time','scar']];
+let pi=0;
+const[wa,wb,mg,cr,cv]=['wa','wb','mg','cr','cv'].map(x=>document.getElementById(x));
+function load(){const[a,b,c]=P[pi];wa.textContent=a;wb.textContent=b;mg.textContent=c;mg.style.opacity=0;wa.style.opacity=wb.style.opacity=1}
+load();
+cv.addEventListener('mousemove',e=>{
+  const W=innerWidth,mx=e.clientX/W;
+  cr.style.left=e.clientX+'px';cr.style.top=e.clientY+'px';
+  const gap=Math.abs(mx-.5)*2*W*.38;
+  wa.style.left=(W/2-gap-wa.offsetWidth)+'px';
+  wb.style.left=(W/2+gap)+'px';
+  const t=Math.max(0,1-gap/48);
+  mg.style.opacity=t;
+  wa.style.opacity=wb.style.opacity=1-t*.82;
+  cr.style.background=t>.5?'#aaa':'#333';
+  cr.style.transform=`translate(-50%,-50%) scale(${1+t*3})`;
+});
+cv.addEventListener('click',()=>{pi=(pi+1)%P.length;load()});
+</script>
+</section>
