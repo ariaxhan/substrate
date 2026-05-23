@@ -1,0 +1,98 @@
+<section data-date='2026-05-22' data-type='reflection'>
+<style>
+*{margin:0;padding:0}
+body{background:#07061b;overflow:hidden;width:100vw;height:100vh;cursor:crosshair}
+canvas{position:fixed;top:0;left:0}
+#p{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;font:italic 1.05rem Georgia,serif;color:rgba(210,200,240,0.2);letter-spacing:.2em;line-height:2.2;pointer-events:none;transition:opacity 4s}
+#h{position:fixed;bottom:1.8rem;width:100%;text-align:center;font:.6rem Georgia,serif;color:rgba(180,170,220,0.22);letter-spacing:.15em;pointer-events:none;transition:opacity 2s}
+</style>
+<canvas id=c></canvas>
+<div id=p>the day<br>has been<br>enough</div>
+<div id=h>touch to name a star</div>
+<script>
+const cv=document.getElementById('c'),
+  gx=cv.getContext('2d'),
+  resize=()=>{cv.width=innerWidth;cv.height=innerHeight},
+  pool=['still','done','held','rest','enough','close','whole','soft','known','let','warm','gone','kept','now','seen','quiet','full','safe'],
+  stars=[],trail=[];
+let tick=0;
+resize();addEventListener('resize',resize);
+
+function Star(px,py){
+  this.x=px;this.y=py;
+  this.r=Math.random()*.7+.35;
+  this.ph=Math.random()*6.28;
+  this.spd=Math.random()*.0007+.0003;
+  this.born=tick;
+  this.word=pool[stars.length%pool.length];
+}
+
+addEventListener('click',e=>{
+  if(stars.length>=22)stars.shift();
+  stars.push(new Star(e.clientX,e.clientY));
+  const n=stars.length;
+  document.getElementById('p').style.opacity=Math.max(0,1-n/6);
+  if(n===1)document.getElementById('h').style.opacity=0;
+});
+
+let lastT=0;
+addEventListener('mousemove',e=>{
+  if(tick-lastT>14){
+    trail.push({x:e.clientX,y:e.clientY,a:.16});
+    if(trail.length>55)trail.shift();
+    lastT=tick;
+  }
+});
+
+function frame(ts){
+  tick=ts;
+  gx.clearRect(0,0,cv.width,cv.height);
+
+  trail.forEach(p=>{
+    p.a*=.91;
+    gx.fillStyle='rgba(150,130,215,'+p.a+')';
+    gx.beginPath();gx.arc(p.x,p.y,1.1,0,6.28);gx.fill();
+  });
+
+  for(let i=0;i<stars.length;i++)
+    for(let j=i+1;j<stars.length;j++){
+      const dx=stars[i].x-stars[j].x,dy=stars[i].y-stars[j].y,
+        d=Math.sqrt(dx*dx+dy*dy);
+      if(d<170){
+        const la=.055*(1-d/170)*Math.min(1,(ts-Math.max(stars[i].born,stars[j].born))/800);
+        gx.strokeStyle='rgba(165,150,225,'+la+')';
+        gx.lineWidth=.5;
+        gx.beginPath();gx.moveTo(stars[i].x,stars[i].y);gx.lineTo(stars[j].x,stars[j].y);gx.stroke();
+      }
+    }
+
+  stars.forEach(s=>{
+    const age=(ts-s.born)/1000,
+      fade=Math.min(1,age*1.4),
+      pulse=.72+Math.sin(ts*s.spd+s.ph)*.28,
+      a=fade*pulse*.88;
+
+    const g=gx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*6);
+    g.addColorStop(0,'rgba(235,225,255,'+a+')');
+    g.addColorStop(.45,'rgba(175,155,240,'+(a*.28)+')');
+    g.addColorStop(1,'rgba(0,0,20,0)');
+    gx.fillStyle=g;
+    gx.beginPath();gx.arc(s.x,s.y,s.r*6,0,6.28);gx.fill();
+
+    gx.fillStyle='rgba(248,244,255,'+a+')';
+    gx.beginPath();gx.arc(s.x,s.y,s.r,0,6.28);gx.fill();
+
+    const wa=Math.min(.42,age*.18);
+    if(wa>.015){
+      gx.fillStyle='rgba(200,192,235,'+wa+')';
+      gx.font='italic .7rem Georgia,serif';
+      gx.textAlign='center';
+      gx.fillText(s.word,s.x,s.y-11);
+    }
+  });
+
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</section>
