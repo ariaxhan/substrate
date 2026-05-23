@@ -1,0 +1,94 @@
+<section data-date='2026-05-23' data-type='morning'>
+<style>
+section[data-date='2026-05-23']{
+  position:relative;height:100vh;overflow:hidden;
+  background:#07060f;cursor:crosshair;
+}
+section[data-date='2026-05-23'] .sky{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse at var(--mx,50%) 82%,rgba(255,170,45,.13) 0%,transparent 55%);
+  transition:background .1s;pointer-events:none;
+}
+section[data-date='2026-05-23'] .hz{
+  position:absolute;bottom:18%;left:0;width:100%;height:1px;
+  background:linear-gradient(to right,transparent 0%,rgba(220,170,55,.45) var(--mx,50%),transparent 100%);
+  pointer-events:none;
+}
+section[data-date='2026-05-23'] .ray{
+  position:absolute;bottom:18%;width:1px;pointer-events:none;
+  background:linear-gradient(to top,rgba(255,190,60,.7) 0%,rgba(255,200,80,.2) 40%,transparent 100%);
+  animation:thr-rise 4.5s ease-out forwards;
+}
+@keyframes thr-rise{
+  0%{height:0;opacity:.9}
+  50%{height:65vh;opacity:.6}
+  100%{height:72vh;opacity:0}
+}
+section[data-date='2026-05-23'] .wrd{
+  position:absolute;top:11%;width:100%;text-align:center;
+  font:italic 3.2rem Georgia,serif;
+  color:rgba(220,182,72,0);letter-spacing:.22em;
+  transition:color 1.3s ease;pointer-events:none;user-select:none;
+}
+section[data-date='2026-05-23'] .wrd.lit{color:rgba(220,182,72,.92)}
+section[data-date='2026-05-23'] .star{
+  position:absolute;border-radius:50%;
+  background:#fff;pointer-events:none;
+}
+section[data-date='2026-05-23'] .dawn{
+  position:absolute;inset:0;
+  background:linear-gradient(to top,rgba(255,210,120,0) 0%,transparent 100%);
+  transition:background 3s ease;pointer-events:none;
+}
+</style>
+<div class='sky'></div>
+<div class='hz'></div>
+<div class='dawn' id='thr-dawn'></div>
+<div class='wrd' id='thr-wrd'></div>
+<script>
+(function(){
+  var sec=document.querySelector("section[data-date='2026-05-23']"),
+      wrd=document.getElementById('thr-wrd'),
+      dw=document.getElementById('thr-dawn'),
+      sky=sec.querySelector('.sky'),
+      hz=sec.querySelector('.hz'),
+      ws=['begin','open','still','whole','unnamed','present','here','almost','yes','now'],
+      idx=0;
+
+  for(var i=0;i<85;i++){
+    var s=document.createElement('div');
+    s.className='star';
+    var sz=Math.random()*1.6+.4;
+    s.style.cssText='left:'+(Math.random()*100)+'%;top:'+(Math.random()*76)+'%;width:'+sz+'px;height:'+sz+'px;opacity:'+(Math.random()*.55+.1)+';transition:opacity 2s';
+    sec.appendChild(s);
+  }
+
+  sec.addEventListener('mousemove',function(e){
+    var r=sec.getBoundingClientRect(),pct=((e.clientX-r.left)/r.width*100).toFixed(1)+'%';
+    sec.style.setProperty('--mx',pct);
+    sky.style.background='radial-gradient(ellipse at '+pct+' 82%,rgba(255,170,45,.14) 0%,transparent 55%)';
+    hz.style.background='linear-gradient(to right,transparent 0%,rgba(220,170,55,.5) '+pct+',transparent 100%)';
+  });
+
+  sec.addEventListener('click',function(e){
+    if(idx>=ws.length)return;
+    var word=ws[idx++],d=idx/ws.length;
+    var ray=document.createElement('div');
+    ray.className='ray';
+    var r=sec.getBoundingClientRect();
+    ray.style.left=(e.clientX-r.left)+'px';
+    sec.appendChild(ray);
+    setTimeout(function(){if(ray.parentNode)ray.remove()},4700);
+    wrd.textContent=word;
+    wrd.classList.add('lit');
+    setTimeout(function(){wrd.classList.remove('lit')},2800);
+    // fade stars as dawn rises
+    var stars=sec.querySelectorAll('.star');
+    stars.forEach(function(s){s.style.opacity=parseFloat(s.style.opacity)*(1-d*.7)});
+    // blush the ground
+    dw.style.background='linear-gradient(to top,rgba(255,'+(170+d*40|0)+','+(60+d*60|0)+','+(.08+d*.25).toFixed(2)+') 0%,transparent '+(15+d*30)+'%)';
+    if(idx>=ws.length)wrd.textContent='threshold';
+  });
+})();
+</script>
+</section>
