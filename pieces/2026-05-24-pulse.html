@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Fulcrum</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;cursor:crosshair;background:#07070f}
+#am,#pm{position:fixed;border-radius:50%;mix-blend-mode:screen;pointer-events:none}
+#am{width:160vmax;height:160vmax;top:-68vmax;left:-68vmax;background:radial-gradient(circle,rgba(100,170,215,.92) 0%,rgba(45,105,158,.55) 40%,transparent 65%)}
+#pm{width:160vmax;height:160vmax;bottom:-68vmax;right:-68vmax;background:radial-gradient(circle,rgba(215,135,55,.92) 0%,rgba(158,72,22,.55) 40%,transparent 65%)}
+#pv{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:5px;height:5px;border-radius:50%;background:#c8bfaa;opacity:.55;z-index:5;transition:background .4s,transform .18s}
+#tx{position:fixed;top:calc(50% + 15px);left:50%;transform:translateX(-50%);font:10px/1 "Courier New",monospace;letter-spacing:.65em;color:#c8bfaa;opacity:.4;z-index:5;user-select:none;transition:opacity .5s,letter-spacing .5s}
+#nw{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) translateY(-16px);font:italic 15px/1 Georgia,serif;letter-spacing:.28em;color:#e2d5bb;opacity:0;z-index:6;pointer-events:none;transition:opacity .45s}
+</style>
+</head>
+<body>
+<section data-date='2026-05-24' data-type='pulse'>
+<div id="am"></div>
+<div id="pm"></div>
+<div id="pv"></div>
+<div id="tx">12·00</div>
+<div id="nw">now</div>
+</section>
+<script>
+var am=document.getElementById("am"),
+pm=document.getElementById("pm"),
+pv=document.getElementById("pv"),
+nw=document.getElementById("nw"),
+tx=document.getElementById("tx"),
+sa=1,sp=1,ta=1,tp=1,lock=0;
+
+document.addEventListener("mousemove",function(e){
+  if(lock)return;
+  var dy=(e.clientY/innerHeight-.5)*2;
+  ta=1-dy*.32;
+  tp=1+dy*.32;
+});
+
+document.addEventListener("click",function(){
+  lock=1;ta=tp=1;
+  pv.style.transform="translate(-50%,-50%) scale(2.8)";
+  pv.style.background="#c89a50";
+  nw.style.opacity=1;
+  tx.style.opacity=0;
+  tx.style.letterSpacing="1.1em";
+  setTimeout(function(){
+    pv.style.transform="translate(-50%,-50%)";
+    pv.style.background="#c8bfaa";
+    nw.style.opacity=0;
+    tx.style.opacity=.4;
+    tx.style.letterSpacing=".65em";
+    lock=0;
+  },980);
+});
+
+!function f(){
+  sa+=(ta-sa)*.09;
+  sp+=(tp-sp)*.09;
+  am.style.transform="scale("+sa.toFixed(3)+")";
+  pm.style.transform="scale("+sp.toFixed(3)+")";
+  requestAnimationFrame(f);
+}();
+</script>
+</body>
+</html>
