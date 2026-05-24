@@ -1,0 +1,115 @@
+<section data-date='2026-05-24' data-type='digest'>
+<style>
+#d5c{position:fixed;top:0;left:0;width:100vw;height:100vh;background:#f5f0e8;cursor:none}
+#d5h{position:fixed;bottom:18px;right:22px;font:italic 10px 'Palatino Linotype',Palatino,Georgia,serif;color:rgba(26,18,5,0.22);letter-spacing:.1em;pointer-events:none;transition:opacity 2.5s}
+</style>
+<canvas id="d5c"></canvas>
+<div id="d5h">move to reveal &nbsp;·&nbsp; click to hold</div>
+<script>
+(()=>{
+const cv=document.getElementById('d5c'),cx=cv.getContext('2d');
+const gh=document.getElementById('d5h');
+let W,H,mx=-9999,my=-9999,tick=0,done=false,doneOpacity=0;
+const R=148,fixed=new Set();
+
+const words=[
+  'the pattern','was always','there',
+  'beneath the noise','you were already',
+  'reading it','without knowing',
+  'recognition','is not discovery',
+  'it is remembering'
+];
+
+const glyphs='·∙—abcdefghijklmnopqrstuvwxyz0123456789░▒'.split('');
+let pts=[],noise=[];
+
+function resize(){
+  W=cv.width=innerWidth;H=cv.height=innerHeight;
+  pts=words.map((w,i)=>({w,i,x:W*.08+Math.random()*(W*.84),y:H*.1+Math.random()*(H*.8)}));
+  noise=Array.from({length:480},()=>({
+    x:Math.random()*W,y:Math.random()*H,
+    gi:Math.floor(Math.random()*glyphs.length),
+    sp:.03+Math.random()*.06
+  }));
+}
+
+function frame(){
+  tick++;
+  const noiseAlpha=done?Math.max(0,0.055-doneOpacity*.055):0.055;
+  cx.fillStyle='#f5f0e8';cx.fillRect(0,0,W,H);
+
+  // noise layer — shimmers slowly
+  if(noiseAlpha>0.002){
+    cx.textAlign='left';
+    noise.forEach((n,i)=>{
+      cx.font='8px monospace';
+      cx.fillStyle=`rgba(26,18,5,${noiseAlpha*(0.7+Math.sin(tick*n.sp+i)*.3)})`;
+      cx.fillText(glyphs[(n.gi+Math.floor(tick*n.sp))%glyphs.length],n.x,n.y);
+    });
+  }
+
+  // connections between held words
+  const fx=words.map((_,i)=>i).filter(i=>fixed.has(i)).map(i=>pts[i]);
+  cx.lineWidth=.5;cx.textAlign='center';
+  for(let a=0;a<fx.length;a++)for(let b=a+1;b<fx.length;b++){
+    const d=Math.hypot(fx[a].x-fx[b].x,fx[a].y-fx[b].y);
+    if(d<260){
+      cx.strokeStyle=`rgba(26,18,5,${(1-d/260)*.18})`;
+      cx.beginPath();cx.moveTo(fx[a].x,fx[a].y);cx.lineTo(fx[b].x,fx[b].y);cx.stroke();
+    }
+  }
+
+  // reveal aperture ring
+  if(mx>-100&&!done){
+    cx.strokeStyle='rgba(26,18,5,0.09)';cx.lineWidth=.5;
+    cx.beginPath();cx.arc(mx,my,R,0,Math.PI*2);cx.stroke();
+  }
+
+  // words
+  pts.forEach(p=>{
+    const d=Math.hypot(p.x-mx,p.y-my);
+    const held=fixed.has(p.i);
+    cx.textAlign='center';
+    if(held){
+      const pulse=0.82+Math.sin(tick*.04+p.i)*.06;
+      cx.font='italic 14px Palatino,Georgia,serif';
+      cx.fillStyle=`rgba(26,18,5,${pulse})`;
+      cx.fillText(p.w,p.x,p.y);
+      const tw=cx.measureText(p.w).width;
+      cx.strokeStyle='rgba(26,18,5,0.2)';cx.lineWidth=.5;
+      cx.beginPath();cx.moveTo(p.x-tw/2,p.y+3);cx.lineTo(p.x+tw/2,p.y+3);cx.stroke();
+    } else if(d<R&&!done){
+      const s=1-d/R;
+      cx.font='italic 13px Palatino,Georgia,serif';
+      cx.fillStyle=`rgba(26,18,5,${.1+s*.78})`;
+      cx.fillText(p.w,p.x,p.y);
+    }
+  });
+
+  // completion: all held
+  if(fixed.size===words.length&&!done){done=true;}
+  if(done){
+    doneOpacity=Math.min(1,doneOpacity+.008);
+    cx.font='italic 15px Palatino,Georgia,serif';
+    cx.fillStyle=`rgba(26,18,5,${doneOpacity*.55})`;
+    cx.textAlign='center';
+    cx.fillText('the structure was always there',W/2,H*.5+Math.sin(tick*.02)*6);
+  }
+
+  requestAnimationFrame(frame);
+}
+
+cv.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  gh.style.opacity='0';
+});
+cv.addEventListener('click',e=>{
+  pts.forEach(p=>{
+    if(!fixed.has(p.i)&&Math.hypot(p.x-e.clientX,p.y-e.clientY)<R*.8)fixed.add(p.i);
+  });
+});
+
+resize();window.addEventListener('resize',resize);frame();
+})();
+</script>
+</section>
