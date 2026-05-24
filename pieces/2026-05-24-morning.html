@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>first light — 2026-05-24</title>
+</head>
+<body>
+<section data-date='2026-05-24' data-type='morning'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body,section{width:100vw;height:100vh;overflow:hidden;display:block}
+#bg{position:absolute;inset:0;transition:background .7s}
+.w{
+  position:absolute;
+  font:300 clamp(13px,1.9vw,24px)/1 Georgia,serif;
+  letter-spacing:.28em;
+  text-transform:lowercase;
+  color:rgba(255,240,210,0);
+  transition:color 1.5s,transform 1.5s;
+  transform:translateY(7px);
+  pointer-events:none;
+}
+.w.on{color:rgba(255,240,210,.86);transform:translateY(0)}
+#tip{
+  position:absolute;bottom:2.5em;width:100%;text-align:center;
+  font:11px/1 sans-serif;letter-spacing:.16em;text-transform:uppercase;
+  color:rgba(255,255,255,.16);transition:opacity 1.4s;
+}
+</style>
+<div id="bg"></div>
+<div id="tip">move to find the day &middot; click to return to night</div>
+<script>
+const P=[
+  [5,5,18],[12,9,42],[48,22,66],[120,55,80],[192,122,92],[236,190,134],[253,233,194]
+],W=[
+  {t:"still",   x:13,y:53,at:.06},
+  {t:"quiet",   x:23,y:35,at:.17},
+  {t:"before",  x:37,y:64,at:.28},
+  {t:"breath",  x:51,y:42,at:.40},
+  {t:"possible",x:63,y:68,at:.53},
+  {t:"open",    x:74,y:33,at:.66},
+  {t:"yours",   x:82,y:57,at:.77},
+  {t:"begin",   x:50,y:50,at:.91},
+];
+const bg=document.getElementById('bg'),tip=document.getElementById('tip');
+
+W.forEach(w=>{
+  const e=document.createElement('div');
+  e.className='w';e.textContent=w.t;
+  e.style.left=w.x+'%';e.style.top=w.y+'%';
+  document.body.appendChild(e);w.e=e;
+});
+
+function mix(a,b,f){return[0,1,2].map(i=>Math.round(a[i]+(b[i]-a[i])*f))}
+function sky(t){
+  const n=P.length-1,r=Math.min(t,1)*n,lo=Math.floor(r),hi=Math.min(lo+1,n);
+  const c=mix(P[lo],P[hi],r-lo);
+  return`rgb(${c[0]},${c[1]},${c[2]})`;
+}
+
+let shown=false;
+function render(t){
+  bg.style.background=sky(t);
+  W.forEach(w=>w.e.classList.toggle('on',t>=w.at));
+  if(!shown&&t>.09){tip.style.opacity='0';shown=true}
+}
+
+document.addEventListener('mousemove',e=>render(e.clientX/innerWidth));
+document.addEventListener('click',()=>{render(0);shown=false;tip.style.opacity='1'});
+render(0);
+</script>
+</section>
+</body>
+</html>
