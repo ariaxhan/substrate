@@ -1,0 +1,50 @@
+<section data-date='2026-05-24' data-type='spark'>
+<style>
+#sp{position:relative;width:100%;height:100vh;background:#07070f;overflow:hidden;cursor:crosshair;user-select:none}
+.w{position:absolute;font-family:monospace;pointer-events:none;letter-spacing:.14em;transition:opacity .5s}
+#wa{color:#8ab4d4;font-size:clamp(1.4rem,3.5vw,2.8rem)}
+#wb{color:#d4956a;font-size:clamp(1.4rem,3.5vw,2.8rem)}
+#wc{color:#f0e878;font-size:clamp(1.8rem,4.5vw,3.6rem);opacity:0;transition:opacity .4s;font-weight:300}
+#ht{position:absolute;bottom:1.2rem;width:100%;text-align:center;font-size:.6rem;color:#1a1a2a;font-family:monospace;letter-spacing:.3em}
+</style>
+<div id='sp'>
+<span id='wa' class='w'></span>
+<span id='wb' class='w'></span>
+<span id='wc' class='w'></span>
+<div id='ht'>move · click · collide</div>
+</div>
+<script>
+const P=[['you','I','we'],['fire','water','steam'],['word','silence','meaning'],['light','dark','dusk'],['before','after','now'],['far','near','here'],['open','closed','threshold'],['alone','together','present']];
+let mx=0,my=0,ax,ay,bx,by,pi=0,busy=0,ang=0,hm=0;
+const sp=document.getElementById('sp'),wa=document.getElementById('wa'),wb=document.getElementById('wb'),wc=document.getElementById('wc');
+const W=()=>sp.offsetWidth,H=()=>sp.offsetHeight;
+function pos(el,x,y){el.style.left=(x-el.offsetWidth/2)+'px';el.style.top=(y-el.offsetHeight/2)+'px'}
+function set(i){
+  const[a,b,c]=P[i];wa.textContent=a;wb.textContent=b;wc.textContent=c;
+  ax=W()*.2;ay=H()*.5;bx=W()*.8;by=H()*.5;
+  wa.style.opacity=wb.style.opacity='1';wc.style.opacity='0';
+  busy=0;pos(wa,ax,ay);pos(wb,bx,by);
+}
+function collide(){
+  busy=1;wa.style.opacity=wb.style.opacity='0';
+  pos(wc,(ax+bx)/2,(ay+by)/2);
+  wc.style.opacity='1';
+  setTimeout(()=>{wc.style.opacity='0';setTimeout(()=>{pi=(pi+1)%P.length;set(pi);},550);},1900);
+}
+function tick(){
+  if(!busy){
+    ang+=.007;
+    const tx=hm?mx:W()/2+Math.cos(ang)*W()*.32,ty=hm?my:H()/2+Math.sin(ang*.73)*H()*.24;
+    ax+=(tx-ax)*.045;ay+=(ty-ay)*.045;
+    bx+=(tx-bx)*.045;by+=(ty-by)*.045;
+    pos(wa,ax,ay);pos(wb,bx,by);
+    if(Math.hypot(bx-ax,by-ay)<85)collide();
+  }
+  requestAnimationFrame(tick);
+}
+sp.addEventListener('mousemove',e=>{const r=sp.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;hm=1;});
+sp.addEventListener('click',e=>{if(!busy){const r=sp.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;hm=1;ax=mx-5;ay=my;bx=mx+5;by=my;}});
+sp.addEventListener('mouseleave',()=>{hm=0;});
+set(0);tick();
+</script>
+</section>
