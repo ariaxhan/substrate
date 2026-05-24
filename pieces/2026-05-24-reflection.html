@@ -1,0 +1,46 @@
+<section data-date='2026-05-24' data-type='reflection'>
+<style>
+.sky{position:relative;background:#06060f;min-height:100vh;overflow:hidden;cursor:crosshair;font-family:Georgia,serif}
+.st{position:absolute;border-radius:50%;background:#e8eaff;transform:translate(-50%,-50%);opacity:0;transition:opacity 2.5s}
+.st.on{opacity:1}
+.st .w{position:absolute;left:8px;top:-5px;font-size:10px;font-style:italic;color:rgba(200,212,255,0);white-space:nowrap;letter-spacing:.08em;pointer-events:none;transition:color .5s .1s}
+.st:hover .w{color:rgba(200,212,255,.8)}
+.ctr{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:rgba(145,150,195,.22);font-size:11px;letter-spacing:.42em;pointer-events:none;user-select:none;transition:opacity 6s}
+</style>
+<div class='sky' id='sk'><div class='ctr' id='ct'>the day is complete</div></div>
+<script>
+(function(){
+const W=['rest','still','enough','breathe','whole','quiet','home','soft','held','done','here','tender','warm','over','sleep','close','safe','full','low','last'],
+sk=document.getElementById('sk'),ct=document.getElementById('ct');
+let ni=0,cnt=0;
+function add(x,y,d){
+  const el=document.createElement('div');
+  el.className='st';
+  const sz=1+Math.random()*2.2;
+  el.style.cssText=`left:${x}px;top:${y}px;width:${sz}px;height:${sz}px;box-shadow:0 0 ${3+sz*2}px ${sz+.8}px rgba(195,215,255,${.28+Math.random()*.38})`;
+  const sp=document.createElement('span');
+  sp.className='w';
+  sp.textContent=W[ni++%W.length];
+  el.appendChild(sp);
+  sk.appendChild(el);
+  setTimeout(()=>{el.classList.add('on');cnt++;if(cnt>9)ct.style.opacity=0},d||20);
+  return el;
+}
+const W2=window.innerWidth,H2=window.innerHeight;
+[[14,22],[80,11],[56,8],[91,42],[29,65],[71,77],[9,53],[44,19],[62,49],[20,36],[85,68],[38,82]].forEach(([px,py],i)=>
+  setTimeout(()=>add(px*.01*(sk.offsetWidth||W2),py*.01*(sk.offsetHeight||H2)),i*210+550));
+sk.addEventListener('click',e=>{
+  const r=sk.getBoundingClientRect(),s=add(e.clientX-r.left,e.clientY-r.top,10);
+  s.style.boxShadow='0 0 12px 7px rgba(220,232,255,.92)';
+  setTimeout(()=>{const g=.3+Math.random()*.5;s.style.transition='box-shadow 3.5s';s.style.boxShadow=`0 0 ${4+g*3}px ${g+.8}px rgba(195,215,255,${.3+g*.35})`},180);
+});
+setInterval(()=>{
+  const ss=sk.querySelectorAll('.st.on');
+  if(!ss.length)return;
+  const s=ss[0|Math.random()*ss.length];
+  s.style.transition='opacity .85s';s.style.opacity=.42+Math.random()*.48;
+  setTimeout(()=>s.style.opacity=1,950);
+},680);
+})();
+</script>
+</section>
