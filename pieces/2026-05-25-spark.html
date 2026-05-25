@@ -1,0 +1,84 @@
+<section data-date='2026-05-25' data-type='spark'>
+<style>#cv{display:block;cursor:crosshair;background:#080808}</style>
+<canvas id="cv"></canvas>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d');
+const W=cv.width=window.innerWidth||640,H=cv.height=window.innerHeight||480;
+const P=[["over","flow"],["day","dream"],["fire","side"],["with","out"],["sun","rise"],["break","through"],["under","stand"],["some","where"],["heart","ache"],["any","where"]];
+let mx=W/2,my=H/2,pi=-1,ax,ay,bx,by,avx,avy,bvx,bvy,phase=0,flash=0;
+
+function spawn(){
+  pi=(pi+1)%P.length;
+  ax=W*.18;ay=H*.4+Math.random()*H*.2;
+  bx=W*.82;by=H*.4+Math.random()*H*.2;
+  avx=.4+Math.random()*.3;avy=(Math.random()-.5)*.5;
+  bvx=-.4-Math.random()*.3;bvy=(Math.random()-.5)*.5;
+  phase=0;flash=1;
+}
+
+cv.addEventListener('mousemove',e=>{
+  const r=cv.getBoundingClientRect();
+  mx=e.clientX-r.left;my=e.clientY-r.top;
+});
+cv.addEventListener('click',e=>{
+  const r=cv.getBoundingClientRect();
+  mx=e.clientX-r.left;my=e.clientY-r.top;
+  if(phase===0){
+    avx+=(mx-ax)*.06;avy+=(my-ay)*.06;
+    bvx+=(mx-bx)*.06;bvy+=(my-by)*.06;
+  }
+});
+
+spawn();
+
+function draw(){
+  ctx.fillStyle='rgba(8,8,8,.18)';
+  ctx.fillRect(0,0,W,H);
+  const fs=Math.min(W,H)*.055;
+  ctx.font=`${fs}px monospace`;
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+
+  if(phase===0){
+    avx+=(mx-ax)*.0018;avy+=(my-ay)*.0018;
+    bvx+=(mx-bx)*.0018;bvy+=(my-by)*.0018;
+    avx*=.978;avy*=.978;bvx*=.978;bvy*=.978;
+    ax+=avx;ay+=avy;bx+=bvx;by+=bvy;
+    if(ax<fs||ax>W-fs){avx*=-1;ax=Math.max(fs,Math.min(W-fs,ax));}
+    if(ay<fs||ay>H-fs){avy*=-1;ay=Math.max(fs,Math.min(H-fs,ay));}
+    if(bx<fs||bx>W-fs){bvx*=-1;bx=Math.max(fs,Math.min(W-fs,bx));}
+    if(by<fs||by>H-fs){bvy*=-1;by=Math.max(fs,Math.min(H-fs,by));}
+
+    const prox=1-Math.min(Math.sqrt((ax-bx)**2+(ay-by)**2)/(W*.5),1);
+    ctx.fillStyle=`rgba(180,180,220,${.4+prox*.6})`;
+    ctx.fillText(P[pi][0],ax,ay);
+    ctx.fillStyle=`rgba(200,160,180,${.4+prox*.6})`;
+    ctx.fillText(P[pi][1],bx,by);
+
+    if(Math.sqrt((ax-bx)**2+(ay-by)**2)<fs*1.6) phase=1;
+  } else {
+    flash*=.94;
+    if(flash<.008){spawn();requestAnimationFrame(draw);return;}
+    const cx=(ax+bx)/2,cy=(ay+by)/2;
+    const syn=P[pi][0]+P[pi][1];
+    const f=Math.min(flash*4,1);
+    ctx.globalAlpha=f;
+    ctx.font=`${fs*1.1}px monospace`;
+    ctx.fillStyle=`hsl(${(Date.now()*.08)%360},60%,82%)`;
+    ctx.fillText(syn,cx,cy);
+    ctx.strokeStyle=`rgba(255,255,255,${flash*.4})`;
+    ctx.lineWidth=1;
+    for(let i=0;i<8;i++){
+      const ang=i*.785+(1-flash)*.5;
+      const len=flash*W*.07;
+      ctx.beginPath();ctx.moveTo(cx,cy);
+      ctx.lineTo(cx+Math.cos(ang)*len,cy+Math.sin(ang)*len);
+      ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</section>
