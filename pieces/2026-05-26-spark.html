@@ -1,0 +1,42 @@
+<section data-date='2026-05-26' data-type='spark'>
+<style>#cv{position:fixed;top:0;left:0;background:#000;cursor:none}</style>
+<canvas id="cv"></canvas>
+<script>
+(()=>{
+const c=document.getElementById('cv'),x=c.getContext('2d');
+let W,H,t=0,mx=0,my=0,state=0,bloom=0,pi=0;
+const P=[['fire','water','steam'],['you','me','us'],['before','after','now'],['wave','shore','foam'],['light','dark','dusk'],['apart','whole','here']];
+function sz(){W=c.width=innerWidth;H=c.height=innerHeight}sz();
+onresize=sz;
+onmousemove=e=>{mx=(e.clientX/W-.5);my=(e.clientY/H-.5)};
+onclick=()=>{if(bloom>1.6){pi=(pi+1)%P.length;state=0;bloom=0;t=0}};
+(function loop(){
+  requestAnimationFrame(loop);
+  x.fillStyle='rgba(0,0,0,.13)';x.fillRect(0,0,W,H);
+  const[wa,wb,wc]=P[pi],cx=W/2,cy=H/2;
+  if(!state){
+    t+=.008+Math.abs(mx)*.003;
+    const r=Math.max(14,165-t*15);
+    const ax=cx+Math.cos(t+my*.5)*r;
+    const ay=cy+Math.sin(t*.72)*r*.5;
+    const bx=cx-Math.cos(t+my*.5)*r;
+    const by=cy-Math.sin(t*.72)*r*.5;
+    const fs=13+r*.045;
+    x.font=`${fs|0}px monospace`;x.textAlign='center';x.textBaseline='middle';
+    const hA=(t*25)%360;
+    x.fillStyle=`hsl(${hA},78%,66%)`;x.fillText(wa,ax,ay);
+    x.fillStyle=`hsl(${(hA+180)%360},78%,66%)`;x.fillText(wb,bx,by);
+    if(Math.hypot(ax-bx,ay-by)<fs*(wa.length*.6+1)){state=1;bloom=.01}
+  }else{
+    bloom=Math.min(bloom+.022,2.4);
+    const fs=15+bloom*22;
+    x.font=`${fs|0}px monospace`;x.textAlign='center';x.textBaseline='middle';
+    x.globalAlpha=Math.min(bloom*.75,1);
+    x.fillStyle=`hsl(55,${75+bloom*12}%,${48+bloom*14}%)`;
+    x.fillText(wc,cx,cy);x.globalAlpha=1;
+    if(bloom>1.8){x.font='9px monospace';x.fillStyle='rgba(255,255,255,.22)';x.fillText('click',cx,cy+(fs*.85))}
+  }
+})();
+})();
+</script>
+</section>
