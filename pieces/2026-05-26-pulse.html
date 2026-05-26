@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>pulse — 2026-05-26</title>
+<style>
+*{margin:0;padding:0}
+body{background:#f0ece3;overflow:hidden;cursor:crosshair}
+section{display:block;width:100vw;height:100vh}
+</style>
+</head>
+<body>
+<section data-date="2026-05-26" data-type="pulse">
+<canvas id="c"></canvas>
+</section>
+<script>
+// pulse: the fulcrum of noon.
+// move mouse to tilt the beam. click to hold the moment level.
+const cv=document.getElementById('c'),g=cv.getContext('2d');
+let W,H,ang=0,aim=0,held=false,tick=0;
+
+function sz(){cv.width=W=innerWidth;cv.height=H=innerHeight}
+sz();addEventListener('resize',sz);
+
+addEventListener('mousemove',e=>{if(!held)aim=(e.clientX/W-.5)*.52});
+addEventListener('click',()=>{held=!held;if(held)aim=0});
+
+// Word drift streams — before (morning, above), after (evening, below)
+function mk(text,side){
+  return{text,side,x:Math.random(),spd:.00022+Math.random()*.00018,yd:.07+Math.random()*.28,op:.18+Math.random()*.38,sc:.8+Math.random()*.35}
+}
+const bef=['before','almost','hush','not yet','still','soon','waiting','threshold','almost','close'];
+const aft=['already','past','spent','gone','over','held','fading','yielded','cooling','past'];
+const words=[...bef.map(t=>mk(t,1)),...aft.map(t=>mk(t,-1))];
+
+function draw(){
+  requestAnimationFrame(draw);
+  tick+=.017;
+  ang+=(aim-ang)*.055;
+
+  const cx=W/2,cy=H/2,s=Math.min(W,H);
+  g.clearRect(0,0,W,H);
+
+  // Warm paper — cool at top, amber at base
+  const bg=g.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#d8e4ef');
+  bg.addColorStop(.45,'#f0ece3');
+  bg.addColorStop(.55,'#f0ece3');
+  bg.addColorStop(1,'#edddc8');
+  g.fillStyle=bg;
+  g.fillRect(0,0,W,H);
+
+  g.save();
+  g.translate(cx,cy);
+  g.rotate(ang);
+
+  const fbase=s*.026;
+  words.forEach(w=>{
+    w.x=(w.x+w.spd)%1;
+    const wx=(w.x-.5)*W*1.15;
+    const wy=w.side*-(s*(w.yd+.09));
+    const edge=Math.max(0,1-Math.abs(wx)/(W*.56));
+    g.globalAlpha=w.op*edge;
+    g.font=`${fbase*w.sc}px Georgia,serif`;
+    g.fillStyle=w.side===1?'#2b4a6e':'#7c3c15';
+    g.textAlign='center';
+    g.textBaseline='middle';
+    g.fillText(w.text,wx,wy);
+  });
+
+  g.globalAlpha=1;
+
+  // The beam — dashed, thin, the dividing moment
+  const bl=s*.43;
+  const beamA=held?.52:.22;
+  g.strokeStyle=`rgba(28,20,12,${beamA})`;
+  g.lineWidth=held?1.1:.65;
+  g.setLineDash([2,8]);
+  g.beginPath();g.moveTo(-bl,0);g.lineTo(bl,0);g.stroke();
+  g.setLineDash([]);
+
+  // Pivot — small diamond at fulcrum
+  const dp=s*.0065;
+  g.fillStyle=`rgba(28,20,12,${held?.7:.35})`;
+  g.beginPath();
+  g.moveTo(0,-dp);g.lineTo(dp,0);g.lineTo(0,dp);g.lineTo(-dp,0);
+  g.closePath();g.fill();
+
+  g.restore();
+
+  // "noon" — upright, monospace, breathing at center
+  const pulse=.985+Math.sin(tick)*.015;
+  const noonA=held?.88:.32+Math.sin(tick*.7)*.08;
+  g.save();
+  g.translate(cx,cy);
+  g.scale(pulse,pulse);
+  g.globalAlpha=noonA;
+  g.font=`${s*.015}px 'Courier New',monospace`;
+  g.fillStyle='#1a1208';
+  g.textAlign='center';
+  g.textBaseline='middle';
+  g.fillText('n o o n',0,0);
+  g.restore();
+}
+draw();
+</script>
+</body>
+</html>
