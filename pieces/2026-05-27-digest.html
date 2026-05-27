@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8>
+<title>digest · 2026-05-27</title>
+<style>
+*{margin:0;padding:0}
+html,body{width:100%;height:100%;background:#f3efe5;overflow:hidden;cursor:crosshair}
+canvas{position:fixed;inset:0;pointer-events:none}
+.nd{position:fixed;transform:translate(-50%,-50%);
+  font:italic 12px Georgia,serif;color:#cac3b4;letter-spacing:.02em;
+  pointer-events:none;user-select:none;white-space:nowrap;
+  transition:color .7s,font-size .55s,font-style .6s,font-weight .55s,letter-spacing .5s,text-shadow .7s}
+#hint{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
+  font:10px/2 monospace;color:#cac3b4;letter-spacing:.22em;transition:opacity 2.5s}
+</style>
+</head>
+<body>
+<section data-date='2026-05-27' data-type='digest'>
+<canvas id=c></canvas>
+<div id=hint>click to connect</div>
+<script>
+const WW='observe record compare infer remember pattern signal noise context weight structure layer emerge know'.split(' ');
+const cv=document.getElementById('c'),gx=cv.getContext('2d');
+let W=cv.width=innerWidth,H=cv.height=innerHeight;
+let nd=[],ed=[],mx=W/2,my=H/2;
+
+WW.forEach(w=>{
+  const el=document.createElement('div');
+  el.className='nd';el.textContent=w;
+  const x=100+Math.random()*(W-200),y=100+Math.random()*(H-200);
+  el.style.left=x+'px';el.style.top=y+'px';
+  document.body.appendChild(el);
+  nd.push({el,x,y,links:0});
+});
+
+const D=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+
+function restyle(n){
+  const l=n.links,near=D(n,{x:mx,y:my})<130;
+  if(l>=3){
+    n.el.style.cssText+=';color:#1c1510;font-size:'+(15+l*.8)+'px;font-style:normal;font-weight:bold;letter-spacing:.1em;text-shadow:none';
+  } else {
+    n.el.style.color=near?'#4858a8':l>0?'#7a6e5e':'#cac3b4';
+    n.el.style.fontSize=(12+l*1.8)+'px';
+    n.el.style.fontStyle='italic';
+    n.el.style.fontWeight='normal';
+    n.el.style.letterSpacing='.02em';
+    n.el.style.textShadow=near?'0 0 10px rgba(80,100,200,.25)':'none';
+  }
+}
+
+function draw(){
+  gx.clearRect(0,0,W,H);
+
+  ed.forEach(([a,b])=>{
+    const str=Math.min(a.links,b.links);
+    gx.beginPath();gx.moveTo(a.x,a.y);gx.lineTo(b.x,b.y);
+    gx.strokeStyle=`rgba(28,18,8,${.05+str*.05})`;
+    gx.lineWidth=.4+str*.18;gx.stroke();
+  });
+
+  const nr=nd.filter(n=>D(n,{x:mx,y:my})<155);
+  for(let i=0;i<nr.length;i++) for(let j=i+1;j<nr.length;j++){
+    const dd=D(nr[i],nr[j]),a=Math.max(0,.32-dd/380);
+    if(a>0){
+      gx.beginPath();gx.moveTo(nr[i].x,nr[i].y);gx.lineTo(nr[j].x,nr[j].y);
+      gx.strokeStyle=`rgba(60,80,185,${a})`;gx.lineWidth=.5;gx.stroke();
+    }
+  }
+  nr.forEach(n=>{
+    gx.beginPath();gx.arc(n.x,n.y,1.8,0,6.28);
+    gx.fillStyle='rgba(70,95,185,.45)';gx.fill();
+  });
+
+  requestAnimationFrame(draw);
+}
+draw();
+
+addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  nd.forEach(restyle);
+});
+
+addEventListener('click',e=>{
+  const s=[...nd].sort((a,b)=>D(a,{x:e.clientX,y:e.clientY})-D(b,{x:e.clientX,y:e.clientY}));
+  const [a,b]=s;
+  if(!ed.some(([p,q])=>(p===a&&q===b)||(p===b&&q===a))){
+    ed.push([a,b]);a.links++;b.links++;
+    restyle(a);restyle(b);
+  }
+  document.getElementById('hint').style.opacity=0;
+});
+
+addEventListener('resize',()=>{W=cv.width=innerWidth;H=cv.height=innerHeight;});
+</script>
+</section>
+</body>
+</html>
