@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>digest · 2026-05-26</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#07080f;overflow:hidden;width:100vw;height:100vh;cursor:crosshair}
+canvas{position:fixed;top:0;left:0;pointer-events:none}
+.w{position:fixed;font:italic 1.5rem Georgia,serif;color:#ede8d8;pointer-events:none;
+  transform:translate(-50%,-50%);opacity:0;transition:opacity 1.4s ease;letter-spacing:.05em;
+  text-shadow:0 0 18px rgba(220,190,120,.25)}
+.w.on{opacity:1}
+#h{position:fixed;bottom:1.8rem;width:100%;text-align:center;
+  font:10px/2 monospace;color:#22334a;letter-spacing:.25em;
+  transition:opacity 1s;pointer-events:none}
+</style>
+</head>
+<body>
+<section data-date="2026-05-26" data-type="digest">
+<canvas id="c"></canvas>
+<div id="h">click to crystallize</div>
+<script>
+const cv=document.getElementById('c'),ct=cv.getContext('2d');
+let W=cv.width=innerWidth,H=cv.height=innerHeight;
+const gl='∴∵≈→←∫∑λΔ∂∇·×÷±∞≡∝∘⊕⊗⊞⊟';
+const poem=['every','scattered','thing','knows','its','form'];
+let P=[],C=[],wi=0,mx=W/2,my=H/2;
+const burst={on:false,x:0,y:0,t:0,pts:[]};
+
+function mkP(){
+  return{x:Math.random()*W,y:Math.random()*H,
+    vx:(Math.random()-.5)*.28,vy:(Math.random()-.5)*.28,
+    ch:gl[Math.random()*gl.length|0],
+    op:Math.random()*.3+.04,sz:8+Math.random()*7};
+}
+for(let i=0;i<110;i++)P.push(mkP());
+
+function frame(){
+  ct.clearRect(0,0,W,H);
+
+  // thread connections between crystallized points
+  if(C.length>1){
+    for(let i=0;i<C.length;i++) for(let j=i+1;j<C.length;j++){
+      const dx=C[i].x-C[j].x,dy=C[i].y-C[j].y,d=Math.hypot(dx,dy);
+      if(d<240){
+        ct.strokeStyle=`rgba(180,150,80,${(1-d/240)*.18})`;
+        ct.lineWidth=.6;ct.beginPath();
+        ct.moveTo(C[i].x,C[i].y);ct.lineTo(C[j].x,C[j].y);ct.stroke();
+      }
+    }
+  }
+
+  // drift particles
+  for(const p of P){
+    p.x+=p.vx; p.y+=p.vy;
+    if(p.x<0)p.x=W; if(p.x>W)p.x=0;
+    if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+    const dx=mx-p.x,dy=my-p.y,d=Math.hypot(dx,dy);
+    if(d<120&&d>1){p.vx+=dx/d*.0015;p.vy+=dy/d*.0015;}
+    p.vx*=.992; p.vy*=.992;
+    ct.globalAlpha=p.op;
+    ct.fillStyle=`hsl(210,25%,${38+p.sz*1.5}%)`;
+    ct.font=`${p.sz}px monospace`;
+    ct.fillText(p.ch,p.x,p.y);
+  }
+  ct.globalAlpha=1;
+
+  // burst animation
+  if(burst.on){
+    burst.t=Math.min(burst.t+.04,1);
+    const ease=1-Math.pow(1-burst.t,3);
+    for(const b of burst.pts){
+      const xx=burst.x+b.dx*ease,yy=burst.y+b.dy*ease;
+      ct.globalAlpha=(1-burst.t)*.7;
+      ct.fillStyle=`hsl(${42+b.h},75%,68%)`;
+      ct.font=`${b.sz}px monospace`;
+      ct.fillText(b.ch,xx,yy);
+    }
+    ct.globalAlpha=1;
+    if(burst.t>=1)burst.on=false;
+  }
+  requestAnimationFrame(frame);
+}
+
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;});
+
+document.addEventListener('click',e=>{
+  if(wi>=poem.length)return;
+  const x=e.clientX,y=e.clientY;
+  C.push({x,y});
+  burst.on=true; burst.x=x; burst.y=y; burst.t=0; burst.pts=[];
+  for(let i=0;i<22;i++){
+    const a=Math.random()*Math.PI*2,r=16+Math.random()*70;
+    burst.pts.push({dx:Math.cos(a)*r,dy:Math.sin(a)*r,
+      ch:gl[Math.random()*gl.length|0],sz:7+Math.random()*7,h:Math.random()*20-10});
+  }
+  const el=Object.assign(document.createElement('div'),{className:'w',textContent:poem[wi++]});
+  el.style.cssText+=`left:${x}px;top:${y}px`;
+  document.body.appendChild(el);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('on')));
+  if(wi===poem.length)document.getElementById('h').style.opacity='0';
+});
+
+addEventListener('resize',()=>{W=cv.width=innerWidth;H=cv.height=innerHeight;});
+frame();
+</script>
+</section>
+</body>
+</html>
