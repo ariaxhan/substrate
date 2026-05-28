@@ -1,0 +1,56 @@
+<section data-date='2026-05-28' data-type='digest'>
+<style>
+#c{position:fixed;top:0;left:0;background:#06060e;cursor:crosshair}
+#w{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);color:#ddf;font:italic 4vw/1 Georgia,serif;opacity:0;pointer-events:none;transition:opacity .9s;letter-spacing:.18em;text-shadow:0 0 50px #6af,0 0 20px #9cf}
+</style>
+<canvas id=c></canvas>
+<div id=w></div>
+<script>
+const C=document.getElementById('c'),ctx=C.getContext('2d'),W=window;
+C.width=W.innerWidth;C.height=W.innerHeight;
+const N=55,R=130,words=['pattern','structure','emerge','form','lattice','digest','know'];
+let mx=-999,my=-999,E={};
+const dots=Array.from({length:N},()=>({
+  x:Math.random()*C.width,y:Math.random()*C.height,
+  vx:(Math.random()-.5)*.4,vy:(Math.random()-.5)*.4
+}));
+W.onmousemove=e=>{mx=e.clientX;my=e.clientY};
+W.onclick=()=>{
+  E={};
+  const d=document.getElementById('w');
+  d.textContent=words[Math.random()*words.length|0];
+  d.style.opacity=1;
+  setTimeout(()=>d.style.opacity=0,1400);
+};
+(function loop(){
+  ctx.fillStyle='rgba(6,6,14,.16)';
+  ctx.fillRect(0,0,C.width,C.height);
+  dots.forEach(d=>{
+    d.x+=d.vx;d.y+=d.vy;
+    if(d.x<0||d.x>C.width)d.vx*=-1;
+    if(d.y<0||d.y>C.height)d.vy*=-1;
+  });
+  dots.forEach((a,i)=>dots.forEach((b,j)=>{
+    if(j<=i)return;
+    const dx=a.x-b.x,dy=a.y-b.y,dd=dx*dx+dy*dy;
+    if(dd>R*R)return;
+    const k=i+'_'+j;
+    const nm=(a.x-mx)*(a.x-mx)+(a.y-my)*(a.y-my)<R*R
+           ||(b.x-mx)*(b.x-mx)+(b.y-my)*(b.y-my)<R*R;
+    E[k]=Math.min((E[k]||0)+(nm?0.03:0),1)*(nm?0.995:0.97);
+    if(E[k]<0.01){delete E[k];return}
+    const t=E[k];
+    ctx.strokeStyle=`rgba(90,170,255,${t*.75})`;
+    ctx.lineWidth=t*2;
+    ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+  }));
+  dots.forEach(d=>{
+    const nm=(d.x-mx)*(d.x-mx)+(d.y-my)*(d.y-my)<R*R;
+    ctx.fillStyle=nm?'rgba(180,220,255,.95)':'rgba(65,105,180,.3)';
+    ctx.beginPath();ctx.arc(d.x,d.y,nm?2.5:1.5,0,6.28);ctx.fill();
+  });
+  requestAnimationFrame(loop);
+})();
+W.onresize=()=>{C.width=W.innerWidth;C.height=W.innerHeight};
+</script>
+</section>
