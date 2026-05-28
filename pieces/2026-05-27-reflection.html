@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>night inventory</title>
+<style>
+*{margin:0;padding:0}
+body{background:#060710;overflow:hidden;cursor:crosshair;height:100vh;width:100vw}
+#s{position:fixed;inset:0;z-index:1}
+canvas{position:fixed;top:0;left:0;pointer-events:none;z-index:2}
+.st{position:fixed;border-radius:50%;pointer-events:none}
+#p{position:fixed;width:100%;z-index:3;pointer-events:none}
+.ln{text-align:center;font:italic 1.05rem Georgia,serif;color:rgba(0,0,0,0);line-height:2.6;transition:color 4.5s ease-in}
+</style>
+</head>
+<body>
+<section data-date='2026-05-27' data-type='reflection'>
+<div id="s"></div>
+<canvas id="cv"></canvas>
+<div id="p"></div>
+</section>
+<script>
+const W=innerWidth,H=innerHeight,
+  sky=document.getElementById('s'),
+  poem=document.getElementById('p'),
+  cv=document.getElementById('cv'),
+  cx=cv.getContext('2d');
+cv.width=W;cv.height=H;
+
+let pts=[],pi=0;
+const L=[
+  'the last light let go',
+  'stars do not announce themselves',
+  'the body knows before the mind',
+  'tomorrow is still forgiven',
+  'all of it  enough'
+];
+
+poem.style.top=(H*.52)+'px';
+
+function addStar(x,y,sz,op,named){
+  const el=document.createElement('div');
+  el.className='st';
+  const g=named?'box-shadow:0 0 6px 2px rgba(255,253,210,.38);':'';
+  el.style.cssText=`width:${sz}px;height:${sz}px;left:${x-sz/2}px;top:${y-sz/2}px;`+
+    `background:hsl(220,${named?8:45}%,${named?97:86}%);`+
+    `opacity:0;transition:opacity ${named?.8:1.5+Math.random()*3}s;${g}`;
+  sky.appendChild(el);
+  pts.push({x,y});
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.style.opacity=op));
+}
+
+function bloom(){
+  const r=Math.random();
+  addStar(Math.random()*W,Math.random()*H,r<.65?1:r<.88?1.5:2,.12+Math.random()*.48,false);
+  if(pts.length<155)setTimeout(bloom,380+Math.random()*820);
+}
+
+document.body.addEventListener('click',e=>{
+  addStar(e.clientX,e.clientY,2.5,1,true);
+  draw(e.clientX,e.clientY);
+});
+
+document.body.addEventListener('mousemove',e=>draw(e.clientX,e.clientY));
+
+function draw(mx,my){
+  cx.clearRect(0,0,W,H);
+  const near=pts.filter(q=>Math.hypot(q.x-mx,q.y-my)<105);
+  for(let i=0;i<near.length;i++){
+    for(let j=i+1;j<near.length;j++){
+      const d=Math.hypot(near[i].x-near[j].x,near[i].y-near[j].y);
+      if(d<105){
+        cx.strokeStyle=`rgba(150,178,255,${.17*(1-d/105)})`;
+        cx.lineWidth=.55;
+        cx.beginPath();
+        cx.moveTo(near[i].x,near[i].y);
+        cx.lineTo(near[j].x,near[j].y);
+        cx.stroke();
+      }
+    }
+  }
+}
+
+function verse(){
+  if(pi>=L.length)return;
+  const el=document.createElement('div');
+  el.className='ln';
+  el.textContent=L[pi++];
+  poem.appendChild(el);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>el.style.color='rgba(182,198,228,.46)'));
+  setTimeout(verse,7500+Math.random()*5000);
+}
+
+setTimeout(bloom,250);
+setTimeout(verse,4500);
+</script>
+</body>
+</html>
