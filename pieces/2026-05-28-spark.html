@@ -1,0 +1,109 @@
+<section data-date='2026-05-28' data-type='spark'>
+<style>
+#s{position:relative;width:100%;height:100vh;background:#08080e;overflow:hidden;cursor:crosshair}
+.w{position:absolute;font:1.8rem/1 Georgia,serif;letter-spacing:.08em;pointer-events:none;transition:opacity .5s}
+#r{position:absolute;inset:0;pointer-events:none}
+#m{position:absolute;font:1.8rem/1 Georgia,serif;letter-spacing:.18em;opacity:0;color:#e8e4d8;pointer-events:none;white-space:nowrap}
+</style>
+<div id="s">
+<span class="w" id="p"></span>
+<span class="w" id="q"></span>
+<svg id="r"></svg>
+<div id="m"></div>
+</div>
+<script>
+const X=[
+['before','after','during'],
+['signal','noise','meaning'],
+['I','you','this'],
+['absence','arrival','recognition'],
+['almost','exactly','enough'],
+['stranger','beloved','known'],
+['closed','open','threshold'],
+['asking','answering','conversation'],
+['forgetting','remembering','presence'],
+];
+const s=document.getElementById('s');
+const p=document.getElementById('p'),q=document.getElementById('q');
+const r=document.getElementById('r'),m=document.getElementById('m');
+const W=()=>s.offsetWidth,H=()=>s.offsetHeight;
+let mx,my,pi=0,phase=0,ax,ay,bx,by,avx,avy,bvx,bvy;
+
+function spawn(){
+  mx=W()/2;my=H()/2;
+  const[la,lb]=X[pi%X.length];pi++;
+  ax=W()*.1;ay=H()*.38+Math.random()*H()*.24;
+  bx=W()*.9;by=H()*.38+Math.random()*H()*.24;
+  avx=.55+Math.random()*.3;avy=(Math.random()-.5)*.5;
+  bvx=-.55-Math.random()*.3;bvy=(Math.random()-.5)*.5;
+  p.textContent=la;p.style.color='#7db0cc';p.style.opacity=0;
+  q.textContent=lb;q.style.color='#c08878';q.style.opacity=0;
+  m.style.opacity=0;r.innerHTML='';
+  r.setAttribute('width',W());r.setAttribute('height',H());
+  phase=0;
+  setTimeout(()=>{p.style.opacity=q.style.opacity=1;},60);
+}
+
+function hit(){
+  const cx=(ax+bx)/2,cy=(ay+by)/2;
+  m.textContent=X[(pi-1)%X.length][2];
+  m.style.left=(cx-m.offsetWidth/2)+'px';
+  m.style.top=(cy-m.offsetHeight/2)+'px';
+  m.style.transition='opacity .4s';
+  m.style.opacity=1;
+  p.style.opacity=q.style.opacity=0;r.innerHTML='';
+  phase=2;
+  setTimeout(()=>{m.style.opacity=0;setTimeout(spawn,700);},1900);
+}
+
+s.addEventListener('mousemove',e=>{
+  const b=s.getBoundingClientRect();mx=e.clientX-b.left;my=e.clientY-b.top;
+});
+s.addEventListener('click',()=>{
+  if(phase===0){
+    avx+=(mx-ax)*.055;avy+=(my-ay)*.055;
+    bvx+=(mx-bx)*.055;bvy+=(my-by)*.055;
+  }
+});
+
+function thread(x1,y1,x2,y2,z){
+  let pts='';
+  for(let i=0,n=8+~~(z*14);i<=n;i++){
+    const t=i/n;
+    pts+=`${~~(x1+(x2-x1)*t+(Math.random()-.5)*z*36)},${~~(y1+(y2-y1)*t+(Math.random()-.5)*z*36)} `;
+  }
+  r.innerHTML=`<polyline points="${pts}" fill="none" stroke="rgba(210,198,182,${(z*.32).toFixed(2)})" stroke-width="${(z*1.8).toFixed(1)}"/>`;
+}
+
+function tick(){
+  if(phase===0){
+    const da=Math.sqrt((mx-ax)**2+(my-ay)**2)||1;
+    const db=Math.sqrt((mx-bx)**2+(my-by)**2)||1;
+    avx+=(mx-ax)/da*.028;avy+=(my-ay)/da*.028;
+    bvx+=(mx-bx)/db*.028;bvy+=(my-by)/db*.028;
+    avx*=.983;avy*=.983;bvx*=.983;bvy*=.983;
+    ax+=avx;ay+=avy;bx+=bvx;by+=bvy;
+    const pw=p.offsetWidth/2||32,ph=p.offsetHeight/2||14;
+    const qw=q.offsetWidth/2||32,qh=q.offsetHeight/2||14;
+    if(ax<pw){avx=Math.abs(avx)*.7;ax=pw;}
+    if(ax>W()-pw){avx=-Math.abs(avx)*.7;ax=W()-pw;}
+    if(ay<ph){avy=Math.abs(avy)*.7;ay=ph;}
+    if(ay>H()-ph){avy=-Math.abs(avy)*.7;ay=H()-ph;}
+    if(bx<qw){bvx=Math.abs(bvx)*.7;bx=qw;}
+    if(bx>W()-qw){bvx=-Math.abs(bvx)*.7;bx=W()-qw;}
+    if(by<qh){bvy=Math.abs(bvy)*.7;by=qh;}
+    if(by>H()-qh){bvy=-Math.abs(bvy)*.7;by=H()-qh;}
+    p.style.left=(ax-pw)+'px';p.style.top=(ay-ph)+'px';
+    q.style.left=(bx-qw)+'px';q.style.top=(by-qh)+'px';
+    const dx=bx-ax,dy=by-ay,d=Math.sqrt(dx*dx+dy*dy)||1;
+    const z=Math.max(0,1-d/(W()*.52));
+    if(z>.1)thread(ax,ay,bx,by,z);else r.innerHTML='';
+    p.style.color=`rgb(${~~(125+z*65)},${~~(175-z*30)},${~~(204-z*55)})`;
+    q.style.color=`rgb(${~~(192+z*63)},${~~(136-z*48)},${~~(120-z*55)})`;
+    if(d<(pw+qw)*.85){phase=1;hit();}
+  }
+  requestAnimationFrame(tick);
+}
+spawn();tick();
+</script>
+</section>
