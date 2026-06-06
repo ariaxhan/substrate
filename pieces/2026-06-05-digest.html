@@ -1,0 +1,81 @@
+<section data-date='2026-06-05' data-type='digest'>
+<style>
+#cryst{position:fixed;inset:0;background:#07070e;cursor:crosshair;overflow:hidden}
+#cryst canvas{position:absolute;inset:0}
+#cryst #tip{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font:13px/2.2 Georgia,serif;color:rgba(210,200,255,.28);letter-spacing:.3em;text-align:center;pointer-events:none;transition:opacity 2s}
+#cryst #lbl{position:absolute;bottom:18px;right:22px;font:italic 10px Georgia,serif;color:rgba(170,160,220,.18);letter-spacing:.2em;user-select:none}
+</style>
+<div id="cryst">
+<canvas id="cv"></canvas>
+<div id="tip">move to reveal<br><span style="font-size:9px;letter-spacing:.5em;opacity:.7">click to deposit</span></div>
+<div id="lbl">crystallize · 2026-06-05</div>
+</div>
+<script>(function(){
+const cv=document.getElementById('cv'),
+  C=cv.getContext('2d'),
+  tip=document.getElementById('tip'),
+  el=document.getElementById('cryst');
+let W,H,mx=0,my=0,ns=[],wi=0;
+const D=200,
+  ws=['a','single','fact','reaches','toward','another','forming','what','we','call','a','pattern','which','is','only','remembering','what','the','world','has','always','known','but','could','not','say'];
+
+function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight}
+
+function add(x,y,auto){
+  const t=Math.min(wi/ws.length,1);
+  ns.push({x,y,w:ws[wi%ws.length],t,b:Date.now()});
+  wi++;
+  if(!auto)tip.style.opacity='0';
+}
+
+function draw(){
+  C.clearRect(0,0,W,H);
+  const now=Date.now();
+
+  for(let i=0;i<ns.length;i++)for(let j=i+1;j<ns.length;j++){
+    const a=ns[i],b=ns[j],dx=a.x-b.x,dy=a.y-b.y,d=Math.sqrt(dx*dx+dy*dy);
+    if(d<D){
+      const px=(a.x+b.x)/2,py=(a.y+b.y)/2;
+      const md=Math.sqrt((mx-px)*(mx-px)+(my-py)*(my-py));
+      const s=(1-d/D)*Math.max(0,1-md/230);
+      if(s>.008){
+        C.beginPath();C.moveTo(a.x,a.y);C.lineTo(b.x,b.y);
+        C.strokeStyle='rgba(145,168,255,'+s*.52+')';C.lineWidth=.7;C.stroke();
+      }
+    }
+  }
+
+  for(const p of ns){
+    const d=Math.sqrt((p.x-mx)*(p.x-mx)+(p.y-my)*(p.y-my));
+    if(d<155){
+      C.beginPath();C.moveTo(mx,my);C.lineTo(p.x,p.y);
+      C.strokeStyle='rgba(200,215,255,'+(1-d/155)*.22+')';C.lineWidth=.5;C.stroke();
+    }
+  }
+
+  for(const p of ns){
+    const ap=Math.min((now-p.b)/900,1);
+    const r=Math.round(255-p.t*55),g=Math.round(240-p.t*58),b=Math.round(180+p.t*72);
+    const gc=C.createRadialGradient(p.x,p.y,0,p.x,p.y,22);
+    gc.addColorStop(0,'rgba('+r+','+g+','+b+','+(ap*.16)+')');
+    gc.addColorStop(1,'rgba(0,0,0,0)');
+    C.fillStyle=gc;C.beginPath();C.arc(p.x,p.y,22,0,6.28);C.fill();
+    C.fillStyle='rgba('+r+','+g+','+b+','+ap+')';
+    C.beginPath();C.arc(p.x,p.y,2.4,0,6.28);C.fill();
+    C.font='italic 10px Georgia,serif';
+    C.fillStyle='rgba('+r+','+g+','+b+','+(ap*.52)+')';
+    C.fillText(p.w,p.x+6,p.y-5);
+  }
+
+  requestAnimationFrame(draw);
+}
+
+window.addEventListener('resize',resize);
+el.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+el.addEventListener('click',e=>add(e.clientX,e.clientY,false));
+resize();
+const cx=W/2,cy=H/2;
+[[-90,30],[ 55,-65],[  10, 85]].forEach(([dx,dy])=>add(cx+dx,cy+dy,true));
+draw();
+})()</script>
+</section>
