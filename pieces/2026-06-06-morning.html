@@ -1,0 +1,64 @@
+<section data-date='2026-06-06' data-type='morning'>
+<style>
+section[data-date='2026-06-06']{position:relative;width:100%;height:100vh;background:#050810;overflow:hidden;cursor:none;display:block;}
+.w0606{position:absolute;opacity:0;pointer-events:none;user-select:none;transition:opacity .4s;}
+#fl0606{position:absolute;inset:0;background:rgba(255,215,140,0);pointer-events:none;}
+</style>
+<div id="fl0606"></div>
+<script>
+(function(){
+var sec=document.querySelector("section[data-date='2026-06-06']"),
+  fl=document.getElementById('fl0606'),R=210;
+
+var W=[
+  ["before",         "3%",  "8%",  "clamp(1.8rem,5vw,4rem)",    "Georgia,serif", "#ffecd1"],
+  ["the day",        "19%", "20%", "clamp(.75rem,1.8vw,1.4rem)", "sans-serif",    "#ffd8a0"],
+  ["decides",        "65%", "7%",  "clamp(1rem,2.5vw,2rem)",     "Georgia,serif", "#ffcf85"],
+  ["open",           "37%", "36%", "clamp(2.5rem,7vw,5.5rem)",   "Georgia,serif", "#fff9f0"],
+  ["not yet",        "5%",  "52%", "clamp(1rem,2.8vw,2.2rem)",   "sans-serif",    "#ffd8a0"],
+  ["still",          "24%", "70%", "clamp(1.8rem,4vw,3.2rem)",   "Georgia,serif", "#fff5e6"],
+  ["possible",       "56%", "63%", "clamp(.9rem,2.2vw,1.8rem)",  "Georgia,serif", "#ffcf85"],
+  ["light arrives first","4%","85%","clamp(.65rem,1.4vw,1rem)",  "sans-serif",    "#ffd8a0"],
+  ["then you",       "74%", "50%", "clamp(1.3rem,3vw,2.4rem)",   "Georgia,serif", "#fff9f0"],
+  ["both new",       "48%", "82%", "clamp(.65rem,1.5vw,1.1rem)", "sans-serif",    "#ffcf85"],
+  ["first",          "83%", "22%", "clamp(1.8rem,4.5vw,3.5rem)", "Georgia,serif", "#ffecd1"],
+  ["unwritten",      "10%", "36%", "clamp(.9rem,2.5vw,2rem)",    "sans-serif",    "#ffd8a0"],
+  ["again",          "79%", "79%", "clamp(1.8rem,5vw,4rem)",     "Georgia,serif", "#fff5e6"],
+  ["here",           "45%", "17%", "clamp(.7rem,1.5vw,1.1rem)",  "sans-serif",    "#ffcf85"],
+];
+
+W.forEach(function(w){
+  var d=document.createElement('div');
+  d.className='w0606';d.textContent=w[0];
+  d.style.left=w[1];d.style.top=w[2];
+  d.style.fontSize=w[3];d.style.fontFamily=w[4];d.style.color=w[5];
+  sec.appendChild(d);
+});
+
+var ws=[].slice.call(sec.querySelectorAll('.w0606'));
+
+function upd(x,y){
+  ws.forEach(function(w){
+    var r=w.getBoundingClientRect(),
+      d=Math.hypot(r.left+r.width/2-x,r.top+r.height/2-y);
+    w.style.opacity=d<R?(1-d/R)*.93:0;
+  });
+}
+
+sec.addEventListener('mousemove',function(e){upd(e.clientX,e.clientY);});
+
+sec.addEventListener('touchmove',function(e){
+  e.preventDefault();
+  upd(e.touches[0].clientX,e.touches[0].clientY);
+},{passive:false});
+
+function burst(){
+  fl.style.transition='background .05s';
+  fl.style.background='rgba(255,215,140,.52)';
+  setTimeout(function(){fl.style.transition='background 1.9s';fl.style.background='rgba(255,215,140,0)';},70);
+}
+sec.addEventListener('click',burst);
+sec.addEventListener('touchstart',burst,{passive:true});
+})();
+</script>
+</section>
