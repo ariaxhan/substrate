@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>vigil — 2026-06-05</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#020a1c;overflow:hidden;cursor:crosshair}
+canvas{position:fixed;inset:0;display:block}
+#poem{
+  position:fixed;top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  font:italic clamp(14px,1.8vw,21px)/2.1 Georgia,serif;
+  color:rgba(180,200,255,0);
+  text-align:center;
+  pointer-events:none;
+  transition:color 7s ease;
+  letter-spacing:.07em;
+}
+</style>
+</head>
+<body>
+<section data-date='2026-06-05' data-type='reflection'>
+<canvas id=c></canvas>
+<div id=poem>
+one star<br>
+then another<br>
+<br>
+the dark between them<br>
+is also yours
+</div>
+<script>
+const cv=document.getElementById('c'),
+      cx=cv.getContext('2d'),
+      po=document.getElementById('poem');
+let W,H,stars=[];
+
+function resize(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+resize();
+onresize=resize;
+
+function mk(x,y,big){
+  return{
+    x,y,
+    r:big?(Math.random()*1.6+.6):(Math.random()*.9+.2),
+    a:0,
+    tgt:Math.random()*.65+.2,
+    spd:Math.random()*.003+.0008,
+    ph:Math.random()*6.28,
+    hue:Math.random()*30+200
+  }
+}
+
+let n=0;
+const iv=setInterval(()=>{
+  stars.push(mk(Math.random()*W,Math.random()*H,false));
+  if(++n>=75){
+    clearInterval(iv);
+    setTimeout(()=>po.style.color='rgba(185,205,255,.78)',3500);
+  }
+},110);
+
+onclick=e=>{
+  const count=Math.floor(Math.random()*4)+5;
+  for(let i=0;i<count;i++){
+    const a=Math.PI*2*i/count+Math.random()*.7,
+          d=Math.random()*60+18;
+    stars.push(mk(e.clientX+Math.cos(a)*d,e.clientY+Math.sin(a)*d,true));
+  }
+};
+
+(function frame(ts){
+  cx.fillStyle='rgba(2,10,28,.18)';
+  cx.fillRect(0,0,W,H);
+
+  for(const s of stars){
+    if(s.a<s.tgt)s.a=Math.min(s.tgt,s.a+s.spd);
+    const tw=s.a*(0.72+0.28*Math.sin(ts*.00085+s.ph));
+    cx.beginPath();
+    cx.arc(s.x,s.y,s.r,0,6.283);
+    cx.fillStyle=`hsla(${s.hue},60%,88%,${tw})`;
+    cx.fill();
+  }
+
+  requestAnimationFrame(frame);
+})(0);
+</script>
+</section>
+</body>
+</html>
