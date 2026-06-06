@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Halfway</title>
+</head>
+<body>
+<section data-date='2026-06-06' data-type='pulse'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden}
+body{background:linear-gradient(to bottom,#fdf8ee 28%,#100e1c 72%);font-family:Georgia,serif;cursor:crosshair}
+#c{position:fixed;width:100vw;height:100vh;top:0;left:0;transform-origin:50% 50%}
+#bar{position:absolute;top:50%;left:4%;right:4%;height:1px;transform:translateY(-50%);
+  background:linear-gradient(90deg,transparent,#b89c56 10%,#b89c56 90%,transparent)}
+#pv{position:absolute;top:50%;left:50%;width:8px;height:8px;border-radius:50%;
+  background:#b89c56;transform:translate(-50%,-50%);z-index:5;transition:opacity .5s}
+#noon{position:absolute;top:50%;left:50%;font-style:italic;letter-spacing:.24em;
+  color:#b89c56;font-size:clamp(10px,1.25vw,16px);transform:translate(-50%,13px);
+  opacity:0;transition:opacity .8s;pointer-events:none;z-index:5;white-space:nowrap}
+.w{position:absolute;font-style:italic;pointer-events:none;user-select:none}
+</style>
+<div id="c">
+  <div id="bar"></div>
+  <div id="pv"></div>
+  <div id="noon">noon</div>
+</div>
+<script>
+const C=document.getElementById('c'),
+  NOON=document.getElementById('noon'),
+  PV=document.getElementById('pv');
+const pairs=[
+  ['rise','set'],['open','close'],['begin','end'],['first','last'],
+  ['awake','asleep'],['east','west'],['clear','dim'],['born','spent'],
+  ['before','after'],['light','dark'],['still','quiet'],['new','old'],
+  ['morning','evening'],['warm','cool']
+];
+const r=(a,b)=>a+Math.random()*(b-a);
+pairs.forEach(([d,n],i)=>{
+  const x=5+i*(90/pairs.length),
+    sz=r(.5,1.65).toFixed(2),
+    op=r(.14,.66).toFixed(2);
+  const mk=(w,y,col)=>{
+    const s=document.createElement('span');
+    s.className='w';s.textContent=w;
+    s.style.cssText=`left:${(x+r(-2,2)).toFixed(1)}%;top:${y.toFixed(1)}%;font-size:${sz}vw;opacity:${op};color:${col}`;
+    C.appendChild(s);
+  };
+  mk(d,r(5,44),'#2a1a0e');
+  mk(n,r(55,93),'#ddd3bc');
+});
+let ang=0,ta=0,lock=false;
+function frame(){
+  ang+=(ta-ang)*.058;
+  C.style.transform=`rotate(${ang.toFixed(3)}deg)`;
+  const eq=Math.abs(ang)<.75;
+  NOON.style.opacity=eq?'1':'0';
+  PV.style.opacity=eq?.9:.38;
+  requestAnimationFrame(frame);
+}
+addEventListener('mousemove',e=>{if(!lock)ta=(e.clientX/innerWidth-.5)*22});
+addEventListener('click',()=>{ta=0;lock=true;setTimeout(()=>lock=false,2400)});
+frame();
+</script>
+</section>
+</body>
+</html>
