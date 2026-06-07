@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+<meta charset=utf-8>
+<title>the night fills (2026-06-06)</title>
+<style>
+*{margin:0}
+body{background:#030810;overflow:hidden;width:100vw;height:100vh;cursor:crosshair}
+canvas{position:absolute;top:0;left:0}
+#lay{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+.w{position:absolute;font:italic 1rem Georgia,serif;color:rgba(165,190,235,0.82);pointer-events:none}
+#coda{position:fixed;bottom:2.8rem;width:100%;text-align:center;font:italic .8rem Georgia,serif;
+  color:rgba(165,190,235,0);letter-spacing:.18em;pointer-events:none;transition:color 5s ease}
+</style>
+</head>
+<body>
+<section data-date='2026-06-06' data-type='reflection'>
+<canvas id=c></canvas>
+<div id=lay></div>
+<p id=coda>enough. rest now.</p>
+</section>
+<script>
+const cv=document.getElementById('c'),
+  ctx=cv.getContext('2d'),
+  lay=document.getElementById('lay'),
+  cod=document.getElementById('coda');
+let W=cv.width=innerWidth,H=cv.height=innerHeight;
+window.onresize=()=>{W=cv.width=innerWidth;H=cv.height=innerHeight;draw()};
+
+const ws=['rest','still','done','enough','held','release','quiet','remain',
+  'soften','breathe','let go','close','whole','sleep','accept','ease','tonight','open'];
+let stars=[],mx=-9e9,my=-9e9,n=0;
+
+for(let i=0;i<60;i++)
+  stars.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,
+    r:.25+Math.random()*.45,a:.05+Math.random()*.13,c:Math.floor(Math.random()*22)});
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  stars.forEach(s=>{
+    const dx=s.x-mx,dy=s.y-my,d=Math.sqrt(dx*dx+dy*dy),
+      g=d<110?(1-d/110)*.5:0,r=s.r+g*1.8;
+    if(g>.06){
+      const grd=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,r*6);
+      grd.addColorStop(0,`rgba(175,200,255,${g*.09})`);
+      grd.addColorStop(1,'rgba(0,0,0,0)');
+      ctx.beginPath();ctx.arc(s.x,s.y,r*6,0,6.28);
+      ctx.fillStyle=grd;ctx.fill();
+    }
+    ctx.beginPath();ctx.arc(s.x,s.y,r,0,6.28);
+    ctx.fillStyle=`rgba(${198+s.c},${210+s.c},255,${Math.min(.95,s.a+g)})`;
+    ctx.fill();
+  });
+}
+
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;draw()});
+
+document.addEventListener('click',e=>{
+  stars.push({x:e.clientX+(Math.random()-.5)*44,y:e.clientY+(Math.random()-.5)*44,
+    r:.7+Math.random()*1.1,a:.5+Math.random()*.38,c:Math.floor(Math.random()*28)});
+  n++;
+  if(n===18) cod.style.color='rgba(165,190,235,0.45)';
+  draw();
+
+  const el=document.createElement('div');
+  el.className='w';
+  el.textContent=ws[n%ws.length];
+  el.style.cssText=`left:${e.clientX-22}px;top:${e.clientY-6}px;opacity:.88;
+    transition:opacity 2.8s ease,transform 2.8s ease`;
+  lay.appendChild(el);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    el.style.opacity='0';el.style.transform='translateY(-30px)';
+  }));
+  setTimeout(()=>el.remove(),3100);
+});
+
+setInterval(()=>{
+  stars.forEach(s=>{s.a+=(Math.random()-.5)*.022;s.a=Math.max(.03,Math.min(.9,s.a))});
+  draw();
+},160);
+
+draw();
+</script>
+</body>
+</html>
