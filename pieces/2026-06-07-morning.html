@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>before the first word</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#07060f;cursor:crosshair}
+section{position:relative;width:100%;height:100%;display:block}
+.w{position:absolute;font-family:Georgia,serif;color:#f0e2c0;opacity:0;pointer-events:none;transition:opacity .5s ease;user-select:none;letter-spacing:.03em;white-space:nowrap}
+#hz{position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent 5%,#b05c18 30%,#e89030 50%,#b05c18 70%,transparent 95%);filter:blur(2px);opacity:.3}
+</style>
+</head>
+<body>
+<section data-date='2026-06-07' data-type='morning'>
+<div id="hz"></div>
+<script>
+const W=[
+  {t:"first",    s:22, x:48, y:50},
+  {t:"before",   s:16, x:14, y:36},
+  {t:"still",    s:18, x:73, y:63},
+  {t:"possible", s:18, x:31, y:22},
+  {t:"open",     s:36, x:57, y:38},
+  {t:"the day",  s:22, x:61, y:71},
+  {t:"unnamed",  s:16, x:18, y:60},
+  {t:"whole",    s:28, x:42, y:80},
+  {t:"unspent",  s:18, x: 7, y:74},
+  {t:"tender",   s:22, x:80, y:44},
+  {t:"not yet",  s:20, x:50, y:14},
+  {t:"beginning",s:26, x:34, y:55},
+  {t:"quiet",    s:16, x:86, y:27},
+  {t:"clean",    s:22, x:24, y:84},
+  {t:"unlost",   s:18, x:68, y:20},
+  {t:"everything",s:20,x:44, y:68},
+  {t:"yours",    s:34, x:78, y:79}
+];
+
+const sec=document.querySelector('section');
+const els=W.map(({t,s,x,y})=>{
+  const d=document.createElement('div');
+  d.className='w';
+  d.textContent=t;
+  d.style.fontSize=s+'px';
+  d.style.left=x+'%';
+  d.style.top=y+'%';
+  sec.appendChild(d);
+  return{el:d,x,y,lit:false};
+});
+
+let mx=-9999,my=-9999;
+
+function illuminate(cx,cy,radius,peak){
+  const vw=window.innerWidth,vh=window.innerHeight;
+  els.forEach(item=>{
+    if(item.lit)return;
+    const ex=item.x/100*vw, ey=item.y/100*vh;
+    const dist=Math.hypot(ex-cx,ey-cy);
+    const op=dist<radius?Math.pow(1-dist/radius,1.8)*peak:0;
+    item.el.style.opacity=op;
+  });
+}
+
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX; my=e.clientY;
+  illuminate(mx,my,200,.88);
+});
+
+document.addEventListener('mouseleave',()=>{
+  els.forEach(({el,lit})=>{ if(!lit)el.style.opacity=0; });
+});
+
+document.addEventListener('click',e=>{
+  const vw=window.innerWidth,vh=window.innerHeight;
+  els.forEach(item=>{
+    const ex=item.x/100*vw, ey=item.y/100*vh;
+    const dist=Math.hypot(ex-e.clientX,ey-e.clientY);
+    if(dist<260){
+      item.lit=true;
+      const el=item.el;
+      el.style.transition='opacity .08s,transform 1.8s ease-out';
+      el.style.opacity=1;
+      el.style.transform='translateY(-55px)';
+      setTimeout(()=>{
+        el.style.opacity=0;
+      },250);
+      setTimeout(()=>{
+        el.style.transform='';
+        el.style.transition='opacity .5s ease';
+        item.lit=false;
+      },1900);
+    }
+  });
+
+  // sunrise ripple at click point
+  const rp=document.createElement('div');
+  rp.style.cssText=`position:absolute;left:${e.clientX}px;top:${e.clientY}px;`+
+    `width:2px;height:2px;border-radius:50%;`+
+    `border:1px solid rgba(232,148,48,.5);`+
+    `transform:translate(-50%,-50%);pointer-events:none;`+
+    `transition:width 1.1s ease-out,height 1.1s ease-out,opacity 1.1s ease-out`;
+  sec.appendChild(rp);
+  requestAnimationFrame(()=>{
+    rp.style.width='320px';
+    rp.style.height='320px';
+    rp.style.opacity='0';
+  });
+  setTimeout(()=>rp.remove(),1200);
+});
+
+// horizon breathes
+let t=0;
+setInterval(()=>{
+  t+=.018;
+  document.getElementById('hz').style.opacity=.22+.14*Math.sin(t);
+},55);
+</script>
+</section>
+</body>
+</html>
