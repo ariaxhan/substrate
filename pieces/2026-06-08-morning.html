@@ -1,0 +1,50 @@
+<section data-date='2026-06-08' data-type='morning'>
+<style>
+section[data-date='2026-06-08']{position:relative;display:block;overflow:hidden;background:#09061a;min-height:320px;cursor:none;user-select:none}
+section[data-date='2026-06-08'] canvas{display:block;width:100%}
+</style>
+<canvas id='tc0608'></canvas>
+<script>!function(){
+var S=document.querySelector("section[data-date='2026-06-08']"),
+    C=document.getElementById('tc0608'),
+    X=C.getContext('2d'),
+    W,H=320,mx,my,wi=0,f=0,fl=0,
+    ws=['before','almost','now','yes','begin'],
+    ps=[];
+function init(){
+  W=C.width=S.offsetWidth||640;C.height=H;
+  mx=W/2;my=H/2;ps=[];
+  for(var i=18;i--;)ps.push({x:W*Math.random(),y:H*Math.random(),r:.3+Math.random()*.8,v:.12+Math.random()*.3,t:Math.random()*6.28});
+}
+S.addEventListener('mousemove',function(e){var r=C.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top});
+S.addEventListener('click',function(){wi=(wi+1)%ws.length;fl=1});
+function draw(){
+  f++;fl=Math.max(0,fl-.04);
+  X.fillStyle='#09061a';X.fillRect(0,0,W,H);
+  var hy=H*.68,gh=X.createLinearGradient(0,hy-8,0,hy+5);
+  gh.addColorStop(0,'rgba(0,0,0,0)');
+  gh.addColorStop(.5,'rgba(255,148,62,'+(0.04+.025*Math.sin(f*.016))+')');
+  gh.addColorStop(1,'rgba(0,0,0,0)');
+  X.fillStyle=gh;X.fillRect(0,hy-8,W,13);
+  for(var i=0;i<ps.length;i++){
+    var p=ps[i];p.y-=p.v;if(p.y<-5)p.y=H+5;
+    X.beginPath();X.arc(p.x,p.y,p.r,0,6.28);
+    X.fillStyle='rgba(185,165,235,'+(0.07+.07*Math.sin(f*.022+p.t))+')';X.fill();
+  }
+  var gr=X.createRadialGradient(mx,my,0,mx,my,140+fl*90);
+  gr.addColorStop(0,'rgba(255,180,88,'+(0.13+fl*.38)+')');
+  gr.addColorStop(1,'rgba(0,0,0,0)');
+  X.fillStyle=gr;X.fillRect(0,0,W,H);
+  var cx=W/2,cy=H*.41,
+      d=Math.sqrt((cx-mx)*(cx-mx)+(cy-my)*(cy-my)),
+      prx=Math.max(0,1-d/175),
+      al=Math.min(.05+.018*Math.sin(f*.011)+prx*.88+fl*.18,0.94);
+  X.font='italic '+Math.min(~~(W*.12),78)+'px Georgia,serif';
+  X.textAlign='center';X.textBaseline='middle';
+  X.fillStyle='rgba('+(190+~~(prx*55))+','+(170+~~(prx*35))+','+(138+~~(prx*18))+','+al+')';
+  X.fillText(ws[wi],cx,cy);
+  requestAnimationFrame(draw);
+}
+init();draw();window.addEventListener('resize',init);
+}();</script>
+</section>
