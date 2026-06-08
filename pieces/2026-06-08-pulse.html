@@ -1,0 +1,81 @@
+<section data-date='2026-06-08' data-type='pulse'>
+<style>
+#ns{position:fixed;inset:0;overflow:hidden;background:linear-gradient(to bottom,#f0dfc0 50%,#0c0c1e 50%);cursor:crosshair}
+#nl{position:absolute;top:50%;left:-20%;width:140%;height:1px;background:#c9923a;transform-origin:50% 0;will-change:transform}
+#np{position:absolute;top:calc(50% - 5px);left:calc(50% - 5px);width:10px;height:10px;border-radius:50%;background:#c9923a;z-index:10;transition:transform .4s,box-shadow .4s}
+#nr{position:absolute;top:50%;left:50%;width:16px;height:16px;border-radius:50%;border:1px solid #c9923a;transform:translate(-50%,-50%);opacity:0;pointer-events:none;z-index:9}
+@keyframes nrk{0%{transform:translate(-50%,-50%) scale(1);opacity:.7}100%{transform:translate(-50%,-50%) scale(12);opacity:0}}
+#nz{position:absolute;top:50%;left:50%;transform:translate(-50%,-180%);font:1.6rem/1 Georgia,serif;letter-spacing:.55em;color:#c9923a;opacity:0;transition:opacity .55s;z-index:20;pointer-events:none;text-transform:uppercase;padding-left:.55em}
+.nw{position:absolute;opacity:0;pointer-events:none;letter-spacing:.18em;font-size:.75rem;text-transform:lowercase}
+.na{font-family:Georgia,serif;color:#7a5225}
+.nb{font-family:'Courier New',monospace;color:#6fa3c4}
+</style>
+<div id="ns">
+  <div id="nl"></div>
+  <div id="np"></div>
+  <div id="nr"></div>
+  <div id="nz">noon</div>
+</div>
+<script>
+!function(){
+const S=document.getElementById('ns'),L=document.getElementById('nl'),
+P=document.getElementById('np'),R=document.getElementById('nr'),Z=document.getElementById('nz');
+let tilt=0,tgt=0,wasNear=false;
+const A=['before','still','almost','rising','pale','warm','once','brief','held','soft'];
+const B=['after','already','falling','cooling','past','barely','slow','late','dim','long'];
+function spawn(){
+  const up=Math.random()>.45;
+  const el=document.createElement('div');
+  el.className='nw '+(up?'na':'nb');
+  const pool=up?A:B;
+  el.textContent=pool[0|Math.random()*pool.length];
+  const ox=(Math.random()-.5)*62;
+  el.style.left=(50+ox)+'%';
+  el.style.transform='translateX(-50%)';
+  const y0=up?47.5-Math.random()*4:52.5+Math.random()*4;
+  el.style.top=y0+'%';
+  S.appendChild(el);
+  let t=0,d=145+90*Math.random(),dir=up?-1:1;
+  !function step(){
+    t++;
+    const p=t/d,e=Math.sin(p*Math.PI);
+    el.style.opacity=e*.68;
+    el.style.top=(y0+dir*p*28)+'%';
+    t<d?requestAnimationFrame(step):el.remove();
+  }();
+}
+S.addEventListener('mousemove',function(e){
+  const w=S.offsetWidth,h=S.offsetHeight;
+  const dx=e.clientX-w/2,dy=e.clientY-h/2;
+  const near=Math.hypot(dx,dy)<40;
+  if(near&&!wasNear){
+    R.style.animation='none';
+    void R.offsetWidth;
+    R.style.animation='nrk 1s ease-out forwards';
+  }
+  wasNear=near;
+  tgt=near?0:dx/(w/2)*17;
+  Z.style.opacity=near?'1':'0';
+  P.style.transform=near?'scale(2.4)':'scale(1)';
+  P.style.boxShadow=near?'0 0 16px #c9923a,0 0 32px #c9923a44':'none';
+});
+S.addEventListener('mouseleave',function(){
+  wasNear=false;
+  Z.style.opacity='0';
+  P.style.transform='scale(1)';
+  P.style.boxShadow='none';
+});
+S.addEventListener('click',function(e){
+  const f=(e.clientX-S.offsetWidth/2)/(S.offsetWidth/2)*32;
+  tgt+=f*.6;
+  setTimeout(function(){tgt=0;},650);
+});
+setInterval(spawn,820);
+!function loop(){
+  tilt+=(tgt-tilt)*.07;
+  L.style.transform='rotate('+tilt.toFixed(3)+'deg)';
+  requestAnimationFrame(loop);
+}();
+}();
+</script>
+</section>
