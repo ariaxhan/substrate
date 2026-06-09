@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>*{margin:0}body{background:#080810;overflow:hidden;cursor:none}canvas{display:block}</style>
+</head>
+<body>
+<section data-date='2026-06-08' data-type='digest'>
+<canvas id="c"></canvas>
+<script>
+const cv=document.getElementById('c'),g=cv.getContext('2d');
+let W,H,mx=300,my=300;
+
+const words=["noise","attention","signal","pattern","recognition","structure","understanding","memory","knowledge"];
+let wi=0,placed=[];
+const abc='01∅01∆01∑01∏01≈01';
+const N=72;
+let pts=[];
+
+function init(){
+  W=cv.width=innerWidth;H=cv.height=innerHeight;
+  pts=Array.from({length:N},(_,i)=>({
+    x:Math.random()*W,y:Math.random()*H,
+    vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5,
+    c:abc[i%abc.length],t:i*11
+  }));
+}
+
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+
+document.addEventListener('click',()=>{
+  if(wi>=words.length){placed=[];wi=0;return}
+  placed.push({x:mx,y:my,w:words[wi++],born:0});
+  pts.forEach(p=>{
+    const d=Math.hypot(p.x-mx,p.y-my);
+    if(d<95){const a=Math.atan2(p.y-my,p.x-mx);p.vx+=Math.cos(a)*4.5;p.vy+=Math.sin(a)*4.5}
+  });
+});
+
+const R=110;
+function frame(){
+  g.fillStyle='rgba(8,8,16,.13)';
+  g.fillRect(0,0,W,H);
+
+  pts.forEach(p=>{
+    p.t++;
+    if(!(p.t%110))p.c=abc[0|Math.random()*abc.length];
+    const dx=mx-p.x,dy=my-p.y,d=Math.hypot(dx,dy),near=d<R;
+    if(near){const f=(1-d/R)*.16;p.vx+=dx*f/d;p.vy+=dy*f/d}
+    p.vx*=.94;p.vy*=.94;
+    if(Math.abs(p.vx)<.09)p.vx+=(Math.random()-.5)*.13;
+    if(Math.abs(p.vy)<.09)p.vy+=(Math.random()-.5)*.13;
+    p.x=(p.x+p.vx+W)%W;p.y=(p.y+p.vy+H)%H;
+    const b=near?1-d/R:0;
+    g.fillStyle=`rgba(${52+b*168},${46+b*122},${35+b*68},${.11+b*.74})`;
+    g.font=`${9+b*5}px monospace`;
+    g.fillText(p.c,p.x,p.y);
+  });
+
+  for(let i=0;i<placed.length;i++)
+    for(let j=i+1;j<placed.length;j++){
+      const d=Math.hypot(placed[i].x-placed[j].x,placed[i].y-placed[j].y);
+      if(d<260){
+        g.strokeStyle=`rgba(88,152,128,${.14*(1-d/260)})`;
+        g.lineWidth=.5;g.beginPath();
+        g.moveTo(placed[i].x,placed[i].y);g.lineTo(placed[j].x,placed[j].y);g.stroke();
+      }
+    }
+
+  g.font='italic 17px Georgia,serif';
+  placed.forEach(p=>{
+    p.born=Math.min(p.born+.04,1);
+    const tw=g.measureText(p.w).width;
+    g.fillStyle=`rgba(185,215,205,${.88*p.born})`;
+    g.fillText(p.w,p.x-tw/2,p.y+5);
+    g.beginPath();g.arc(p.x,p.y+15,1.5,0,Math.PI*2);
+    g.fillStyle=`rgba(88,158,132,${.5*p.born})`;g.fill();
+  });
+
+  g.strokeStyle='rgba(155,150,175,.3)';
+  g.lineWidth=.8;g.beginPath();g.arc(mx,my,4,0,Math.PI*2);g.stroke();
+
+  g.textAlign='center';
+  if(!placed.length){
+    g.fillStyle='rgba(52,52,68,.7)';g.font='10px monospace';
+    g.fillText('move  .  click',W/2,H-22);
+  } else if(wi>=words.length){
+    g.fillStyle='rgba(88,128,112,.35)';g.font='10px monospace';
+    g.fillText('click to dissolve',W/2,H-22);
+  }
+  g.textAlign='left';
+
+  requestAnimationFrame(frame);
+}
+
+window.addEventListener('resize',init);
+init();frame();
+</script>
+</section>
+</body>
+</html>
