@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>before</title>
+<style>
+*{margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden}
+body{font-family:Georgia,'Times New Roman',serif;background:#05050d}
+.w{position:fixed;color:rgba(255,245,220,.05);letter-spacing:.17em;text-transform:lowercase;cursor:pointer;pointer-events:all;white-space:nowrap;transition:text-shadow .6s}
+</style>
+</head>
+<body>
+<section data-date='2026-06-09' data-type='morning'>
+<canvas id=cv style="position:fixed;top:0;left:0;pointer-events:none"></canvas>
+<div id=hz style="position:fixed;bottom:33%;left:4%;width:92%;height:1px;background:rgba(255,165,60,.06);pointer-events:none"></div>
+<script>
+const WW=['before','open','still','possible','unwritten','breathe','begin','new','first','light','enough','threshold','wait'],
+E=[],T0=performance.now();
+let mx=innerWidth/2,my=innerHeight/2;
+
+const cv=document.getElementById('cv');
+cv.width=innerWidth;cv.height=innerHeight;
+const ctx=cv.getContext('2d');
+const stars=Array.from({length:38},()=>({
+  x:Math.random()*innerWidth,
+  y:Math.random()*innerHeight*.58,
+  o:Math.random()*.35+.08,
+  r:Math.random()*.6+.2
+}));
+
+WW.forEach(w=>{
+  const d=document.createElement('div');
+  d.className='w';
+  d.textContent=w;
+  const sz=(.68+Math.random()*.82).toFixed(2);
+  const rot=(Math.random()*7-3.5).toFixed(1);
+  d.style.cssText+=`font-size:${sz}rem;left:${(6+Math.random()*83).toFixed(1)}%;top:${(6+Math.random()*83).toFixed(1)}%;transform:rotate(${rot}deg)`;
+  d.addEventListener('click',e=>{
+    d._lit=true;
+    d.style.color='rgba(255,212,88,.97)';
+    d.style.textShadow='0 0 18px rgba(255,185,45,.85),0 0 44px rgba(255,148,18,.5)';
+    bloom(e.clientX,e.clientY);
+    setTimeout(()=>{d._lit=false;d.style.textShadow=''},2600);
+  });
+  document.body.appendChild(d);
+  E.push(d);
+});
+
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+
+function bloom(x,y){
+  const b=document.createElement('div');
+  b.style.cssText=`position:fixed;left:${x}px;top:${y}px;width:44px;height:44px;border-radius:50%;background:rgba(255,185,55,.42);pointer-events:none;transform:translate(-50%,-50%) scale(1);opacity:.7`;
+  document.body.appendChild(b);
+  let n=1,o=.7;
+  (function g(){
+    n+=.16;o-=.038;
+    b.style.transform=`translate(-50%,-50%) scale(${n})`;
+    b.style.opacity=o>0?o:0;
+    o>0?requestAnimationFrame(g):b.remove();
+  })();
+}
+
+const hz=document.getElementById('hz');
+(function tick(){
+  const p=Math.min((performance.now()-T0)/108e3,1);
+
+  const r=5+p*26,g=5+p*11,bl=13+p*52;
+  document.body.style.background=`rgb(${r|0},${g|0},${bl|0})`;
+  hz.style.background=`rgba(255,165,60,${(.06+p*.16).toFixed(3)})`;
+
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const so=Math.max(0,1-p*3.8);
+  if(so>.01) stars.forEach(s=>{
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,6.283);
+    ctx.fillStyle=`rgba(255,252,240,${(s.o*so).toFixed(2)})`;
+    ctx.fill();
+  });
+
+  E.forEach(d=>{
+    if(d._lit)return;
+    const rc=d.getBoundingClientRect();
+    const dist=Math.hypot(rc.left+rc.width/2-mx,rc.top+rc.height/2-my);
+    const a=Math.max(.04,Math.min(.72,1.08-dist/195));
+    d.style.color=`rgba(255,245,220,${a.toFixed(2)})`;
+  });
+
+  requestAnimationFrame(tick);
+})();
+</script>
+</section>
+</body>
+</html>
