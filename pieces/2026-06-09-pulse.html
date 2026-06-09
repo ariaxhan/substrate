@@ -1,0 +1,60 @@
+<section data-date='2026-06-09' data-type='pulse'>
+<style>
+#mer{height:100vh;position:relative;overflow:hidden;background:#f0ede6;cursor:crosshair;font-family:Georgia,serif}
+#bm{position:absolute;inset:0;transform-origin:50% 50%}
+#ax{position:absolute;top:50%;left:8%;right:8%;height:1px;background:rgba(0,0,0,.1);transform:translateY(-.5px)}
+@keyframes bp{0%,100%{transform:translate(-50%,-50%) scale(1);opacity:.6}50%{transform:translate(-50%,-50%) scale(1.8);opacity:.25}}
+#pv{position:absolute;top:50%;left:50%;width:5px;height:5px;border-radius:50%;background:#999;transform:translate(-50%,-50%);animation:bp 3.5s ease-in-out infinite}
+#nn{position:absolute;top:50%;left:50%;transform:translate(-50%,13px);font-family:monospace;font-size:9px;color:#bbb;letter-spacing:.4em;transition:color .9s}
+.w{position:absolute;transform:translate(-50%,-50%);font-size:clamp(10px,1.15vw,14px);letter-spacing:.04em;pointer-events:none;user-select:none}
+</style>
+<div id="mer">
+  <div id="bm">
+    <div id="ax"></div>
+    <div id="pv"></div>
+    <div id="nn">12:00</div>
+  </div>
+</div>
+<script>
+(function(){
+var P=[
+  ['first light','last light',-26,11],
+  ['opening','closing',15,21],
+  ['waking','walking',-7,31],
+  ['still','still',29,13],
+  ['threshold','threshold',-20,5],
+  ['the hour','the hour',8,40]
+],bm=document.getElementById('bm'),
+mer=document.getElementById('mer'),
+nn=document.getElementById('nn'),
+tilt=0,target=0,locked=0;
+
+P.forEach(function(p){
+  var am=document.createElement('div'),pm=document.createElement('div');
+  am.className=pm.className='w';
+  am.textContent=p[0];pm.textContent=p[1];
+  am.style.left=pm.style.left=(50+p[2])+'%';
+  am.style.top=(50-p[3])+'%';pm.style.top=(50+p[3])+'%';
+  am.style.color='#4a2c0e';pm.style.color='#0e2a4a';
+  bm.appendChild(am);bm.appendChild(pm);
+});
+
+mer.addEventListener('mousemove',function(e){
+  if(!locked){var r=mer.getBoundingClientRect();target=((e.clientX-r.left)/r.width-.5)*26;}
+});
+mer.addEventListener('click',function(){
+  locked=!locked;
+  if(!locked){target=0;nn.textContent='12:00';nn.style.color='#bbb';}
+  else{
+    if(target<-.5){nn.textContent='a.m.';nn.style.color='#7a4a1e';}
+    else if(target>.5){nn.textContent='p.m.';nn.style.color='#1e4a7a';}
+  }
+});
+(function loop(){
+  tilt+=(target-tilt)*.07;
+  bm.style.transform='rotate('+tilt.toFixed(2)+'deg)';
+  requestAnimationFrame(loop);
+})();
+})();
+</script>
+</section>
