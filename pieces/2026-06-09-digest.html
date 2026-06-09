@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Lattice (2026-06-09)</title>
+<style>
+*{margin:0;padding:0}
+body{background:#07070f;overflow:hidden;font-family:Georgia,serif;cursor:crosshair}
+canvas{position:fixed;top:0;left:0}
+#hint{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);color:#1e3848;font-size:10px;letter-spacing:.22em;font-family:monospace;transition:opacity 3s;pointer-events:none}
+</style>
+</head>
+<body>
+<section data-date='2026-06-09' data-type='digest'>
+<canvas id="cv"></canvas>
+<div id="hint">move to reveal &nbsp; click to add</div>
+</section>
+<script>
+const cv=document.getElementById('cv'),
+  g=cv.getContext('2d'),
+  W=()=>window.innerWidth,
+  H=()=>window.innerHeight,
+  vocab="signal pattern lattice form record trace know reveal gather cohere weight graph field edge bridge node data memory learn structure order belong".split(' ');
+
+cv.width=W();cv.height=H();
+window.onresize=()=>{cv.width=W();cv.height=H()};
+
+let nodes=[],mx=W()/2,my=H()/2,clicks=0;
+
+function spawn(x,y){
+  nodes.push({x,y,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,
+    w:vocab[nodes.length%vocab.length],age:0,sz:10+(Math.random()*6|0)});
+}
+
+for(let i=0;i<7;i++)
+  spawn(W()*.12+Math.random()*W()*.76, H()*.12+Math.random()*H()*.76);
+
+document.addEventListener('click',e=>{
+  spawn(e.clientX,e.clientY);
+  if(++clicks>=3)document.getElementById('hint').style.opacity='0';
+});
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+
+function cen(){
+  let sx=0,sy=0,n=nodes.length;
+  nodes.forEach(p=>{sx+=p.x;sy+=p.y});
+  return{x:sx/n,y:sy/n};
+}
+function d2(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+
+function frame(){
+  g.clearRect(0,0,W(),H());
+  const N=nodes.length,C=cen(),R=Math.min(210,55+N*20);
+
+  nodes.forEach(p=>{
+    p.age++;
+    p.x+=p.vx; p.y+=p.vy;
+    p.vx*=.996; p.vy*=.996;
+    if(p.x<40)p.vx+=.03; if(p.x>W()-40)p.vx-=.03;
+    if(p.y<30)p.vy+=.03; if(p.y>H()-30)p.vy-=.03;
+    if(N>5){
+      const f=.00012*Math.log(N);
+      p.vx+=(C.x-p.x)*f; p.vy+=(C.y-p.y)*f;
+    }
+  });
+
+  for(let i=0;i<N;i++){
+    for(let j=i+1;j<N;j++){
+      const ed=d2(nodes[i],nodes[j]);
+      if(ed<R){
+        const dm=Math.min(Math.hypot(nodes[i].x-mx,nodes[i].y-my),
+                          Math.hypot(nodes[j].x-mx,nodes[j].y-my));
+        const rev=Math.max(0,1-dm/160);
+        const al=(1-ed/R)*(.04+rev*.6);
+        if(al<.015)continue;
+        g.beginPath();
+        g.moveTo(nodes[i].x,nodes[i].y);
+        g.lineTo(nodes[j].x,nodes[j].y);
+        g.strokeStyle=`rgba(55,150,185,${al.toFixed(3)})`;
+        g.lineWidth=.4+rev*.9;
+        g.stroke();
+      }
+    }
+  }
+
+  const mxD=Math.max(...nodes.map(p=>d2(p,C)),1);
+  nodes.forEach(p=>{
+    const centrality=N>1?1-d2(p,C)/mxD:.5;
+    const hover=Math.max(0,1-Math.hypot(p.x-mx,p.y-my)/95);
+    const bright=(.18+centrality*.38+hover*.44)*Math.min(1,p.age/90);
+    g.font=`${p.sz}px Georgia,serif`;
+    g.textAlign='center'; g.textBaseline='middle';
+    g.fillStyle=`rgba(218,207,186,${bright.toFixed(3)})`;
+    g.fillText(p.w,p.x,p.y);
+  });
+
+  requestAnimationFrame(frame);
+}
+frame();
+</script>
+</body>
+</html>
