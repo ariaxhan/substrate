@@ -1,0 +1,74 @@
+<section data-date='2026-06-10' data-type='digest'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#f5f1e6;overflow:hidden;cursor:none}
+#f{position:fixed;inset:0}
+.w{position:absolute;font:300 12px Georgia,serif;color:#3d2810;pointer-events:none;user-select:none;white-space:nowrap;transition:color 1.6s}
+.w.fx{color:#18224d;font-weight:400}
+#d{position:fixed;pointer-events:none;border-radius:50%;border:1.5px solid rgba(61,40,16,.3);transform:translate(-50%,-50%);width:8px;height:8px;transition:width .15s,height .15s,border-color .15s}
+#l{position:fixed;left:0;right:0;bottom:10%;text-align:center;font:italic 1rem Georgia,serif;color:#3d2810;opacity:0;pointer-events:none;letter-spacing:.14em;transition:opacity 2s}
+#k{position:fixed;bottom:18px;right:22px;font:9px/1 Georgia,serif;color:#b0a07a;letter-spacing:.4px}
+</style>
+<div id=f></div>
+<div id=d></div>
+<div id=l></div>
+<div id=k></div>
+<script>
+const F=document.getElementById('f'),D=document.getElementById('d'),L=document.getElementById('l'),K=document.getElementById('k');
+const WS='signal noise threshold weight pattern cluster emerge learn form crystal edge sparse dense gradient seed grow wave trace converge fold drift layer sediment grain attend mark hold lattice node'.split(' ');
+const LS=['noise becoming signal','every pattern was once invisible','attention crystallizes','knowledge: residue of attention','the field remembers your path','what you return to, you learn','form follows the trace of looking'];
+let W=innerWidth,H=innerHeight,ns=[],mx=W/2,my=H/2,li=0;
+
+function mk(w,x,y,fl,op){
+  const el=document.createElement('div'),fs=10+~~(Math.random()*5);
+  el.className='w';el.textContent=w;
+  el.style.cssText=`left:${x}px;top:${y}px;opacity:${op};font-size:${fs}px`;
+  F.appendChild(el);
+  return{el,x,y,floor:fl,o:op,done:false,vx:(Math.random()-.5)*.07,vy:(Math.random()-.5)*.07};
+}
+
+function setup(){
+  ns=[];F.innerHTML='';
+  WS.forEach(w=>{
+    const fl=.01+.01*Math.random();
+    ns.push(mk(w,(.06+.88*Math.random())*W,(.08+.82*Math.random())*H,fl,fl));
+  });
+}
+
+function run(){
+  requestAnimationFrame(run);
+  D.style.left=mx+'px';D.style.top=my+'px';
+  let vis=0;
+  ns.forEach(n=>{
+    if(!n.done){n.x+=n.vx;n.y+=n.vy;if(n.x<10||n.x>W-70)n.vx*=-1;if(n.y<10||n.y>H-25)n.vy*=-1;n.el.style.left=n.x+'px';n.el.style.top=n.y+'px';}
+    const d=Math.hypot(n.x-mx,n.y-my),near=d<140;
+    if(near&&!n.done)n.floor=Math.min(.2,n.floor+.0007);
+    const tgt=near?Math.max(n.floor,(1-d/140)*.84):n.floor;
+    n.o+=(tgt-n.o)*.09;
+    n.el.style.opacity=n.o;
+    if(!n.done&&n.floor>.16){n.done=true;n.el.classList.add('fx');}
+    if(n.o>.1)vis++;
+  });
+  K.textContent=`${vis}/${ns.length}`;
+}
+
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  const near=ns.some(n=>Math.hypot(n.x-mx,n.y-my)<60);
+  D.style.width=D.style.height=(near?14:8)+'px';
+  D.style.borderColor=`rgba(61,40,16,${near?.5:.3})`;
+});
+
+document.addEventListener('click',e=>{
+  for(let i=0;i<4;i++){
+    const a=Math.PI*2*Math.random(),r=20+70*Math.random();
+    ns.push(mk(WS[~~(Math.random()*WS.length)],e.clientX+Math.cos(a)*r,e.clientY+Math.sin(a)*r,.04,.5));
+  }
+  L.textContent=LS[li++%LS.length];L.style.opacity=1;
+  clearTimeout(L._t);L._t=setTimeout(()=>L.style.opacity=0,4200);
+});
+
+window.addEventListener('resize',()=>{W=innerWidth;H=innerHeight;setup()});
+setup();run();
+</script>
+</section>
