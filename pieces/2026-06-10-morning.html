@@ -1,0 +1,47 @@
+<section data-date='2026-06-10' data-type='morning'>
+<style>
+#m{position:fixed;inset:0;background:#05031a;font-family:'Palatino Linotype',Palatino,Georgia,serif;cursor:crosshair;overflow:hidden}
+#m-s{position:absolute;inset:0;background:linear-gradient(to bottom,#0e0522 0%,#7a1535 38%,#d95e00 66%,#f0c040 100%);opacity:0;transition:opacity 3.2s ease}
+#m-d{position:absolute;inset:0;background:#05031a;pointer-events:none;transition:opacity 2.6s ease}
+.mw{position:absolute;color:rgba(255,253,245,.88);user-select:none;transition:color 2.8s,text-shadow 2.8s}
+.mw.r{color:rgba(32,12,4,.8)}
+.mw.r:hover{color:rgba(190,68,6,.92);text-shadow:0 0 22px rgba(255,155,40,.28)}
+</style>
+<div id="m">
+<div id="m-s"></div>
+<span class="mw" style="top:7%;left:6%;font-size:clamp(12px,1.9vw,24px);opacity:.58">still</span>
+<span class="mw" style="top:13%;left:58%;font-size:clamp(10px,1.5vw,19px);opacity:.5">not yet</span>
+<span class="mw" style="top:22%;left:26%;font-size:clamp(13px,2.3vw,30px)">almost</span>
+<span class="mw" style="top:31%;left:74%;font-size:clamp(9px,1.3vw,16px);opacity:.45">hold</span>
+<span class="mw" style="top:38%;left:8%;font-size:clamp(11px,1.7vw,22px);opacity:.64">one more breath</span>
+<span class="mw" style="top:44%;left:44%;font-size:clamp(14px,2.5vw,34px)">before</span>
+<span class="mw" style="top:52%;left:18%;font-size:clamp(11px,1.9vw,24px);opacity:.6">the dark</span>
+<span class="mw" style="top:58%;left:62%;font-size:clamp(10px,1.5vw,19px);opacity:.53">has already</span>
+<span class="mw" style="top:64%;left:32%;font-size:clamp(16px,2.9vw,38px)">started</span>
+<span class="mw" style="top:72%;left:5%;font-size:clamp(10px,1.6vw,20px);opacity:.48">becoming</span>
+<span class="mw" style="top:75%;left:64%;font-size:clamp(12px,2vw,26px)">something</span>
+<span class="mw" style="top:82%;left:39%;font-size:clamp(9px,1.3vw,16px);opacity:.48">else</span>
+<span class="mw" style="top:86%;left:13%;font-size:clamp(18px,3.7vw,50px)">open</span>
+<span class="mw" style="top:87%;left:71%;font-size:clamp(11px,1.9vw,24px);opacity:.58">first light</span>
+<span class="mw" style="top:91%;left:47%;font-size:clamp(22px,4.5vw,60px)">now</span>
+<div id="m-d"></div>
+</div>
+<script>
+(function(){
+var m=document.getElementById('m'),s=document.getElementById('m-s'),d=document.getElementById('m-d'),ws=m.querySelectorAll('.mw'),done=false;
+d.style.background='#05031a';
+m.addEventListener('mousemove',function(e){
+  if(!done)d.style.background='radial-gradient(circle 155px at '+e.clientX+'px '+e.clientY+'px,transparent 0%,#05031a 66%)';
+});
+function rise(){
+  if(done)return;
+  done=true;
+  s.style.opacity='1';
+  d.style.opacity='0';
+  ws.forEach(function(w){w.classList.add('r')});
+}
+m.addEventListener('click',rise);
+m.addEventListener('touchend',rise);
+})();
+</script>
+</section>
