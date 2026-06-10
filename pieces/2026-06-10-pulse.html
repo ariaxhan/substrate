@@ -1,0 +1,53 @@
+<section data-date='2026-06-10' data-type='pulse' style="display:block;position:fixed;inset:0;overflow:hidden;background:#f0ebe1;cursor:crosshair">
+<style>
+canvas{position:absolute;inset:0}
+#n{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font:italic 12px Georgia,serif;letter-spacing:.28em;color:#7a6050;opacity:0;transition:opacity .8s;pointer-events:none}
+</style>
+<canvas id=c></canvas>
+<div id=n>noon</div>
+<script>
+const cv=document.getElementById('c'),g=cv.getContext('2d'),nd=document.getElementById('n');
+let W,H,mx=.5,tilt=0,snp=false;
+const am=['before','quiet','still','risen','open','early'],
+  pm=['after','hushed','already','falling','closed','late'];
+function sz(){cv.width=W=innerWidth;cv.height=H=innerHeight}
+sz();onresize=sz;
+onmousemove=e=>mx=e.clientX/W;
+onclick=()=>{snp=true;setTimeout(()=>snp=false,1800)};
+function draw(){
+  g.clearRect(0,0,W,H);
+  let target=snp?0:(mx-.5)*24;
+  tilt+=(target-tilt)*.065;
+  let cx=W/2,cy=H/2,ang=tilt*Math.PI/180,len=Math.min(W,H)*.35;
+  let lx=cx-Math.cos(ang)*len,ly=cy-Math.sin(ang)*len;
+  let rx=cx+Math.cos(ang)*len,ry=cy+Math.sin(ang)*len;
+  let gr=g.createLinearGradient(lx,ly,rx,ry);
+  gr.addColorStop(0,'#9b6a30');gr.addColorStop(.5,'#7a6050');gr.addColorStop(1,'#506080');
+  g.beginPath();g.moveTo(lx,ly);g.lineTo(rx,ry);g.strokeStyle=gr;g.lineWidth=.8;g.stroke();
+  g.beginPath();g.moveTo(cx,cy);g.lineTo(cx,cy+18);g.strokeStyle='#7a6050';g.lineWidth=.7;g.stroke();
+  g.beginPath();g.arc(cx,cy,2.5,0,6.28);g.fillStyle='#7a6050';g.fill();
+  let lW=.3+Math.max(0,-tilt/24)*.55;
+  am.forEach((w,i)=>{
+    let oy=(i-2.5)*19,nx=lx-Math.sin(ang)*oy,ny=ly+Math.cos(ang)*oy;
+    g.save();g.translate(nx,ny);g.rotate(ang);
+    g.globalAlpha=Math.max(.07,lW-i*.03);
+    g.font=`italic ${10+lW*3}px Georgia,serif`;
+    g.fillStyle='#8b5020';g.textAlign='right';g.textBaseline='middle';
+    g.fillText(w,-10,0);g.restore();
+  });
+  let rW=.3+Math.max(0,tilt/24)*.55;
+  pm.forEach((w,i)=>{
+    let oy=(i-2.5)*19,nx=rx-Math.sin(ang)*oy,ny=ry+Math.cos(ang)*oy;
+    g.save();g.translate(nx,ny);g.rotate(ang);
+    g.globalAlpha=Math.max(.07,rW-i*.03);
+    g.font=`italic ${10+rW*3}px Georgia,serif`;
+    g.fillStyle='#304060';g.textAlign='left';g.textBaseline='middle';
+    g.fillText(w,10,0);g.restore();
+  });
+  g.globalAlpha=1;
+  nd.style.opacity=snp||Math.abs(tilt)<1.5?'.85':'0';
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</section>
