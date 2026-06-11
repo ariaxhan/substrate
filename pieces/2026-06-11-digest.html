@@ -1,0 +1,92 @@
+<section data-date='2026-06-11' data-type='digest'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#f0ebe1;overflow:hidden;cursor:crosshair}
+canvas{position:fixed;inset:0}
+#w{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none}
+#wt{font:italic 8vw Georgia,serif;color:#2a1608;opacity:0;transition:opacity 1.8s;letter-spacing:-.02em}
+#hint{position:fixed;bottom:1.5em;width:100%;text-align:center;font:11px Georgia,serif;color:#c0a882;letter-spacing:.15em;text-transform:uppercase;transition:opacity 1s}
+</style>
+<canvas id=c></canvas>
+<div id=w><span id=wt></span></div>
+<div id=hint>click to accumulate &middot; move to illuminate</div>
+<script>
+const cv=document.getElementById('c'),cx=cv.getContext('2d'),wt=document.getElementById('wt'),hint=document.getElementById('hint');
+const resize=()=>{cv.width=innerWidth;cv.height=innerHeight};
+resize();addEventListener('resize',resize);
+
+const SYMS=['0.73','∴','n=812','r²','p<.01','14σ','⊤','≡','∼k','Δ','→','∵','12%','∞','⊥'],
+  WORDS=['signal','pattern','structure','form','knowledge'],
+  pts=[];
+let mx=innerWidth/2,my=innerHeight/2,stage=0,cd=0;
+
+function seed(x,y,n){
+  for(let i=0;i<n;i++) pts.push({
+    x:x+(Math.random()-.5)*50,
+    y:y-(Math.random()*30),
+    vx:(Math.random()-.5)*.4,
+    vy:.4+Math.random()*.5,
+    floor:cv.height*(.52+Math.random()*.32),
+    t:SYMS[pts.length%SYMS.length],
+    settled:false,op:0,nb:0
+  });
+}
+
+for(let i=0;i<12;i++) seed(Math.random()*innerWidth,Math.random()*innerHeight*.55,1);
+addEventListener('click',e=>{seed(e.clientX,e.clientY,5);hint.style.opacity='0'});
+addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+
+function show(w){
+  wt.textContent=w;wt.style.opacity='1';
+  setTimeout(()=>wt.style.opacity='0',2200);
+}
+
+function tick(){
+  requestAnimationFrame(tick);
+  cx.fillStyle='rgba(240,235,225,.09)';cx.fillRect(0,0,cv.width,cv.height);
+  cd=Math.max(0,cd-1);
+  for(const p of pts) p.nb=0;
+
+  for(const p of pts){
+    if(!p.settled){
+      p.y+=p.vy;p.x+=p.vx*=.99;
+      if(p.y>=p.floor) p.settled=true;
+    } else {
+      p.x+=Math.sin(Date.now()*.0007+p.floor*.01)*.06;
+    }
+    p.op=Math.min(1,p.op+.04);
+  }
+
+  cx.lineWidth=.6;
+  for(let i=0;i<pts.length;i++){
+    for(let j=i+1;j<pts.length;j++){
+      const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<90){
+        pts[i].nb++;pts[j].nb++;
+        const near=Math.min(Math.hypot(mx-pts[i].x,my-pts[i].y),Math.hypot(mx-pts[j].x,my-pts[j].y));
+        const glow=Math.max(0,1-near/170);
+        cx.strokeStyle=`rgba(156,90,30,${.03+glow*.42})`;
+        cx.beginPath();cx.moveTo(pts[i].x,pts[i].y);cx.lineTo(pts[j].x,pts[j].y);cx.stroke();
+      }
+    }
+  }
+
+  cx.textAlign='center';cx.textBaseline='middle';
+  for(const p of pts){
+    const dm=Math.hypot(mx-p.x,my-p.y),glow=Math.max(0,1-dm/160);
+    const dense=Math.min(p.nb,4)/4;
+    cx.font=`${9+dense*5+glow*4}px "Courier New",monospace`;
+    cx.fillStyle=`rgba(42,22,8,${p.op*(.14+glow*.5+dense*.55)})`;
+    cx.fillText(p.t,p.x,p.y);
+  }
+
+  if(!cd&&stage<WORDS.length){
+    const need=[8,16,26,38,54][stage];
+    if(pts.length>=need&&pts.filter(p=>p.settled).length>=need/2){
+      show(WORDS[stage++]);cd=100;
+    }
+  }
+}
+tick();
+</script>
+</section>
