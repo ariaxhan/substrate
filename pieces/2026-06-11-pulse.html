@@ -1,0 +1,56 @@
+<section data-date='2026-06-11' data-type='pulse' style="display:block;position:fixed;inset:0;overflow:hidden;background:#f9f6f0;cursor:ew-resize">
+<canvas id=c style="position:absolute;inset:0"></canvas>
+<script>
+const cv=document.getElementById('c'),g=cv.getContext('2d');
+let W,H,amp=0,A=0,t=0,paused=false;
+// NOON: a palindrome. The same word backward and forward, like noon itself.
+const CH='NOON'.split(''),FR=[1,.96,1.04,.91],PH=[0,.38,.76,1.14];
+function sz(){cv.width=W=innerWidth;cv.height=H=innerHeight}
+sz();addEventListener('resize',sz);
+addEventListener('mousemove',e=>{if(!paused)A=(e.clientX/W-.5)*2.4});
+// click: discover the stillness — noon is the instant nothing moves
+addEventListener('click',()=>{
+  paused=true;A=0;
+  setTimeout(()=>paused=false,2200);
+});
+function draw(){
+  amp+=(A-amp)*.042;
+  g.clearRect(0,0,W,H);
+  const fs=Math.min(W*.24,H*.32),L=H*.26,cx=W*.5,barY=H*.30,sp=fs*.68;
+  // suspension bar
+  g.beginPath();
+  g.moveTo(cx-sp*1.5-fs*.18,barY);
+  g.lineTo(cx+sp*1.5+fs*.18,barY);
+  g.strokeStyle='rgba(155,143,130,.38)';g.lineWidth=.7;g.stroke();
+  // fulcrum point
+  g.beginPath();g.arc(cx,barY,2.2,0,6.28);
+  g.fillStyle='rgba(155,143,130,.55)';g.fill();
+  CH.forEach((ch,i)=>{
+    const sx=cx+(i-1.5)*sp;
+    const th=amp*.20*Math.sin(FR[i]*t+PH[i]);
+    const px=sx+Math.sin(th)*L,py=barY+Math.cos(th)*L;
+    // thread
+    g.beginPath();g.moveTo(sx,barY);g.lineTo(px,py-.02*fs);
+    g.strokeStyle='rgba(155,143,130,.22)';g.lineWidth=.5;g.stroke();
+    // character
+    g.save();g.translate(px,py);g.rotate(th);
+    g.font=`${fs}px Georgia,serif`;
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillStyle='#1b1916';g.globalAlpha=.87;
+    g.fillText(ch,0,0);
+    g.restore();
+  });
+  // label appears only at stillness — the secret of noon
+  const still=Math.abs(amp)<.012;
+  g.save();
+  g.font='9px monospace';g.textAlign='center';
+  g.fillStyle='#9a8f84';
+  g.globalAlpha=still?.55:Math.max(0,.55-(Math.abs(amp)/.012-.97)*12);
+  g.fillText('noon · noon · noon',cx,barY+L+fs*.65);
+  g.restore();
+  t+=.015;
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</section>
