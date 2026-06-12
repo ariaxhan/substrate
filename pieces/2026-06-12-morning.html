@@ -1,0 +1,76 @@
+<section data-date='2026-06-12' data-type='morning'>
+<style>
+.tm{position:fixed;inset:0;overflow:hidden;cursor:none;
+  background:linear-gradient(to bottom,#05050d 0%,#09060e 55%,#07050c 100%)}
+.tw{position:absolute;color:transparent;pointer-events:none;
+  transform:translate(-50%,-50%);font:clamp(14px,2.2vw,30px)/1 Georgia,serif;
+  letter-spacing:.22em;transition:color .7s,text-shadow .7s}
+.tw.on{color:#c8952e;text-shadow:0 0 55px rgba(200,140,40,.32)}
+.th{position:absolute;left:0;right:0;top:50%;height:1px;
+  background:linear-gradient(to right,transparent 0%,rgba(190,130,45,.09) 25%,rgba(190,130,45,.09) 75%,transparent 100%);
+  animation:hpulse 7s ease-in-out infinite}
+@keyframes hpulse{0%,100%{opacity:.5}50%{opacity:1}}
+.tg{position:absolute;width:210px;height:210px;border-radius:50%;
+  background:radial-gradient(circle,rgba(195,135,45,.13) 0%,transparent 65%);
+  transform:translate(-50%,-50%);pointer-events:none;transition:opacity .2s}
+.tf{position:absolute;inset:0;opacity:0;pointer-events:none}
+.tb{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  font:italic clamp(22px,4.5vw,60px)/1 Georgia,serif;letter-spacing:.5em;
+  color:#c8952e;opacity:0;pointer-events:none;transition:opacity .35s}
+</style>
+<div class="tm" id="tm">
+  <div class="th"></div>
+  <div class="tg" id="tg"></div>
+  <div class="tf" id="tf"></div>
+  <div class="tb" id="tb">begin</div>
+</div>
+<script>
+(function(){
+var c=document.getElementById('tm'),
+g=document.getElementById('tg'),
+f=document.getElementById('tf'),
+b=document.getElementById('tb'),
+R=165,busy=0,
+ws=[
+  ['still',      19, 44],
+  ['open',       71, 44],
+  ['not yet',    50, 38],
+  ['possible',   83, 57],
+  ['before',     17, 57],
+  ['first light',50, 51],
+  ['the day',    36, 63]
+],
+els=ws.map(function(w){
+  var e=document.createElement('div');
+  e.className='tw';e.textContent=w[0];
+  e.style.left=w[1]+'%';e.style.top=w[2]+'%';
+  c.appendChild(e);return{e:e,x:w[1],y:w[2]}
+});
+
+c.addEventListener('mousemove',function(ev){
+  var mx=ev.clientX,my=ev.clientY,
+      W=innerWidth,H=innerHeight;
+  g.style.left=mx+'px';g.style.top=my+'px';
+  els.forEach(function(w){
+    var d=Math.hypot(mx-w.x/100*W, my-w.y/100*H);
+    w.e.classList.toggle('on',d<R);
+  });
+});
+
+c.addEventListener('click',function(ev){
+  if(busy)return;busy=1;
+  f.style.cssText='position:absolute;inset:0;pointer-events:none;opacity:1;transition:opacity .18s;'
+    +'background:radial-gradient(circle at '+ev.clientX+'px '+ev.clientY+'px,'
+    +'rgba(210,155,55,.26) 0%,transparent 58%)';
+  b.style.transition='opacity .3s';b.style.opacity='1';
+  els.forEach(function(w){w.e.classList.add('on')});
+  setTimeout(function(){
+    f.style.transition='opacity 2.2s';f.style.opacity='0';
+    b.style.transition='opacity 1.1s';b.style.opacity='0';
+    els.forEach(function(w){w.e.classList.remove('on')});
+    setTimeout(function(){busy=0},2300);
+  },550);
+});
+})();
+</script>
+</section>
