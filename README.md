@@ -55,7 +55,7 @@ taper-site/
 ```bash
 npm install -g wrangler
 wrangler login
-cd /Users/ariaxhan/Downloads/Vaults/.claude/services/taper-site
+cd $HOME/Documents/Vaults/_meta/services/taper-site
 wrangler pages deploy . --project-name substrate
 ```
 
@@ -73,8 +73,8 @@ Pieces accumulate. Site displays newest first.
 
 ```bash
 # Generate a test piece
-cd /Users/ariaxhan/Downloads/Vaults/CollabVault
-/Users/ariaxhan/.claude/local/claude --model sonnet -p "
+cd $HOME/Documents/Vaults/CollabVault
+/Users/slowember/.claude/local/claude --model sonnet -p "
 Generate a Taper-style HTML piece.
 
 Theme: [your theme]
@@ -85,11 +85,11 @@ Output ONLY <section>...</section>.
 Include inline <style> and <script>.
 Add data-date='$(date +%Y-%m-%d)' data-type='test'.
 
-Write to: /Users/ariaxhan/Downloads/Vaults/.claude/services/taper-site/pieces/$(date +%Y-%m-%d)-test.html
+Write to: $HOME/Documents/Vaults/_meta/services/taper-site/pieces/$(date +%Y-%m-%d)-test.html
 "
 
 # Update manifest
-bash /Users/ariaxhan/Downloads/Vaults/.claude/services/taper-site/update-manifest.sh
+bash $HOME/Documents/Vaults/_meta/services/taper-site/update-manifest.sh
 ```
 
 ## Sync to Cloudflare
