@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>pulse — 2026-06-12</title>
+</head>
+<body style="margin:0;padding:0">
+<section data-date='2026-06-12' data-type='pulse'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:radial-gradient(ellipse at center,#0e0b08 0%,#050507 80%);overflow:hidden;font-family:Georgia,serif;cursor:crosshair}
+#f{width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;position:relative}
+#bw{position:relative;width:76vw;transform-origin:center center}
+#b{width:100%;height:1px;background:linear-gradient(to right,rgba(126,184,212,.35) 0%,rgba(255,255,255,.9) 50%,rgba(212,154,66,.35) 100%);position:relative}
+#pv{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:5px;height:5px;border-radius:50%;background:#fff;box-shadow:0 0 10px 2px rgba(255,255,255,.65);transition:box-shadow .4s}
+#pv.n{box-shadow:0 0 22px 7px rgba(255,255,255,.85)}
+#wa{position:absolute;right:calc(100% + 2.5vw);top:-.5em;color:#7eb8d4;font-size:clamp(.9rem,2.5vw,2rem);letter-spacing:.09em;text-align:right;white-space:nowrap;transition:opacity .4s,color .35s}
+#wp{position:absolute;left:calc(100% + 2.5vw);top:-.5em;color:#d49a42;font-size:clamp(.9rem,2.5vw,2rem);letter-spacing:.09em;white-space:nowrap;transition:opacity .4s,color .35s}
+#lb{position:absolute;bottom:4.5vh;left:50%;transform:translateX(-50%);font-size:.56rem;letter-spacing:.65em;font-family:monospace;text-transform:uppercase;transition:color .45s;pointer-events:none;user-select:none}
+</style>
+<div id="f">
+  <div id="bw">
+    <div id="b">
+      <div id="pv"></div>
+      <div id="wa">before</div>
+      <div id="wp">after</div>
+    </div>
+  </div>
+  <div id="lb">&#189;</div>
+</div>
+<script>
+const A=['before','rising','still','pale','cool','dew','first','waking','early','hush'],
+      P=['after','falling','amber','warm','gold','dust','last','drifting','late','haze'];
+let i=0,uT=null,cT=0;
+const bw=document.getElementById('bw'),
+      wa=document.getElementById('wa'),
+      wp=document.getElementById('wp'),
+      pv=document.getElementById('pv'),
+      lb=document.getElementById('lb');
+function tT(){
+  const n=new Date(),m=n.getHours()*60+n.getMinutes()-720;
+  return Math.max(-28,Math.min(28,m/26));
+}
+addEventListener('mousemove',e=>{uT=(e.clientX/innerWidth*2-1)*28});
+addEventListener('mouseleave',()=>{uT=null});
+addEventListener('click',()=>{
+  i=(i+1)%A.length;
+  wa.style.opacity=wp.style.opacity='0';
+  setTimeout(()=>{
+    wa.textContent=A[i];wp.textContent=P[i];
+    wa.style.opacity=wp.style.opacity='1';
+  },350);
+});
+function tick(){
+  const t=uT!==null?uT:tT();
+  cT+=(t-cT)*.07;
+  const noon=Math.abs(cT)<.65;
+  bw.style.transform=`rotate(${cT}deg)`;
+  wa.style.transform=wp.style.transform=`rotate(${-cT}deg)`;
+  wa.style.color=noon?'#fff':'#7eb8d4';
+  wp.style.color=noon?'#fff':'#d49a42';
+  pv.className=noon?'n':'';
+  lb.textContent=noon?'½':cT<0?'before':'after';
+  lb.style.color=noon?'rgba(255,255,255,.55)':cT<0?'rgba(126,184,212,.3)':'rgba(212,154,66,.3)';
+  requestAnimationFrame(tick);
+}
+tick();
+</script>
+</section>
+</body>
+</html>
