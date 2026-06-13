@@ -1,0 +1,81 @@
+<section data-date='2026-06-12' data-type='digest'>
+<style>
+*{margin:0}body{background:#07070d;overflow:hidden;cursor:crosshair}
+</style>
+<canvas id=cv style="position:fixed;top:0;left:0;display:block"></canvas>
+<script>
+const c=document.getElementById('cv'),g=c.getContext('2d');
+let W,H,mx=-999,my=-999,pts=[],words=[],cq=[],
+ph=['pattern','signal','the shape was always here','what repeats becomes form','noise resolves','to attend is to know','you already knew','emergence','it was latent all along'],
+pi=0;
+
+function rs(){W=c.width=innerWidth;H=c.height=innerHeight}rs();onresize=rs;
+
+function mk(x,y){return{x,y,vx:(Math.random()-.5)*.45,vy:(Math.random()-.5)*.45,a:0,lk:0}}
+
+for(let i=0;i<16;i++)pts.push(mk(W*.1+W*.8*Math.random(),H*.1+H*.8*Math.random()));
+
+addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+addEventListener('click',e=>{
+  for(let i=0;i<3;i++)pts.push(mk(e.clientX+(Math.random()-.5)*44,e.clientY+(Math.random()-.5)*44));
+  cq.push([e.clientX,e.clientY]);
+  if(cq.length>=3&&pi<ph.length){
+    let sl=cq.slice(-3),
+        ax=sl.reduce((s,p)=>s+p[0],0)/3,
+        ay=sl.reduce((s,p)=>s+p[1],0)/3;
+    words.push({t:ph[pi++],x:ax,y:ay,a:0});
+    cq=[];
+    pts.forEach(p=>{if((p.x-ax)**2+(p.y-ay)**2<65*65)p.lk=1});
+  }
+});
+
+function draw(){
+  g.fillStyle='rgba(7,7,13,.14)';g.fillRect(0,0,W,H);
+
+  pts.forEach(p=>{
+    if(!p.lk){p.x+=p.vx;p.y+=p.vy}
+    if(p.x<3||p.x>W-3)p.vx*=-1;
+    if(p.y<3||p.y>H-3)p.vy*=-1;
+    p.a=Math.min(1,p.a+.025);
+  });
+
+  for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+    let dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.hypot(dx,dy);
+    if(d<115){
+      let cmx=(pts[i].x+pts[j].x)/2,cmy=(pts[i].y+pts[j].y)/2;
+      let md=Math.hypot(cmx-mx,cmy-my);
+      let a=(1-d/115)*Math.max(0,1-md/210)*.52;
+      if(a>.01){
+        g.beginPath();g.moveTo(pts[i].x,pts[i].y);g.lineTo(pts[j].x,pts[j].y);
+        g.strokeStyle=`rgba(88,128,218,${a})`;g.lineWidth=.55;g.stroke();
+      }
+    }
+  }
+
+  pts.forEach(p=>{
+    let gw=Math.max(0,1-Math.hypot(p.x-mx,p.y-my)/165);
+    g.beginPath();g.arc(p.x,p.y,1.5+gw*2.5,0,6.28);
+    g.fillStyle=p.lk?`rgba(228,172,55,${p.a*.9})`:`rgba(${88+gw*92|0},${122+gw*58|0},212,${p.a*.75+gw*.25})`;
+    g.fill();
+  });
+
+  let fs=Math.max(13,Math.min(W,H)*.028|0);
+  g.font=`italic ${fs}px Georgia,serif`;g.textAlign='center';
+  words.forEach(w=>{
+    w.a=Math.min(1,w.a+.007);
+    g.shadowColor='rgba(228,172,55,.38)';g.shadowBlur=17*w.a;
+    g.fillStyle=`rgba(228,172,55,${w.a})`;
+    g.fillText(w.t,w.x,w.y);
+  });
+  g.shadowBlur=0;
+
+  if(!pi){
+    g.font='11px Georgia,serif';g.fillStyle='rgba(68,92,148,.44)';
+    g.fillText('move to reveal  ·  click to accumulate',W/2,H-22);
+  }
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</section>
