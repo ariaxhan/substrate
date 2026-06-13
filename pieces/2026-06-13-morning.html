@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>before light knows where to fall</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#05051a;overflow:hidden}
+canvas{display:block;position:fixed;top:0;left:0;cursor:none}
+#g{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;font-family:Georgia,"Times New Roman",serif}
+.f{position:absolute;color:#f2e4c0;opacity:0;text-align:center;transform:translateX(-50%);line-height:1.55;letter-spacing:.03em;transition:opacity .5s}
+</style>
+</head>
+<body>
+<section data-date="2026-06-13" data-type="morning">
+<canvas id="c"></canvas>
+<div id="g"></div>
+</section>
+<script>
+const cv=document.getElementById('c'),
+ctx=cv.getContext('2d'),
+gd=document.getElementById('g');
+
+let W,H,mx,my,burst=0;
+
+const fr=[
+  ['before',50,13,'3em',300],
+  ['the day has not yet\ndecided what it is',25,31,'1.05em',400],
+  ['possibility\nwithout form',73,42,'1.3em',300],
+  ['the hour\nbefore asking',16,59,'1em',400],
+  ['everything\nstill open',50,68,'1.65em',300],
+  ['light before it knows\nwhere to fall',80,34,'0.92em',400],
+  ['what will you\nmake of this',36,80,'1.1em',400],
+  ['the unwritten\nday',63,84,'1.45em',300],
+  ['open',50,50,'0.8em',400],
+];
+
+function resize(){
+  W=cv.width=innerWidth;
+  H=cv.height=innerHeight;
+  if(mx==null){mx=W/2;my=H*0.85;}
+}
+
+gd.innerHTML=fr.map(([t,x,y,s,w],i)=>
+  `<div class="f" id="f${i}" style="left:${x}%;top:${y}%;font-size:${s};font-weight:${w}">${t.replace('\n','<br>')}</div>`
+).join('');
+
+function draw(){
+  ctx.clearRect(0,0,W,H);
+
+  const hz=H*0.695;
+  const dy=Math.abs(my-hz),
+        hProx=Math.max(0,1-dy/(H*0.45)),
+        gAmt=hProx*0.85+burst*0.5;
+
+  // Night sky gradient
+  const sky=ctx.createLinearGradient(0,0,0,H);
+  sky.addColorStop(0,'#03031a');
+  sky.addColorStop(.45,`rgb(${6+gAmt*22},${5+gAmt*8},${26+gAmt*4})`);
+  sky.addColorStop(.66,`rgb(${12+gAmt*165},${8+gAmt*52},${6+gAmt*12})`);
+  sky.addColorStop(.73,'#060612');
+  sky.addColorStop(1,'#040410');
+  ctx.fillStyle=sky;
+  ctx.fillRect(0,0,W,H);
+
+  // Horizon radial warmth
+  const hg=ctx.createRadialGradient(mx,hz,0,mx,hz,W*.6);
+  const ha=0.28*gAmt+burst*.3;
+  hg.addColorStop(0,`rgba(255,178,55,${ha})`);
+  hg.addColorStop(.35,`rgba(220,70,10,${ha*.45})`);
+  hg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=hg;
+  ctx.fillRect(0,0,W,H);
+
+  // Cursor lantern
+  const lg=ctx.createRadialGradient(mx,my,0,mx,my,110);
+  lg.addColorStop(0,`rgba(255,225,160,${.13+burst*.08})`);
+  lg.addColorStop(.6,`rgba(255,160,60,${.04+burst*.04})`);
+  lg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=lg;
+  ctx.fillRect(0,0,W,H);
+
+  // Horizon line
+  ctx.beginPath();
+  ctx.moveTo(0,hz);ctx.lineTo(W,hz);
+  ctx.strokeStyle=`rgba(255,195,90,${.04+gAmt*.28+burst*.18})`;
+  ctx.lineWidth=1;
+  ctx.stroke();
+
+  // Stars (seeded by position, not random each frame)
+  if(burst<.05){
+    ctx.fillStyle=`rgba(255,245,220,${Math.max(0,.18-gAmt*.2)})`;
+    for(let i=0;i<60;i++){
+      const sx=(i*137.508%1)*W,
+            sy=(i*97.31%1)*hz*.85,
+            sz=(i*53.7%1)*.8+.4;
+      ctx.beginPath();
+      ctx.arc(sx,sy,sz,0,Math.PI*2);
+      ctx.fill();
+    }
+  }
+
+  // Word reveal by cursor proximity
+  fr.forEach(([,x,y],,i)=>{
+    const px=W*x/100,py=H*y/100,
+          d=Math.hypot(mx-px,my-py),
+          prox=Math.max(0,1-d/(W*.27));
+    const el=document.getElementById('f'+i);
+    el.style.opacity=Math.min(1,prox*1.35+burst*1.4).toFixed(3);
+    el.style.color=burst>.3?`rgba(255,240,200,1)`:'#f2e4c0';
+  });
+
+  burst=Math.max(0,burst-.0055);
+  requestAnimationFrame(draw);
+}
+
+window.addEventListener('resize',resize);
+window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+window.addEventListener('click',()=>{burst=1});
+
+resize();
+draw();
+</script>
+</body>
+</html>
