@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>pulse — 2026-06-15</title>
+</head>
+<body style="margin:0;padding:0">
+<section data-date='2026-06-15' data-type='pulse'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;cursor:crosshair;font-family:Georgia,serif}
+#f{width:100vw;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(.8rem,1.9vh,1.55rem)}
+.row{display:flex;align-items:center;width:min(66vw,500px)}
+.lw,.rw{width:clamp(52px,10.5vw,98px);font-size:clamp(.62rem,1.25vw,.92rem);letter-spacing:.18em;white-space:nowrap;transition:color .5s,opacity .5s}
+.lw{text-align:right}
+.rw{text-align:left}
+.cn{flex:1;height:1px;background:rgba(0,0,0,.1);position:relative;margin:0 clamp(7px,1.6vw,16px)}
+.dt{position:absolute;top:50%;width:5px;height:5px;border-radius:50%;transform:translate(-50%,-50%);transition:background .4s,box-shadow .4s,transform .35s}
+#lb{position:absolute;bottom:4vh;left:50%;transform:translateX(-50%);font-size:.43rem;letter-spacing:.72em;font-family:monospace;text-transform:uppercase;pointer-events:none;user-select:none;transition:color .45s}
+</style>
+<div id="f"></div>
+<div id="lb"></div>
+<script>
+const W=[['wake','sleep'],['open','close'],['begin','end'],['rise','fall'],['pale','amber'],['cool','warm'],['first','last'],['empty','full'],['new','worn'],['still','spent']];
+const f=document.getElementById('f'),lb=document.getElementById('lb');
+let p=.5,tp=.5,lk=false;
+W.map(([l,r])=>{
+  const d=document.createElement('div');
+  d.className='row';
+  d.innerHTML=`<span class="lw">${l}</span><div class="cn"><div class="dt"></div></div><span class="rw">${r}</span>`;
+  f.appendChild(d);
+});
+const dots=[...document.querySelectorAll('.dt')];
+const lws=[...document.querySelectorAll('.lw')];
+const rws=[...document.querySelectorAll('.rw')];
+
+addEventListener('mousemove',e=>{if(!lk)tp=e.clientX/innerWidth});
+addEventListener('mouseleave',()=>{if(!lk)tp=.5});
+addEventListener('click',()=>{
+  if(lk)return;
+  lk=true;tp=.5;
+  setTimeout(()=>lk=false,1500);
+});
+
+const L=(a,b,t)=>a+(b-a)*t;
+
+(function tick(){
+  p=L(p,tp,.07);
+  const n=Math.abs(p-.5)<.022;
+  const r=L(245,249,p)|0,g=L(247,244,p)|0,b=L(250,240,p)|0;
+  document.body.style.background=`rgb(${r},${g},${b})`;
+  const lo=L(.85,.28,p),ro=L(.28,.85,p);
+  const dr=L(58,122,p)|0,dg=L(80,74,p)|0,db=L(104,30,p)|0;
+  lws.forEach(w=>{w.style.color=n||lk?'#111':`rgba(58,80,104,${lo})`});
+  rws.forEach(w=>{w.style.color=n||lk?'#111':`rgba(122,74,30,${ro})`});
+  dots.forEach(d=>{
+    d.style.left=(p*100)+'%';
+    d.style.background=n||lk?'#111':`rgb(${dr},${dg},${db})`;
+    d.style.boxShadow=n||lk?'0 0 7px 2px rgba(0,0,0,.18)':'none';
+    d.style.transform=n||lk?'translate(-50%,-50%) scale(1.5)':'translate(-50%,-50%)';
+  });
+  lb.textContent=lk?'this moment':n?'noon':p<.5?'before':'after';
+  lb.style.color=n||lk?'rgba(0,0,0,.5)':p<.5?'rgba(58,80,104,.38)':'rgba(122,74,30,.38)';
+  requestAnimationFrame(tick);
+})();
+</script>
+</section>
+</body>
+</html>
