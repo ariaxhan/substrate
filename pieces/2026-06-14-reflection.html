@@ -1,0 +1,88 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>vigil (2026-06-14)</title>
+<style>
+*{margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#04050e;cursor:crosshair}
+#sky{position:fixed;inset:0;pointer-events:none}
+.s{position:absolute;border-radius:50%;transform:translate(-50%,-50%);opacity:0;transition:opacity .8s;pointer-events:none}
+.w{position:absolute;opacity:0;font:italic 12px Georgia,serif;letter-spacing:.16em;color:rgba(190,205,255,.55);transform:translateX(-50%);transition:opacity .5s;white-space:nowrap;pointer-events:none}
+svg{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+#vr{position:fixed;bottom:40px;left:0;right:0;text-align:center;font:italic 13px Georgia,serif;letter-spacing:.22em;color:rgba(148,162,208,.26);pointer-events:none;line-height:2.6}
+#hint{position:fixed;bottom:14px;left:0;right:0;text-align:center;font:10px/1 Georgia,serif;letter-spacing:.1em;color:rgba(100,110,160,.3);pointer-events:none;transition:opacity 2s}
+</style>
+</head>
+<body>
+<section data-date="2026-06-14" data-type="reflection">
+<div id="sky"></div>
+<svg><g id="lg"></g></svg>
+<div id="vr"></div>
+<div id="hint">click to place a star</div>
+</section>
+<script>
+const sky=document.getElementById('sky'),
+  lg=document.getElementById('lg'),
+  vr=document.getElementById('vr'),
+  hint=document.getElementById('hint'),
+  W='done rest still enough whole quiet held known safe close full here'.split(' '),
+  P=['the hours are done with you','the stars were here all along'],
+  A=[];
+let wi=0,mx=-999,my=-999,shown=false,clicked=false;
+
+function addStar(x,y,dim){
+  const r=1.2+Math.random()*2,h=208+Math.random()*28,e=document.createElement('div');
+  e.className='s';
+  e.style.cssText=`left:${x}px;top:${y}px;width:${r*2}px;height:${r*2}px;background:#fff;box-shadow:0 0 ${r*5}px ${r*1.5}px hsla(${h},60%,88%,.38)`;
+  sky.appendChild(e);
+  setTimeout(()=>e.style.opacity=dim??1,20);
+  A.push({x,y});
+  redraw();
+  if(A.length>=3&&!shown){shown=true;setTimeout(poem,1200);}
+}
+
+function addWord(x,y){
+  const e=document.createElement('div');
+  e.className='w';
+  e.textContent=W[wi++%W.length];
+  e.style.cssText=`left:${x}px;top:${y-20}px`;
+  sky.appendChild(e);
+  requestAnimationFrame(()=>e.style.opacity=1);
+  setTimeout(()=>{e.style.opacity=0;setTimeout(()=>e.remove(),650)},2000);
+}
+
+function redraw(){
+  const R=210;
+  lg.innerHTML=A.flatMap((a,i)=>A.slice(i+1).filter(b=>Math.hypot(a.x-b.x,a.y-b.y)<R).map(b=>{
+    const d=Math.hypot(a.x-b.x,a.y-b.y),
+      near=Math.max(0,1-Math.min(Math.hypot(a.x-mx,a.y-my),Math.hypot(b.x-mx,b.y-my))/165),
+      op=((0.05+near*.18)*(1-d/R)).toFixed(3);
+    return`<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="rgba(155,175,255,${op})" stroke-width=".5"/>`;
+  })).join('');
+}
+
+function poem(){
+  P.forEach((l,i)=>{
+    const e=document.createElement('div');
+    e.style.cssText='opacity:0;transition:opacity 3.2s';
+    e.textContent=l;
+    vr.appendChild(e);
+    setTimeout(()=>e.style.opacity=1,i*3800+200);
+  });
+}
+
+document.addEventListener('click',e=>{
+  if(!clicked){clicked=true;hint.style.opacity=0;}
+  addStar(e.clientX,e.clientY);
+  addWord(e.clientX,e.clientY);
+});
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;if(A.length)redraw()});
+
+// ambient seed: faint pre-existing stars
+[[.12,.22],[.68,.12],[.84,.54],[.45,.78],[.57,.18],[.92,.38],[.28,.68],[.76,.82],[.38,.35],[.62,.6]].forEach(([rx,ry],i)=>
+  setTimeout(()=>addStar(rx*innerWidth,ry*innerHeight,.22+Math.random()*.14),i*380+200)
+);
+</script>
+</body>
+</html>
