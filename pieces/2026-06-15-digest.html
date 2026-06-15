@@ -1,0 +1,78 @@
+<section data-date='2026-06-15' data-type='digest'>
+<style>
+*{margin:0;padding:0}
+html,body{width:100%;height:100%;background:radial-gradient(ellipse at 50% 60%,#060820 0%,#020208 100%);overflow:hidden}
+canvas{display:block}
+#hint{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font:9px/1.5 'Courier New',monospace;color:rgba(255,165,50,.22);letter-spacing:2px;pointer-events:none;text-align:center}
+</style>
+<canvas id=cv></canvas>
+<div id=hint>move to connect &nbsp;·&nbsp; click to crystallize</div>
+<script>
+const WORDS='signal noise observe detect sense pattern link connect weave structure emerge order chaos crystal form trace know remember understand data'.split(' '),
+cv=document.getElementById('cv'),cx=cv.getContext('2d');
+let mx=-9e3,my=-9e3,pts=[],frame=0;
+
+function resize(){cv.width=innerWidth;cv.height=innerHeight}
+addEventListener('resize',resize);resize();
+
+function mk(x,y,fresh){
+  return{x,y,vx:(Math.random()-.5)*.45,vy:(Math.random()-.5)*.32,
+    w:WORDS[0|Math.random()*WORDS.length],t:Math.random()*6.28,
+    ts:.003+Math.random()*.008,f:fresh|0}
+}
+
+for(let i=24;i--;)pts.push(mk(Math.random()*innerWidth,Math.random()*innerHeight,0));
+
+cv.addEventListener('click',e=>pts.push(mk(e.clientX,e.clientY,100)));
+addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+
+(function loop(){
+  cx.clearRect(0,0,cv.width,cv.height);
+
+  // drift
+  for(let p of pts){
+    p.t+=p.ts;
+    p.x+=p.vx+Math.sin(p.t)*.24;
+    p.y+=p.vy+Math.cos(p.t*.71)*.17;
+    if(p.x<-90)p.x=cv.width+90; if(p.x>cv.width+90)p.x=-90;
+    if(p.y<-90)p.y=cv.height+90;if(p.y>cv.height+90)p.y=-90;
+    if(p.f>0)p.f--;
+  }
+
+  // latent connections (amber — structure always waiting)
+  cx.lineWidth=.5;
+  for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+    const a=pts[i],b=pts[j],dx=a.x-b.x,dy=a.y-b.y,d=Math.sqrt(dx*dx+dy*dy);
+    if(d<155){
+      cx.strokeStyle=`rgba(255,162,38,${(1-d/155)*.28})`;
+      cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);cx.stroke();
+    }
+  }
+
+  // attentive connections (cyan — what attention illuminates)
+  cx.lineWidth=.9;
+  for(let p of pts){
+    const dx=p.x-mx,dy=p.y-my,d=Math.sqrt(dx*dx+dy*dy);
+    if(d<210){
+      cx.strokeStyle=`rgba(120,200,255,${(1-d/210)*.6})`;
+      cx.beginPath();cx.moveTo(p.x,p.y);cx.lineTo(mx,my);cx.stroke();
+    }
+  }
+
+  // particles
+  cx.textAlign='center';cx.textBaseline='middle';
+  for(let p of pts){
+    const g=p.f/100;
+    const jx=g>.25?(Math.random()-.5)*g*5:0,jy=g>.25?(Math.random()-.5)*g*5:0;
+    cx.font=`${g>0?'italic ':''}${(10+g*4)|0}px Georgia,serif`;
+    cx.shadowBlur=g*22;
+    cx.shadowColor='rgba(120,200,255,.85)';
+    cx.fillStyle=g>0?`rgba(235,242,255,${.32+g*.68})`:'rgba(155,160,205,.38)';
+    cx.fillText(p.w,p.x+jx,p.y+jy);
+  }
+  cx.shadowBlur=0;
+
+  requestAnimationFrame(loop);
+})();
+</script>
+</section>
