@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+<head>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>fulcrum</title>
+</head>
+<body>
+<section data-date='2026-06-16' data-type='pulse'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body,section{height:100vh;width:100vw;overflow:hidden}
+section{position:relative;cursor:col-resize;user-select:none;font-family:'Palatino Linotype',Palatino,Georgia,serif}
+#ba{position:absolute;left:0;top:0;height:100%;background:#cee2f3;width:50%}
+#bb{position:absolute;right:0;top:0;height:100%;background:#f3e0ae;width:50%}
+#poem{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9em;z-index:2;pointer-events:none}
+.row{display:flex;gap:4em;font-size:clamp(14px,2.6vw,38px);color:#231f17;letter-spacing:.03em}
+.l{text-align:right;width:7em}
+.r{text-align:left;width:7em}
+#ln{position:absolute;width:1px;top:8%;height:84%;background:rgba(18,12,4,.25);z-index:3;pointer-events:none}
+#nn{position:absolute;top:77%;left:50%;transform:translateX(-50%);font-size:clamp(8px,.85vw,12px);letter-spacing:.7em;color:rgba(35,31,23,0);transition:color .8s;z-index:3;pointer-events:none;text-transform:uppercase}
+</style>
+<div id="ba"></div>
+<div id="bb"></div>
+<div id="poem">
+  <div class="row"><span class="l">before</span><span class="r">after</span></div>
+  <div class="row"><span class="l">waking</span><span class="r">sleeping</span></div>
+  <div class="row"><span class="l">cool</span><span class="r">warm</span></div>
+  <div class="row"><span class="l">pale</span><span class="r">gold</span></div>
+  <div class="row"><span class="l">first</span><span class="r">last</span></div>
+  <div class="row"><span class="l">begin</span><span class="r">end</span></div>
+</div>
+<div id="ln"></div>
+<div id="nn">noon</div>
+<script>
+const ba=document.getElementById('ba'),
+      bb=document.getElementById('bb'),
+      ln=document.getElementById('ln'),
+      nn=document.getElementById('nn');
+let cur=50;
+function upd(px){
+  cur=px/innerWidth*100;
+  ba.style.width=cur+'%';
+  bb.style.width=(100-cur)+'%';
+  ln.style.left=px+'px';
+  nn.style.color=Math.abs(cur-50)<2.5?'rgba(35,31,23,.5)':'rgba(35,31,23,0)';
+}
+document.addEventListener('mousemove',e=>upd(e.clientX));
+document.addEventListener('touchmove',e=>{e.preventDefault();upd(e.touches[0].clientX)},{passive:false});
+document.addEventListener('click',()=>upd((1-cur/100)*innerWidth));
+upd(innerWidth/2);
+</script>
+</section>
+</body>
+</html>
