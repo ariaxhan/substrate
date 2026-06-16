@@ -1,0 +1,56 @@
+<section data-date='2026-06-16' data-type='morning'>
+<style>
+*{margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#020009}
+body{font-family:Georgia,serif;cursor:crosshair}
+#gl{position:fixed;inset:0;pointer-events:none}
+#hz{position:fixed;bottom:0;left:0;right:0;height:50%;background:linear-gradient(to top,#18042c 0%,#0b0119 35%,transparent 100%);animation:dw 90s ease-out forwards;opacity:0}
+@keyframes dw{10%{opacity:.6}100%{opacity:1}}
+.w{position:fixed;color:#f0e8d4;opacity:0;transition:opacity .6s;font-style:italic;letter-spacing:.1em;pointer-events:none;font-size:clamp(12px,1.7vw,21px)}
+.w.lit{opacity:1!important;text-shadow:0 0 20px currentColor,0 0 55px rgba(240,90,0,.2);transition:color 2.5s,text-shadow 2.5s}
+#hint{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);font:10px/1 sans-serif;letter-spacing:.2em;color:#44334450;text-transform:uppercase;transition:opacity 2s}
+</style>
+<div id="gl"></div>
+<div id="hz"></div>
+<div id="ws"></div>
+<div id="hint">move &middot; click</div>
+<script>
+const words='still yet open first before tender unnamed beginning threshold breath possible unwritten becoming almost patience now light empty'.split(' ');
+const golds=['#f5bc45','#f0a830','#e8c060','#fac535','#e09820','#f8d060'];
+let mx=innerWidth/2,my=innerHeight,gi=0,px=[],R=165;
+const wd=document.getElementById('ws');
+words.forEach(t=>{
+  const e=document.createElement('div');
+  e.className='w';e.textContent=t;
+  e.style.left=(6+Math.random()*86)+'%';
+  e.style.top=(5+Math.random()*87)+'%';
+  wd.appendChild(e);
+  px.push(e);
+});
+function up(){
+  document.getElementById('gl').style.background=
+    `radial-gradient(circle ${R}px at ${mx}px ${my}px,rgba(255,185,65,.06) 0%,rgba(175,65,8,.022) 55%,transparent 100%)`;
+  px.forEach(e=>{
+    if(e.classList.contains('lit'))return;
+    const r=e.getBoundingClientRect();
+    const d=Math.hypot(r.left+r.width/2-mx,r.top+r.height/2-my);
+    e.style.opacity=Math.max(0,(1-d/R)*.93).toFixed(3);
+  });
+}
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;up()});
+document.addEventListener('click',()=>{
+  let near=null,nd=Infinity;
+  px.filter(e=>!e.classList.contains('lit')).forEach(e=>{
+    const r=e.getBoundingClientRect();
+    const d=Math.hypot(r.left+r.width/2-mx,r.top+r.height/2-my);
+    if(d<nd){nd=d;near=e}
+  });
+  if(near&&nd<R){
+    near.classList.add('lit');
+    near.style.color=golds[gi++%golds.length];
+    document.getElementById('hint').style.opacity='0';
+  }
+});
+up();
+</script>
+</section>
