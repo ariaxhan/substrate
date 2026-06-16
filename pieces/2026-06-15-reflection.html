@@ -1,0 +1,54 @@
+<section data-date='2026-06-15' data-type='reflection'>
+<style>
+*{margin:0}
+body{background:#050302;overflow:hidden}
+#v{position:fixed;inset:0}
+.f{position:fixed;font:300 9px/2.4 system-ui,-apple-system,sans-serif;letter-spacing:.38em;text-transform:lowercase;user-select:none;cursor:default;text-align:center;text-shadow:0 0 10px currentColor}
+.f.h{animation:pl 6s ease-in-out infinite}
+@keyframes pl{0%,100%{filter:brightness(1)}50%{filter:brightness(1.5)}}
+#g{position:fixed;bottom:26px;width:100%;text-align:center;font:9px/1 system-ui,sans-serif;letter-spacing:.55em;color:rgba(195,180,148,.07)}
+</style>
+<div id="v"></div>
+<div id="g">the day has done its work</div>
+<script>
+const P=[
+['the day','complete'],
+['the body','safe'],
+['the mind','still'],
+['the noise','gone'],
+['enough','was given'],
+['the dark','is kind'],
+['the hours','through'],
+['you were','here'],
+['let it','rest'],
+['the night','receives you'],
+['close now','close'],
+['the stars','patient'],
+],
+V=document.getElementById('v');
+let mx=-1e6,my=-1e6,F=[];
+
+P.forEach((ls,i)=>{
+  const e=document.createElement('div');
+  e.className='f';
+  e.innerHTML=ls.join('<br>');
+  e.style.cssText=`left:${(9+Math.random()*76).toFixed(1)}%;top:${(9+Math.random()*74).toFixed(1)}%;color:rgba(240,232,210,0)`;
+  V.appendChild(e);
+  F.push({e,o:0,h:false});
+  e.addEventListener('click',()=>{F[i].h=!F[i].h;e.classList.toggle('h',F[i].h)});
+});
+
+(function raf(){
+  F.forEach(f=>{
+    const b=f.e.getBoundingClientRect(),
+      d=Math.hypot(b.left+b.width/2-mx,b.top+b.height/2-my),
+      t=f.h?.56:Math.max(.032,(1-Math.min(d,260)/260)*.56);
+    f.o+=(t-f.o)*.055;
+    f.e.style.color=`rgba(240,232,210,${f.o.toFixed(3)})`;
+  });
+  requestAnimationFrame(raf);
+})();
+
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+</script>
+</section>
