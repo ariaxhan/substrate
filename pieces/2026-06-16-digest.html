@@ -1,0 +1,55 @@
+<section data-date='2026-06-16' data-type='digest'>
+<style>
+body{margin:0;background:#f0ede5;overflow:hidden;min-height:100vh;cursor:crosshair}
+.p{position:fixed;pointer-events:none;font:9px/1 'Courier New',mono;will-change:transform;animation:df var(--d) ease-in-out infinite}
+@keyframes df{0%,100%{transform:translate(0,0)}50%{transform:translate(var(--dx),var(--dy))}}
+#po{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity 2.5s .5s;font-family:Georgia,'Times New Roman',serif;text-align:center;color:#1a1210;line-height:1}
+.a{font-size:clamp(24px,3.8vw,44px);letter-spacing:.04em;display:block;margin:.15em 0}
+.b{font-size:clamp(11px,1.6vw,18px);letter-spacing:.18em;color:#7a5048;font-style:italic;display:block;margin:.05em 0 .65em}
+#hi{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);font:10px/1 'Courier New';color:#c8b8a8;letter-spacing:3px;transition:opacity 1.2s}
+</style>
+<div id="po">
+<span class="a">noise</span>
+<span class="b">until named</span>
+<span class="a">pattern</span>
+<span class="b">until seen</span>
+</div>
+<div id="hi">move to accumulate</div>
+<script>
+const chars='∴∵≈∅∈∀∂∞∑∫≡⋮∷⁖◦·○◇▸';
+let n=0,done=false,last=0,els=[];
+const hi=document.getElementById('hi');
+
+document.addEventListener('mousemove',e=>{
+  if(done)return;
+  const now=Date.now();
+  if(now-last<65)return;
+  last=now;
+  const el=document.createElement('div');
+  el.className='p';
+  el.textContent=chars[n%chars.length];
+  const r=Math.random();
+  const c=r>.6?'rgba(80,110,90,.32)':r>.3?'rgba(140,80,60,.26)':'rgba(80,75,120,.28)';
+  el.style.cssText=`left:${e.clientX+Math.random()*14-7}px;top:${e.clientY+Math.random()*14-7}px;color:${c};--dx:${Math.random()*28-14}px;--dy:${Math.random()*18-9}px;--d:${4+Math.random()*5}s;animation-delay:-${Math.random()*5}s`;
+  document.body.appendChild(el);
+  els.push(el);
+  n++;
+  if(n===50)crystallize();
+});
+
+function crystallize(){
+  done=true;
+  hi.style.opacity='0';
+  const cx=innerWidth/2,cy=innerHeight/2;
+  els.forEach(el=>{
+    el.style.animation='none';
+    const d=.35+Math.random()*.65;
+    el.style.transition=`left ${d}s ease-in,top ${d}s ease-in,opacity ${d*.75}s`;
+    el.style.left=cx+'px';
+    el.style.top=cy+'px';
+    el.style.opacity='0';
+  });
+  document.getElementById('po').style.opacity='1';
+}
+</script>
+</section>
