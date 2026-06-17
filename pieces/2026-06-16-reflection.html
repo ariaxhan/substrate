@@ -1,0 +1,42 @@
+<section data-date='2026-06-16' data-type='reflection'>
+<style>
+body{background:#01010b;overflow:hidden}
+#f{position:fixed;inset:0;overflow:hidden;transition:transform .5s ease-out}
+.s{position:absolute;pointer-events:none;color:#fff;text-shadow:0 0 6px rgba(155,190,255,.75);animation:ap var(--d,2.5s) ease-out forwards}
+@keyframes ap{0%{opacity:0;transform:translate(-50%,-50%) scale(2.5)}100%{opacity:var(--o,.45);transform:translate(-50%,-50%)}}
+#h{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font:italic 300 1.3rem Georgia,serif;color:rgba(200,210,245,.09);letter-spacing:.5em;pointer-events:none;transition:opacity 3s}
+#v{position:fixed;bottom:9vh;width:100%;text-align:center;font:italic 300 .88rem Georgia,serif;color:rgba(185,200,232,.34);letter-spacing:.14em;line-height:2.3em;pointer-events:none}
+</style>
+<div id=f></div>
+<div id=h>still</div>
+<div id=v></div>
+<script>
+const f=document.getElementById('f'),h=document.getElementById('h'),v=document.getElementById('v'),
+P=["the day","has given everything.","","now the dark","asks nothing of you.","","find the stillness","between one breath","and the next.","","this is enough.","","rest."],
+C="···∗··✦·".split('');
+let i=0,html='';
+function mk(x,y,sz,op,d){
+  const s=document.createElement('span');
+  s.className='s';
+  s.textContent=C[Math.random()*C.length|0];
+  s.style.cssText=`left:${x};top:${y};font-size:${sz}rem`;
+  s.style.setProperty('--o',op);
+  s.style.setProperty('--d',(d||1.5+Math.random()*2)+'s');
+  f.appendChild(s);
+}
+for(let j=28;j--;)mk(Math.random()*100+'%',Math.random()*100+'%',.14+Math.random()*.2,.05+Math.random()*.17,4);
+document.addEventListener('click',e=>{
+  if(!i)h.style.opacity=0;
+  mk(e.clientX+'px',e.clientY+'px',.3+Math.random()*.55,.4+Math.random()*.45);
+  if(i<P.length){
+    const w=P[i++];
+    if(w==='')html+='<br>';
+    else html+=(html&&!html.endsWith('>')?' ':'')+w;
+    v.innerHTML=html;
+  }
+});
+document.addEventListener('mousemove',e=>{
+  f.style.transform=`translate(${(e.clientX/innerWidth-.5)*8}px,${(e.clientY/innerHeight-.5)*8}px)`;
+});
+</script>
+</section>
