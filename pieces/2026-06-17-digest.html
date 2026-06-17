@@ -1,0 +1,106 @@
+<section data-date='2026-06-17' data-type='digest'>
+<style>
+body{margin:0;background:#0a0c16;overflow:hidden;cursor:crosshair}
+canvas{position:fixed;top:0;left:0}
+</style>
+<canvas id=cv></canvas>
+<script>
+const cv=document.getElementById('cv'),ctx=cv.getContext('2d'),W=innerWidth,H=innerHeight;
+cv.width=W;cv.height=H;
+
+const POEM=['gather','signal','layer','weight','trace','pattern','form','order','hold','know','emerge'],
+  TAGS=['∂','n+1','Δt','0.9','k','→','ε','λ','∫','±','μ'],
+  N=60;
+let mx=-1,my=-1,wi=0,t=0;
+const pts=[],fixed=[];
+
+for(let i=0;i<N;i++) pts.push({
+  x:Math.random()*W, y:Math.random()*H,
+  vx:(Math.random()-.5)*.28, vy:(Math.random()-.5)*.28,
+  tag:TAGS[~~(Math.random()*TAGS.length)]
+});
+
+function D(ax,ay,bx,by){return Math.hypot(ax-bx,ay-by)}
+
+cv.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+
+cv.addEventListener('click',e=>{
+  const near=pts.filter(p=>D(p.x,p.y,e.clientX,e.clientY)<88);
+  if(near.length<2)return;
+  const cx=near.reduce((s,p)=>s+p.x,0)/near.length;
+  const cy=near.reduce((s,p)=>s+p.y,0)/near.length;
+  const nearSet=new Set(near);
+  for(let i=pts.length-1;i>=0;i--)if(nearSet.has(pts[i]))pts.splice(i,1);
+  near.forEach(p=>{p.tx=cx+(Math.random()-.5)*24;p.ty=cy+(Math.random()-.5)*24});
+  fixed.push({x:cx,y:cy,pts:near,word:POEM[wi++%POEM.length],age:0,c:0,sz:11+Math.min(near.length,5)});
+});
+
+function frame(){
+  t++;
+  ctx.fillStyle='rgba(10,12,22,.11)';
+  ctx.fillRect(0,0,W,H);
+
+  // inter-particle connections within cursor field
+  if(mx>-1){
+    const np=pts.filter(p=>D(p.x,p.y,mx,my)<125);
+    np.forEach((a,i)=>np.slice(i+1).forEach(b=>{
+      const dd=D(a.x,a.y,b.x,b.y);
+      if(dd<80){
+        ctx.strokeStyle=`rgba(155,182,210,${(1-dd/80)*.14})`;
+        ctx.lineWidth=.3;
+        ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+      }
+    }));
+  }
+
+  // frozen clusters
+  fixed.forEach(cl=>{
+    cl.age++;
+    if(t%3===0&&cl.c<cl.word.length)cl.c++;
+    cl.pts.forEach(p=>{p.x+=(p.tx-p.x)*.06;p.y+=(p.ty-p.y)*.06});
+    cl.pts.forEach((a,i)=>cl.pts.slice(i+1).forEach(b=>{
+      ctx.strokeStyle='rgba(155,182,210,.11)';
+      ctx.lineWidth=.4;
+      ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+    }));
+    cl.pts.forEach(p=>{
+      ctx.fillStyle='rgba(238,232,212,.72)';
+      ctx.beginPath();ctx.arc(p.x,p.y,1.5,0,6.28);ctx.fill();
+    });
+    const alpha=Math.min(1,cl.age/22);
+    ctx.fillStyle=`rgba(238,232,212,${alpha})`;
+    ctx.font=`italic ${cl.sz}px Georgia,serif`;
+    ctx.textAlign='center';
+    ctx.fillText(cl.word.slice(0,cl.c),cl.x,cl.y+5);
+  });
+
+  // drifting particles
+  pts.forEach(p=>{
+    p.x+=p.vx;p.y+=p.vy;
+    if(p.x<0||p.x>W)p.vx*=-1;
+    if(p.y<0||p.y>H)p.vy*=-1;
+    const dd=D(p.x,p.y,mx,my),close=dd<125&&mx>-1;
+    if(close){
+      p.vx+=(mx-p.x)/dd*.006;
+      p.vy+=(my-p.y)/dd*.006;
+      ctx.strokeStyle=`rgba(155,182,210,${(1-dd/125)*.2})`;
+      ctx.lineWidth=.35;
+      ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(mx,my);ctx.stroke();
+    }
+    ctx.fillStyle=`rgba(155,182,210,${close?.5:.17})`;
+    ctx.beginPath();ctx.arc(p.x,p.y,close?2:1.4,0,6.28);ctx.fill();
+    if(close){
+      ctx.fillStyle='rgba(155,182,210,.36)';
+      ctx.font='8px monospace';
+      ctx.textAlign='left';
+      ctx.fillText(p.tag,p.x+4,p.y-3);
+    }
+  });
+
+  requestAnimationFrame(frame);
+}
+
+ctx.fillStyle='#0a0c16';ctx.fillRect(0,0,W,H);
+frame();
+</script>
+</section>
