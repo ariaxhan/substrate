@@ -1,0 +1,105 @@
+<section data-date='2026-06-17' data-type='pulse'>
+<style>
+#mer{position:fixed;inset:0;background:#090909;overflow:hidden}
+</style>
+<div id='mer'><canvas id='mc'></canvas></div>
+<script>
+(function(){
+var cv=document.getElementById('mc'),
+    cx=cv.getContext('2d'),
+    W,H,tilt=0,vel=0,target=0,echo=0;
+
+function sz(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+sz();addEventListener('resize',sz);
+
+var d=new Date(),
+    mins=d.getHours()*60+d.getMinutes();
+target=-(mins-720)/720*20;
+tilt=target;
+
+addEventListener('mousemove',function(e){
+  target=(e.clientX/W*2-1)*24;
+});
+
+addEventListener('click',function(){
+  echo=2;target=0;
+});
+
+var past=['rose','woke','was','spent','gone'],
+    fut=['falls','sleep','will','coming','tomorrow'];
+
+function w(arr,v){
+  return arr[Math.max(0,Math.min(~~(v/24*arr.length),arr.length-1))];
+}
+
+(function draw(){
+  requestAnimationFrame(draw);
+  vel+=(target-tilt)*0.011-vel*0.13;
+  tilt+=vel;
+  echo=Math.max(0,echo-0.01);
+  cx.clearRect(0,0,W,H);
+
+  var px=W/2,py=H/2,
+      br=Math.min(W,H)*0.28,
+      rad=tilt*Math.PI/180,
+      lx=px-br*Math.cos(rad),ly=py-br*Math.sin(rad),
+      rx=px+br*Math.cos(rad),ry=py+br*Math.sin(rad),
+      drop=Math.min(W,H)*0.09;
+
+  cx.save();
+  cx.strokeStyle='rgba(180,165,130,0.1)';
+  cx.lineWidth=0.8;
+  cx.setLineDash([2,9]);
+  cx.beginPath();cx.moveTo(px,py-drop*.5);cx.lineTo(px,py);
+  cx.stroke();cx.setLineDash([]);
+  cx.restore();
+
+  cx.strokeStyle='rgba(230,215,175,'+(0.22+echo*0.28)+')';
+  cx.lineWidth=1;
+  cx.beginPath();cx.moveTo(lx,ly);cx.lineTo(rx,ry);cx.stroke();
+
+  cx.strokeStyle='rgba(140,130,110,0.27)';
+  cx.lineWidth=0.7;
+  cx.beginPath();cx.moveTo(lx,ly);cx.lineTo(lx,ly+drop);cx.stroke();
+  cx.beginPath();cx.moveTo(rx,ry);cx.lineTo(rx,ry+drop);cx.stroke();
+
+  var lt=Math.max(0,-tilt),rt=Math.max(0,tilt),
+      balanced=Math.abs(tilt)<1.2;
+
+  cx.textAlign='center';
+
+  if(!balanced&&lt>0.5){
+    cx.font='italic '+(13+lt*.68)+'px Georgia,serif';
+    cx.fillStyle='rgba(230,215,175,'+(0.18+lt/24*.62)+')';
+    cx.fillText(w(past,lt),lx,ly+drop+24);
+  }
+
+  if(!balanced&&rt>0.5){
+    cx.font='italic '+(13+rt*.68)+'px Georgia,serif';
+    cx.fillStyle='rgba(230,215,175,'+(0.18+rt/24*.62)+')';
+    cx.fillText(w(fut,rt),rx,ry+drop+24);
+  }
+
+  cx.fillStyle='rgba(230,215,175,'+(0.38+echo*.42)+')';
+  cx.beginPath();cx.arc(px,py,2+echo*1.5,0,6.28);cx.fill();
+
+  if(echo>0){
+    cx.strokeStyle='rgba(230,215,175,'+(echo*.2)+')';
+    cx.lineWidth=0.8;
+    cx.beginPath();cx.arc(px,py,28,0,6.28);cx.stroke();
+  }
+
+  var na=Math.max(balanced?.5:0,echo*.88);
+  if(na>0.02){
+    cx.font='9px Georgia,serif';
+    cx.fillStyle='rgba(195,180,148,'+na+')';
+    cx.fillText('noon',px,py-36);
+  }
+
+  cx.font='9px Georgia,serif';
+  cx.fillStyle='rgba(88,78,62,.28)';
+  cx.fillText('2026.06.17',px,H-16);
+})();
+})();
+</script>
+</section>
