@@ -1,0 +1,94 @@
+<section data-date='2026-06-18' data-type='morning'>
+<style>
+section[data-date='2026-06-18']{
+  background:#08080f;
+  width:100%;min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;
+  cursor:default;position:relative;overflow:hidden;
+  user-select:none;
+}
+#gl618{
+  position:fixed;
+  pointer-events:none;
+  width:300px;height:300px;
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  background:radial-gradient(circle,rgba(255,140,50,.05) 0%,transparent 70%);
+  z-index:1;opacity:0;
+  transition:opacity .8s,width .9s,height .9s,background 1.6s;
+}
+#po618{
+  font:300 clamp(18px,3.2vw,44px)/1.8 Georgia,serif;
+  color:rgba(255,255,255,.82);
+  letter-spacing:.1em;
+  position:relative;z-index:2;
+  text-align:center;
+  min-height:2.2em;
+  transition:color 3.5s ease;
+}
+#cr618{
+  display:inline-block;
+  width:.48em;height:.88em;
+  background:rgba(255,255,255,.72);
+  vertical-align:text-bottom;
+  animation:blink618 1.1s step-end infinite;
+}
+@keyframes blink618{0%,100%{opacity:1}50%{opacity:0}}
+#hi618{
+  position:absolute;bottom:2.2rem;
+  font:300 9px/1 'Courier New',monospace;
+  color:rgba(255,255,255,.15);
+  letter-spacing:.35em;
+  text-transform:uppercase;
+  z-index:3;transition:opacity 1.5s;
+}
+</style>
+<div id='gl618'></div>
+<div id='po618'><span id='tx618'></span><span id='cr618'></span></div>
+<div id='hi618'>click</div>
+<script>
+(function(){
+  var sec=document.querySelector("section[data-date='2026-06-18']"),
+    tx=document.getElementById('tx618'),
+    cr=document.getElementById('cr618'),
+    gl=document.getElementById('gl618'),
+    hi=document.getElementById('hi618'),
+    ph=["before","the dark","has finished","leaving"],
+    n=0;
+
+  sec.addEventListener('mousemove',function(e){
+    gl.style.left=e.clientX+'px';
+    gl.style.top=e.clientY+'px';
+    gl.style.opacity='1';
+  });
+
+  sec.addEventListener('click',function(){
+    if(n>=ph.length)return;
+    hi.style.opacity='0';
+    tx.textContent=(n?tx.textContent+' ':'')+ph[n++];
+    var p=n/ph.length;
+    gl.style.background='radial-gradient(circle,rgba(255,'
+      +Math.round(150-p*50)+','
+      +Math.round(50-p*44)+','
+      +(0.05+p*0.13).toFixed(2)
+      +') 0%,transparent 68%)';
+    gl.style.width=(300+p*200)+'px';
+    gl.style.height=(300+p*200)+'px';
+    if(n===ph.length){
+      cr.style.animation='none';
+      cr.style.opacity='0';
+      setTimeout(function(){
+        sec.style.transition='background 5s ease';
+        sec.style.background='#130803';
+        document.getElementById('po618').style.color='rgba(255,185,70,.95)';
+        gl.style.width='900px';gl.style.height='900px';
+        gl.style.transition='all 6s ease';
+        gl.style.background='radial-gradient(circle,rgba(255,100,10,.17) 0%,transparent 55%)';
+        gl.style.opacity='1';
+      },300);
+    }
+  });
+})();
+</script>
+</section>
