@@ -1,0 +1,104 @@
+<section data-date='2026-06-18' data-type='digest'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#07070e;overflow:hidden;cursor:crosshair;font-family:'Courier New',monospace}
+canvas{position:fixed;inset:0;pointer-events:none}
+.nd{
+  position:fixed;transform:translate(-50%,-50%);
+  font:10px/1 'Courier New',monospace;color:#3d5878;
+  letter-spacing:.12em;pointer-events:none;white-space:nowrap;
+  padding-top:14px;opacity:0;animation:ap .9s ease forwards;
+}
+.nd::before{
+  content:'';position:absolute;top:0;left:50%;
+  transform:translateX(-50%);width:3px;height:3px;
+  background:#2a4a80;border-radius:50%;
+  box-shadow:0 0 8px rgba(42,74,128,.5);
+}
+.em{color:#b89030;animation:gl 2s ease forwards}
+.em::before{background:#b89030;box-shadow:0 0 10px rgba(184,144,48,.4)}
+#ht{
+  position:fixed;bottom:22px;width:100%;text-align:center;
+  color:#161624;font-size:9px;letter-spacing:.35em;
+  text-transform:uppercase;pointer-events:none;transition:opacity 2s;
+}
+@keyframes ap{from{opacity:0}to{opacity:1}}
+@keyframes gl{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}70%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}100%{opacity:1;transform:translate(-50%,-50%)}}
+</style>
+<canvas id=cv></canvas>
+<div id=ht>click anywhere to accumulate</div>
+<script>
+const cv=document.getElementById('cv'),
+      cx=cv.getContext('2d'),
+      wds='datum signal noise entropy pattern edge node link weight depth cluster trace path symbol sense syntax model infer recall learn cohere order chaos form void bridge memory abstract'.split(' '),
+      ems='structure understanding knowledge recognition meaning emergence coherence insight wisdom'.split(' ');
+let N=[],E=[],wi=0,ei=0,mx=0,my=0;
+
+function sz(){cv.width=innerWidth;cv.height=innerHeight}
+addEventListener('resize',sz);sz();
+addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+
+addEventListener('click',e=>{
+  const el=document.createElement('div');
+  el.className='nd';
+  el.textContent=wds[wi++%wds.length];
+  el.style.left=e.clientX+'px';
+  el.style.top=e.clientY+'px';
+  document.body.appendChild(el);
+  N.push({x:e.clientX,y:e.clientY});
+  const ht=document.getElementById('ht');
+  if(N.length>2&&ht)ht.style.opacity='0';
+  ck();
+});
+
+function ck(){
+  if(ei>=ems.length)return;
+  const T=130;
+  for(let i=0;i<N.length;i++){
+    let cl=[N[i]];
+    for(let j=0;j<N.length;j++){
+      if(i===j)continue;
+      const dx=N[i].x-N[j].x,dy=N[i].y-N[j].y;
+      if(dx*dx+dy*dy<T*T)cl.push(N[j]);
+    }
+    if(cl.length<3)continue;
+    const cx2=cl.reduce((s,n)=>s+n.x,0)/cl.length,
+          cy2=cl.reduce((s,n)=>s+n.y,0)/cl.length,
+          R=T*.55;
+    if(E.some(e=>{const dx=e.x-cx2,dy=e.y-cy2;return dx*dx+dy*dy<R*R}))continue;
+    const el=document.createElement('div');
+    el.className='nd em';
+    el.textContent=ems[ei++];
+    el.style.left=cx2+'px';
+    el.style.top=(cy2-22)+'px';
+    document.body.appendChild(el);
+    E.push({x:cx2,y:cy2-22});
+  }
+}
+
+function draw(){
+  const w=cv.width,h=cv.height,T=160,TE=T*1.6;
+  cx.clearRect(0,0,w,h);
+  for(let i=0;i<N.length;i++)
+    for(let j=i+1;j<N.length;j++){
+      const dx=N[i].x-N[j].x,dy=N[i].y-N[j].y,d=Math.hypot(dx,dy);
+      if(d<T){cx.strokeStyle=`rgba(42,80,160,${(1-d/T)*.45})`;cx.lineWidth=.6;cx.beginPath();cx.moveTo(N[i].x,N[i].y);cx.lineTo(N[j].x,N[j].y);cx.stroke()}
+    }
+  for(const e of E)
+    for(const n of N){
+      const d=Math.hypot(e.x-n.x,e.y-n.y);
+      if(d<TE){cx.strokeStyle=`rgba(184,144,48,${(1-d/TE)*.3})`;cx.lineWidth=.6;cx.beginPath();cx.moveTo(e.x,e.y);cx.lineTo(n.x,n.y);cx.stroke()}
+    }
+  if(N.length>0){
+    cx.setLineDash([2,6]);
+    for(const n of N){
+      const d=Math.hypot(mx-n.x,my-n.y);
+      if(d<T&&d>6){cx.strokeStyle=`rgba(100,130,180,${(1-d/T)*.16})`;cx.lineWidth=.5;cx.beginPath();cx.moveTo(mx,my);cx.lineTo(n.x,n.y);cx.stroke()}
+    }
+    cx.setLineDash([]);
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</section>
