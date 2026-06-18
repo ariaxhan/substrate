@@ -1,0 +1,57 @@
+<section data-date='2026-06-17' data-type='reflection'>
+<style>
+*{margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;cursor:crosshair;background:#04060f}
+#w{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;font:italic clamp(1rem,2.8vw,2rem) Georgia,serif;color:rgba(255,245,200,0);pointer-events:none;line-height:1.75;letter-spacing:.04em;transition:color 5s}
+#h{position:fixed;bottom:2rem;width:100%;text-align:center;font:.6rem monospace;color:rgba(255,255,255,.2);letter-spacing:.25em;pointer-events:none;transition:opacity 2s}
+.s{position:fixed;border-radius:50%;pointer-events:none;animation:pop .5s ease-out}
+@keyframes pop{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
+</style>
+<div id="w">the day<br>holds still<br>then lets go</div>
+<div id="h">touch the dark</div>
+<script>
+const W=document.getElementById('w'),H=document.getElementById('h');
+let n=0,pts=[];
+const v=[
+  'the day<br>holds still<br>then lets go',
+  'the hours<br>have finished<br>their work',
+  'you were here<br>the whole time',
+  'the dark<br>is not empty',
+  'rest now.<br>what needs<br>to begin<br>waits',
+  'even this<br>was enough'
+];
+function mk(x,y,dim){
+  const d=document.createElement('div'),
+        r=dim?.7+Math.random():.8+Math.random()*3,
+        warm=Math.random()>.4,
+        o=dim?.08+Math.random()*.18:1;
+  d.className='s';
+  d.style.cssText=`width:${r}px;height:${r}px;left:${x-r/2}px;top:${y-r/2}px;background:${warm?'#fff8d0':'#bcd4ff'};box-shadow:0 0 ${r*6}px ${r*2}px ${warm?'rgba(255,220,100,.3)':'rgba(150,180,255,.25)'};opacity:${o}`;
+  document.body.appendChild(d);
+  pts.push({el:d,x,y,o});
+  setTimeout(()=>{d.style.animation='none';pulse(d,o);},550);
+}
+function pulse(el,b){
+  el.style.transition=`opacity ${3+Math.random()*5}s`;
+  el.style.opacity=b*(.45+Math.random()*.55);
+  setTimeout(()=>pulse(el,b),4000+Math.random()*8000);
+}
+for(let i=0;i<18;i++)
+  setTimeout(()=>mk(Math.random()*innerWidth,Math.random()*innerHeight,true),i*140);
+document.addEventListener('mousemove',e=>{
+  pts.forEach(p=>{
+    if(Math.hypot(p.x-e.clientX,p.y-e.clientY)<110){
+      p.el.style.transition='opacity .25s';
+      p.el.style.opacity=Math.min(p.o*2.8,.95);
+    }
+  });
+});
+document.addEventListener('click',e=>{
+  mk(e.clientX,e.clientY,false);
+  n++;
+  if(n===1)H.style.opacity='0';
+  W.innerHTML=v[Math.min(Math.floor(n/14),5)];
+  W.style.color=`rgba(255,245,200,${Math.min(.04+n*.0038,.26)})`;
+});
+</script>
+</section>
