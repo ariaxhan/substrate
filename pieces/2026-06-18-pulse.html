@@ -1,0 +1,58 @@
+<section data-date='2026-06-18' data-type='pulse'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:#f9f5ed;transition:background 1.3s;cursor:crosshair}
+#w{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.7em}
+#sc{position:relative;width:min(680px,92vw)}
+#bm{position:absolute;left:0;right:0;top:50%;height:1px;background:#1c1208;opacity:.2;transform-origin:50%;transition:transform .13s ease-out}
+#pv{position:absolute;left:50%;top:50%;width:5px;height:5px;border-radius:50%;background:#1c1208;opacity:.35;transform:translate(-50%,-50%)}
+#lb{display:flex;justify-content:space-between;align-items:center;width:100%;position:relative;z-index:1}
+.ab{font-size:clamp(2.8rem,10vw,8.5rem);font-weight:200;color:#1c1208;font-family:Georgia,serif;user-select:none;transition:transform .2s ease,opacity .2s ease;line-height:1}
+#nl{font-size:.57rem;letter-spacing:.24em;text-align:center;color:#1c1208;opacity:0;transition:opacity .28s;font-family:Georgia,serif;height:1.1em;line-height:1.1}
+#wd{display:flex;justify-content:space-between;width:min(680px,92vw)}
+.wc{display:flex;flex-direction:column;gap:.22em;opacity:.16;transition:opacity .32s;font-size:.68rem;font-style:italic;color:#1c1208;letter-spacing:.04em;font-family:Georgia,serif}
+</style>
+<div id="w">
+<div id="sc">
+  <div id="bm"></div><div id="pv"></div>
+  <div id="lb">
+    <span class="ab" id="am">am</span>
+    <span class="ab" id="pm">pm</span>
+  </div>
+</div>
+<div id="nl">noon</div>
+<div id="wd">
+  <div class="wc" id="wl"><span>dawn</span><span>rising</span><span>first</span><span>open</span></div>
+  <div class="wc" id="wr"><span>rest</span><span>falling</span><span>last</span><span>dusk</span></div>
+</div>
+</div>
+<script>
+const bm=document.getElementById('bm'),
+am=document.getElementById('am'),pm=document.getElementById('pm'),
+wl=document.getElementById('wl'),wr=document.getElementById('wr'),
+nl=document.getElementById('nl'),W=innerWidth;
+let fl=0;
+const AW=['dawn','rising','first','open'],PW=['rest','falling','last','dusk'];
+document.addEventListener('mousemove',e=>{
+const dx=(e.clientX/W-.5)*2;
+bm.style.transform=`rotate(${dx*14}deg)`;
+am.style.transform=`scale(${1+Math.max(0,-dx)*.32})`;
+pm.style.transform=`scale(${1+Math.max(0,dx)*.32})`;
+am.style.opacity=.5+Math.max(0,-dx)*.38+'';
+pm.style.opacity=.5+Math.max(0,dx)*.38+'';
+wl.style.opacity=.1+Math.max(0,-dx)*.52+'';
+wr.style.opacity=.1+Math.max(0,dx)*.52+'';
+nl.style.opacity=Math.pow(1-Math.abs(dx),9)*.72+'';
+});
+document.addEventListener('click',()=>{
+fl^=1;
+document.body.style.background=fl?'#edf0f8':'#f9f5ed';
+[am.textContent,pm.textContent]=fl?['pm','am']:['am','pm'];
+wl.innerHTML=(fl?PW:AW).map(w=>`<span>${w}</span>`).join('');
+wr.innerHTML=(fl?AW:PW).map(w=>`<span>${w}</span>`).join('');
+bm.style.transform='rotate(0deg)';
+nl.style.opacity='.85';
+setTimeout(()=>nl.style.opacity='0',780);
+});
+</script>
+</section>
