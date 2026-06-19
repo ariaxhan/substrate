@@ -1,0 +1,47 @@
+<section data-date='2026-06-19' data-type='pulse'>
+<style>
+#fs{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#f4efe5;cursor:crosshair;font-family:Georgia,serif;transition:background 1.4s}
+#fb{width:min(76vw,760px);height:320px;position:relative;transform-origin:50% 50%}
+#fl{position:absolute;top:50%;left:0;right:0;height:1px;background:#1c1c1c}
+#fk{position:absolute;left:50%;top:50%;transform:translateX(-50%);width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:13px solid #1c1c1c}
+#fn{position:absolute;left:50%;top:calc(50% - 2.8em);transform:translateX(-50%);font-size:.58rem;letter-spacing:.46em;text-transform:uppercase;color:#bbb5a8;white-space:nowrap;opacity:0;transition:opacity .9s}
+.fw{position:absolute;transform:translate(-50%,-50%);font-size:clamp(.54rem,.84vw,.82rem);letter-spacing:.07em;opacity:0;transition:opacity 3.2s;user-select:none;pointer-events:none}
+.fa{color:#7b6347}.fp{color:#3e5169}
+</style>
+<div id="fs">
+<div id="fb">
+  <div id="fl"></div>
+  <div id="fk"></div>
+  <div id="fn">noon</div>
+</div>
+</div>
+<script>
+const S=document.getElementById('fb'),N=document.getElementById('fn'),G=document.getElementById('fs');
+[['wake',7,32,'a',400],['dew',14,68,'a',820],['light',26,24,'a',650],
+['first',19,55,'a',1200],['coffee',37,38,'a',1050],['before',29,73,'a',1600],
+['silence',43,45,'a',1450],['open',9,79,'a',2000],
+['rest',93,32,'p',520],['exhale',86,68,'p',940],['dark',74,24,'p',770],
+['last',81,55,'p',1320],['breath',63,38,'p',1170],['after',71,73,'p',1720],
+['memory',57,45,'p',1570],['close',91,79,'p',2120]
+].forEach(([t,l,tp,c,d])=>{
+const e=document.createElement('div');
+e.className=`fw f${c}`;e.textContent=t;
+e.style.cssText=`left:${l}%;top:${tp}%`;
+S.appendChild(e);
+setTimeout(()=>e.style.opacity='.68',d);
+});
+let g=0,tg=0,lk=false;
+addEventListener('mousemove',e=>{
+if(lk)return;
+tg=(e.clientX/innerWidth-.5)*28;
+const r=e.clientX/innerWidth;
+G.style.background=`rgb(${244-r*8|0},${239-r*2|0},${229+r*12|0})`;
+});
+addEventListener('click',()=>{
+lk=true;tg=0;N.style.opacity='1';
+G.style.background='#f4efe5';
+setTimeout(()=>{N.style.opacity='0';lk=false},2100);
+});
+(function f(){g+=(tg-g)*.065;S.style.transform=`rotate(${g.toFixed(2)}deg)`;requestAnimationFrame(f)})();
+</script>
+</section>
