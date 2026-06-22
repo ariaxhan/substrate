@@ -1,0 +1,99 @@
+<section data-date='2026-06-21' data-type='digest'>
+<style>
+*{margin:0}
+body{background:#f3f0e7;overflow:hidden}
+section{position:fixed;inset:0}
+canvas{display:block}
+#h{position:absolute;bottom:1.6em;width:100%;text-align:center;
+font:9px/1 Georgia,serif;color:rgba(80,70,55,.3);letter-spacing:.45em;
+pointer-events:none;transition:opacity 3s}
+</style>
+<canvas id=cv></canvas>
+<div id=h>CLICK · TO · CRYSTALLIZE</div>
+<script>
+const c=document.getElementById('cv'),g=c.getContext('2d');
+let W,H,mx=0,my=0,nodes=[],edges=[],tick=0;
+const ws=['noise','signal','pattern','structure','meaning',
+  'then order','from noise,','a lattice forms',
+  'each node: a question','each edge: an answer',
+  'knowledge','grows in the space between'];
+
+function sz(){c.width=W=innerWidth;c.height=H=innerHeight}
+sz();addEventListener('resize',sz);
+
+const bg=Array.from({length:60},()=>({
+  x:Math.random(),y:Math.random(),
+  r:.3+Math.random()*.8,o:.04+Math.random()*.09
+}));
+
+function dst(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+
+function frame(){
+  tick++;
+  g.clearRect(0,0,W,H);
+
+  bg.forEach(p=>{
+    g.beginPath();g.arc(p.x*W,p.y*H,p.r,0,6.28);
+    g.fillStyle=`rgba(90,80,60,${p.o})`;g.fill()
+  });
+
+  const mc={x:mx,y:my};
+  nodes.forEach(n=>{
+    const d=dst(mc,n);
+    if(d<190){
+      g.beginPath();g.moveTo(mx,my);g.lineTo(n.x,n.y);
+      g.strokeStyle=`rgba(80,70,50,${(1-d/190)*.08})`;
+      g.lineWidth=.5;g.stroke()
+    }
+  });
+
+  edges.forEach(e=>{
+    e.age++;
+    const {a,b,word}=e,d=dst(a,b);
+    const ox=(a.x+b.x)/2,oy=(a.y+b.y)/2;
+    const prox=Math.max(0,1-dst(mc,{x:ox,y:oy})/85);
+    const lineA=Math.min(e.age/90,1)*(1-d/240)*.22;
+    const wordA=Math.min(e.age/70,.12)+prox*.82;
+
+    g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);
+    g.strokeStyle=`rgba(60,50,38,${lineA})`;g.lineWidth=.6;g.stroke();
+
+    if(wordA>.05){
+      const ang=Math.atan2(b.y-a.y,b.x-a.x);
+      g.save();g.translate(ox,oy);
+      if(Math.abs(ang)>1.57)g.rotate(ang+3.14);else g.rotate(ang);
+      g.font=`italic ${Math.round(10+d/65)}px Georgia,serif`;
+      g.fillStyle=`rgba(38,28,16,${Math.min(wordA,.92)})`;
+      g.textAlign='center';g.fillText(word,0,-7);
+      g.restore()
+    }
+  });
+
+  nodes.forEach(n=>{
+    n.age++;
+    const a=Math.min(n.age/40,1);
+    const gr=g.createRadialGradient(n.x,n.y,0,n.x,n.y,16);
+    gr.addColorStop(0,`rgba(130,105,70,${a*.16})`);
+    gr.addColorStop(1,'rgba(243,240,231,0)');
+    g.beginPath();g.arc(n.x,n.y,16,0,6.28);g.fillStyle=gr;g.fill();
+    g.beginPath();g.arc(n.x,n.y,2.2,0,6.28);
+    g.fillStyle=`rgba(48,38,24,${a})`;g.fill()
+  });
+
+  requestAnimationFrame(frame)
+}
+
+addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+addEventListener('click',e=>{
+  const n={x:e.clientX,y:e.clientY,age:0};
+  nodes.forEach(m=>{
+    if(dst(n,m)<240)
+      edges.push({a:n,b:m,word:ws[edges.length%ws.length],age:0})
+  });
+  nodes.push(n);
+  if(nodes.length===1)document.getElementById('h').style.opacity='0'
+});
+
+frame()
+</script>
+</section>
