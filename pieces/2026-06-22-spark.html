@@ -1,0 +1,59 @@
+<section data-date='2026-06-22' data-type='spark'>
+<style>
+#cv22{position:relative;width:100%;height:100vh;background:#08080e;overflow:hidden;cursor:crosshair;display:flex;align-items:center}
+.cv22w{position:absolute;font:bold clamp(24px,8vw,88px) Georgia,serif;top:50%;transform:translateY(-50%);pointer-events:none;will-change:left;transition:opacity .5s}
+#cv22l{color:#6ab0d4}
+#cv22r{color:#d4875a}
+#cv22s{position:absolute;font:bold clamp(24px,8vw,88px) Georgia,serif;color:#f5f0e8;opacity:0;top:50%;left:50%;transform:translate(-50%,-50%);letter-spacing:.1em;transition:opacity .65s;pointer-events:none}
+#cv22h{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);color:#1c1c2e;font:11px/1 sans-serif;letter-spacing:.2em;text-transform:uppercase;pointer-events:none;transition:opacity 1s;white-space:nowrap}
+</style>
+<div id=cv22>
+<div class=cv22w id=cv22l></div>
+<div class=cv22w id=cv22r></div>
+<div id=cv22s></div>
+<div id=cv22h>bring them together</div>
+</div>
+<script>
+(()=>{
+const P=[['fire','water','steam'],['you','me','us'],['night','day','dusk'],['self','other','we'],['wound','time','scar'],['silence','sound','song'],['alone','alone','together'],['grief','joy','depth']];
+let i=0,busy=0,mx=0;
+const $=id=>document.getElementById(id),l=$('cv22l'),r=$('cv22r'),s=$('cv22s'),h=$('cv22h'),c=$('cv22');
+function load(){
+  const[a,b,syn]=P[i%P.length];
+  l.textContent=a;r.textContent=b;s.textContent=syn;
+  l.style.opacity=r.style.opacity=1;
+  s.style.opacity=0;
+  setTimeout(()=>busy=0,420);
+}
+function draw(){
+  if(busy)return;
+  const W=innerWidth,hw=W/2;
+  const d=Math.abs(mx-hw)/hw;
+  const off=d*hw*.54+4;
+  l.style.left=(hw-off-l.offsetWidth)+'px';
+  r.style.left=(hw+off)+'px';
+  const ht=Math.max(0,1-d*3.5);
+  l.style.color=`hsl(${200+ht*28},${52+ht*26}%,${48+ht*24}%)`;
+  r.style.color=`hsl(${28-ht*14},${60+ht*24}%,${50+ht*22}%)`;
+  if(d<.034)merge();
+}
+function merge(){
+  if(busy)return;
+  busy=1;
+  l.style.opacity=r.style.opacity=0;
+  s.style.opacity=1;
+  h.style.opacity=0;
+  setTimeout(()=>{
+    s.style.opacity=0;
+    setTimeout(()=>{i++;load();setTimeout(draw,70);h.style.opacity=1},640);
+  },2100);
+}
+c.addEventListener('mousemove',e=>{mx=e.clientX;draw()});
+c.addEventListener('click',()=>{if(!busy){mx=innerWidth/2;draw()}});
+c.addEventListener('touchmove',e=>{mx=e.touches[0].clientX;draw();e.preventDefault()},{passive:false});
+c.addEventListener('touchend',()=>{if(!busy){mx=innerWidth/2;draw()}});
+window.addEventListener('resize',()=>draw());
+load();setTimeout(draw,90);
+})();
+</script>
+</section>
