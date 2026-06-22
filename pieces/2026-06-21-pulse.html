@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Pulse — 2026-06-21</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#f9f4ec;overflow:hidden;height:100vh;cursor:crosshair;user-select:none}
+#s{position:fixed;inset:0}
+#arm{position:absolute;left:50%;top:50%;width:84vw;height:1px;margin-left:-42vw;transform-origin:center center;background:rgba(20,15,8,.28)}
+#pv{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:rgba(20,15,8,.3);font-size:12px;pointer-events:none}
+#clk{position:absolute;left:50%;top:calc(50% + 26px);transform:translateX(-50%);font:8px/1 'Courier New',monospace;color:rgba(20,15,8,.28);letter-spacing:.3em;pointer-events:none}
+#lam,#lpm{position:absolute;top:50%;transform:translateY(-50%);font:6px 'Courier New',mono;letter-spacing:.5em;color:rgba(20,15,8,.15);pointer-events:none}
+#lam{left:3vw}#lpm{right:3vw}
+.w{position:absolute;white-space:nowrap;font:italic clamp(.58rem,1.2vw,.88rem) Georgia,serif;pointer-events:none}
+@keyframes p{0%,100%{transform:translate(-50%,-50%) scale(1)}35%{transform:translate(-50%,-50%) scale(2.2)}}
+</style>
+</head>
+<body>
+<section data-date='2026-06-21' data-type='pulse'>
+<div id="s">
+  <div id="arm"></div>
+  <span id="pv">◆</span>
+  <div id="clk"></div>
+  <span id="lam">AM</span>
+  <span id="lpm">PM</span>
+</div>
+<script>
+var S=document.getElementById('s'),
+    arm=document.getElementById('arm'),
+    clk=document.getElementById('clk'),
+    pv=document.getElementById('pv'),
+    ls=-1;
+
+// [label, xVW from center, yPX base offset, color hue]
+var WD=[
+  ['waking',   -32,-18, 28],
+  ['first light',-22, 10, 22],
+  ['before',   -40,  2, 34],
+  ['rising',   -27, -8, 18],
+  ['half-open',-15, 22, 30],
+  ['after',     32,  2,210],
+  ['fading',    22, 22,220],
+  ['half-closed',15,-8,226],
+  ['resting',   40,-18,214],
+  ['darkening', 27, 10,232]
+];
+
+var els=WD.map(function(w){
+  var d=document.createElement('div');
+  d.className='w';
+  d.textContent=w[0];
+  d.style.color='hsl('+w[3]+',44%,40%)';
+  d.style.left='calc(50% + '+w[1]+'vw)';
+  d.style.top='50%';
+  d.dataset.x=w[1];
+  d.dataset.y=w[2];
+  S.appendChild(d);
+  return d;
+});
+
+function nb(){
+  var d=new Date(),h=d.getHours()+d.getMinutes()/60;
+  return (h-12)/12*4;
+}
+
+var tl=nb(),tar=tl;
+
+document.addEventListener('mousemove',function(e){
+  tar=((e.clientX/innerWidth)-.5)*20;
+});
+document.addEventListener('mouseleave',function(){tar=nb()});
+document.addEventListener('click',function(){tar=nb()});
+
+(function f(){
+  tl+=(tar-tl)*.07;
+  var r=tl*Math.PI/180;
+  arm.style.transform='rotate('+tl+'deg)';
+
+  els.forEach(function(el){
+    var x=+el.dataset.x,y=+el.dataset.y;
+    var dy=Math.sin(r)*x*2.4;
+    el.style.transform='translate(-50%,'+(y+dy)+'px)';
+    el.style.opacity=Math.max(.12,Math.min(.9,.52+(x<0?-1:1)*tl/20*.42));
+  });
+
+  var n=new Date(),sc=n.getSeconds();
+  if(sc!==ls){
+    ls=sc;
+    pv.style.animation='none';
+    void pv.offsetWidth;
+    pv.style.animation='p .5s ease-out';
+  }
+  clk.textContent=[n.getHours(),n.getMinutes(),sc].map(function(v){
+    return('0'+v).slice(-2);
+  }).join(':');
+
+  requestAnimationFrame(f);
+})();
+</script>
+</section>
+</body>
+</html>
