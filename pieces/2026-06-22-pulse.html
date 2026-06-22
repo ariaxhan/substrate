@@ -1,0 +1,50 @@
+<section data-date='2026-06-22' data-type='pulse'>
+<style>
+#half{position:relative;width:100%;height:100vh;background:#f8f4ef;overflow:hidden;cursor:crosshair}
+#fv{position:absolute;top:50%;left:50%;width:72vw;height:0;transform:translate(-50%,0);transform-origin:center;will-change:transform}
+#fv::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:rgba(80,60,40,.25)}
+#nn{position:absolute;left:50%;top:0;transform:translate(-50%,-50%);padding:3px 14px;font:italic 10px/1.6 Georgia,serif;color:#b09080;letter-spacing:.3em;background:#f8f4ef;white-space:nowrap;transition:color .4s}
+.fc{position:absolute;top:10px;font-style:italic;font-size:max(10px,1.3vw);color:#7a6a58;line-height:2.3;white-space:nowrap}
+#fa{right:50%;text-align:right;padding-right:8px}
+#fp{left:50%;padding-left:8px}
+#half::after{content:'▲';position:absolute;top:50%;left:50%;transform:translate(-50%,3px);font-size:7px;color:rgba(80,60,40,.3);pointer-events:none}
+</style>
+<div id="half">
+<div id="fv">
+  <div id="nn">noon</div>
+  <div class="fc" id="fa">
+    <div>still</div>
+    <div>unread</div>
+    <div>tomorrow</div>
+    <div>open</div>
+    <div>not yet</div>
+  </div>
+  <div class="fc" id="fp">
+    <div>already</div>
+    <div>spent</div>
+    <div>yesterday</div>
+    <div>closing</div>
+    <div>done</div>
+  </div>
+</div>
+</div>
+<script>
+!function(){
+let t=0,m=1,
+    b=document.getElementById('fv'),
+    n=document.getElementById('nn');
+function up(){
+  b.style.transform=`translate(-50%,0) rotate(${t}deg)`;
+  n.style.color=Math.abs(t)<.6?'#c4905a':'#b09080';
+}
+addEventListener('mousemove',e=>{t=(e.clientX/innerWidth-.5)*14*m;up()});
+addEventListener('touchmove',e=>{t=(e.touches[0].clientX/innerWidth-.5)*14*m;up();e.preventDefault()},{passive:false});
+addEventListener('click',()=>{
+  m*=-1;t=-t;
+  b.style.transition='transform .2s ease';
+  up();
+  setTimeout(()=>b.style.transition='',220);
+});
+}()
+</script>
+</section>
