@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>adjust</title>
+</head>
+<body>
+<section data-date='2026-06-22' data-type='morning'>
+<style>
+*{margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden}
+body{background:linear-gradient(to top,#f0d888 0%,#fffef0 100%);cursor:crosshair;transition:background 2.2s ease}
+.w{position:absolute;font:italic Georgia,serif;color:#3a2000;letter-spacing:.07em;white-space:nowrap;pointer-events:none;user-select:none}
+#ov{position:fixed;inset:0;pointer-events:none;background:rgba(255,253,242,.98);transition:opacity 2s ease}
+</style>
+<div id="ov"></div>
+<script>
+!function(){
+var D=document,OV=D.getElementById('ov'),n=0,
+ws=[
+  {t:'first light',x:44,y:11,s:'2rem'},
+  {t:'too bright',x:19,y:25,s:'1.1rem'},
+  {t:'before your eyes',x:53,y:21,s:'.95rem'},
+  {t:'adjust',x:47,y:43,s:'1.55rem'},
+  {t:'the world',x:25,y:56,s:'1.1rem'},
+  {t:'was already',x:56,y:63,s:'.88rem'},
+  {t:'here',x:41,y:73,s:'1.65rem'},
+  {t:'waiting',x:17,y:65,s:'1rem'},
+  {t:'for you',x:66,y:47,s:'1rem'},
+  {t:'to see it',x:61,y:75,s:'.92rem'}
+];
+ws.forEach(function(w){
+  var e=D.createElement('div');
+  e.className='w';e.textContent=w.t;
+  e.style.left=w.x+'%';e.style.top=w.y+'%';e.style.fontSize=w.s;
+  D.body.insertBefore(e,OV);
+});
+D.addEventListener('mousemove',function(ev){
+  OV.style.background='radial-gradient(circle 175px at '+ev.clientX+'px '+ev.clientY+'px,rgba(255,253,242,0) 0%,rgba(255,253,242,.98) 55%,rgba(255,253,242,.99) 100%)';
+});
+D.addEventListener('click',function(){
+  n=Math.min(5,n+1);
+  var p=n/5;
+  OV.style.opacity=(1-p).toFixed(2);
+  D.body.style.background='linear-gradient(to top,hsl(42,'+(48+p*37)+'%,'+(62+p*9)+'%) 0%,hsl(50,'+(p*38)+'%,'+(95-p*9)+'%) 100%)';
+});
+}();
+</script>
+</section>
+</body>
+</html>
