@@ -1,0 +1,72 @@
+<section data-date='2026-06-21' data-type='reflection'>
+<style>
+#tn{position:relative;width:100%;height:100vh;background:#030308;overflow:hidden;cursor:none}
+#tc{position:absolute;top:0;left:0;width:100%;height:100%}
+.tw{position:absolute;pointer-events:none;font:1rem/1 Georgia,serif;color:#cfc7b5;letter-spacing:.3em;opacity:0;transition:opacity 1s;white-space:nowrap;transform:translate(-50%,-50%)}
+#tp{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);font:11px Georgia,serif;color:#1e1a28;letter-spacing:.3em;pointer-events:none;transition:opacity 2s}
+#td{position:absolute;width:4px;height:4px;background:rgba(205,220,240,.9);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);box-shadow:0 0 10px rgba(185,205,235,.5);opacity:0;transition:opacity .6s}
+</style>
+<div id='tn'>
+<canvas id='tc'></canvas>
+<div id='tp'>move &middot; click</div>
+<div id='td'></div>
+</div>
+<script>(function(){
+var n=document.getElementById('tn'),
+    cv=document.getElementById('tc'),
+    pr=document.getElementById('tp'),
+    dot=document.getElementById('td'),
+    cx=cv.getContext('2d'),
+    W,H,mx=-9999,my=-9999,fr=0,u=0,
+    poem=['the day held','its breath','quietly','the stars','were there','all along','waiting','to be seen','in the dark','something completes','rest now','begin again'],
+    ss=[];
+function rsz(){W=cv.width=n.offsetWidth;H=cv.height=n.offsetHeight}
+rsz();window.addEventListener('resize',rsz);
+for(var i=200;i--;)ss.push({x:Math.random(),y:Math.random(),r:Math.random()*.8+.2,a:Math.random()*.2+.03,ph:Math.random()*6.28,sp:Math.random()*.5+.2});
+n.addEventListener('mousemove',function(e){
+  var r=n.getBoundingClientRect();
+  mx=e.clientX-r.left;my=e.clientY-r.top;
+  dot.style.left=mx+'px';dot.style.top=my+'px';dot.style.opacity='1';
+  pr.style.opacity='0';
+});
+n.addEventListener('click',function(e){
+  var r=n.getBoundingClientRect(),
+      x=e.clientX-r.left,y=e.clientY-r.top,
+      d=document.createElement('div');
+  d.className='tw';d.textContent=poem[u++%poem.length];
+  d.style.left=x+'px';d.style.top=y+'px';
+  n.appendChild(d);
+  setTimeout(function(){d.style.opacity='1'},30);
+  setTimeout(function(){
+    d.style.transition='opacity 3s';d.style.opacity='0';
+    setTimeout(function(){d.remove()},3100);
+  },3000);
+});
+function draw(){
+  fr++;cx.clearRect(0,0,W,H);
+  var t=fr*.01,near=[];
+  for(var i=0;i<ss.length;i++){
+    var s=ss[i],sx=s.x*W,sy=s.y*H,
+        dx=sx-mx,dy=sy-my,
+        d=Math.sqrt(dx*dx+dy*dy),
+        rv=Math.max(0,1-d/180),
+        tw=Math.sin(t*s.sp+s.ph)*.1+.9,
+        op=s.a+rv*.78*tw;
+    cx.beginPath();cx.arc(sx,sy,s.r,0,6.28);
+    cx.fillStyle='rgba(228,218,198,'+op.toFixed(2)+')';cx.fill();
+    if(rv>.45)near.push({x:sx,y:sy});
+  }
+  for(var i=0;i<near.length-1;i++){
+    var a=near[i],b=near[i+1],
+        dl=Math.sqrt((a.x-b.x)**2+(a.y-b.y)**2);
+    if(dl<88){
+      cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);
+      cx.strokeStyle='rgba(175,198,222,'+(.055*(1-dl/88)).toFixed(3)+')';
+      cx.lineWidth=.4;cx.stroke();
+    }
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+})();</script>
+</section>
