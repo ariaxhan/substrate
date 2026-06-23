@@ -1,0 +1,41 @@
+<section data-date='2026-06-23' data-type='pulse'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#faf8f4;display:flex;align-items:center;justify-content:center;cursor:crosshair}
+#s{position:relative;display:inline-block;user-select:none}
+#b{font:normal clamp(60px,16vw,240px)/1 Georgia,serif;color:transparent;white-space:nowrap}
+.h{position:absolute;top:0;left:0;font:normal clamp(60px,16vw,240px)/1 Georgia,serif;white-space:nowrap;will-change:clip-path,transform}
+#l{color:#c4722a}
+#r{color:#3a6488}
+#nw{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font:italic clamp(12px,2vw,28px)/1 Georgia,serif;color:#9a9590;opacity:0;transition:opacity .35s;pointer-events:none;white-space:nowrap}
+</style>
+<div id=s>
+  <div id=b>noon</div>
+  <div class=h id=l>noon</div>
+  <div class=h id=r>noon</div>
+  <div id=nw>now</div>
+</div>
+<script>
+const s=document.getElementById('s'),
+  l=document.getElementById('l'),
+  r=document.getElementById('r'),
+  nw=document.getElementById('nw');
+let sw=0;
+function go(px){
+  if(!sw)sw=s.offsetWidth;
+  const t=Math.max(0,Math.min(1,(px-innerWidth/2+sw/2)/sw));
+  const p=t*100;
+  l.style.clipPath=`inset(0 ${(100-p).toFixed(1)}% 0 0)`;
+  r.style.clipPath=`inset(0 0 0 ${p.toFixed(1)}%)`;
+  const d=Math.max(0,(.08-Math.abs(t-.5))*25);
+  l.style.transform=`translateX(${(-d*sw*.05).toFixed(1)}px)`;
+  r.style.transform=`translateX(${(d*sw*.05).toFixed(1)}px)`;
+  nw.style.opacity=Math.min(1,d).toFixed(2);
+}
+addEventListener('mousemove',e=>go(e.clientX));
+addEventListener('touchmove',e=>{go(e.touches[0].clientX);e.preventDefault()},{passive:false});
+addEventListener('resize',()=>{sw=0;go(innerWidth/2)});
+addEventListener('click',()=>go(innerWidth/2));
+go(innerWidth/2);
+</script>
+</section>
