@@ -1,0 +1,94 @@
+<section data-date='2026-06-22' data-type='digest'>
+<style>
+#dg{position:relative;width:100%;height:100vh;background:#0d0d14;overflow:hidden;cursor:crosshair}
+canvas{display:block;position:absolute;top:0;left:0}
+.glyph{position:absolute;font:italic clamp(13px,1.3vw,22px) Georgia,serif;color:#ddd6c8;pointer-events:none;opacity:0;transition:opacity 2.8s ease;white-space:nowrap;letter-spacing:.04em}
+</style>
+<div id="dg"><canvas id="cv"></canvas></div>
+<script>
+const el=document.getElementById('dg'),
+cv=document.getElementById('cv'),
+cx=cv.getContext('2d');
+let W=cv.width=el.clientWidth,
+H=cv.height=el.clientHeight,
+mx=W/2,my=H/2,nc=0,pi=0;
+
+const LINES=[
+  "a particle. another.",
+  "the space between begins to matter",
+  "a field of almost-meaning",
+  "structure as a kind of pressure",
+  "what you see before you name it",
+  "the lattice was always there",
+  "now you cannot unsee it"
+];
+
+let dots=[];
+for(let i=0;i<65;i++) dots.push({
+  x:Math.random()*W,y:Math.random()*H,
+  vx:(Math.random()-.5)*.22,vy:(Math.random()-.5)*.22,
+  r:Math.random()*1.4+.4
+});
+
+function addDot(x,y){
+  dots.push({x,y,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,r:1.4});
+  if(++nc%7===0&&pi<LINES.length) show(LINES[pi++]);
+}
+
+function show(txt){
+  const d=document.createElement('div');
+  d.className='glyph';
+  d.textContent=txt;
+  const lx=10+Math.random()*58;
+  d.style.cssText=`left:${lx}%;top:${18+Math.random()*54}%;transform:translateX(-50%)`;
+  el.appendChild(d);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{d.style.opacity='1'}));
+  setTimeout(()=>{
+    d.style.transition='opacity 3s ease';
+    d.style.opacity='0';
+    setTimeout(()=>d.remove(),3100);
+  },5200);
+}
+
+el.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+el.addEventListener('click',e=>addDot(e.clientX,e.clientY));
+
+(function draw(){
+  cx.clearRect(0,0,W,H);
+
+  for(let i=0;i<dots.length;i++){
+    const a=dots[i];
+    const adx=a.x-mx,ady=a.y-my;
+    const dm=Math.sqrt(adx*adx+ady*ady);
+    const near=dm<145;
+
+    if(near){
+      const af=(1-dm/145);
+      for(let j=i+1;j<dots.length;j++){
+        const b=dots[j];
+        const bdx=b.x-mx,bdy=b.y-my;
+        const dm2=Math.sqrt(bdx*bdx+bdy*bdy);
+        if(dm2>145) continue;
+        const ex=a.x-b.x,ey=a.y-b.y;
+        const dd=Math.sqrt(ex*ex+ey*ey);
+        if(dd>105) continue;
+        const la=af*(1-dm2/145)*(1-dd/105)*.45;
+        cx.strokeStyle=`rgba(148,178,210,${la})`;
+        cx.lineWidth=.55;
+        cx.beginPath();cx.moveTo(a.x,a.y);cx.lineTo(b.x,b.y);cx.stroke();
+      }
+    }
+
+    const fa=near?0.5+(1-dm/145)*.5:0.13;
+    cx.fillStyle=`rgba(148,178,210,${fa})`;
+    const nr=near?a.r*(1+(1-dm/145)*.9):a.r;
+    cx.beginPath();cx.arc(a.x,a.y,nr,0,6.283);cx.fill();
+
+    a.x+=a.vx;a.y+=a.vy;
+    if(a.x<0||a.x>W)a.vx*=-1;
+    if(a.y<0||a.y>H)a.vy*=-1;
+  }
+  requestAnimationFrame(draw);
+})();
+</script>
+</section>
