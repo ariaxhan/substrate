@@ -1,0 +1,57 @@
+<section data-date='2026-06-22' data-type='reflection'>
+<style>
+.vg{background:#04041a;width:100%;height:100vh;overflow:hidden;cursor:crosshair;position:relative}
+.s{position:absolute;border-radius:50%;pointer-events:none;animation:b 2s ease-out forwards}
+@keyframes b{0%{transform:scale(0);opacity:1}40%{transform:scale(2.2);opacity:.85}100%{transform:scale(1);opacity:.45}}
+.w{position:absolute;color:rgba(240,230,200,0);font:italic clamp(11px,1.6vw,19px) Georgia,serif;letter-spacing:.07em;transition:color 2.5s;white-space:nowrap;pointer-events:none}
+.w.v{color:rgba(240,230,200,.52)}
+#vh{position:absolute;bottom:1.6em;width:100%;text-align:center;color:rgba(240,230,200,.22);font:italic 10px Georgia,serif;letter-spacing:.24em;transition:opacity 1.5s}
+#ve{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:rgba(240,230,200,0);font:italic clamp(13px,1.9vw,21px) Georgia,serif;letter-spacing:.13em;line-height:2.4;transition:color 5s;pointer-events:none}
+#ve.v{color:rgba(240,230,200,.42)}
+</style>
+<div class="vg" id="vg">
+<div id="vh">touch the dark</div>
+<div id="ve">the day gave everything<br>now it rests</div>
+</div>
+<script>
+(function(){
+const vg=document.getElementById('vg'),hint=document.getElementById('vh'),end=document.getElementById('ve');
+const poem=['the','day','gave','everything','now','it','lets','go','one','light','at','a','time'];
+let wi=0,stars=[],clicks=0;
+function R(a,b){return a+Math.random()*(b-a)}
+function mkStar(x,y,sm){
+  const d=document.createElement('div'),sz=R(sm?1.5:2,sm?3:5.5);
+  const warm=Math.random()>.5;
+  const c=warm?`255,${(200+R(0,40))|0},${(130+R(0,70))|0}`:`${(180+R(0,75))|0},${(200+R(0,55))|0},255`;
+  d.className='s';
+  d.style.cssText=`left:${x-sz/2}px;top:${y-sz/2}px;width:${sz}px;height:${sz}px;background:rgb(${c});box-shadow:0 0 ${(sz*2.5).toFixed(1)}px rgb(${c})`;
+  vg.appendChild(d);
+  stars.push({el:d,x,y});
+}
+function mkWord(x,y,t){
+  const d=document.createElement('div');
+  d.className='w';d.textContent=t;
+  d.style.left=`${Math.min(Math.max(x+R(-90,90),8),window.innerWidth-90)}px`;
+  d.style.top=`${Math.min(Math.max(y+R(-65,65),8),window.innerHeight-40)}px`;
+  vg.appendChild(d);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>d.classList.add('v')));
+}
+vg.addEventListener('click',e=>{
+  mkStar(e.clientX,e.clientY,false);
+  clicks++;
+  if(clicks===3)hint.style.opacity='0';
+  if(wi<poem.length)mkWord(e.clientX,e.clientY,poem[wi++]);
+  if(wi>=poem.length)setTimeout(()=>end.classList.add('v'),2000);
+  stars.forEach(p=>{
+    const r=Math.hypot(p.x-e.clientX,p.y-e.clientY);
+    if(r<130&&r>1){
+      p.el.style.transition='transform .28s,opacity .28s';
+      p.el.style.transform='scale(3.2)';p.el.style.opacity='1';
+      setTimeout(()=>{p.el.style.transform='';p.el.style.opacity=''},360);
+    }
+  });
+});
+setInterval(()=>{if(stars.length<55)mkStar(R(8,window.innerWidth-8),R(8,window.innerHeight-8),true)},3800);
+})();
+</script>
+</section>
