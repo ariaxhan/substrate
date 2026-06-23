@@ -1,0 +1,69 @@
+<section data-date='2026-06-23' data-type='digest'>
+<style>
+*{margin:0;padding:0}
+body{background:#f0ebe2;overflow:hidden;cursor:crosshair}
+canvas{position:fixed;inset:0}
+#h{position:fixed;bottom:16px;width:100%;text-align:center;font:italic 11px Georgia,serif;color:#c0b0a0;letter-spacing:.1em;pointer-events:none}
+</style>
+<canvas id=v></canvas>
+<div id=h>click to know · move to see</div>
+<script>
+const cv=document.getElementById('v'),g=cv.getContext('2d');
+let W=cv.width=innerWidth,H=cv.height=innerHeight,pts=[],mx=W/2,my=H/2,wc=0;
+const ws='sense know find hold see name mark trace grasp notice form pattern remain still once now there this emerge shape crystallize accumulate'.split(' ');
+
+addEventListener('resize',()=>{W=cv.width=innerWidth;H=cv.height=innerHeight});
+addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+addEventListener('click',e=>{add(e.clientX,e.clientY)});
+
+function add(x,y){pts.push({x,y,t:0,w:ws[wc++%ws.length]})}
+
+for(let i=0;i<8;i++) add(W*.12+Math.random()*W*.76,H*.12+Math.random()*H*.76);
+
+function loop(){
+  requestAnimationFrame(loop);
+  pts.forEach(p=>p.t++);
+  g.fillStyle='rgba(240,235,226,.14)';
+  g.fillRect(0,0,W,H);
+
+  for(let i=0;i<pts.length;i++) for(let j=i+1;j<pts.length;j++){
+    const a=pts[i],b=pts[j],d=Math.hypot(a.x-b.x,a.y-b.y);
+    if(d>140) continue;
+    const prox=Math.max(0,1-Math.min(Math.hypot(mx-a.x,my-a.y),Math.hypot(mx-b.x,my-b.y))/175);
+    const acc=Math.min(.1,(a.t+b.t)/900);
+    const al=acc+prox*.26*(1-d/140);
+    if(al<.012) continue;
+    g.strokeStyle=`rgba(120,85,50,${al.toFixed(3)})`;
+    g.lineWidth=.7;
+    g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.stroke();
+  }
+
+  const used=new Set();
+  for(let i=0;i<pts.length;i++){
+    if(used.has(i)) continue;
+    const grp=pts.reduce((a,_,j)=>Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y)<80?[...a,j]:a,[]);
+    if(grp.length<3) continue;
+    grp.forEach(j=>used.add(j));
+    const cx=grp.reduce((s,j)=>s+pts[j].x,0)/grp.length;
+    const cy=grp.reduce((s,j)=>s+pts[j].y,0)/grp.length;
+    const age=Math.min(...grp.map(j=>pts[j].t));
+    const al=Math.min(.82,age/140);
+    if(al<.02) continue;
+    g.save();
+    g.fillStyle=`rgba(45,28,12,${al.toFixed(3)})`;
+    g.font=`italic ${10+grp.length*2}px Georgia,serif`;
+    g.textAlign='center';
+    g.fillText(pts[grp[0]].w,cx,cy-6);
+    g.restore();
+  }
+
+  pts.forEach(p=>{
+    const prox=Math.max(0,1-Math.hypot(mx-p.x,my-p.y)/100);
+    const al=Math.min(.88,.18+p.t/130+prox*.42);
+    g.fillStyle=`rgba(88,58,28,${al.toFixed(3)})`;
+    g.beginPath();g.arc(p.x,p.y,2.5,0,6.28);g.fill();
+  });
+}
+loop();
+</script>
+</section>
