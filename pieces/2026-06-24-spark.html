@@ -1,0 +1,76 @@
+<section data-date='2026-06-24' data-type='spark'>
+<style>
+#_cv{position:fixed;inset:0;background:#07070d;cursor:crosshair;overflow:hidden;font-family:Georgia,serif}
+.ww{position:absolute;transform:translate(-50%,-50%);font-size:clamp(1.4rem,2.8vw,2.6rem);letter-spacing:.18em;pointer-events:none;user-select:none;transition:opacity .5s,color .4s}
+#_sy{position:absolute;transform:translate(-50%,-50%);font-size:clamp(1.8rem,3.8vw,3.5rem);letter-spacing:.25em;color:#fffaee;pointer-events:none;user-select:none;opacity:0;transition:opacity .7s}
+#_sy.on{text-shadow:0 0 28px rgba(255,248,220,.65),0 0 55px rgba(255,240,180,.3)}
+#_ln{position:fixed;bottom:1.4rem;width:100%;text-align:center;font-size:.7rem;letter-spacing:.25em;color:rgba(255,255,255,.18);pointer-events:none;user-select:none;font-family:Georgia,serif;font-style:italic}
+</style>
+<div id="_cv">
+  <div class="ww" id="_wa"></div>
+  <div class="ww" id="_wb"></div>
+  <div id="_sy"></div>
+  <div id="_ln">move cursor between them</div>
+</div>
+<script>
+var P=[
+  ['you','me','us'],
+  ['fire','water','mist'],
+  ['east','west','here'],
+  ['dark','light','dusk'],
+  ['seed','root','tree'],
+  ['I','I','we'],
+  ['wave','sand','shore'],
+  ['breath','breath','song']
+],
+L=P.length,pi=-1,ax,bx,ay,by,mx=50,my=50,done=0,
+el=document.getElementById('_cv'),
+WA=document.getElementById('_wa'),
+WB=document.getElementById('_wb'),
+SY=document.getElementById('_sy'),
+LN=document.getElementById('_ln');
+
+function at(e,x,y){e.style.left=x+'%';e.style.top=y+'%'}
+function rn(a,b){return a+Math.random()*(b-a)}
+
+function go(){
+  done=0;pi=(pi+1)%L;
+  SY.classList.remove('on');SY.style.opacity='0';
+  WA.textContent=P[pi][0];WB.textContent=P[pi][1];SY.textContent=P[pi][2];
+  WA.style.color='#7bbce0';WB.style.color='#e8a46e';
+  ax=rn(6,12);bx=rn(88,94);ay=rn(44,56);by=rn(44,56);
+  at(WA,ax,ay);at(WB,bx,by);
+  WA.style.opacity=WB.style.opacity='1';
+  LN.style.opacity='.18';
+}
+
+function meet(){
+  if(done)return;done=1;
+  LN.style.opacity='0';
+  var cx=(ax+bx)/2,cy=(ay+by)/2;
+  WA.style.opacity=WB.style.opacity='0';
+  at(SY,cx,cy);SY.style.opacity='1';
+  setTimeout(function(){SY.classList.add('on')},650);
+  setTimeout(go,2700);
+}
+
+function tick(){
+  if(!done){
+    ax+=(mx-ax)*.023;ay+=(my-ay)*.019;
+    bx+=(mx-bx)*.02;by+=(my-by)*.019;
+    var d=Math.hypot(bx-ax,by-ay);
+    if(d<8)meet();
+    else{at(WA,ax,ay);at(WB,bx,by)}
+  }
+  requestAnimationFrame(tick);
+}
+
+el.addEventListener('mousemove',function(e){
+  var r=el.getBoundingClientRect();
+  mx=(e.clientX-r.left)/r.width*100;
+  my=(e.clientY-r.top)/r.height*100;
+});
+el.addEventListener('click',meet);
+go();tick();
+</script>
+</section>
