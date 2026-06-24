@@ -1,0 +1,55 @@
+<section data-date='2026-06-24' data-type='pulse'>
+<style>
+#n{height:100vh;background:#f0ebe1;display:flex;align-items:center;justify-content:center;overflow:hidden;cursor:crosshair;font-family:Georgia,serif;position:relative}
+#a,#z{font-size:28vw;line-height:.9;color:#1d1b18;will-change:transform,opacity;transition:transform .04s,opacity .12s}
+#c{font-size:18vw;color:#b3552a;line-height:.9;opacity:0;transform:scaleX(0);transition:opacity .5s,transform .5s;padding:0 .5vw}
+.g{position:absolute;bottom:11vh;font-size:clamp(8px,.82vw,13px);letter-spacing:.28em;opacity:0;transition:opacity .45s}
+#gl{left:12%;color:rgba(29,27,24,.4);font-style:italic}
+#gr{right:12%;text-align:right;color:rgba(29,27,24,.4);font-style:italic}
+#gm{left:50%;transform:translateX(-50%);color:#b3552a;letter-spacing:.55em;white-space:nowrap;font-size:clamp(6px,.68vw,10px)}
+</style>
+<div id=n>
+  <div id=a>1</div>
+  <div id=c>:</div>
+  <div id=z>2</div>
+  <div class=g id=gl>before &middot; waking &middot; not yet</div>
+  <div class=g id=gr>after &middot; spent &middot; already</div>
+  <div class=g id=gm>noon</div>
+</div>
+<script>
+const el=i=>document.getElementById(i),
+      a=el('a'),z=el('z'),c=el('c'),
+      gl=el('gl'),gr=el('gr'),gm=el('gm');
+let mx=innerWidth/2,sx=0,moved=false,lock=0,t=0;
+addEventListener('mousemove',e=>{moved=true;mx=e.clientX});
+el('n').addEventListener('click',()=>{
+  if(!moved)return;
+  lock=Date.now()+2400;
+  [a,z].forEach(e=>{e.style.transform='scale(1)';e.style.opacity='1'});
+  c.style.opacity='.88';c.style.transform='scaleX(1)';
+  gl.style.opacity=gr.style.opacity='0';
+  gm.style.opacity='1';
+  setTimeout(()=>{
+    c.style.opacity='0';c.style.transform='scaleX(0)';gm.style.opacity='0';
+  },2400);
+});
+(function loop(){
+  t+=.007;
+  if(Date.now()<lock){requestAnimationFrame(loop);return;}
+  const raw=moved?(mx/innerWidth-.5)*2:Math.sin(t)*.3;
+  sx+=(raw-sx)*.11;
+  const x=sx,w=Math.abs(x),bal=moved&&w<.045;
+  const s=1+w*.3,si=1/s;
+  a.style.transform=`scale(${x<0?s:si})`;
+  z.style.transform=`scale(${x>0?s:si})`;
+  a.style.opacity=moved&&x>.05?String(Math.max(.55,1-w*.38)):'1';
+  z.style.opacity=moved&&x<-.05?String(Math.max(.55,1-w*.38)):'1';
+  c.style.opacity=bal?'.88':'0';
+  c.style.transform=bal?'scaleX(1)':'scaleX(0)';
+  gl.style.opacity=moved&&x<-.22?'.6':'0';
+  gr.style.opacity=moved&&x>.22?'.6':'0';
+  gm.style.opacity=bal?'1':'0';
+  requestAnimationFrame(loop);
+})();
+</script>
+</section>
