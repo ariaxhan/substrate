@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>digest · 2026-06-24</title>
+<style>*{margin:0;padding:0}body{background:#f4f0e8;overflow:hidden;cursor:crosshair}</style>
+</head>
+<body>
+<section data-date='2026-06-24' data-type='digest'>
+<canvas id=c></canvas>
+<script>
+var cv=document.getElementById('c'),g=cv.getContext('2d');
+cv.width=innerWidth;cv.height=innerHeight;
+var W=cv.width,H=cv.height;
+var src='datum·pattern·latent·emerge·crystal·form·signal·noise·'.split('');
+var nodes=[],mx=-9999,my=-9999,seen=new Set(),revAt=0;
+var phrase='structure was latent in the noise';
+for(var i=0;i<55;i++)nodes.push({
+  x:.07*W+Math.random()*.86*W,
+  y:.08*H+Math.random()*.84*H,
+  ch:src[i%src.length],
+  hit:0,v:0
+});
+document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY});
+function frame(t){
+  requestAnimationFrame(frame);
+  g.fillStyle='#f4f0e8';
+  g.fillRect(0,0,W,H);
+  nodes.forEach(function(n,i){
+    if(Math.hypot(n.x-mx,n.y-my)<85){n.hit=t;n.v++;seen.add(i)}
+  });
+  if(!revAt&&seen.size>=30)revAt=t;
+  var rev=revAt?Math.min(1,(t-revAt)/2800):0;
+  var hot=nodes.filter(function(n){return t-n.hit<3500});
+  for(var i=0;i<hot.length;i++)for(var j=i+1;j<hot.length;j++){
+    var a=hot[i],b=hot[j],d=Math.hypot(a.x-b.x,a.y-b.y);
+    if(d<158){
+      var s=Math.min((3500-(t-a.hit))/3500,(3500-(t-b.hit))/3500);
+      g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);
+      g.strokeStyle='rgba(155,82,18,'+(s*.26*(1-d/158))+')';
+      g.lineWidth=1;g.stroke();
+    }
+  }
+  g.textAlign='center';g.textBaseline='middle';
+  nodes.forEach(function(n){
+    var age=t-n.hit;
+    var pulse=.5+.5*Math.sin(t*.0009+n.x*.007+n.y*.009);
+    var base=.038+Math.min(n.v,10)*.011+pulse*.009;
+    var a=age<3500?Math.max(base,(3500-age)/3500):base;
+    g.font=(13+a*9)+'px "Times New Roman",serif';
+    g.fillStyle='rgba(15,10,38,'+a+')';
+    g.fillText(n.ch,n.x,n.y);
+  });
+  if(!revAt){
+    g.font='11px "Times New Roman",serif';
+    g.fillStyle='rgba(15,10,38,.16)';
+    g.textAlign='right';
+    g.textBaseline='bottom';
+    g.fillText('move through the field',W-18,H-16);
+  }
+  if(rev>0){
+    var vl=Math.floor(phrase.length*rev);
+    g.fillStyle='rgba(244,240,232,'+(rev*.94)+')';
+    g.fillRect(W/2-248,H/2-24,496,48);
+    g.font='italic 20px "Times New Roman",serif';
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillStyle='rgba(15,10,38,'+rev+')';
+    g.fillText(phrase.slice(0,vl),W/2,H/2);
+  }
+}
+requestAnimationFrame(frame);
+</script>
+</section>
+</body>
+</html>
