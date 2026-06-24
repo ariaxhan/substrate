@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>still — 2026-06-23</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;background:#06090f;overflow:hidden;cursor:crosshair}
+#h{position:fixed;width:100%;top:2rem;text-align:center;
+   font:italic 11px/1 'Palatino Linotype',Palatino,serif;
+   color:rgba(160,185,220,.18);letter-spacing:.28em;
+   pointer-events:none;user-select:none}
+#fin{position:fixed;width:100%;top:50%;transform:translateY(-50%);text-align:center;
+     font:300 2.2rem/1 'Palatino Linotype',Palatino,serif;
+     color:rgba(195,215,245,0);letter-spacing:.2em;
+     pointer-events:none;transition:color 6s ease}
+</style>
+</head>
+<body>
+<section data-date='2026-06-23' data-type='reflection'>
+<canvas id="c"></canvas>
+<p id="h">what did the day hold</p>
+<p id="fin">it was enough</p>
+</section>
+<script>
+const C=document.getElementById('c'),
+      X=C.getContext('2d'),
+      W=['done','held','heard','made','tried','gave','felt','stayed',
+         'loved','woke','began','let go','rested','witnessed'];
+
+let w=C.width=innerWidth,h=C.height=innerHeight,mx=-999,my=-999;
+window.addEventListener('resize',()=>{w=C.width=innerWidth;h=C.height=innerHeight});
+window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+
+const amb=Array.from({length:55},()=>({
+  x:Math.random()*innerWidth,y:Math.random()*innerHeight,
+  r:Math.random()*.65+.2,
+  a:Math.random()*.18+.04,
+  t:Math.random()*6.28,
+  dt:Math.random()*.006+.004
+}));
+
+const named=[];
+let wi=0;
+
+window.addEventListener('click',e=>{
+  named.push({
+    x:e.clientX,y:e.clientY,
+    word:W[wi++%W.length],
+    born:performance.now(),fade:0
+  });
+  if(named.length>=7)
+    document.getElementById('fin').style.color='rgba(195,215,245,.58)';
+});
+
+function loop(){
+  X.clearRect(0,0,w,h);
+
+  for(const s of amb){
+    s.t+=s.dt;
+    const a=s.a*(Math.sin(s.t)*.18+.82);
+    X.beginPath();X.arc(s.x,s.y,s.r,0,6.28);
+    X.fillStyle=`rgba(215,228,250,${a})`;X.fill();
+  }
+
+  for(let i=0;i<named.length;i++)
+    for(let j=i+1;j<named.length;j++){
+      const ni=named[i],nj=named[j];
+      const d=Math.hypot(ni.x-nj.x,ni.y-nj.y);
+      if(d<180){
+        const cx=(ni.x+nj.x)/2,cy=(ni.y+nj.y)/2,
+              dm=Math.hypot(cx-mx,cy-my),
+              a=Math.max(0,.2*(1-dm/200))*(Math.min(ni.fade,nj.fade));
+        if(a>0){
+          X.strokeStyle=`rgba(160,195,240,${a})`;
+          X.lineWidth=.5;X.beginPath();
+          X.moveTo(ni.x,ni.y);X.lineTo(nj.x,nj.y);X.stroke();
+        }
+      }
+    }
+
+  for(const s of named){
+    s.fade=Math.min(1,(performance.now()-s.born)/1100);
+    const a=s.fade;
+    const g=X.createRadialGradient(s.x,s.y,0,s.x,s.y,14);
+    g.addColorStop(0,`rgba(205,228,255,${a*.3})`);
+    g.addColorStop(1,`rgba(205,228,255,0)`);
+    X.beginPath();X.arc(s.x,s.y,14,0,6.28);X.fillStyle=g;X.fill();
+    X.beginPath();X.arc(s.x,s.y,1.6,0,6.28);
+    X.fillStyle=`rgba(240,248,255,${a})`;X.fill();
+    if(a>.45){
+      X.font=`italic 10.5px 'Palatino Linotype',Palatino,serif`;
+      X.fillStyle=`rgba(150,185,220,${(a-.45)*1.82*.52})`;
+      X.fillText(s.word,s.x+9,s.y-7);
+    }
+  }
+
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
