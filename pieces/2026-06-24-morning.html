@@ -1,0 +1,73 @@
+<section data-date='2026-06-24' data-type='morning'>
+<style>#th{position:fixed;top:0;left:0;z-index:1;cursor:crosshair}</style>
+<canvas id='th'></canvas>
+<script>
+!function(){
+  var cv=document.getElementById('th'),
+      cx=cv.getContext('2d'),
+      W,H,mx=.5,words=[],wi=0,glw=0,f=0,
+      ws='begin open yes still now first light here yet wake breathe today'.split(' ');
+
+  function sz(){cv.width=W=innerWidth;cv.height=H=innerHeight}
+  sz();addEventListener('resize',sz);
+
+  function dn(t){return[5+t*240|0,4+t*120|0,16+t*40|0]}
+
+  function go(){
+    glw=Math.min(glw+.07,1);
+    words.push({
+      s:ws[wi++%ws.length],
+      x:W*(.28+mx*.44),y:H*.65,
+      vy:-.6-.45*Math.random(),
+      a:1,da:.003+.002*Math.random(),
+      sz:Math.min(W*.055,68)
+    });
+  }
+
+  cv.addEventListener('mousemove',function(e){mx=e.clientX/W});
+  cv.addEventListener('click',go);
+  setTimeout(go,900);
+
+  function draw(){
+    f++;
+    cx.clearRect(0,0,W,H);
+    var hy=H*.65,c=dn(mx),r=c[0],g=c[1],b=c[2];
+
+    var sk=cx.createLinearGradient(0,0,0,H);
+    sk.addColorStop(0,'rgb('+(5+glw*18|0)+','+(4+glw*12|0)+','+(16+glw*38|0)+')');
+    sk.addColorStop(.65,'rgb(7,5,18)');
+    sk.addColorStop(hy/H,'rgb(3,2,10)');
+    sk.addColorStop(1,'rgb(0,0,4)');
+    cx.fillStyle=sk;cx.fillRect(0,0,W,H);
+
+    var pulse=.15+Math.sin(f*.025)*.04;
+    var gr=cx.createRadialGradient(W*mx,hy,0,W*mx,hy,W*.38);
+    gr.addColorStop(0,'rgba('+r+','+g+','+b+','+pulse+')');
+    gr.addColorStop(1,'rgba(0,0,0,0)');
+    cx.fillStyle=gr;cx.fillRect(0,hy-100,W,200);
+
+    var lg=cx.createLinearGradient(W*(mx-.45),0,W*(mx+.45),0);
+    lg.addColorStop(0,'rgba(0,0,0,0)');
+    lg.addColorStop(.5,'rgba('+r+','+g+','+b+',.85)');
+    lg.addColorStop(1,'rgba(0,0,0,0)');
+    cx.beginPath();cx.moveTo(0,hy);cx.lineTo(W,hy);
+    cx.strokeStyle=lg;cx.lineWidth=1;cx.stroke();
+
+    for(var i=words.length-1;i>=0;i--){
+      var w=words[i];
+      w.y+=w.vy;w.a-=w.da;
+      if(w.a<=0){words.splice(i,1);continue}
+      cx.save();
+      cx.globalAlpha=w.a<.25?w.a/.25:1;
+      cx.font='300 '+w.sz+'px Georgia,serif';
+      cx.fillStyle='rgb(248,200,138)';
+      cx.textAlign='center';
+      cx.fillText(w.s,w.x,w.y);
+      cx.restore();
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+}()
+</script>
+</section>
