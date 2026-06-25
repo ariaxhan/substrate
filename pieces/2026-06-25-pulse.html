@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>pulse</title>
+<style>
+*{margin:0;padding:0}
+body{background:#0d0c1d;overflow:hidden;cursor:crosshair}
+canvas{display:block}
+</style>
+</head>
+<body>
+<section data-date='2026-06-25' data-type='pulse'>
+<canvas id=c></canvas>
+<script>
+/* pulse — a balance at noon
+   move: tip the scale toward morning or afternoon
+   click: time turns over                          */
+
+const cv=document.getElementById('c'),g=cv.getContext('2d');
+let W,H,tilt=0,ttilt=0,ft=0,flipped=0;
+const am=['rose','broke','first'],
+      pm=['falls','closes','last'];
+
+function sz(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+addEventListener('resize',sz);sz();
+addEventListener('mousemove',e=>{ttilt=(e.clientX/W-.5)*.52});
+addEventListener('click',()=>{if(!ft)ft=.001});
+
+function draw(){
+  g.clearRect(0,0,W,H);
+
+  tilt+=(ttilt-tilt)*.055;
+  if(ft){ft+=.017;if(ft>=1){ft=0;flipped^=1}}
+  const t=tilt+(ft?Math.sin(ft*Math.PI)*.58:0);
+  const cx=W/2,cy=H/2,arm=Math.min(W,H)*.34;
+
+  // axis lines — the ideal, static
+  g.strokeStyle='rgba(255,255,255,.045)';g.lineWidth=.5;
+  g.beginPath();g.moveTo(cx,0);g.lineTo(cx,H);g.stroke();
+  g.beginPath();g.moveTo(0,cy);g.lineTo(W,cy);g.stroke();
+
+  const lx=cx-arm*Math.cos(t),ly=cy-arm*Math.sin(t);
+  const rx=cx+arm*Math.cos(t),ry=cy+arm*Math.sin(t);
+  const pd=60;
+
+  // beam
+  g.beginPath();g.moveTo(lx,ly);g.lineTo(rx,ry);
+  g.strokeStyle='rgba(255,255,255,.48)';g.lineWidth=1;g.stroke();
+
+  // strings + pans
+  for(const[px,py]of[[lx,ly],[rx,ry]]){
+    g.strokeStyle='rgba(255,255,255,.15)';g.lineWidth=.6;
+    g.beginPath();g.moveTo(px,py);g.lineTo(px,py+pd);g.stroke();
+    g.beginPath();g.moveTo(px-24,py+pd);g.lineTo(px+24,py+pd);g.stroke();
+  }
+
+  // post and base
+  g.strokeStyle='rgba(255,255,255,.17)';g.lineWidth=.7;
+  g.beginPath();g.moveTo(cx,cy);g.lineTo(cx,cy+44);g.stroke();
+  g.beginPath();g.moveTo(cx-20,cy+44);g.lineTo(cx+20,cy+44);g.stroke();
+
+  // fulcrum
+  g.beginPath();g.arc(cx,cy,2.5,0,6.28);
+  g.fillStyle='rgba(255,255,255,.82)';g.fill();
+
+  // words — morning amber, afternoon violet
+  const lw=flipped?pm:am,rw=flipped?am:pm;
+  const sz2=[18,13,10],al=[.72,.44,.22];
+  g.textAlign='center';g.textBaseline='top';
+  for(let i=0;i<3;i++){
+    g.font=`italic ${sz2[i]}px Georgia,serif`;
+    g.fillStyle=`rgba(255,185,70,${al[i]})`;
+    g.fillText(lw[i],lx,ly+pd+10+i*22);
+    g.fillStyle=`rgba(148,168,255,${al[i]})`;
+    g.fillText(rw[i],rx,ry+pd+10+i*22);
+  }
+
+  // noon — glows when the scale finds center
+  const centered=Math.max(0,1-Math.abs(ttilt)/.26);
+  g.font='9px Georgia,serif';
+  g.fillStyle=`rgba(255,255,255,${.14+centered*.52})`;
+  g.textBaseline='middle';
+  g.textAlign='center';
+  g.fillText('noon',cx,cy-16);
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</section>
+</body>
+</html>
