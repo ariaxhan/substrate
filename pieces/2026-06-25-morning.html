@@ -1,0 +1,112 @@
+<section data-date='2026-06-25' data-type='morning'>
+<style>
+section[data-date='2026-06-25']{
+  position:fixed;inset:0;
+  background:#07091a;
+  overflow:hidden;
+  cursor:none;
+  transition:background 3.5s ease;
+  z-index:0;
+}
+section[data-date='2026-06-25'].dawn{background:#fdf0dc}
+section[data-date='2026-06-25'] .w{
+  position:absolute;
+  font-family:Georgia,serif;
+  font-size:clamp(10px,1.6vw,20px);
+  letter-spacing:.3em;
+  color:rgba(165,182,255,0);
+  transition:color .5s;
+  user-select:none;pointer-events:none;
+  text-transform:lowercase;
+}
+section[data-date='2026-06-25'].dawn .w{
+  color:rgba(100,74,43,.58)!important;
+}
+section[data-date='2026-06-25'] #pv{
+  position:absolute;top:50%;left:50%;
+  transform:translate(-50%,-50%) translateX(.28em);
+  font-family:Georgia,serif;
+  font-size:clamp(32px,7vw,94px);
+  letter-spacing:.55em;
+  color:rgba(165,182,255,.05);
+  transition:color 3s ease,letter-spacing 3s ease,opacity .4s;
+  user-select:none;white-space:nowrap;
+}
+section[data-date='2026-06-25'].dawn #pv{
+  color:rgba(190,108,36,.9);letter-spacing:.72em;
+}
+section[data-date='2026-06-25'] #hint{
+  position:absolute;bottom:9%;left:50%;
+  transform:translateX(-50%);
+  font-family:Georgia,serif;font-size:10px;
+  letter-spacing:.4em;
+  color:rgba(165,182,255,.16);
+  transition:opacity 1s;
+  user-select:none;pointer-events:none;
+}
+section[data-date='2026-06-25'] #dot{
+  position:fixed;pointer-events:none;
+  width:5px;height:5px;border-radius:50%;
+  background:rgba(165,182,255,.28);
+  transform:translate(-50%,-50%);
+  transition:background 3s;
+  z-index:9;
+}
+section[data-date='2026-06-25'].dawn #dot{
+  background:rgba(198,130,42,.3);
+}
+</style>
+<div id="dot"></div>
+<div id="pv">still</div>
+<div id="hint">move &middot; click</div>
+<script>
+(function(){
+  var sec=document.querySelector("section[data-date='2026-06-25']"),
+    dot=document.getElementById('dot'),
+    pv=document.getElementById('pv'),
+    hint=document.getElementById('hint'),
+    dawn=false,moved=false,items=[];
+
+  var ws=[
+    {t:'quiet',x:17,y:31},{t:'unbroken',x:68,y:23},
+    {t:'possible',x:13,y:63},{t:'waiting',x:76,y:67},
+    {t:'whole',x:40,y:15},{t:'before',x:57,y:84},
+    {t:'open',x:25,y:80},{t:'enough',x:83,y:40},
+    {t:'here',x:7,y:49},{t:'soft',x:87,y:55},
+    {t:'dark',x:46,y:89},{t:'tender',x:60,y:10}
+  ];
+
+  ws.forEach(function(w){
+    var e=document.createElement('div');
+    e.className='w';e.textContent=w.t;
+    e.style.left=w.x+'%';e.style.top=w.y+'%';
+    sec.appendChild(e);
+    items.push({e:e,x:w.x,y:w.y});
+  });
+
+  document.addEventListener('mousemove',function(ev){
+    dot.style.left=ev.clientX+'px';
+    dot.style.top=ev.clientY+'px';
+    if(!moved){moved=true;hint.style.opacity=0;}
+    if(dawn)return;
+    items.forEach(function(o){
+      var cx=o.x/100*innerWidth,cy=o.y/100*innerHeight;
+      var d=Math.hypot(cx-ev.clientX,cy-ev.clientY);
+      o.e.style.color='rgba(165,182,255,'+Math.max(0,(1-d/245)*.76).toFixed(2)+')';
+    });
+    var dc=Math.hypot(innerWidth/2-ev.clientX,innerHeight/2-ev.clientY);
+    pv.style.color='rgba(165,182,255,'+(.05+Math.max(0,1-dc/268)*.3).toFixed(2)+')';
+  });
+
+  document.addEventListener('click',function(){
+    if(dawn)return;
+    dawn=true;
+    sec.classList.add('dawn');
+    items.forEach(function(o,i){
+      o.e.style.transitionDelay=(i*0.07)+'s';
+    });
+    setTimeout(function(){pv.textContent='begin';},650);
+  });
+})();
+</script>
+</section>
