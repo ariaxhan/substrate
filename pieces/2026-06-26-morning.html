@@ -1,0 +1,85 @@
+<section data-date='2026-06-26' data-type='morning'>
+<style>
+section[data-date='2026-06-26']{
+  position:fixed;inset:0;
+  background:#f7f3ea;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;overflow:hidden;
+}
+section[data-date='2026-06-26'] #t26{
+  font:300 clamp(1.5rem,4.2vw,3.8rem)/1.55 Georgia,'Times New Roman',serif;
+  color:#1a1610;text-align:center;max-width:68vw;
+  letter-spacing:.015em;
+  opacity:1;transition:opacity .55s ease;
+}
+section[data-date='2026-06-26'] #c26{
+  display:inline-block;width:2px;height:.88em;
+  background:#1a1610;margin-left:.12em;
+  vertical-align:text-bottom;
+  animation:bl26 1.1s step-end infinite;
+}
+@keyframes bl26{50%{opacity:0}}
+section[data-date='2026-06-26'] #h26{
+  position:absolute;bottom:2.2rem;left:50%;
+  transform:translateX(-50%);
+  font:italic 11px/1 Georgia,serif;letter-spacing:.25em;
+  color:rgba(26,22,16,.2);pointer-events:none;
+  white-space:nowrap;transition:opacity 1.2s;
+}
+</style>
+<div id="t26"><span id="m26"></span><span id="c26"></span></div>
+<div id="h26">anywhere &middot; to continue</div>
+<script>
+(function(){
+  var sec=document.querySelector("section[data-date='2026-06-26']"),
+    m=document.getElementById('m26'),
+    t=document.getElementById('t26'),
+    h=document.getElementById('h26'),
+    ss=[
+      "In the quiet before light, a single word.",
+      "This is the moment before the first word.",
+      "Today is unwritten.",
+      "Something waits in the space before beginning.",
+      "The light arrives without asking.",
+      "This morning holds every possibility.",
+      "Before anything, there is only this.",
+      "The first word is always the hardest.",
+      "Begin where you are.",
+      "Nothing is fixed yet.",
+      "Today could be anything.",
+      "The cursor blinks. That is enough."
+    ],
+    si=0,iv=null,tid=null,busy=false;
+
+  function stop(){
+    if(iv){clearInterval(iv);iv=null;}
+    if(tid){clearTimeout(tid);tid=null;}
+    busy=false;
+  }
+
+  function type(){
+    var s=ss[si++%ss.length],ci=0;
+    iv=setInterval(function(){
+      m.textContent=s.substring(0,++ci);
+      if(ci>=s.length){
+        clearInterval(iv);iv=null;
+        tid=setTimeout(function(){
+          busy=true;t.style.opacity='0';
+          tid=setTimeout(function(){t.style.opacity='1';busy=false;type();},620);
+        },2600);
+      }
+    },54);
+  }
+
+  sec.addEventListener('click',function(){
+    if(busy)return;
+    h.style.opacity='0';
+    stop();
+    busy=true;t.style.opacity='0';
+    tid=setTimeout(function(){t.style.opacity='1';busy=false;type();},520);
+  });
+
+  type();
+})();
+</script>
+</section>
