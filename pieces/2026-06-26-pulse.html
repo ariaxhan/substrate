@@ -1,0 +1,76 @@
+<section data-date='2026-06-26' data-type='pulse'>
+<style>
+*{margin:0;padding:0}
+body{background:#f2ede4;overflow:hidden}
+#c{position:fixed;inset:0}
+</style>
+<canvas id=c></canvas>
+<script>
+const cv=document.getElementById('c'),g=cv.getContext('2d');
+let W,H,T=0,A=0,moved=0,snap=0,tick=0;
+function sz(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+addEventListener('resize',sz);sz();
+addEventListener('mousemove',e=>{moved=1;if(!snap)T=(e.clientX/W-.5)*2});
+addEventListener('click',()=>{snap=90});
+
+function draw(){
+  tick++;
+  g.fillStyle='#f2ede4';g.fillRect(0,0,W,H);
+
+  if(!moved)T=Math.sin(tick*.02)*.72;
+  if(snap>0){snap--;T+=(0-T)*.1;if(!snap)moved=0}
+  A+=(T-A)*.07;
+
+  const cx=W/2,cy=H*.44,gh=Math.min(W,H)*.19,ml=Math.min(W,H)*.42;
+
+  // faint horizon — the surface the gnomon stands on
+  g.strokeStyle='rgba(50,35,15,.07)';g.lineWidth=.5;
+  g.beginPath();g.moveTo(cx-ml*.75,cy);g.lineTo(cx+ml*.75,cy);g.stroke();
+
+  // shadow — collapses at noon, extends toward morning (right) or afternoon (left)
+  const ang=A*1.1,len=Math.abs(A)*ml;
+  const dx=-Math.sin(ang),dy=Math.cos(ang);
+  const ex=cx+dx*len,ey=cy+dy*len;
+  if(len>2){
+    const gr=g.createLinearGradient(cx,cy,ex,ey);
+    gr.addColorStop(0,`rgba(50,35,15,${.17+Math.abs(A)*.14})`);
+    gr.addColorStop(1,'rgba(50,35,15,0)');
+    g.beginPath();g.moveTo(cx,cy);g.lineTo(ex,ey);
+    g.strokeStyle=gr;g.lineWidth=1;g.stroke();
+  }
+
+  // gnomon — the vertical stick
+  g.strokeStyle='rgba(50,35,15,.68)';g.lineWidth=1.5;
+  g.beginPath();g.moveTo(cx,cy);g.lineTo(cx,cy-gh);g.stroke();
+
+  // gnomon tip
+  g.fillStyle='rgba(50,35,15,.5)';
+  g.beginPath();g.arc(cx,cy-gh,2,0,6.28);g.fill();
+
+  // fulcrum — the base point, where shadow originates
+  g.fillStyle='rgba(50,35,15,.65)';
+  g.beginPath();g.arc(cx,cy,2.5,0,6.28);g.fill();
+
+  // word at shadow tip: warm amber in morning, cool blue in afternoon
+  if(len>45){
+    const isMorn=A<0,f=Math.min(1,(len-45)/95);
+    g.font=`italic 13px Georgia,serif`;
+    g.textAlign='center';g.textBaseline='middle';
+    g.fillStyle=isMorn?`rgba(148,78,14,${f*.78})`:`rgba(40,82,148,${f*.78})`;
+    g.fillText(isMorn?'becoming':'returning',ex,ey);
+  }
+
+  // noon — appears only when shadow nearly vanishes
+  const noon=Math.max(0,1-Math.abs(A)*4.5);
+  if(noon>.04){
+    g.font=`9px Georgia,serif`;
+    g.textAlign='center';g.textBaseline='top';
+    g.fillStyle=`rgba(50,35,15,${noon*.5})`;
+    g.fillText('noon',cx,cy+8);
+  }
+
+  requestAnimationFrame(draw);
+}
+draw();
+</script>
+</section>
