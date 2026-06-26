@@ -1,0 +1,76 @@
+<section data-date='2026-06-26' data-type='spark'>
+<style>*{margin:0;padding:0}#c{display:block;cursor:crosshair;background:#09090f}</style>
+<canvas id=c></canvas>
+<script>
+const cv=document.getElementById('c'),g=cv.getContext('2d');
+let W=cv.width=500,H=cv.height=380,mx=.5,t=0;
+let aA=0,aB=Math.PI,ph=0,fa=0,sa=0,cX=250,cY=264;
+const R=130,OX=W/2,OY=H/2-10;
+const P=[['fire','ice','mist'],['I','you','we'],['speak','silence','echo'],['here','gone','now'],['know','forget','dream']];
+let pi=0;
+
+cv.addEventListener('mousemove',e=>{const r=cv.getBoundingClientRect();mx=(e.clientX-r.left)/W;});
+cv.addEventListener('click',()=>{if(ph===2){pi=(pi+1)%P.length;ph=fa=sa=0;aA=0;aB=Math.PI;}});
+
+function gl(px,py,col,sz){
+  const gd=g.createRadialGradient(px,py,0,px,py,sz);
+  gd.addColorStop(0,col);gd.addColorStop(1,'transparent');
+  g.fillStyle=gd;g.beginPath();g.arc(px,py,sz,0,7);g.fill();
+}
+
+function frame(){
+  g.fillStyle='rgba(9,9,15,.12)';g.fillRect(0,0,W,H);
+
+  if(ph===0){
+    aA+=.004+mx*.016;aB-=.004+(1-mx)*.016;
+    const ax=OX+R*Math.cos(aA),ay=OY+R*.65*Math.sin(aA);
+    const bx=OX+R*Math.cos(aB),by=OY+R*.65*Math.sin(aB);
+    const d=Math.hypot(bx-ax,by-ay);
+
+    if(d<100){
+      const s=1-d/100;
+      g.save();g.globalAlpha=s*.6;
+      const lg=g.createLinearGradient(ax,ay,bx,by);
+      lg.addColorStop(0,'#6be');lg.addColorStop(.5,'#ffe');lg.addColorStop(1,'#f96');
+      g.strokeStyle=lg;g.lineWidth=1+s*2;
+      g.beginPath();g.moveTo(ax,ay);g.lineTo(bx,by);g.stroke();
+      g.restore();
+    }
+
+    g.save();g.font='1rem monospace';g.textAlign='center';g.textBaseline='bottom';
+    g.fillStyle='rgba(110,190,255,.9)';g.fillText(P[pi][0],ax,ay-16);
+    g.fillStyle='rgba(255,150,80,.9)';g.fillText(P[pi][1],bx,by-16);g.restore();
+
+    gl(ax,ay,'rgba(90,165,255,.9)',18);
+    gl(bx,by,'rgba(255,135,65,.9)',18);
+
+    if(d<14){cX=(ax+bx)/2;cY=(ay+by)/2;ph=1;fa=0;}
+  }
+
+  if(ph===1){
+    fa++;const f=fa/65;
+    g.save();g.globalAlpha=Math.max(0,1-f)*.9;
+    const fg=g.createRadialGradient(cX,cY,0,cX,cY,60+fa*2.5);
+    fg.addColorStop(0,'#fff');fg.addColorStop(.4,'#c9e');fg.addColorStop(1,'transparent');
+    g.fillStyle=fg;g.fillRect(0,0,W,H);g.restore();
+    if(fa>65){ph=2;sa=0;}
+  }
+
+  if(ph===2){
+    sa=Math.min(sa+.015,1);
+    g.save();
+    g.font='bold 2.4rem monospace';g.textAlign='center';g.textBaseline='middle';
+    g.shadowColor='#c9e';g.shadowBlur=30;
+    g.fillStyle=`rgba(255,255,255,${sa})`;
+    g.fillText(P[pi][2],cX,cY);
+    g.shadowBlur=0;g.font='.6rem monospace';
+    g.fillStyle=`rgba(80,80,100,${Math.min(sa*2,1)*(Math.sin(t*.08)*.2+.65)})`;
+    g.fillText('click',cX,cY+52);
+    g.restore();
+  }
+
+  t++;requestAnimationFrame(frame);
+}
+frame();
+</script>
+</section>
