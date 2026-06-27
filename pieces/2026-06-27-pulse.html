@@ -1,0 +1,66 @@
+<section data-date='2026-06-27' data-type='pulse'>
+<style>
+#fw{position:relative;width:100%;height:100vh;overflow:hidden;background:linear-gradient(to bottom,#f5ede0 50%,#e8e0f2 50%);cursor:crosshair;perspective:700px}
+#fs{position:absolute;inset:0;transform-origin:50% 50%;will-change:transform}
+#fb{position:absolute;top:50%;left:5%;width:90%;height:1px;transform:translateY(-50%);animation:fb-pulse 3.5s ease-in-out infinite}
+@keyframes fb-pulse{0%,100%{background:rgba(80,60,40,.2)}50%{background:rgba(80,60,40,.45)}}
+#fp{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:Georgia,serif;font-size:.8rem;letter-spacing:.55em;text-transform:lowercase;color:#2a1a0a;opacity:0;transition:opacity .35s ease;white-space:nowrap;user-select:none}
+.fw-w{position:absolute;pointer-events:none;transition:opacity .75s ease}
+.fw-a{font-family:Georgia,serif;color:#7a5030;font-size:clamp(.65rem,1.2vw,1rem)}
+.fw-p{font-family:'Courier New',monospace;color:#32285e;font-size:clamp(.6rem,1vw,.88rem)}
+</style>
+<div id=fw>
+<div id=fs>
+<div id=fb></div>
+<div id=fp>noon</div>
+</div>
+</div>
+<script>
+(function(){
+var A=['wake','pale','cool','dew','open','begin','not yet','quiet','east','thin','early','rise','almost','before','light'],
+P=['fall','deep','warm','ash','close','end','still','heavy','west','full','late','rest','already','after','dark'],
+M=['noon','still','here','even','half','now','both','neither'],n=0,
+D=document,W=window,
+fw=D.getElementById('fw'),
+fs=D.getElementById('fs'),
+fp=D.getElementById('fp');
+
+function spawn(list,top){
+  var e=D.createElement('span');
+  e.className='fw-w '+(top?'fw-a':'fw-p');
+  e.textContent=list[Math.random()*list.length|0];
+  e.style.left=(7+Math.random()*82)+'%';
+  e.style.top=(top?(4+Math.random()*42):(54+Math.random()*41))+'%';
+  e.style.opacity=0;
+  fs.appendChild(e);
+  requestAnimationFrame(function(){e.style.opacity=.6});
+  setTimeout(function(){e.style.opacity=0;setTimeout(function(){e.remove()},800)},2600+Math.random()*2000);
+}
+
+setInterval(function(){spawn(A,1)},820);
+setInterval(function(){spawn(P,0)},820);
+
+fw.addEventListener('mousemove',function(e){
+  var r=fw.getBoundingClientRect(),
+      cx=(e.clientX-r.left)/r.width,
+      cy=(e.clientY-r.top)/r.height,
+      rx=(cy-.5)*15,
+      ry=(cx-.5)*-15;
+  fs.style.transform='rotateX('+rx+'deg) rotateY('+ry+'deg)';
+  var d=Math.sqrt((cx-.5)*(cx-.5)+(cy-.5)*(cy-.5));
+  fp.style.opacity=d<.2?(1-d/.2).toFixed(2):'0';
+});
+
+fw.addEventListener('mouseleave',function(){
+  fs.style.transform='rotateX(0) rotateY(0)';
+  fp.style.opacity=0;
+});
+
+fw.addEventListener('click',function(){
+  n=(n+1)%M.length;
+  fp.textContent=M[n];
+  fs.style.transform='rotateX(0) rotateY(0)';
+});
+})();
+</script>
+</section>
