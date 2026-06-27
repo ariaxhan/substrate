@@ -1,0 +1,66 @@
+<section data-date='2026-06-27' data-type='morning'>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+#s{position:fixed;inset:0;cursor:none;user-select:none;background:#07080f}
+#fd{position:absolute;inset:0}
+.w{position:absolute;font-family:Georgia,serif;letter-spacing:.15em;pointer-events:none;color:rgba(255,220,160,0);transition:color .4s}
+#gl{position:fixed;pointer-events:none;border-radius:50%;width:150px;height:150px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,210,120,.22),transparent 70%)}
+#pu{position:fixed;pointer-events:none;border-radius:50%;opacity:0;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,210,100,.3),transparent 70%)}
+#cr{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);font:clamp(1.4rem,4vw,3rem)/1.6 Georgia,serif;letter-spacing:.4em;color:rgba(255,235,160,.8);text-align:center;pointer-events:none;white-space:pre-line;transition:opacity .9s}
+</style>
+<div id=s>
+<div id=fd></div>
+<div id=gl></div>
+<div id=pu></div>
+<div id=cr>·</div>
+</div>
+<script>
+const W=['open','before','still','almost','held','not yet','tender','first','unwritten','possible','new','between','threshold','breathe','soft','empty','waking','becoming','clean','pause','soon','light','ready'];
+const DC=[[7,8,15],[16,13,30],[45,26,50],[85,45,35],[152,92,45],[215,155,85]];
+const PH=['·','begin','the\nunwritten\nday','opens','like a\nheld breath'];
+const TH=[0,.18,.38,.62,.82];
+let mx=innerWidth/2,my=innerHeight/2,dn=0,ph=0;
+const GL=document.getElementById('gl'),PU=document.getElementById('pu'),CR=document.getElementById('cr'),FD=document.getElementById('fd'),S=document.getElementById('s');
+
+const pts=W.map(w=>{
+  const el=document.createElement('div');
+  el.className='w';el.textContent=w;
+  const lp=5+Math.random()*88,tp=7+Math.random()*82,sz=.6+Math.random()*.9;
+  el.style.cssText=`left:${lp}%;top:${tp}%;font-size:${sz}rem`;
+  FD.appendChild(el);
+  return{el,x:innerWidth*lp/100,y:innerHeight*tp/100};
+});
+
+document.addEventListener('mousemove',e=>{
+  mx=e.clientX;my=e.clientY;
+  GL.style.left=mx+'px';GL.style.top=my+'px';
+});
+
+document.addEventListener('click',e=>{
+  dn=Math.min(dn+.1,1);
+  PU.style.cssText=`position:fixed;pointer-events:none;border-radius:50%;opacity:1;width:0;height:0;left:${e.clientX}px;top:${e.clientY}px;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,210,100,.3),transparent 70%)`;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    PU.style.transition='width 1.3s ease-out,height 1.3s ease-out,opacity .5s .5s';
+    PU.style.width=PU.style.height='700px';
+    PU.style.opacity='0';
+  }));
+});
+
+function lc(t){
+  const i=Math.min(Math.floor(t*(DC.length-1)),DC.length-2),f=t*(DC.length-1)-i;
+  return DC[i].map((v,j)=>Math.round(v+(DC[i+1][j]-v)*f));
+}
+
+setInterval(()=>{
+  dn=Math.min(dn+.0015,1);
+  const[r,g,b]=lc(dn);
+  S.style.background=`rgb(${r},${g},${b})`;
+  pts.forEach(o=>{
+    const d=Math.hypot(o.x-mx,o.y-my);
+    o.el.style.color=`rgba(255,220,160,${Math.min(1,Math.max(0,(1-d/160)*.88+dn*.5)).toFixed(2)})`;
+  });
+  const np=TH.reduce((a,t,i)=>dn>=t?i:a,0);
+  if(np!==ph){ph=np;CR.style.opacity='0';setTimeout(()=>{CR.textContent=PH[ph];CR.style.opacity='1'},850)}
+},40);
+</script>
+</section>
