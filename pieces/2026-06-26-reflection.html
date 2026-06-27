@@ -1,0 +1,86 @@
+<section data-date='2026-06-26' data-type='reflection'>
+<style>
+.rfn{position:relative;height:100vh;background:#060409;overflow:hidden;cursor:crosshair}
+.rfn .pt{position:absolute;font:14px/1.7 Georgia,serif;color:rgba(238,220,188,0);text-shadow:0 0 0 transparent;transition:color 1.8s,text-shadow 1.8s;pointer-events:none;letter-spacing:.07em;white-space:nowrap}
+.rfn .lit{color:rgba(238,220,188,.82)!important;text-shadow:0 0 22px rgba(255,185,70,.2)!important}
+.rfn .sk{position:absolute;border-radius:50%;pointer-events:none}
+.rfn .ht{position:absolute;bottom:22px;width:100%;text-align:center;font:11px/1 Georgia,serif;color:rgba(190,175,145,0);letter-spacing:.3em;transition:color 4s;pointer-events:none}
+.rfn .ht.vis{color:rgba(190,175,145,.18)}
+</style>
+<div class="rfn" id="rfn0">
+<div class="ht" id="rfnh">move to find the words &nbsp;&middot;&nbsp; click to mark the night</div>
+</div>
+<script>
+(function(){
+const D=document,b=D.getElementById('rfn0'),h=D.getElementById('rfnh');
+const frags=[
+  ['the day held you','13%','19%'],
+  ['without asking','63%','15%'],
+  ['now the dark','35%','31%'],
+  ['asks nothing of you','43%','37%'],
+  ['still','8%','51%'],
+  ['the stars were always there','65%','44%'],
+  ['rest is not empty','17%','64%'],
+  ['it is the field','77%','58%'],
+  ['that lets the seed remember','41%','73%'],
+  ['what it is','11%','81%'],
+  ['sleep','85%','27%'],
+  ['begin again','50%','87%']
+];
+frags.forEach(([t,l,tp])=>{
+  const e=D.createElement('div');
+  e.className='pt';e.textContent=t;
+  e.style.left=l;e.style.top=tp;
+  b.appendChild(e);
+});
+const pts=[...b.querySelectorAll('.pt')];
+
+b.addEventListener('mousemove',e=>{
+  const r=b.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;
+  pts.forEach(p=>{
+    const pr=p.getBoundingClientRect();
+    const cx=pr.left+pr.width/2-r.left,cy=pr.top+pr.height/2-r.top;
+    if(Math.hypot(mx-cx,my-cy)<115){
+      p.classList.add('lit');
+      clearTimeout(p._ft);
+      p._ft=setTimeout(()=>p.classList.remove('lit'),2400);
+    }
+  });
+});
+
+b.addEventListener('click',e=>{
+  const r=b.getBoundingClientRect();
+  for(let i=0;i<5;i++){
+    const s=D.createElement('div');
+    const sz=.5+Math.random()*1.8,w=Math.random()>.38;
+    const c=w?'255,228,148':'195,213,255';
+    s.className='sk';
+    s.style.cssText=`width:${sz}px;height:${sz}px;`+
+      `left:${e.clientX-r.left+(-9+Math.random()*18)}px;`+
+      `top:${e.clientY-r.top+(-9+Math.random()*18)}px;`+
+      `background:rgba(${c},0);box-shadow:0 0 ${sz*4}px rgba(${c},.4);`+
+      `transition:background .9s`;
+    b.appendChild(s);
+    requestAnimationFrame(()=>s.style.background=`rgba(${c},${.5+Math.random()*.45})`);
+  }
+});
+
+for(let i=0;i<55;i++){
+  const s=D.createElement('div');
+  const sz=.4+Math.random()*1.1,w=Math.random()>.48;
+  const c=w?'255,226,142':'192,211,255';
+  s.className='sk';
+  s.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;`+
+    `background:rgba(${c},0);box-shadow:0 0 ${sz*3}px rgba(${c},.3);transition:background ${1.4+Math.random()*2.2}s`;
+  b.appendChild(s);
+  setTimeout(()=>{
+    const op=()=>(.08+Math.random()*.46).toFixed(2);
+    s.style.background=`rgba(${c},${op()})`;
+    setInterval(()=>s.style.background=`rgba(${c},${op()})`,1600+Math.random()*3800);
+  },150+Math.random()*11000);
+}
+
+setTimeout(()=>h.classList.add('vis'),4000);
+})();
+</script>
+</section>
