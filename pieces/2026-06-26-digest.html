@@ -1,0 +1,55 @@
+<section data-date='2026-06-26' data-type='digest'>
+<style>
+*{margin:0;padding:0}
+body,html{width:100%;height:100%;background:#09070a;overflow:hidden;cursor:crosshair}
+canvas{position:fixed;top:0;left:0}
+#p{position:fixed;left:50%;bottom:11%;transform:translateX(-50%);font:italic 1.15em/1.6 Georgia,serif;color:#c4a96a;opacity:0;transition:opacity 2.2s;text-align:center;pointer-events:none;letter-spacing:.06em;white-space:nowrap}
+#h{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);font:.6em/1 monospace;color:rgba(175,150,85,.18);pointer-events:none;letter-spacing:.18em;text-transform:uppercase;transition:opacity 1.2s}
+</style>
+<canvas id=c></canvas>
+<div id=p></div>
+<div id=h>click to deposit</div>
+<script>
+var C=document.getElementById('c'),X=C.getContext('2d'),
+    P=document.getElementById('p'),H=document.getElementById('h'),
+    N=[],te=0,mx=-1,my=-1,mt=0;
+var W=['accumulates','not yet named','threshold','signal','coheres','pattern','crystalline','known','latent','becoming','the gap','contact','weight','evidence','emerges'];
+var V=['noise becomes signal','signal becomes pattern','pattern becomes meaning','meaning becomes structure','structure remembers'];
+function sz(){C.width=innerWidth;C.height=innerHeight}sz();
+onresize=sz;
+document.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;mt=Date.now()});
+document.addEventListener('click',function(e){
+  if(!N.length)H.style.opacity=0;
+  N.push({x:e.clientX,y:e.clientY,b:Date.now(),w:W[N.length%15]});
+  var n=N[N.length-1],ne=0;
+  for(var i=0;i<N.length-1;i++){var dx=N[i].x-n.x,dy=N[i].y-n.y;if(dx*dx+dy*dy<22500)ne++}
+  var ote=te;te+=ne;
+  var ph=te>>1,op=ote>>1;
+  if(ne&&ph!=op&&ph<5){P.textContent=V[ph];P.style.opacity=1;clearTimeout(window._t);window._t=setTimeout(function(){P.style.opacity=0},3800)}
+});
+(function f(){
+  requestAnimationFrame(f);
+  X.clearRect(0,0,C.width,C.height);
+  var now=Date.now();
+  if(mx>=0){var fd=Math.max(0,1-(now-mt)/1400);if(fd>0){X.beginPath();X.arc(mx,my,2,0,6.28);X.fillStyle='rgba(210,175,90,'+fd*.22+')';X.fill()}}
+  for(var i=0;i<N.length;i++)for(var j=i+1;j<N.length;j++){
+    var dx=N[j].x-N[i].x,dy=N[j].y-N[i].y,d2=dx*dx+dy*dy;
+    if(d2<22500){
+      var d=Math.sqrt(d2),a=(150-d)/150;
+      X.beginPath();X.moveTo(N[i].x,N[i].y);X.lineTo(N[j].x,N[j].y);
+      X.strokeStyle='rgba(130,100,50,'+a*.38+')';X.lineWidth=.5;X.stroke();
+      var age=Math.min((now-Math.max(N[i].b,N[j].b))/2400,1);
+      if(age>.18){X.save();X.translate((N[i].x+N[j].x)*.5,(N[i].y+N[j].y)*.5);X.rotate(Math.atan2(dy,dx));X.font='7px Georgia';X.fillStyle='rgba(190,155,72,'+age*.42+')';X.textAlign='center';X.fillText(N[i].w,0,-3);X.restore()}
+    }
+  }
+  for(var i=0;i<N.length;i++){
+    var n=N[i],age=Math.min((now-n.b)/500,1),r=now-n.b;
+    if(r<900){var rp=r/900;X.beginPath();X.arc(n.x,n.y,rp*16,0,6.28);X.strokeStyle='rgba(225,185,90,'+(1-rp)*.38+')';X.lineWidth=.7;X.stroke()}
+    var g=X.createRadialGradient(n.x,n.y,0,n.x,n.y,22);
+    g.addColorStop(0,'rgba(235,195,98,'+age*.11+')');g.addColorStop(1,'rgba(0,0,0,0)');
+    X.beginPath();X.arc(n.x,n.y,22,0,6.28);X.fillStyle=g;X.fill();
+    X.beginPath();X.arc(n.x,n.y,2,0,6.28);X.fillStyle='rgba(235,195,98,'+age+')';X.fill();
+  }
+})();
+</script>
+</section>
