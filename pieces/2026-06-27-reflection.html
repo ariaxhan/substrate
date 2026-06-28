@@ -1,0 +1,63 @@
+<section data-date='2026-06-27' data-type='reflection'>
+<style>
+#sky{position:fixed;inset:0;background:#01020d;overflow:hidden;cursor:crosshair}
+#hint{position:absolute;bottom:6%;width:100%;text-align:center;font:italic .7rem Palatino,Georgia,serif;color:rgba(200,215,255,.3);letter-spacing:.3em;animation:dim 8s ease-out forwards;pointer-events:none}
+@keyframes dim{0%,45%{opacity:1}100%{opacity:0}}
+.w{position:absolute;font:italic 1.2rem Palatino,Georgia,serif;color:rgba(215,225,255,0);letter-spacing:.12em;white-space:nowrap;pointer-events:none;transition:color 1s,text-shadow 1s;user-select:none}
+.w.on{color:rgba(215,228,255,.8);text-shadow:0 0 22px rgba(130,165,255,.18)}
+.bg{position:absolute;border-radius:50%;background:rgba(255,255,245,.2)}
+.pt{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;pointer-events:none;animation:out 5s ease-out forwards}
+@keyframes out{0%{opacity:1;transform:scale(1)}25%{opacity:.9;transform:scale(2.5)}100%{opacity:0;transform:scale(.2)}}
+@keyframes tw{0%,100%{opacity:.1}50%{opacity:.3}}
+</style>
+<div id="sky"><div id="hint">move through the dark</div></div>
+<script>
+const sky=document.getElementById('sky');
+const V=[
+  ['the day',12,17],['is finished',50,21],
+  ['you can',10,44],['set it down',41,50],
+  ['the dark',8,73],['is soft',40,77],
+  ['stars were',63,26],['always here',71,52],
+  ['before you',57,67],['looked up',76,16]
+];
+for(let i=55;i--;){
+  const s=document.createElement('div');
+  const small=Math.random()<.7;
+  s.className='bg';
+  s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${small?1:2}px;height:${small?1:2}px;animation:tw ${2.5+Math.random()*4}s ${-Math.random()*5}s ease-in-out infinite`;
+  sky.appendChild(s);
+}
+const ws=V.map(([t,l,top])=>{
+  const e=document.createElement('div');
+  e.className='w';e.textContent=t;
+  e.style.left=l+'%';e.style.top=top+'%';
+  sky.appendChild(e);
+  return{e,l,top};
+});
+function reveal(px,py){
+  ws.forEach(({e,l,top})=>{
+    if(Math.hypot(px-l,py-top)<11){
+      e.classList.add('on');
+      clearTimeout(e._t);
+      e._t=setTimeout(()=>e.classList.remove('on'),2200);
+    }
+  });
+}
+document.addEventListener('mousemove',ev=>{
+  reveal(ev.clientX/innerWidth*100,ev.clientY/innerHeight*100);
+});
+document.addEventListener('touchmove',ev=>{
+  ev.preventDefault();
+  const t=ev.touches[0];
+  reveal(t.clientX/innerWidth*100,t.clientY/innerHeight*100);
+},{passive:false});
+sky.addEventListener('click',ev=>{
+  const s=document.createElement('div');
+  s.className='pt';
+  s.style.left=(ev.clientX-1)+'px';
+  s.style.top=(ev.clientY-1)+'px';
+  sky.appendChild(s);
+  s.addEventListener('animationend',()=>s.remove());
+});
+</script>
+</section>
