@@ -1,0 +1,99 @@
+<section data-date='2026-06-28' data-type='spark'>
+<style>
+*{margin:0;padding:0}
+#v{width:100vw;height:100vh;background:#07080f;position:relative;overflow:hidden;cursor:crosshair}
+.w{position:absolute;font:italic 1.15em Georgia,serif;pointer-events:none;user-select:none;transition:opacity .5s}
+#a{color:#c8a060;text-shadow:0 0 14px #c8a06055}
+#b{color:#60a0c8;text-shadow:0 0 14px #60a0c855}
+#s{position:absolute;color:#f0ece4;font:italic 1.5em Georgia,serif;opacity:0;pointer-events:none;text-shadow:0 0 24px #fff6;transition:opacity .35s}
+#h{position:absolute;bottom:18px;width:100%;text-align:center;color:#181828;font:9px monospace;letter-spacing:.3em;text-transform:uppercase}
+</style>
+<div id=v>
+<div id=a class=w></div>
+<div id=b class=w></div>
+<div id=s></div>
+<div id=h>move to draw near · click to collide</div>
+</div>
+<script>
+const P=[
+['flame','shadow','warmth'],
+['alone','alone','together'],
+['stranger','stranger','us'],
+['breath','breath','silence'],
+['leaving','arriving','travel'],
+['you','i','we'],
+['forgetting','remembering','now'],
+['end','beginning','ring'],
+['dark','dark','depth'],
+['echo','source','voice']
+],
+v=document.getElementById('v'),
+A=document.getElementById('a'),
+B=document.getElementById('b'),
+S=document.getElementById('s');
+let mx,my,ax,ay,bx,by,avx,avy,bvx,bvy,pi=0,fused=0;
+
+function init(){
+  let p=P[pi%P.length],w=v.offsetWidth,h=v.offsetHeight;
+  A.textContent=p[0];B.textContent=p[1];
+  ax=w*.07;ay=h*.5+(Math.random()-.5)*h*.28;
+  bx=w*.87;by=h*.5+(Math.random()-.5)*h*.28;
+  avx=.85;avy=(Math.random()-.5)*.45;
+  bvx=-.85;bvy=(Math.random()-.5)*.45;
+  A.style.opacity=B.style.opacity=1;
+  fused=0;
+}
+
+function fuse(){
+  if(fused)return;fused=1;
+  let cx=(ax+bx)*.5,cy=(ay+by)*.5,p=P[pi%P.length];
+  S.textContent=p[2];
+  S.style.left=Math.round(cx-38)+'px';
+  S.style.top=Math.round(cy-14)+'px';
+  S.style.opacity=1;
+  A.style.opacity=B.style.opacity=0;
+  setTimeout(()=>{
+    S.style.opacity=0;
+    pi++;
+    setTimeout(init,650);
+  },1350);
+}
+
+function tick(){
+  if(!fused){
+    let g=.03;
+    avx+=(mx-ax)*g;avy+=(my-ay)*g;
+    bvx+=(mx-bx)*g;bvy+=(my-by)*g;
+    avx*=.87;avy*=.87;bvx*=.87;bvy*=.87;
+    ax+=avx;ay+=avy;bx+=bvx;by+=bvy;
+    let w=v.offsetWidth-70,h=v.offsetHeight-28;
+    if(ax<0){avx*=-.82;ax=0}if(ax>w){avx*=-.82;ax=w}
+    if(ay<0){avy*=-.82;ay=0}if(ay>h){avy*=-.82;ay=h}
+    if(bx<0){bvx*=-.82;bx=0}if(bx>w){bvx*=-.82;bx=w}
+    if(by<0){bvy*=-.82;by=0}if(by>h){bvy*=-.82;by=h}
+    A.style.left=ax+'px';A.style.top=ay+'px';
+    B.style.left=bx+'px';B.style.top=by+'px';
+    let dx=ax-bx,dy=ay-by;
+    if(dx*dx+dy*dy<3025)fuse();
+  }
+  requestAnimationFrame(tick);
+}
+
+v.addEventListener('mousemove',e=>{
+  let r=v.getBoundingClientRect();
+  mx=e.clientX-r.left;my=e.clientY-r.top;
+});
+v.addEventListener('click',()=>{
+  if(fused)return;
+  let cx=(ax+bx)*.5,cy=(ay+by)*.5;
+  ax=cx-22;bx=cx+22;ay=by=cy;
+  avx=bvx=avy=bvy=0;
+  fuse();
+});
+
+mx=my=0;
+init();
+mx=v.offsetWidth*.5;my=v.offsetHeight*.5;
+tick();
+</script>
+</section>
