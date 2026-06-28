@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head><meta charset='utf-8'><title>before</title></head>
+<body>
+<section data-date='2026-06-28' data-type='morning'>
+<style>
+*{margin:0;box-sizing:border-box}
+body,#c{background:#08060d}
+#c{position:fixed;inset:0;cursor:crosshair;overflow:hidden}
+#sky{position:absolute;inset:0;background:linear-gradient(168deg,#190a36 0%,#5e1e48 32%,#c84a18 66%,#e89030 100%);opacity:0;transition:opacity 3.5s ease;z-index:0}
+.w{position:absolute;z-index:1;font-family:Georgia,serif;color:#b89840;user-select:none;transition:color 3.5s ease 1s}
+#c.dawn .w{color:#f0e4c0}
+#veil{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(circle 270px at var(--mx,50%) var(--my,-20%),transparent 0%,#08060d 65%);transition:opacity 3s ease}
+#now{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3;font-family:Georgia,serif;font-size:clamp(2.5rem,6vw,5rem);color:#f0d880;letter-spacing:.4em;opacity:0;transition:opacity 4.5s ease 2.2s;text-align:center;font-style:italic}
+#c.dawn #sky{opacity:1}
+#c.dawn #veil{opacity:0}
+#c.dawn #now{opacity:1}
+</style>
+<div id='c'>
+  <div id='sky'></div>
+  <div id='veil'></div>
+  <div class='w' style='top:8%;left:7%;font-size:clamp(.7rem,1.7vw,1.35rem);letter-spacing:.18em'>before the first word</div>
+  <div class='w' style='top:19%;left:59%;font-size:clamp(.6rem,1.25vw,1.05rem);letter-spacing:.12em'>nothing written</div>
+  <div class='w' style='top:34%;left:13%;font-size:clamp(.85rem,2.3vw,1.9rem);letter-spacing:.2em'>the day holds</div>
+  <div class='w' style='top:51%;left:66%;font-size:clamp(.6rem,1.3vw,1.1rem);letter-spacing:.13em;font-style:italic'>what arrives</div>
+  <div class='w' style='top:65%;left:8%;font-size:clamp(.65rem,1.5vw,1.25rem);letter-spacing:.16em'>still becoming</div>
+  <div class='w' style='top:27%;left:39%;font-size:clamp(1rem,3.1vw,2.6rem);letter-spacing:.45em'>open</div>
+  <div class='w' style='top:77%;left:54%;font-size:clamp(.55rem,1.1vw,.92rem);letter-spacing:.11em'>all of it ahead</div>
+  <div class='w' style='top:43%;left:79%;font-size:clamp(.55rem,1.2vw,.98rem);letter-spacing:.12em;font-style:italic'>somewhere, a door</div>
+  <div class='w' style='top:83%;left:24%;font-size:clamp(.65rem,1.6vw,1.3rem);letter-spacing:.17em'>the hour of not yet</div>
+  <div class='w' style='top:13%;left:74%;font-size:clamp(.55rem,1.1vw,.92rem);letter-spacing:.12em'>begins again</div>
+  <div class='w' style='top:60%;left:38%;font-size:clamp(.5rem,1.05vw,.88rem);letter-spacing:.1em'>you are here</div>
+  <div class='w' style='top:5%;left:41%;font-size:clamp(1.1rem,3.5vw,2.9rem);letter-spacing:.5em;font-style:italic'>possible</div>
+  <div id='now'>now</div>
+</div>
+<script>
+var c=document.getElementById('c'),v=document.getElementById('veil'),d=false;
+function mv(x,y){
+  v.style.setProperty('--mx',(x/innerWidth*100).toFixed(1)+'%');
+  v.style.setProperty('--my',(y/innerHeight*100).toFixed(1)+'%');
+}
+c.addEventListener('mousemove',function(e){mv(e.clientX,e.clientY)});
+c.addEventListener('touchmove',function(e){e.preventDefault();mv(e.touches[0].clientX,e.touches[0].clientY)},{passive:false});
+c.addEventListener('click',function(){if(!d){d=true;c.classList.add('dawn')}});
+</script>
+</section>
+</body>
+</html>
