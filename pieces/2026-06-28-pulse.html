@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset='utf-8'>
+<style>
+*{margin:0;padding:0}
+body{height:100vh;overflow:hidden;background:#f4efe4;cursor:none}
+#beam{position:fixed;left:-20%;width:140%;height:1px;top:50%;background:rgba(18,18,18,.25);transform-origin:50% 50%}
+#now{position:fixed;top:50%;transform:translate(-50%,-50%);font:.72em Georgia,serif;letter-spacing:.55em;color:#1a1a1a;opacity:0;transition:opacity .7s;pointer-events:none;text-transform:uppercase}
+#cur{position:fixed;width:4px;height:4px;border-radius:50%;background:#1a1a1a;transform:translate(-50%,-50%);pointer-events:none}
+span{position:fixed;font:italic .95em Georgia,serif;pointer-events:none;transition:transform .18s ease-out;opacity:.72}
+</style>
+</head>
+<body>
+<section data-date='2026-06-28' data-type='pulse'>
+<div id='beam'></div>
+<div id='now'>now</div>
+<div id='cur'></div>
+<script>
+let a=.5;
+const s=document.querySelector('section');
+[['wake',12,15,'#b07028'],['first light',36,8,'#b07028'],['begin',58,20,'#b07028'],['unread',79,11,'#b07028'],
+['cold',22,35,'#b07028'],['silence',50,27,'#b07028'],['before',70,38,'#b07028'],['still',89,21,'#b07028'],
+['rest',10,85,'#3d5a7a'],['last light',33,78,'#3d5a7a'],['end',55,89,'#3d5a7a'],['read',76,65,'#3d5a7a'],
+['warm',19,68,'#3d5a7a'],['sound',45,76,'#3d5a7a'],['after',63,82,'#3d5a7a'],['already',86,70,'#3d5a7a']
+].forEach(([t,l,p,c])=>{
+  let el=document.createElement('span');
+  el.textContent=t;el.style.cssText=`left:${l}%;top:${p}%;color:${c}`;
+  s.appendChild(el);
+});
+
+const b=document.getElementById('beam'),
+      n=document.getElementById('now'),
+      c=document.getElementById('cur'),
+      sp=[...s.querySelectorAll('span')];
+
+function u(mx){
+  let t=(mx/innerWidth-a)*22;
+  b.style.transform=`rotate(${t}deg)`;
+  n.style.opacity=Math.abs(mx/innerWidth-a)<.028?'1':'0';
+  n.style.left=a*100+'%';
+  sp.forEach(el=>{
+    let lp=parseFloat(el.style.left)/100;
+    el.style.transform=`translateY(${t*(lp-a)*innerHeight*.024}px)`;
+  });
+}
+
+addEventListener('mousemove',e=>{
+  c.style.left=e.clientX+'px';c.style.top=e.clientY+'px';
+  u(e.clientX);
+});
+addEventListener('click',e=>{a=e.clientX/innerWidth;u(e.clientX)});
+u(innerWidth/2);
+</script>
+</section>
+</body>
+</html>
