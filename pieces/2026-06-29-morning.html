@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head><meta charset='utf-8'><title>beginning</title></head>
+<body>
+<section data-date='2026-06-29' data-type='morning'>
+<style>
+body{margin:0}
+#w{position:fixed;inset:0;background:#0b0906;display:flex;align-items:center;justify-content:center;cursor:default}
+#t{margin:0;white-space:pre;font:clamp(1rem,2.2vw,1.6rem)/1.9 'Courier New',monospace;color:#b87a24;transition:color 2s}
+#t::after{content:'_';animation:bl 1s step-end infinite}
+#w.lit #t{color:#f0d48a}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:0}}
+</style>
+<div id='w'><pre id='t'></pre></div>
+<script>
+var p=".\n\n.\n\n.\n\nbeginning\n\n\na day is a word\nyou have not yet spoken\n\nthe light does not ask\nif you are ready\n\nit comes\n\n\nevery morning:\n    the first\n\nevery line:\n    still yours\n\n> ",
+t=document.getElementById('t'),w=document.getElementById('w'),i=0,f=false;
+function go(){if(i>=p.length)return;t.textContent+=p[i++];setTimeout(go,f?3:55)}
+w.addEventListener('click',function(){if(!f){f=true;w.classList.add('lit')}});
+go();
+</script>
+</section>
+</body>
+</html>
