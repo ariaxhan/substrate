@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head><meta charset='utf-8'><title>halfway</title></head>
+<body>
+<section data-date='2026-06-29' data-type='pulse'>
+<style>
+body{margin:0}
+#P{position:fixed;inset:0;background:#09080a;display:flex;align-items:center;justify-content:center;cursor:crosshair;overflow:hidden;user-select:none}
+#R{display:flex;flex-direction:column;align-items:center;transform-origin:center center}
+#A{color:#dddacf;font-family:Georgia,serif;font-size:clamp(2rem,4.5vw,3.5rem);line-height:1;letter-spacing:.22em;padding-bottom:2.5rem}
+#L{width:60vw;height:1px;background:linear-gradient(90deg,transparent,#7a6a5a 12%,#7a6a5a 88%,transparent);position:relative}
+#D{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:5px;height:5px;border-radius:50%;background:#7a6a5a;transition:opacity .4s,box-shadow .4s}
+#B{color:#2d2822;font-family:Georgia,serif;font-size:clamp(2rem,4.5vw,3.5rem);line-height:1;letter-spacing:.22em;padding-top:2.5rem;transform:scaleY(-1)}
+</style>
+<div id=P>
+<div id=R>
+<div id=A></div>
+<div id=L><div id=D></div></div>
+<div id=B></div>
+</div>
+</div>
+<script>
+const W='between still half hold noon here now hinge turn wait breath pivot even level rest center'.split(' '),
+P=document.getElementById('P'),
+R=document.getElementById('R'),
+A=document.getElementById('A'),
+B=document.getElementById('B'),
+D=document.getElementById('D');
+let idx=0,base;
+const t=new Date(),h=t.getHours()+t.getMinutes()/60;
+base=parseFloat(((h-12)*1.45).toFixed(1));
+function word(){const w=W[idx++%W.length];A.textContent=B.textContent=w}
+function tilt(deg,slow){
+  R.style.transition=slow?'transform .85s cubic-bezier(.34,1.56,.64,1)':'transform .07s linear';
+  R.style.transform='rotate('+deg+'deg)';
+  const near=Math.abs(deg)<1.5;
+  D.style.opacity=near?'1':'.3';
+  D.style.boxShadow=near?'0 0 10px 3px #9a8a7a':'none';
+}
+word();tilt(base,false);
+P.addEventListener('mousemove',e=>{
+  tilt((e.clientX/innerWidth-.5)*28,false);
+});
+P.addEventListener('mouseleave',()=>tilt(base,true));
+P.addEventListener('click',()=>{word();tilt(base,true)});
+</script>
+</section>
+</body>
+</html>
