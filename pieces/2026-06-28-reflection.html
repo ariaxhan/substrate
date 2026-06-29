@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head><meta charset='utf-8'><title>vespers</title></head>
+<body>
+<section data-date='2026-06-28' data-type='reflection'>
+<style>
+*{margin:0}html,body{width:100%;height:100%;overflow:hidden;background:#07071a;cursor:crosshair}
+canvas{position:fixed;inset:0}
+#v{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+font:italic clamp(.9rem,2.2vw,1.5rem) Georgia,serif;color:#9ab8cc;
+letter-spacing:.22em;text-align:center;pointer-events:none;opacity:0}
+</style>
+<canvas id='k'></canvas>
+<div id='v'></div>
+<script>
+const k=document.getElementById('k'),cx=k.getContext('2d'),v=document.getElementById('v'),
+ws=["the day folded","you remained","this was enough","night: a clearing","rest here","something continues","before the next beginning"],
+ss=[];
+let wi=0,ox=.5,oy=.5,busy=0;
+
+function sz(){k.width=innerWidth;k.height=innerHeight}
+sz();addEventListener('resize',sz);
+
+function Star(x,y){
+  this.x=x;this.y=y;
+  this.r=.2+Math.random()*.9;
+  this.a=0;this.cap=.3+Math.random()*.5;
+  this.ph=Math.random()*6.28;
+  this.dp=.002+Math.random()*.003
+}
+
+addEventListener('click',e=>{
+  ss.push(new Star(e.clientX,e.clientY));
+  if(ss.length%5===0&&!busy)say()
+});
+
+addEventListener('mousemove',e=>{
+  ox=e.clientX/innerWidth;
+  oy=e.clientY/innerHeight
+});
+
+function say(){
+  busy=1;v.textContent='';
+  v.style.transition='none';v.style.opacity=1;
+  const w=ws[wi++%ws.length];let i=0;
+  const iv=setInterval(()=>{
+    v.textContent+=w[i++];
+    if(i>=w.length){
+      clearInterval(iv);
+      setTimeout(()=>{
+        v.style.transition='opacity 2.2s';
+        v.style.opacity=0;
+        setTimeout(()=>{v.style.transition='none';busy=0},2400)
+      },3200)
+    }
+  },95)
+}
+
+function draw(){
+  const W=k.width,H=k.height;
+  cx.clearRect(0,0,W,H);
+  const g=cx.createLinearGradient(0,H*.68,0,H);
+  g.addColorStop(0,'rgba(0,0,0,0)');
+  g.addColorStop(1,'rgba(22,9,4,.26)');
+  cx.fillStyle=g;cx.fillRect(0,0,W,H);
+  const dx=(ox-.5)*4,dy=(oy-.5)*3;
+  ss.forEach(s=>{
+    if(s.a<s.cap)s.a=Math.min(s.cap,s.a+.006);
+    s.ph+=s.dp;
+    const a=s.a*(1+.2*Math.sin(s.ph));
+    cx.beginPath();
+    cx.arc(s.x+dx*(s.r+.5),s.y+dy*(s.r+.5),s.r,0,6.28);
+    cx.fillStyle=`rgba(218,212,194,${Math.min(.92,a)})`;
+    cx.fill()
+  });
+  requestAnimationFrame(draw)
+}
+draw()
+</script>
+</section>
+</body>
+</html>
