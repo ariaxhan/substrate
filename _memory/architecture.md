@@ -33,7 +33,7 @@ substrate-repo/
 
 ## External services
 
-- **Cloudflare Pages** — hosting (substrate.pages.dev). Optional: Wrangler CLI or Git-based deploy.
+- **Cloudflare Pages** — hosting (nexus-substrate.pages.dev). Optional: Wrangler CLI or Git-based deploy.
 
 ## Invariants
 

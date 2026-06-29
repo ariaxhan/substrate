@@ -11,7 +11,7 @@
 
 ## Hosting
 
-- **Cloudflare Pages** — Project name: `substrate`. URL: https://substrate.pages.dev. Deploy via Wrangler or Git integration (build command: none; output: `/`).
+- **Cloudflare Pages** — Project name: `substrate`. URL: https://nexus-substrate.pages.dev. Deploy via Wrangler or Git integration (build command: none; output: `/`).
 
 ## Environment
 
