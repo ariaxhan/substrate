@@ -1,0 +1,58 @@
+<section data-date='2026-06-29' data-type='reflection'>
+<style>
+#sk{position:relative;width:100%;height:100vh;overflow:hidden;background:linear-gradient(175deg,#020308 0%,#0a0d2e 100%);cursor:crosshair}
+#bg{position:absolute;width:1px;height:1px;top:0;left:0;pointer-events:none}
+.s{position:absolute;pointer-events:none;white-space:nowrap}
+.w{font:italic 1.05rem Georgia,serif;color:#e8e4ff;text-shadow:0 0 8px #8888ff;animation:diss 4.5s ease-in forwards}
+.d{width:2px;height:2px;border-radius:50%;background:#fff;box-shadow:0 0 4px 1px rgba(190,205,255,.75);animation:pk 3s ease-in-out infinite alternate}
+@keyframes diss{
+  0%{opacity:0;font-size:1.05rem;transform:translate(-50%,-50%)}
+  10%{opacity:.85}
+  80%{opacity:.35;font-size:.08rem;transform:translate(-50%,-68%)}
+  100%{opacity:0;font-size:0;transform:translate(-50%,-72%)}
+}
+@keyframes pk{
+  0%{opacity:.35;transform:translate(-50%,-50%) scale(.8)}
+  100%{opacity:.95;transform:translate(-50%,-50%) scale(1.3)}
+}
+#ht{position:absolute;bottom:2.8rem;width:100%;text-align:center;font:.6rem/1 Georgia,serif;color:rgba(175,185,255,.28);letter-spacing:.22em;pointer-events:none;transition:opacity 2.5s}
+</style>
+<div id="sk">
+  <div id="bg"></div>
+  <div id="ht">click to release the day</div>
+</div>
+<script>
+(function(){
+var sk=document.getElementById('sk'),
+ht=document.getElementById('ht'),
+bg=document.getElementById('bg'),
+W='enough done rest quiet still whole let go breathe complete held soft here warm slow good safe spent ready known kept full found close through forgiven seen free'.split(' '),
+rf=function(n){return Math.random()*n},
+ri=function(n){return rf(n)|0},
+sh=[];
+for(var i=0;i<88;i++){
+  var op=(0.2+rf(0.65)).toFixed(2),bl=(rf(1.8)).toFixed(1);
+  sh.push(rf(100).toFixed(1)+'vw '+rf(100).toFixed(1)+'vh '+bl+'px rgba(255,255,255,'+op+')');
+}
+bg.style.boxShadow=sh.join(',');
+
+sk.addEventListener('click',function(e){
+  ht.style.opacity='0';
+  var rect=sk.getBoundingClientRect();
+  var x=e.clientX-rect.left, y=e.clientY-rect.top;
+  var el=document.createElement('div');
+  el.className='s w';
+  el.textContent=W[ri(W.length)];
+  el.style.cssText='left:'+x+'px;top:'+y+'px';
+  sk.appendChild(el);
+  el.addEventListener('animationend',function(){
+    el.remove();
+    var d=document.createElement('div');
+    d.className='s d';
+    d.style.cssText='left:'+x+'px;top:'+y+'px;animation-delay:'+rf(2.5).toFixed(1)+'s;animation-duration:'+(1.8+rf(3.2)).toFixed(1)+'s';
+    sk.appendChild(d);
+  });
+});
+})();
+</script>
+</section>
