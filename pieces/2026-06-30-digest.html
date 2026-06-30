@@ -1,0 +1,48 @@
+<section data-date='2026-06-30' data-type='digest'>
+<style>
+#tp30dg{position:relative;width:100%;height:520px;background:radial-gradient(ellipse at 50% 28%,#0d111a 0%,#05060a 72%);overflow:hidden;font-family:Georgia,'Iowan Old Style',serif}
+#tp30dg canvas{display:block;width:100%;height:100%;cursor:crosshair}
+#tp30dg .h{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);color:#6b7280;font:11px/1.4 ui-monospace,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;opacity:.5;pointer-events:none;transition:opacity 1s}
+#tp30dg .n{position:absolute;top:14px;right:18px;color:#7e889c;font:10px ui-monospace,Menlo,monospace;letter-spacing:.08em;opacity:.45;pointer-events:none}
+</style>
+<div id="tp30dg">
+<canvas></canvas>
+<div class="h">click to lay a thought down</div>
+<div class="n"></div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('tp30dg');
+var cv=root.querySelector('canvas'),hint=root.querySelector('.h'),cnt=root.querySelector('.n');
+var ctx=cv.getContext('2d'),DPR=Math.min(window.devicePixelRatio||1,2),W,H;
+function size(){W=root.clientWidth;H=root.clientHeight;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0)}
+size();window.addEventListener('resize',size);
+var words=['trace','signal','thread','fragment','echo','pattern','axiom','structure','memory','origin','glyph','lattice','vector','cipher','thesis','synapse','shard','form','seed','node'];
+var pts=[],mouse=null,RAD=150,MAX=90;
+function add(x,y){if(pts.length>=MAX)pts.shift();pts.push({x:x,y:y,w:words[pts.length%words.length],links:0,c:false,t:Math.random()*6});cnt.textContent=pts.length+' nodes'}
+add(W*.32,H*.42);add(W*.62,H*.56);add(W*.5,H*.24);
+cv.addEventListener('click',function(e){var r=cv.getBoundingClientRect();add(e.clientX-r.left,e.clientY-r.top);hint.style.opacity=0});
+cv.addEventListener('mousemove',function(e){var r=cv.getBoundingClientRect();mouse={x:e.clientX-r.left,y:e.clientY-r.top}});
+cv.addEventListener('mouseleave',function(){mouse=null});
+function draw(){
+ctx.fillStyle='rgba(5,6,10,.16)';ctx.fillRect(0,0,W,H);
+for(var i=0;i<pts.length;i++)pts[i].links=0;
+for(var i=0;i<pts.length;i++)for(var j=i+1;j<pts.length;j++){
+var a=pts[i],b=pts[j],dx=a.x-b.x,dy=a.y-b.y,d=Math.sqrt(dx*dx+dy*dy);
+if(d<RAD){a.links++;b.links++;var op=(1-d/RAD)*.5;
+ctx.strokeStyle='rgba(110,170,220,'+op+')';ctx.lineWidth=.7;
+ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}}
+if(mouse){var near=null,nd=80;
+for(var i=0;i<pts.length;i++){var dx=pts[i].x-mouse.x,dy=pts[i].y-mouse.y,d=Math.sqrt(dx*dx+dy*dy);if(d<nd){nd=d;near=pts[i]}}
+if(near){ctx.strokeStyle='rgba(230,180,110,.35)';ctx.lineWidth=.8;
+ctx.beginPath();ctx.moveTo(near.x,near.y);ctx.lineTo(mouse.x,mouse.y);ctx.stroke()}}
+for(var i=0;i<pts.length;i++){var p=pts[i];p.c=p.links>=3;p.t+=.02;
+var rad=p.c?4.5:2.5,glow=p.c?'rgba(230,180,110,':'rgba(140,190,230,';
+ctx.beginPath();ctx.fillStyle=glow+(.85+Math.sin(p.t)*.1)+')';ctx.arc(p.x,p.y,rad,0,6.283);ctx.fill();
+if(p.c){ctx.font='12px Georgia, serif';ctx.fillStyle='rgba(225,205,175,.7)';ctx.textAlign='center';ctx.fillText(p.w,p.x,p.y-9)}}
+requestAnimationFrame(draw)}
+cnt.textContent=pts.length+' nodes';
+draw();
+})();
+</script>
+</section>
