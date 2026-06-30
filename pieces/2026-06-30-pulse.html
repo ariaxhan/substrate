@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+<head><meta charset='utf-8'><title>the fulcrum</title></head>
+<body>
+<section data-date='2026-06-30' data-type='pulse'>
+<style>
+body{margin:0}
+#S{position:fixed;inset:0;background:#f3ead9;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;user-select:none;font-family:'SF Mono','Courier New',monospace}
+#G{position:relative;width:min(70vw,640px);height:180px}
+#bar{position:absolute;top:50%;left:50%;width:100%;height:2px;background:#231c12;transform-origin:50% 50%}
+#bar:before,#bar:after{content:'';position:absolute;top:-3px;width:2px;height:8px;background:#231c12}
+#bar:before{left:0}
+#bar:after{right:0}
+#L,#R{position:absolute;top:-2.6em;font-size:.95rem;letter-spacing:.34em;color:#231c12}
+#L{left:0}
+#R{right:0}
+#F{position:absolute;left:50%;top:calc(50% + 1px);transform:translateX(-50%);width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;border-top:22px solid #231c12;transition:filter .6s}
+#F.lit{filter:drop-shadow(0 0 7px #c4602e)}
+#W{position:absolute;bottom:18%;left:50%;transform:translateX(-50%);font-size:.7rem;letter-spacing:.4em;color:#c4602e;opacity:0;transition:opacity 1s}
+#W.on{opacity:1}
+</style>
+<div id=S>
+<div id=G>
+<div id=bar><span id=L>DAWN</span><span id=R>DUSK</span></div>
+<div id=F></div>
+<div id=W>EQUILIBRIUM</div>
+</div>
+</div>
+<script>
+const pairs=[['DAWN','DUSK'],['WAKE','SLEEP'],['RISE','SET'],['OPEN','CLOSE'],['BEGIN','END'],['HERE','GONE'],['NOW','THEN']];
+let idx=0;
+const G=document.getElementById('G'),S=document.getElementById('S'),bar=document.getElementById('bar'),L=document.getElementById('L'),R=document.getElementById('R'),F=document.getElementById('F'),W=document.getElementById('W');
+const t=new Date(),h=t.getHours()+t.getMinutes()/60;
+const trueTilt=+(((h-12)/12)*38).toFixed(2);
+let tid,wtid;
+function words(){const p=pairs[idx%pairs.length];L.textContent=p[0];R.textContent=p[1]}
+function settle(){
+  bar.style.transition='transform 1.5s cubic-bezier(.22,1.6,.36,1)';
+  bar.style.transform=`translate(-50%,-50%) rotate(${trueTilt}deg)`;
+  clearTimeout(wtid);
+  wtid=setTimeout(()=>{F.classList.add('lit');W.classList.add('on');setTimeout(()=>W.classList.remove('on'),1800)},1500);
+}
+words();
+bar.style.transition='none';
+bar.style.transform=`translate(-50%,-50%) rotate(${trueTilt}deg)`;
+requestAnimationFrame(()=>setTimeout(settle,50));
+S.addEventListener('click',e=>{
+  F.classList.remove('lit');
+  const r=G.getBoundingClientRect();
+  const dir=e.clientX<r.left+r.width/2?-1:1;
+  idx++;words();
+  clearTimeout(tid);
+  bar.style.transition='transform .2s ease-out';
+  bar.style.transform=`translate(-50%,-50%) rotate(${dir*34}deg)`;
+  tid=setTimeout(settle,200);
+});
+</script>
+</section>
+</body>
+</html>
