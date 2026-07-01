@@ -1,59 +1,69 @@
 <!doctype html>
 <html>
-<head><meta charset='utf-8'><title>the fulcrum</title></head>
+<head><meta charset='utf-8'><title>halfway</title></head>
 <body>
 <section data-date='2026-06-30' data-type='pulse'>
 <style>
-body{margin:0}
-#S{position:fixed;inset:0;background:#f3ead9;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;user-select:none;font-family:'SF Mono','Courier New',monospace}
-#G{position:relative;width:min(70vw,640px);height:180px}
-#bar{position:absolute;top:50%;left:50%;width:100%;height:2px;background:#231c12;transform-origin:50% 50%}
-#bar:before,#bar:after{content:'';position:absolute;top:-3px;width:2px;height:8px;background:#231c12}
-#bar:before{left:0}
-#bar:after{right:0}
-#L,#R{position:absolute;top:-2.6em;font-size:.95rem;letter-spacing:.34em;color:#231c12}
-#L{left:0}
-#R{right:0}
-#F{position:absolute;left:50%;top:calc(50% + 1px);transform:translateX(-50%);width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;border-top:22px solid #231c12;transition:filter .6s}
-#F.lit{filter:drop-shadow(0 0 7px #c4602e)}
-#W{position:absolute;bottom:18%;left:50%;transform:translateX(-50%);font-size:.7rem;letter-spacing:.4em;color:#c4602e;opacity:0;transition:opacity 1s}
-#W.on{opacity:1}
+html,body{margin:0;height:100%;overflow:hidden;background:#0b0b14}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-family:Georgia,'Iowan Old Style',serif;color:#e8e2d8}
+#beam{position:relative;width:min(76vw,720px);height:1px;background:rgba(232,226,216,.35)}
+#beam:before,#beam:after{content:'';position:absolute;top:-4px;width:1px;height:9px;background:rgba(232,226,216,.35)}
+#beam:before{left:0}
+#beam:after{right:0}
+#mark{position:absolute;top:-6px;width:1px;height:13px;background:#e8934a;box-shadow:0 0 8px #e8934a}
+#left,#right{position:absolute;top:50%;font-size:clamp(1.1rem,2.4vw,2rem);letter-spacing:.14em}
+#left{left:0;transform:translate(-2%,-50%)}
+#right{right:0;transform:translate(2%,-50%)}
+#word{position:absolute;top:2.6em;left:50%;transform:translateX(-50%);font-style:italic;font-size:.85rem;letter-spacing:.4em;opacity:0;color:#e8934a}
+#word.on{opacity:1;transition:opacity 1.6s ease-out}
+.ripple{position:absolute;top:50%;left:var(--x);width:0;height:0;border:1px solid #e8934a;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;animation:rip 1.4s ease-out forwards}
+@keyframes rip{to{width:340px;height:340px;opacity:0;border-width:0}}
 </style>
-<div id=S>
-<div id=G>
-<div id=bar><span id=L>DAWN</span><span id=R>DUSK</span></div>
-<div id=F></div>
-<div id=W>EQUILIBRIUM</div>
+<div id="stage">
+<div id="beam">
+<span id="mark"></span>
+<div id="left">MORNING</div>
+<div id="right">EVENING</div>
+<div id="word">equilibrium</div>
 </div>
 </div>
 <script>
-const pairs=[['DAWN','DUSK'],['WAKE','SLEEP'],['RISE','SET'],['OPEN','CLOSE'],['BEGIN','END'],['HERE','GONE'],['NOW','THEN']];
-let idx=0;
-const G=document.getElementById('G'),S=document.getElementById('S'),bar=document.getElementById('bar'),L=document.getElementById('L'),R=document.getElementById('R'),F=document.getElementById('F'),W=document.getElementById('W');
-const t=new Date(),h=t.getHours()+t.getMinutes()/60;
-const trueTilt=+(((h-12)/12)*38).toFixed(2);
-let tid,wtid;
-function words(){const p=pairs[idx%pairs.length];L.textContent=p[0];R.textContent=p[1]}
-function settle(){
-  bar.style.transition='transform 1.5s cubic-bezier(.22,1.6,.36,1)';
-  bar.style.transform=`translate(-50%,-50%) rotate(${trueTilt}deg)`;
-  clearTimeout(wtid);
-  wtid=setTimeout(()=>{F.classList.add('lit');W.classList.add('on');setTimeout(()=>W.classList.remove('on'),1800)},1500);
+const stage=document.getElementById('stage'),beam=document.getElementById('beam'),mark=document.getElementById('mark'),word=document.getElementById('word');
+const now=new Date(),hrs=now.getHours()+now.getMinutes()/60+now.getSeconds()/3600;
+const markPct=hrs/24*100;
+mark.style.left=markPct+'%';
+const warm=[232,147,74],cool=[47,58,110];
+let armed=true;
+function paint(pct){
+  const t=pct/100;
+  const c=warm.map((w,i)=>Math.round(w+(cool[i]-w)*t));
+  stage.style.background=`radial-gradient(circle at ${pct}% 50%, rgba(${c.join(',')},.28), #0b0b14 62%)`;
+  const deg=(pct-50)/50*13;
+  beam.style.transform=`rotate(${deg}deg)`;
+  const dist=Math.abs(pct-markPct);
+  if(dist<2.2){
+    if(armed){
+      armed=false;
+      word.classList.add('on');
+      const r=document.createElement('div');
+      r.className='ripple';
+      r.style.setProperty('--x',markPct+'%');
+      beam.appendChild(r);
+      setTimeout(()=>r.remove(),1450);
+      setTimeout(()=>word.classList.remove('on'),2600);
+    }
+  } else if(dist>6){
+    armed=true;
+  }
 }
-words();
-bar.style.transition='none';
-bar.style.transform=`translate(-50%,-50%) rotate(${trueTilt}deg)`;
-requestAnimationFrame(()=>setTimeout(settle,50));
-S.addEventListener('click',e=>{
-  F.classList.remove('lit');
-  const r=G.getBoundingClientRect();
-  const dir=e.clientX<r.left+r.width/2?-1:1;
-  idx++;words();
-  clearTimeout(tid);
-  bar.style.transition='transform .2s ease-out';
-  bar.style.transform=`translate(-50%,-50%) rotate(${dir*34}deg)`;
-  tid=setTimeout(settle,200);
-});
+function handle(x){
+  const r=beam.getBoundingClientRect();
+  const pct=Math.max(0,Math.min(100,(x-r.left)/r.width*100));
+  paint(pct);
+}
+paint(50);
+window.addEventListener('mousemove',e=>handle(e.clientX));
+window.addEventListener('touchmove',e=>{if(e.touches[0])handle(e.touches[0].clientX)},{passive:true});
 </script>
 </section>
 </body>
