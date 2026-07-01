@@ -1,48 +1,50 @@
 <section data-date='2026-06-30' data-type='digest'>
 <style>
-#tp30dg{position:relative;width:100%;height:520px;background:radial-gradient(ellipse at 50% 28%,#0d111a 0%,#05060a 72%);overflow:hidden;font-family:Georgia,'Iowan Old Style',serif}
-#tp30dg canvas{display:block;width:100%;height:100%;cursor:crosshair}
-#tp30dg .h{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);color:#6b7280;font:11px/1.4 ui-monospace,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;opacity:.5;pointer-events:none;transition:opacity 1s}
-#tp30dg .n{position:absolute;top:14px;right:18px;color:#7e889c;font:10px ui-monospace,Menlo,monospace;letter-spacing:.08em;opacity:.45;pointer-events:none}
+#cvb{position:relative;width:100%;height:520px;overflow:hidden;cursor:crosshair;
+background:repeating-radial-gradient(circle at 22% 30%,rgba(0,0,0,.05) 0 1px,transparent 1px 15px),linear-gradient(160deg,#c9a876,#a9824f 58%,#856239)}
+#cvb svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#cvb .card{position:absolute;width:120px;padding:11px 9px 9px;background:#faf3df;box-shadow:1px 2px 6px rgba(0,0,0,.4);font:11px/1.4 'Courier New',monospace;color:#2b2117;letter-spacing:.01em}
+#cvb .card::before{content:'';position:absolute;top:-5px;left:50%;transform:translateX(-50%);width:9px;height:9px;border-radius:50%;background:#b3261e;box-shadow:0 1px 2px rgba(0,0,0,.5)}
+#cvb .hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font:italic 12px Georgia,serif;color:rgba(43,33,23,.6);pointer-events:none;transition:opacity 1s}
+#cvb .ct{position:absolute;top:12px;right:16px;font:10px 'Courier New',monospace;letter-spacing:.12em;color:rgba(43,33,23,.55);text-transform:uppercase}
 </style>
-<div id="tp30dg">
-<canvas></canvas>
-<div class="h">click to lay a thought down</div>
-<div class="n"></div>
+<div id="cvb">
+<svg></svg>
+<div class="hint">click the board to pin a thought</div>
+<div class="ct"></div>
 </div>
 <script>
 (function(){
-var root=document.getElementById('tp30dg');
-var cv=root.querySelector('canvas'),hint=root.querySelector('.h'),cnt=root.querySelector('.n');
-var ctx=cv.getContext('2d'),DPR=Math.min(window.devicePixelRatio||1,2),W,H;
-function size(){W=root.clientWidth;H=root.clientHeight;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0)}
-size();window.addEventListener('resize',size);
-var words=['trace','signal','thread','fragment','echo','pattern','axiom','structure','memory','origin','glyph','lattice','vector','cipher','thesis','synapse','shard','form','seed','node'];
-var pts=[],mouse=null,RAD=150,MAX=90;
-function add(x,y){if(pts.length>=MAX)pts.shift();pts.push({x:x,y:y,w:words[pts.length%words.length],links:0,c:false,t:Math.random()*6});cnt.textContent=pts.length+' nodes'}
-add(W*.32,H*.42);add(W*.62,H*.56);add(W*.5,H*.24);
-cv.addEventListener('click',function(e){var r=cv.getBoundingClientRect();add(e.clientX-r.left,e.clientY-r.top);hint.style.opacity=0});
-cv.addEventListener('mousemove',function(e){var r=cv.getBoundingClientRect();mouse={x:e.clientX-r.left,y:e.clientY-r.top}});
-cv.addEventListener('mouseleave',function(){mouse=null});
-function draw(){
-ctx.fillStyle='rgba(5,6,10,.16)';ctx.fillRect(0,0,W,H);
-for(var i=0;i<pts.length;i++)pts[i].links=0;
-for(var i=0;i<pts.length;i++)for(var j=i+1;j<pts.length;j++){
-var a=pts[i],b=pts[j],dx=a.x-b.x,dy=a.y-b.y,d=Math.sqrt(dx*dx+dy*dy);
-if(d<RAD){a.links++;b.links++;var op=(1-d/RAD)*.5;
-ctx.strokeStyle='rgba(110,170,220,'+op+')';ctx.lineWidth=.7;
-ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}}
-if(mouse){var near=null,nd=80;
-for(var i=0;i<pts.length;i++){var dx=pts[i].x-mouse.x,dy=pts[i].y-mouse.y,d=Math.sqrt(dx*dx+dy*dy);if(d<nd){nd=d;near=pts[i]}}
-if(near){ctx.strokeStyle='rgba(230,180,110,.35)';ctx.lineWidth=.8;
-ctx.beginPath();ctx.moveTo(near.x,near.y);ctx.lineTo(mouse.x,mouse.y);ctx.stroke()}}
-for(var i=0;i<pts.length;i++){var p=pts[i];p.c=p.links>=3;p.t+=.02;
-var rad=p.c?4.5:2.5,glow=p.c?'rgba(230,180,110,':'rgba(140,190,230,';
-ctx.beginPath();ctx.fillStyle=glow+(.85+Math.sin(p.t)*.1)+')';ctx.arc(p.x,p.y,rad,0,6.283);ctx.fill();
-if(p.c){ctx.font='12px Georgia, serif';ctx.fillStyle='rgba(225,205,175,.7)';ctx.textAlign='center';ctx.fillText(p.w,p.x,p.y-9)}}
-requestAnimationFrame(draw)}
-cnt.textContent=pts.length+' nodes';
-draw();
+var root=document.getElementById('cvb'),svg=root.querySelector('svg'),hint=root.querySelector('.hint'),ct=root.querySelector('.ct');
+var NS='http://www.w3.org/2000/svg';
+var words=['a name overheard','half a citation','the pattern repeats','three sources agree','page 12, footnote','not yet proven','circle back to this','the shape emerges','cross-reference','who said it first','it fits','building consensus','still unverified','triangulate','the thread holds','worth revisiting','converges here','same shape, new frame','margin note','a hunch, confirmed'];
+var pins=[],wi=0;
+function dist(a,b){var dx=a.x-b.x,dy=a.y-b.y;return Math.sqrt(dx*dx+dy*dy)}
+function thread(a,b){
+var l=document.createElementNS(NS,'path'),mx=(a.x+b.x)/2,my=(a.y+b.y)/2+16+Math.random()*16;
+l.setAttribute('d','M'+a.x+' '+a.y+' Q '+mx+' '+my+' '+b.x+' '+b.y);
+l.setAttribute('stroke','#b3261e');l.setAttribute('stroke-width','1');l.setAttribute('fill','none');l.setAttribute('opacity','.5');
+svg.appendChild(l);
+}
+function place(x,y){
+var c=document.createElement('div');c.className='card';
+var r=(Math.random()*8-4).toFixed(1);
+c.style.left=(x-60)+'px';c.style.top=y+'px';c.style.transform='rotate('+r+'deg)';
+c.textContent=words[wi%words.length];wi++;
+root.appendChild(c);
+var p={x:x,y:y};
+var near=pins.slice().sort(function(a,b){return dist(a,p)-dist(b,p)}).slice(0,Math.min(2,pins.length));
+near.forEach(function(o){thread(o,p)});
+pins.push(p);
+ct.textContent=pins.length+' pinned';
+hint.style.opacity=0;
+}
+root.addEventListener('click',function(e){
+if(e.target.closest('.card'))return;
+var r=root.getBoundingClientRect();
+place(e.clientX-r.left,e.clientY-r.top);
+});
+[[.26,.34],[.56,.2],[.7,.5]].forEach(function(p){place(p[0]*root.clientWidth,p[1]*520)});
 })();
 </script>
 </section>
