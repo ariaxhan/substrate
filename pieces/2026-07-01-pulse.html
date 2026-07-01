@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head><meta charset='utf-8'><title>fulcrum</title></head>
+<body>
+<section data-date='2026-07-01' data-type='pulse'>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#f4f0e6;font-family:Georgia,'Times New Roman',serif}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+#plank{position:relative;width:min(72vw,680px);height:2px;background:#1c1a17;transform-origin:50% 50%;transition:transform .9s cubic-bezier(.34,1.56,.64,1)}
+#fulcrum{position:absolute;top:50%;left:50%;width:0;height:0;transform:translateX(-50%);border-left:9px solid transparent;border-right:9px solid transparent;border-top:16px solid #b5772f}
+.tag{position:absolute;top:50%;font-size:clamp(1.3rem,3.4vw,2.6rem);letter-spacing:.12em;color:#1c1a17;white-space:nowrap}
+#a{left:0;transform:translate(-4%,-140%)}
+#b{right:0;transform:translate(4%,-140%)}
+#frac{position:absolute;top:calc(50% + 40px);left:50%;transform:translateX(-50%);font-size:.7rem;letter-spacing:.32em;color:#9a8f7d}
+</style>
+<div id="stage">
+<div id="fulcrum"></div>
+<div id="plank">
+<div class="tag" id="a">DAWN</div>
+<div class="tag" id="b">DUSK</div>
+</div>
+<div id="frac"></div>
+</div>
+<script>
+const pairs=[["DAWN","DUSK"],["WAKE","WANE"],["RISE","REST"],["NOON","MOON"],["LIGHT","NIGHT"]];
+const plank=document.getElementById('plank'),a=document.getElementById('a'),b=document.getElementById('b'),frac=document.getElementById('frac'),stage=document.getElementById('stage');
+let i=0,flipped=false;
+function hrsFrac(){const d=new Date();return(d.getHours()+d.getMinutes()/60+d.getSeconds()/3600)/24}
+function tilt(){
+  const h=hrsFrac(),deg=(h-0.5)*30;
+  plank.style.transform='rotate('+deg+'deg)';
+  frac.textContent=h.toFixed(4)+' · '+(h<0.5?'approaching':'past')+' halfway';
+}
+function render(){const p=pairs[i];a.textContent=flipped?p[1]:p[0];b.textContent=flipped?p[0]:p[1]}
+function flip(){
+  const dir=flipped?1:-1;
+  plank.style.transition='transform .35s ease-in';
+  plank.style.transform='rotate('+(dir*22)+'deg)';
+  setTimeout(()=>{
+    i=(i+1)%pairs.length;
+    flipped=!flipped;
+    render();
+    plank.style.transition='transform .9s cubic-bezier(.34,1.56,.64,1)';
+    tilt();
+  },380);
+}
+render();tilt();
+stage.addEventListener('click',flip);
+setInterval(tilt,15000);
+</script>
+</section>
+</body>
+</html>
