@@ -1,0 +1,90 @@
+<section data-date='2026-07-01' data-type='spark'>
+<style>
+#w0701{position:fixed;inset:0;background:#05060a;overflow:hidden;cursor:crosshair;--x:50vw;--y:50vh}
+#w0701::after{content:'';position:absolute;inset:0;pointer-events:none;z-index:5;
+background:radial-gradient(circle at var(--x) var(--y),transparent 0,transparent 150px,rgba(5,6,10,.92) 360px)}
+.co0701{position:absolute;inset:0}
+.co0701 span{position:absolute;white-space:nowrap;font-size:1.05rem}
+#ca0701{mix-blend-mode:screen;font-family:'Courier New',monospace}
+#ca0701 span{color:#4fd8ff;text-shadow:0 0 10px #4fd8ff99}
+#cb0701{mix-blend-mode:screen;font-family:Georgia,serif;font-style:italic}
+#cb0701 span{color:#ff7ea6;text-shadow:0 0 10px #ff7ea699}
+.fz0701{position:absolute;transform:translate(-50%,-50%);color:#fff;font:bold 1.25rem/1 monospace;
+text-shadow:0 0 20px #fff,0 0 42px #ffffffaa;opacity:0;pointer-events:none;z-index:6;
+animation:fi0701 1.4s ease forwards}
+.rg0701{position:absolute;width:10px;height:10px;border:1px solid #fff;border-radius:50%;
+transform:translate(-50%,-50%);opacity:.85;pointer-events:none;z-index:6;animation:ro0701 1.4s ease forwards}
+@keyframes fi0701{0%{opacity:0;transform:translate(-50%,-42%) scale(.7)}
+20%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}70%{opacity:1}
+100%{opacity:0;transform:translate(-50%,-62%) scale(1.2)}}
+@keyframes ro0701{to{width:320px;height:320px;opacity:0}}
+#hn0701{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);font:.6rem monospace;
+letter-spacing:.3em;color:#ffffff26;text-transform:uppercase;z-index:6;pointer-events:none}
+</style>
+<div id="w0701">
+<div class="co0701" id="ca0701"></div>
+<div class="co0701" id="cb0701"></div>
+<div id="hn0701">move to focus &middot; click to fuse</div>
+</div>
+<script>
+(function(){
+var wrap=document.getElementById('w0701'),
+ca=document.getElementById('ca0701'),
+cb=document.getElementById('cb0701'),
+WA=['circuit','current','static','signal','code','wire','voltage','carrier','pulse'],
+WB=['skin','breath','warmth','blood','ache','hand','heat','pulse','longing'],
+FUSE=['synapse','livewire','wireheart','bloodcircuit','ghostcurrent','skinsignal'],
+H=innerHeight;
+addEventListener('resize',function(){H=innerHeight});
+
+function seed(col,words,dir){
+  var n=15,arr=[];
+  for(var i=0;i<n;i++){
+    var el=document.createElement('span');
+    el.textContent=words[i%words.length];
+    el.style.left=(Math.random()*90)+'%';
+    var y=Math.random()*H*1.4-H*0.2;
+    el.style.top=y+'px';
+    col.appendChild(el);
+    arr.push({el:el,y:y,vy:dir*(0.35+Math.random()*0.4)});
+  }
+  return arr;
+}
+var pa=seed(ca,WA,1),pb=seed(cb,WB,-1);
+
+function tick(){
+  var i,p;
+  for(i=0;i<pa.length;i++){
+    p=pa[i];p.y+=p.vy;
+    if(p.y>H+30)p.y=-30;
+    p.el.style.top=p.y+'px';
+  }
+  for(i=0;i<pb.length;i++){
+    p=pb[i];p.y+=p.vy;
+    if(p.y<-30)p.y=H+30;
+    p.el.style.top=p.y+'px';
+  }
+  requestAnimationFrame(tick);
+}
+tick();
+
+addEventListener('mousemove',function(e){
+  wrap.style.setProperty('--x',e.clientX+'px');
+  wrap.style.setProperty('--y',e.clientY+'px');
+});
+
+wrap.addEventListener('click',function(e){
+  var f=document.createElement('div');
+  f.className='fz0701';
+  f.textContent=FUSE[0|Math.random()*FUSE.length];
+  f.style.left=e.clientX+'px';f.style.top=e.clientY+'px';
+  wrap.appendChild(f);
+  var r=document.createElement('div');
+  r.className='rg0701';
+  r.style.left=e.clientX+'px';r.style.top=e.clientY+'px';
+  wrap.appendChild(r);
+  setTimeout(function(){f.remove();r.remove()},1400);
+});
+})();
+</script>
+</section>
