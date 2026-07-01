@@ -1,0 +1,59 @@
+<section data-date='2026-06-30' data-type='reflection'>
+<style>
+#n{position:relative;width:100%;height:100vh;overflow:hidden;background:radial-gradient(ellipse at 50% 115%,#0d1230 0%,#050611 55%,#020207 100%);cursor:crosshair}
+#s{position:absolute;inset:0}
+#p,#l{position:absolute;left:50%;transform:translateX(-50%);width:90%;max-width:32rem;text-align:center;font:italic 1.05rem/1.6 Georgia,'Iowan Old Style',serif;color:#f3e6c8;letter-spacing:.02em;pointer-events:none;text-shadow:0 0 12px rgba(243,230,200,.25)}
+#p{top:44%;opacity:.55;transition:opacity 2s}
+#l{bottom:14%;opacity:0;transition:opacity 1.8s}
+#f{position:absolute;bottom:1.6rem;width:100%;text-align:center;font:.62rem/1 'Courier New',monospace;letter-spacing:.3em;color:rgba(210,200,255,.22);text-transform:uppercase;pointer-events:none}
+</style>
+<div id="n">
+<canvas id="s"></canvas>
+<div id="p">touch the dark, set down the day</div>
+<div id="l"></div>
+<div id="f">30 jun &middot; stillness</div>
+</div>
+<script>
+(function(){
+var cv=document.getElementById('s'),x=cv.getContext('2d'),n=document.getElementById('n'),
+p=document.getElementById('p'),l=document.getElementById('l'),
+W,H,stars=[],mx=-999,my=-999,lt=0,
+msgs=['the day sets down its weight','small lights, kept anyway','the noise softens here','a shape forming from scattered hours','enough. rest now.'];
+function rs(){W=cv.width=n.clientWidth;H=cv.height=n.clientHeight}
+rs();window.addEventListener('resize',rs);
+
+function draw(t){
+x.clearRect(0,0,W,H);
+for(var i=0;i<stars.length;i++){
+var st=stars[i],tw=.5+.5*Math.sin(t/900+st.ph),
+d=Math.hypot(mx-st.x,my-st.y),near=Math.max(0,1-d/140),
+r=1.1+tw*1.1+near*2.2,
+a=.35+tw*.45+near*.4;
+if(st.j>-1){
+var o=stars[st.j];
+x.beginPath();x.moveTo(st.x,st.y);x.lineTo(o.x,o.y);
+x.strokeStyle='rgba(243,214,160,'+(.05+.07*tw)+')';x.lineWidth=1;x.stroke();
+}
+x.beginPath();x.arc(st.x,st.y,r,0,6.283);
+x.fillStyle='rgba(255,238,205,'+Math.min(a,1)+')';x.fill();
+}
+requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+
+n.addEventListener('mousemove',function(e){var r=n.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top});
+n.addEventListener('mouseleave',function(){mx=my=-999});
+
+n.addEventListener('click',function(e){
+var r=n.getBoundingClientRect(),cx=e.clientX-r.left,cy=e.clientY-r.top,j=-1,bd=1e9;
+for(var i=0;i<stars.length;i++){var dd=Math.hypot(cx-stars[i].x,cy-stars[i].y);if(dd<bd){bd=dd;j=i}}
+stars.push({x:cx,y:cy,ph:Math.random()*6.283,j:stars.length?j:-1});
+p.style.opacity=0;
+l.textContent=msgs[Math.min(stars.length-1,msgs.length-1)];
+l.style.opacity=.75;
+clearTimeout(lt);
+lt=setTimeout(function(){l.style.opacity=0},3600);
+});
+})();
+</script>
+</section>
