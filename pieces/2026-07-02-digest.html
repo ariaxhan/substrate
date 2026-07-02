@@ -1,0 +1,65 @@
+<section data-date='2026-07-02' data-type='digest'>
+<style>
+#kx0702{position:relative;width:100%;height:520px;overflow:hidden;cursor:crosshair;font-family:Georgia,'Times New Roman',serif;background:radial-gradient(ellipse at 50% 88%,#0e1830 0%,#060810 55%,#020204 100%)}
+#kx0702 canvas{position:absolute;inset:0;width:100%;height:100%}
+#kx0702 .ep{position:absolute;top:14px;left:18px;max-width:230px;font:italic 12px Georgia,serif;color:rgba(170,200,255,.32);pointer-events:none}
+#kx0702 .hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font:italic 12px Georgia,serif;color:rgba(170,200,255,.42);pointer-events:none;transition:opacity 1.6s}
+#kx0702 .ct{position:absolute;top:14px;right:18px;font:10px/1.5 'Courier New',monospace;letter-spacing:.14em;color:rgba(170,200,255,.45);text-transform:uppercase;text-align:right;pointer-events:none}
+</style>
+<div id="kx0702">
+<canvas></canvas>
+<div class="ep">a thought drifts until it finds something to hold onto.</div>
+<div class="hint">click to release one</div>
+<div class="ct"></div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('kx0702'),cv=root.querySelector('canvas'),hint=root.querySelector('.hint'),ct=root.querySelector('.ct');
+var H=520,W=root.clientWidth||800;
+cv.width=W;cv.height=H;
+var x=cv.getContext('2d');
+var pts=[{x:W/2,y:H-16,par:-1,d:0}],walkers=[];
+var MAXP=240,MAXW=30,STICK=7;
+function dist(a,b){var dx=a.x-b.x,dy=a.y-b.y;return Math.sqrt(dx*dx+dy*dy)}
+function addWalker(px,py){
+if(pts.length>=MAXP||walkers.length>=MAXW)return;
+walkers.push({x:px,y:py,a:0});
+}
+function step(){
+for(var i=walkers.length-1;i>=0;i--){
+var w=walkers[i],bd=1e9,bi=-1;
+for(var j=0;j<pts.length;j++){var d=dist(w,pts[j]);if(d<bd){bd=d;bi=j}}
+if(bd<STICK){pts.push({x:w.x,y:w.y,par:bi,d:pts[bi].d+1});walkers.splice(i,1);continue}
+var ang=Math.atan2(pts[bi].y-w.y,pts[bi].x-w.x);
+w.x+=Math.cos(ang)*.8+(Math.random()-.5)*3;
+w.y+=Math.sin(ang)*.8+(Math.random()-.5)*3;
+w.a++;
+if(w.x<-40||w.x>W+40||w.y<-40||w.y>H+40||w.a>1400)walkers.splice(i,1);
+}
+}
+function render(){
+x.clearRect(0,0,W,H);
+for(var i=1;i<pts.length;i++){
+var p=pts[i],q=pts[p.par],hue=190+Math.min(p.d*3,120);
+x.strokeStyle='hsla('+hue+',80%,70%,.55)';x.lineWidth=1;
+x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke();
+}
+for(var i=0;i<pts.length;i++){
+var p=pts[i],hue=190+Math.min(p.d*3,120);
+x.beginPath();x.fillStyle='hsla('+hue+',90%,85%,.9)';x.arc(p.x,p.y,i==0?3.4:1.6,0,7);x.fill();
+}
+x.fillStyle='rgba(200,220,255,.5)';
+walkers.forEach(function(w){x.beginPath();x.arc(w.x,w.y,1.6,0,7);x.fill()});
+ct.textContent=(pts.length-1)+' crystallized \xb7 '+walkers.length+' drifting';
+}
+root.addEventListener('click',function(e){
+var r=root.getBoundingClientRect();
+addWalker(e.clientX-r.left,e.clientY-r.top);
+hint.style.opacity=0;
+});
+addWalker(W*.3,H*.15);
+addWalker(W*.7,H*.25);
+(function loop(){step();render();requestAnimationFrame(loop)})();
+})();
+</script>
+</section>
