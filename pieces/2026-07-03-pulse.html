@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head><meta charset='utf-8'><title>turn</title></head>
+<body>
+<section data-date='2026-07-03' data-type='pulse'>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(circle at 50% 40%,#141319,#08070a 72%)}
+#stage{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;font-family:'Helvetica Neue',Arial,sans-serif;color:#e9e5df;cursor:pointer;user-select:none}
+#glass{position:relative;width:min(30vw,190px);height:min(58vh,460px);filter:drop-shadow(0 0 20px rgba(255,255,255,.10))}
+#inner{position:absolute;inset:0;display:flex;flex-direction:column;transition:transform .9s cubic-bezier(.4,0,.2,1)}
+#inner.flip{transform:rotate(180deg)}
+.bulb{position:relative;flex:1;background:rgba(255,255,255,.035);overflow:hidden}
+#top{clip-path:polygon(0 0,100% 0,50% 100%)}
+#bot{clip-path:polygon(50% 0,100% 100%,0 100%)}
+.fill{position:absolute;left:0;right:0;transition:height .5s linear}
+#topfill{top:0;background:linear-gradient(180deg,#e8a352,#b5652a)}
+#botfill{bottom:0;background:linear-gradient(0deg,#5b6ea8,#2e3a5e)}
+#neck{height:8px;width:5px;margin:0 auto;background:rgba(255,255,255,.55);box-shadow:0 0 10px rgba(255,255,255,.5)}
+#word{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.92);font-family:Georgia,serif;font-style:italic;font-size:.92rem;letter-spacing:.05em;white-space:nowrap;pointer-events:none}
+#line{font-size:.6rem;letter-spacing:.34em;text-transform:uppercase;color:rgba(233,229,223,.5);min-height:1em}
+#clock{position:fixed;top:16px;left:18px;font-size:.6rem;letter-spacing:.2em;color:rgba(233,229,223,.32);font-family:'Helvetica Neue',Arial,sans-serif}
+</style>
+<div id="stage">
+<div id="glass">
+<div id="inner">
+<div class="bulb" id="top"><div class="fill" id="topfill"></div></div>
+<div id="neck"></div>
+<div class="bulb" id="bot"><div class="fill" id="botfill"></div></div>
+</div>
+<div id="word">equilibrium</div>
+</div>
+<div id="line">the glass turns</div>
+</div>
+<div id="clock"></div>
+<script>
+const inner=document.getElementById('inner'),topfill=document.getElementById('topfill'),botfill=document.getElementById('botfill'),word=document.getElementById('word'),line=document.getElementById('line'),clock=document.getElementById('clock'),stage=document.getElementById('stage');
+const lines=['the glass turns','so does the day','grain by grain','we cross the seam','and settle','half spent, half kept','again'];
+let li=0;
+function pad(n){return n<10?'0'+n:''+n}
+function frac(){const d=new Date();return (d.getHours()+d.getMinutes()/60+d.getSeconds()/3600)/24}
+function render(){
+  const f=frac(),d=new Date();
+  topfill.style.height=((1-f)*100).toFixed(2)+'%';
+  botfill.style.height=(f*100).toFixed(2)+'%';
+  const dist=Math.abs(f-0.5),near=Math.max(0,1-dist/0.06);
+  word.style.opacity=(0.1+0.9*near).toFixed(3);
+  word.style.transform='translate(-50%,-50%) scale('+(0.9+near*0.18).toFixed(3)+')';
+  word.style.textShadow='0 0 '+(near*16).toFixed(0)+'px rgba(255,255,255,'+(near*0.85).toFixed(2)+')';
+  clock.textContent=pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+  requestAnimationFrame(render);
+}
+function flip(){
+  inner.classList.toggle('flip');
+  li=(li+1)%lines.length;
+  line.textContent=lines[li];
+}
+stage.addEventListener('click',flip);
+render();
+</script>
+</section>
+</body>
+</html>
