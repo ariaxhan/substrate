@@ -1,0 +1,65 @@
+<section data-date='2026-07-03' data-type='morning'>
+<style>
+#sky0703{position:fixed;inset:0;background:linear-gradient(180deg,#232a5e 0%,#5a4a86 32%,#c66a5e 58%,#ffb15e 82%,#ffe1a8 100%);overflow:hidden;font-family:Georgia,'Times New Roman',serif}
+#words0703{position:absolute;inset:0}
+#words0703 span{position:absolute;white-space:nowrap;color:#0a0a18;opacity:.82;transform:translate(-50%,-50%)}
+#hero0703{position:absolute;left:50%;top:47%;transform:translate(-50%,-50%);text-align:center;font-style:italic;color:#0a0a18;font-size:clamp(1.1rem,3.2vw,2.1rem);line-height:1.5;letter-spacing:.01em;white-space:nowrap}
+#scrim0703{position:fixed;inset:0;z-index:2;background:rgba(5,5,18,.94);cursor:crosshair;
+  -webkit-mask-image:radial-gradient(circle var(--r,130px) at var(--x,50%) var(--y,42%),transparent 0%,transparent 55%,black 100%);
+  mask-image:radial-gradient(circle var(--r,130px) at var(--x,50%) var(--y,42%),transparent 0%,transparent 55%,black 100%);
+  transition:background-color 1.4s ease}
+#cap0703{position:fixed;left:50%;bottom:6vh;transform:translateX(-50%);z-index:3;font-family:ui-monospace,'SF Mono',Consolas,monospace;font-size:.65rem;letter-spacing:.32em;text-transform:uppercase;color:rgba(255,225,168,.75);pointer-events:none;transition:opacity .8s ease}
+</style>
+<div id="sky0703">
+  <div id="words0703"></div>
+  <div id="hero0703">the day has not decided<br>what it will become</div>
+</div>
+<div id="scrim0703"></div>
+<div id="cap0703">unwritten &middot; move to find light</div>
+<script>
+(function(){
+var sky=document.getElementById('sky0703'),wrap=document.getElementById('words0703'),
+    scrim=document.getElementById('scrim0703'),cap=document.getElementById('cap0703');
+var W=['hush','threshold','ember','possible','waking','still','soon','edge','quiet',
+       'again','open','undecided','almost','not yet','blank page','the hour before names',
+       'first light','begin'];
+function lerp(a,b,t){return a+(b-a)*t}
+W.forEach(function(w,i){
+  var s=document.createElement('span'),
+      t=Math.min(.94,Math.max(.06,(i/(W.length-1))+ (Math.random()*.16-.08))),
+      x=8+Math.random()*84, y=6+t*82;
+  s.textContent=w;
+  s.style.left=x+'%';s.style.top=y+'%';
+  s.style.fontSize=lerp(.7,1.5,t).toFixed(2)+'rem';
+  s.style.fontFamily=i%3===0?'Georgia,serif':'ui-monospace,SFMono-Regular,monospace';
+  s.style.fontStyle=i%3===0?'italic':'normal';
+  wrap.appendChild(s);
+});
+var x=window.innerWidth/2, y=window.innerHeight*0.42;
+function setPos(px,py){x=px;y=py;scrim.style.setProperty('--x',x+'px');scrim.style.setProperty('--y',y+'px')}
+setPos(x,y);
+addEventListener('mousemove',function(e){setPos(e.clientX,e.clientY)});
+addEventListener('touchmove',function(e){var t=e.touches[0];setPos(t.clientX,t.clientY)},{passive:true});
+
+var phases=[
+  {a:.94,r:130,label:'unwritten · move to find light'},
+  {a:.74,r:165,label:'becoming'},
+  {a:.52,r:205,label:'arriving'},
+  {a:.30,r:255,label:'yours to write'}
+];
+var phase=0;
+function apply(){
+  var p=phases[phase];
+  scrim.style.backgroundColor='rgba(5,5,18,'+p.a+')';
+  scrim.style.setProperty('--r',p.r+'px');
+  cap.textContent=p.label;
+}
+apply();
+sky.addEventListener('click',advance);
+scrim.addEventListener('click',advance);
+function advance(){
+  if(phase<phases.length-1){phase++;apply()}
+}
+})();
+</script>
+</section>
