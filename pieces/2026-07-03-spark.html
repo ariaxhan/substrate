@@ -1,0 +1,64 @@
+<section data-date='2026-07-03' data-type='spark'>
+<style>
+#wr0703{position:fixed;inset:0;background:#05060a;overflow:hidden;cursor:crosshair}
+#wr0703 .tp0703-txt{position:absolute;top:0;left:0;font:2.1rem/1.1 Georgia,serif;white-space:nowrap;
+pointer-events:none;will-change:transform,filter}
+#wr0703 .tp0703-a{color:#3fd4ff;mix-blend-mode:screen}
+#wr0703 .tp0703-b{color:#ff3f8f;mix-blend-mode:screen}
+#wr0703 .tp0703-fuse{position:absolute;top:0;left:0;font:2.3rem/1 Georgia,serif;color:#fff;
+text-shadow:0 0 18px #fff,0 0 36px #9ff;pointer-events:none;opacity:1;
+transition:opacity 1.4s ease,transform 1.4s ease}
+#hn0703{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);font:.6rem monospace;
+letter-spacing:.3em;color:#ffffff33;text-transform:uppercase;pointer-events:none}
+</style>
+<div id="wr0703">
+<div id="tA0703" class="tp0703-txt tp0703-a">reaching</div>
+<div id="tB0703" class="tp0703-txt tp0703-b">waiting</div>
+</div>
+<div id="hn0703">move to close the gap &middot; click where they meet</div>
+<script>
+(function(){
+var wr=document.getElementById('wr0703'),tA=document.getElementById('tA0703'),tB=document.getElementById('tB0703');
+var WA=['reaching','signal','memory','ash','before','one'],
+    WB=['waiting','mirror','static','bloom','after','other'];
+var ia=0,ib=0;
+var mouse={x:innerWidth*0.5,y:innerHeight*0.5};
+addEventListener('mousemove',function(e){mouse.x=e.clientX;mouse.y=e.clientY});
+addEventListener('touchmove',function(e){var t=e.touches[0];mouse.x=t.clientX;mouse.y=t.clientY},{passive:true});
+var pa={x:innerWidth*0.22,y:innerHeight*0.38},
+    pb={x:innerWidth*0.78,y:innerHeight*0.62};
+function lp(a,b,t){return a+(b-a)*t}
+function place(el,p){el.style.transform='translate('+(p.x-el.offsetWidth/2)+'px,'+(p.y-el.offsetHeight/2)+'px)'}
+function tick(){
+    pa.x=lp(pa.x,mouse.x,.028);pa.y=lp(pa.y,mouse.y,.028);
+    pb.x=lp(pb.x,mouse.x,.05);pb.y=lp(pb.y,mouse.y,.05);
+    place(tA,pa);place(tB,pb);
+    var d=Math.hypot(pa.x-pb.x,pa.y-pb.y),near=d<90;
+    tA.style.filter=near?'brightness(1.7)':'none';
+    tB.style.filter=near?'brightness(1.7)':'none';
+    requestAnimationFrame(tick);
+}
+tick();
+function interleave(a,b){
+    var r='',n=Math.max(a.length,b.length);
+    for(var i=0;i<n;i++){if(a[i])r+=a[i];if(b[i])r+=b[i]}
+    return r;
+}
+wr.addEventListener('click',function(){
+    var mx=(pa.x+pb.x)/2,my=(pa.y+pb.y)/2;
+    var f=document.createElement('div');
+    f.className='tp0703-fuse';
+    f.textContent=interleave(tA.textContent,tB.textContent);
+    wr.appendChild(f);
+    f.style.transform='translate('+(mx-f.offsetWidth/2)+'px,'+(my-f.offsetHeight/2)+'px)';
+    requestAnimationFrame(function(){
+        f.style.opacity='0';
+        f.style.transform='translate('+(mx-f.offsetWidth/2)+'px,'+(my-f.offsetHeight*1.6)+'px) scale(1.5)';
+    });
+    setTimeout(function(){f.remove()},1500);
+    ia=(ia+1)%WA.length;ib=(ib+1)%WB.length;
+    tA.textContent=WA[ia];tB.textContent=WB[ib];
+});
+})();
+</script>
+</section>
