@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+<head><meta charset='utf-8'><title>hush</title></head>
+<body>
+<section data-date='2026-07-02' data-type='reflection'>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#04050c;font-family:Georgia,'Times New Roman',serif}
+#sky{position:fixed;inset:0;cursor:crosshair;background:radial-gradient(ellipse at 50% 20%,#0c1230 0%,#04050c 60%)}
+#dusk{position:absolute;left:0;right:0;bottom:0;height:38%;background:linear-gradient(to top,#ff9d5c,rgba(255,111,60,.2) 40%,transparent);animation:fade 7s ease forwards;pointer-events:none}
+@keyframes fade{to{opacity:0}}
+.amb{position:absolute;border-radius:50%;background:#eef2ff;pointer-events:none;animation:tw var(--d) ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:var(--o)}50%{opacity:calc(var(--o) * .25)}}
+.star{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff7e6;box-shadow:0 0 6px 2px rgba(255,247,230,.8),0 0 14px 6px rgba(255,247,230,.3);opacity:0;transform:translate(-50%,-50%);transition:opacity 1.4s ease}
+.star.on{opacity:1}
+svg{position:absolute;inset:0;pointer-events:none}
+line{stroke:rgba(255,247,230,.18);stroke-width:.6;opacity:0;transition:opacity 2s ease}
+line.on{opacity:1}
+#line{position:absolute;bottom:9%;left:0;right:0;text-align:center;color:#cfd6ee;font-style:italic;font-size:15px;letter-spacing:.03em;opacity:0;transition:opacity 3s ease;pointer-events:none}
+#line.on{opacity:.85}
+</style>
+<div id="sky">
+<div id="dusk"></div>
+<svg id="lines"></svg>
+<p id="line"></p>
+</div>
+<script>
+(function(){
+var sky=document.getElementById('sky'),svg=document.getElementById('lines'),line=document.getElementById('line');
+var w=innerWidth,h=innerHeight;
+svg.setAttribute('width',w);svg.setAttribute('height',h);
+addEventListener('resize',function(){w=innerWidth;h=innerHeight;svg.setAttribute('width',w);svg.setAttribute('height',h)});
+for(var i=0;i<45;i++){
+  var a=document.createElement('div');
+  a.className='amb';
+  var s=Math.random()*1.6+.5;
+  a.style.width=s+'px';a.style.height=s+'px';
+  a.style.left=(Math.random()*100)+'%';
+  a.style.top=(Math.random()*70)+'%';
+  a.style.setProperty('--o',(Math.random()*.5+.15).toFixed(2));
+  a.style.setProperty('--d',(Math.random()*4+3).toFixed(2)+'s');
+  sky.appendChild(a);
+}
+var lines=["the day, folded into light.","nothing left undone tonight.","stillness keeps what the hours made.","sleep now. the dark remembers everything.","each small light, a thought set down."];
+line.textContent=lines[Math.floor(Math.random()*lines.length)];
+var pts=[];
+sky.addEventListener('click',function(e){
+  var x=e.clientX,y=e.clientY;
+  var st=document.createElement('div');
+  st.className='star';
+  st.style.left=x+'px';st.style.top=y+'px';
+  sky.appendChild(st);
+  requestAnimationFrame(function(){st.classList.add('on')});
+  pts.forEach(function(p){
+    var d=Math.hypot(p.x-x,p.y-y);
+    if(d<210){
+      var ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+      ln.setAttribute('x1',p.x);ln.setAttribute('y1',p.y);
+      ln.setAttribute('x2',x);ln.setAttribute('y2',y);
+      svg.appendChild(ln);
+      requestAnimationFrame(function(){ln.classList.add('on')});
+    }
+  });
+  pts.push({x:x,y:y});
+  if(pts.length===5){line.classList.add('on')}
+});
+})();
+</script>
+</section>
+</body>
+</html>
