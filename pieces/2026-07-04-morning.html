@@ -1,0 +1,57 @@
+<section data-date='2026-07-04' data-type='morning'>
+<style>
+html,body{margin:0;height:100%;overflow:hidden}
+#sky{position:fixed;inset:0;cursor:pointer}
+#sun{position:absolute;left:50%;border-radius:50%;transform:translate(-50%,-50%)}
+#line{position:absolute;left:50%;transform:translate(-50%,-50%);text-align:center;white-space:nowrap;font:italic 2.4vw/1.4 Georgia,'Times New Roman',serif;color:#fff;mix-blend-mode:difference;letter-spacing:.02em}
+#cap{position:absolute;bottom:24px;left:24px;font:11px/1.6 -apple-system,sans-serif;letter-spacing:.28em;text-transform:uppercase;color:#fff;mix-blend-mode:difference;opacity:.7}
+.lock #line{font-style:normal;letter-spacing:.06em}
+</style>
+<div id="sky">
+<div id="sun"></div>
+<div id="line">before the first word</div>
+<div id="cap">an unwritten day</div>
+</div>
+<script>
+(function(){
+var sky=document.getElementById('sky'),sun=document.getElementById('sun'),line=document.getElementById('line'),cap=document.getElementById('cap');
+var lines=["before the first word","the sky hasn't decided","still only maybe","not yet, not yet","the color before color","a day, unmade","light, arriving","everything, possible","and then, morning"];
+var locked=false,t=0.15;
+function lerp(a,b,k){return a+(b-a)*k}
+function mix(c1,c2,k){return [0,1,2].map(function(i){return Math.round(lerp(c1[i],c2[i],k))})}
+function rgb(c){return 'rgb('+c[0]+','+c[1]+','+c[2]+')'}
+function render(){
+  var top=mix([10,12,35],[110,165,215],t);
+  var horBase=mix([40,24,70],[255,208,140],t);
+  var dawn=Math.sin(Math.min(Math.max(t,0),1)*Math.PI);
+  var hor=mix(horBase,[255,110,120],dawn*0.55);
+  var ground=hor.map(function(v){return Math.round(v*0.28)});
+  sky.style.background='linear-gradient(to bottom,'+rgb(top)+' 0%,'+rgb(hor)+' 68%,'+rgb(ground)+' 68%,'+rgb(ground)+' 100%)';
+  var sunColor=mix(mix([200,210,235],[255,214,140],t),[255,140,90],dawn*0.4);
+  sun.style.top=lerp(80,12,t)+'vh';
+  var size=lerp(34,64,t);
+  sun.style.width=size+'px';
+  sun.style.height=size+'px';
+  sun.style.background=rgb(sunColor);
+  sun.style.boxShadow='0 0 '+lerp(20,90,t)+'px '+lerp(6,26,dawn)+'px rgba('+sunColor.join(',')+',.55)';
+  line.style.top=lerp(74,18,t)+'vh';
+  var idx=Math.min(lines.length-1,Math.floor(t*lines.length));
+  line.textContent=lines[idx];
+  cap.textContent=locked?'this is the day now':'an unwritten day';
+}
+function move(y){
+  if(locked)return;
+  t=1-y/window.innerHeight;
+  render();
+}
+window.addEventListener('mousemove',function(e){move(e.clientY)});
+window.addEventListener('touchmove',function(e){move(e.touches[0].clientY)});
+sky.addEventListener('click',function(){
+  locked=!locked;
+  sky.classList.toggle('lock',locked);
+  render();
+});
+render();
+})();
+</script>
+</section>
