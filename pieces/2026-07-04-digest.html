@@ -1,0 +1,71 @@
+<section data-date='2026-07-04' data-type='digest'>
+<style>
+#kx0704{position:relative;width:100%;height:520px;overflow:hidden;box-sizing:border-box;background:#0a0806;font-family:'SF Mono','IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;display:flex;align-items:center;justify-content:center;padding:40px}
+#kx0704 .wrap{max-width:600px;line-height:2.1;font-size:15px;letter-spacing:.02em}
+#kx0704 .w{display:inline-block;white-space:nowrap}
+#kx0704 .c{display:inline-block;min-width:.62em;color:#4a3620;cursor:pointer;transition:color .5s,text-shadow .5s}
+#kx0704 .c.peek{color:#c98a2e;transition:color .08s}
+#kx0704 .c.on{color:#ffb646;text-shadow:0 0 9px rgba(255,182,70,.55);cursor:default}
+#kx0704 .sp{display:inline-block;width:.5em}
+#kx0704 .hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font:11px/1.4 inherit;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,182,70,.4);transition:opacity 1.4s}
+#kx0704 .ct{position:absolute;top:14px;right:18px;font:10px/1.5 inherit;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,182,70,.45)}
+</style>
+<div id="kx0704">
+<div class="wrap" id="kx0704w"></div>
+<div class="hint" id="kx0704h">hover to peek &middot; click to crystallize</div>
+<div class="ct" id="kx0704c"></div>
+</div>
+<script>
+(function(){
+var phrase="every fact alone is noise. enough facts in the same place start to agree. agreement is what we call structure. you are watching one form itself now.";
+var words=phrase.split(' '),html='',real=[];
+words.forEach(function(word,wi){
+html+='<span class="w">';
+for(var k=0;k<word.length;k++){html+='<span class="c"> </span>';real.push(word[k])}
+html+='</span>';
+if(wi<words.length-1)html+='<span class="sp"></span>';
+});
+var wrap=document.getElementById('kx0704w'),hint=document.getElementById('kx0704h'),ct=document.getElementById('kx0704c');
+wrap.innerHTML=html;
+var els=wrap.querySelectorAll('.c'),total=els.length;
+var locked=new Array(total).fill(false),peeking=new Array(total).fill(false),n=0;
+var noise='01#*+~^%$&@?/<>='.split('');
+function rc(){return noise[Math.floor(Math.random()*noise.length)]}
+function paint(){
+for(var i=0;i<total;i++){
+if(locked[i]||peeking[i])continue;
+els[i].textContent=rc();
+}
+}
+function count(){ct.textContent=n+'/'+total+' crystallized'}
+function lockAt(i,el){
+if(locked[i])return;
+locked[i]=true;peeking[i]=false;n++;
+el.textContent=real[i];
+el.classList.remove('peek');el.classList.add('on');
+count();
+if(n===1)hint.style.opacity=0;
+}
+els.forEach(function(el,i){
+el.addEventListener('mouseenter',function(){
+if(locked[i])return;
+peeking[i]=true;el.textContent=real[i];el.classList.add('peek');
+});
+el.addEventListener('mouseleave',function(){
+if(locked[i])return;
+peeking[i]=false;el.classList.remove('peek');
+});
+el.addEventListener('click',function(){lockAt(i,el)});
+});
+var seed=[];
+while(seed.length<Math.min(5,total)){
+var r=Math.floor(Math.random()*total);
+if(seed.indexOf(r)<0)seed.push(r);
+}
+seed.forEach(function(i){lockAt(i,els[i])});
+count();
+paint();
+setInterval(paint,110);
+})();
+</script>
+</section>
