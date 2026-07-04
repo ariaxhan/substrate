@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+<head><meta charset='utf-8'><title>fulcrum</title></head>
+<body>
+<section data-date='2026-07-04' data-type='pulse'>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:linear-gradient(180deg,#f7f3ea,#ece2d0);font-family:Georgia,'Times New Roman',serif}
+#stage{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:none}
+#beam{position:relative;width:min(66vw,520px);height:2px}
+#fulcrum{position:absolute;left:50%;top:2px;width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:13px solid #2b2823}
+#bar{position:absolute;left:0;right:0;top:0;height:2px;background:#2b2823;transform:rotate(var(--a,0deg));transition:transform .15s ease-out}
+#bar::before,#bar::after{content:'';position:absolute;top:-3px;width:2px;height:8px;background:#2b2823}
+#bar::before{left:0}
+#bar::after{right:0}
+#l,#r{position:absolute;top:-32px;font-size:.92rem;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap}
+#l{left:0;color:#a6552d}
+#r{right:0;color:#374a63}
+#secret{margin-top:58px;font-style:italic;font-size:.86rem;letter-spacing:.04em;color:#8a6a35;opacity:0;transform:translateY(5px) scale(.96);transition:opacity .5s,transform .5s}
+.balanced #secret{opacity:1;transform:translateY(0) scale(1)}
+#cap{position:fixed;bottom:24px;font:.6rem/1 'Helvetica Neue',Arial,sans-serif;letter-spacing:.32em;text-transform:uppercase;color:rgba(43,40,35,.42)}
+#clock{position:fixed;top:16px;left:18px;font:.6rem 'Helvetica Neue',Arial,sans-serif;letter-spacing:.2em;color:rgba(43,40,35,.32)}
+</style>
+<div id="stage">
+<div id="beam">
+<div id="fulcrum"></div>
+<div id="bar">
+<span id="l">before</span>
+<span id="r">after</span>
+</div>
+</div>
+<div id="secret"></div>
+</div>
+<div id="cap"></div>
+<div id="clock"></div>
+<script>
+const bar=document.getElementById('bar'),stage=document.getElementById('stage'),secret=document.getElementById('secret'),cap=document.getElementById('cap'),clock=document.getElementById('clock');
+const secrets=['the exact middle','neither yet the other','held, not decided','the seam between two lights','equal weight, equal debt','this is where it balances'];
+function pad(n){return n<10?'0'+n:''+n}
+function dayFrac(){const d=new Date();return(d.getHours()*60+d.getMinutes()+d.getSeconds()/60)/1440}
+let mouseA=0;
+secret.textContent=secrets[new Date().getHours()%secrets.length];
+function render(){
+  const d=new Date(),f=dayFrac(),base=(f-0.5)*46;
+  const a=Math.max(-27,Math.min(27,base+mouseA));
+  bar.style.setProperty('--a',a.toFixed(2)+'deg');
+  const near=Math.abs(a)<0.6;
+  stage.classList.toggle('balanced',near);
+  cap.textContent=near?'holds':(a<0?'tips toward before':'tips toward after');
+  clock.textContent=pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());
+  requestAnimationFrame(render);
+}
+function move(x){
+  const cx=window.innerWidth/2;
+  mouseA=((x-cx)/cx)*27;
+}
+window.addEventListener('mousemove',e=>move(e.clientX));
+window.addEventListener('touchmove',e=>{move(e.touches[0].clientX);e.preventDefault()},{passive:false});
+render();
+</script>
+</section>
+</body>
+</html>
