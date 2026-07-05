@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head><meta charset='utf-8'><title>ledger</title></head>
+<body>
+<section data-date='2026-07-04' data-type='reflection'>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#070604;font-family:Georgia,'Times New Roman',serif}
+#sky{position:fixed;inset:0;cursor:crosshair;background:radial-gradient(ellipse at 50% 88%,#161009 0%,#0a0705 55%,#020201 100%)}
+.amb{position:absolute;border-radius:50%;background:#f3e4c8;pointer-events:none;animation:tw var(--d) ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:var(--o)}50%{opacity:calc(var(--o) * .2)}}
+.word{position:absolute;transform:translate(-50%,-50%);opacity:0;filter:blur(9px);color:#f6e8cc;font-style:italic;letter-spacing:.02em;font-size:clamp(.95rem,2.1vw,1.35rem);white-space:nowrap;pointer-events:none;transition:opacity 1.8s ease,filter 1.8s ease}
+.word.in{opacity:.92;filter:blur(0)}
+.word.out{opacity:0;filter:blur(3px);transition:opacity 1.4s ease,filter 1.4s ease}
+.star{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff3da;box-shadow:0 0 6px 2px rgba(255,243,218,.7),0 0 16px 6px rgba(255,243,218,.25);opacity:0;transform:translate(-50%,-50%);transition:opacity 2s ease;pointer-events:none}
+.star.on{opacity:1;animation:tw2 4.2s ease-in-out infinite 2s}
+@keyframes tw2{0%,100%{opacity:1}50%{opacity:.5}}
+#hint{position:absolute;bottom:9%;width:100%;text-align:center;color:rgba(246,232,204,.4);font-size:.78rem;letter-spacing:.1em;font-style:italic;transition:opacity 1.6s ease}
+#done{position:absolute;bottom:9%;width:100%;text-align:center;color:rgba(246,232,204,.8);font-size:.72rem;letter-spacing:.32em;text-transform:uppercase;opacity:0;transition:opacity 3s ease;pointer-events:none}
+#done.on{opacity:1}
+</style>
+<div id="sky">
+<p id="hint">touch the dark. let something from today settle</p>
+<p id="done">day, filed. rest now</p>
+</div>
+<script>
+(function(){
+var sky=document.getElementById('sky'),hint=document.getElementById('hint'),done=document.getElementById('done');
+for(var i=0;i<40;i++){
+  var a=document.createElement('div');
+  a.className='amb';
+  var s=Math.random()*1.5+.5;
+  a.style.width=s+'px';a.style.height=s+'px';
+  a.style.left=(Math.random()*100)+'%';
+  a.style.top=(Math.random()*100)+'%';
+  a.style.setProperty('--o',(Math.random()*.5+.15).toFixed(2));
+  a.style.setProperty('--d',(Math.random()*4+3).toFixed(2)+'s');
+  sky.appendChild(a);
+}
+var pool=["the last email, sent","the coffee, gone cold","a joke that landed","one good idea, at 2pm","a door, closed gently","the walk not taken","a promise, kept quietly","the news, half-watched","a name, almost forgotten","the light, changing outside","one small kindness","a question, left for tomorrow","the noise, finally quiet","a plan, loosely held"];
+var bag=pool.slice(),count=0;
+function next(){if(!bag.length)bag=pool.slice();return bag.splice(Math.floor(Math.random()*bag.length),1)[0]}
+sky.addEventListener('click',function(e){
+  var x=e.clientX,y=e.clientY;
+  var el=document.createElement('div');
+  el.className='word';
+  el.textContent=next();
+  el.style.left=x+'px';el.style.top=y+'px';
+  sky.appendChild(el);
+  requestAnimationFrame(function(){el.classList.add('in')});
+  hint.style.opacity=0;
+  setTimeout(function(){
+    el.classList.add('out');
+    var st=document.createElement('div');
+    st.className='star';
+    st.style.left=x+'px';st.style.top=y+'px';
+    sky.appendChild(st);
+    requestAnimationFrame(function(){st.classList.add('on')});
+    setTimeout(function(){el.remove()},1500);
+  },2100);
+  count++;
+  if(count===6){setTimeout(function(){done.classList.add('on')},2600)}
+});
+})();
+</script>
+</section>
+</body>
+</html>
