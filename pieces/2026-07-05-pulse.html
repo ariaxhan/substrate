@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head><meta charset='utf-8'><title>halfway</title></head>
+<body>
+<section data-date='2026-07-05' data-type='pulse'>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#0a0a0d;font-family:'Avenir Next','Century Gothic',Futura,sans-serif}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;cursor:none}
+#scale{position:relative;display:flex;align-items:baseline}
+.w{font-weight:700;letter-spacing:.06em;text-transform:uppercase;transition:color .25s;white-space:nowrap}
+#dawn{color:#e8a659}
+#dusk{color:#6b7fd7}
+#pin{width:10px;height:10px;margin:0 18px;border-radius:50%;background:#e9e6df;opacity:.35;transition:opacity .3s,box-shadow .3s}
+#stage.balanced #pin{opacity:1;box-shadow:0 0 18px 6px rgba(233,230,223,.5)}
+#secret{position:absolute;top:100%;left:50%;transform:translate(-50%,14px);margin-top:22px;font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:.72rem;letter-spacing:.08em;font-style:italic;color:rgba(233,230,223,.55);opacity:0;transition:opacity .5s,transform .5s;white-space:nowrap}
+#stage.balanced #secret{opacity:1;transform:translate(-50%,0)}
+#cap{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);font:.58rem/1 'Helvetica Neue',Arial,sans-serif;letter-spacing:.3em;text-transform:uppercase;color:rgba(233,230,223,.3)}
+</style>
+<div id="stage">
+<div id="scale">
+<span class="w" id="dawn">dawn</span>
+<div id="pin"></div>
+<span class="w" id="dusk">dusk</span>
+<div id="secret">the second where nothing tips</div>
+</div>
+</div>
+<div id="cap">tip the day</div>
+<script>
+(function(){
+var stage=document.getElementById('stage'),dawn=document.getElementById('dawn'),dusk=document.getElementById('dusk'),pin=document.getElementById('pin'),cap=document.getElementById('cap');
+var target=0,cur=0,base=54,amp=46;
+function move(x){
+  var cx=window.innerWidth/2;
+  target=Math.max(-1,Math.min(1,(x-cx)/cx));
+}
+window.addEventListener('mousemove',function(e){move(e.clientX)});
+window.addEventListener('touchmove',function(e){move(e.touches[0].clientX);e.preventDefault()},{passive:false});
+move(window.innerWidth/2);
+function frame(){
+  cur+=(target-cur)*0.09;
+  var dawnSize=base-cur*amp, duskSize=base+cur*amp;
+  dawn.style.fontSize=dawnSize.toFixed(1)+'px';
+  dusk.style.fontSize=duskSize.toFixed(1)+'px';
+  var dawnGlow=Math.max(0,(dawnSize-base)/amp);
+  var duskGlow=Math.max(0,(duskSize-base)/amp);
+  dawn.style.textShadow=dawnGlow>0?('0 0 '+(dawnGlow*26).toFixed(0)+'px rgba(232,166,89,'+(dawnGlow*.8).toFixed(2)+')'):'none';
+  dusk.style.textShadow=duskGlow>0?('0 0 '+(duskGlow*26).toFixed(0)+'px rgba(107,127,215,'+(duskGlow*.8).toFixed(2)+')'):'none';
+  pin.style.transform='rotate('+(cur*10).toFixed(1)+'deg)';
+  var near=Math.abs(cur)<0.025;
+  stage.classList.toggle('balanced',near);
+  cap.textContent=near?'holds':(cur<0?'tips toward dawn':'tips toward dusk');
+  requestAnimationFrame(frame);
+}
+frame();
+})();
+</script>
+</section>
+</body>
+</html>
