@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head><meta charset='utf-8'><title>halfway</title></head>
+<body>
+<section data-date='2026-07-06' data-type='pulse'>
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#ece6d9;font-family:Georgia,'Iowan Old Style',serif;color:#211f1c}
+#stage{position:fixed;inset:0;cursor:pointer}
+#stage::before,#stage::after{content:'';position:absolute;top:0;bottom:0;width:50%}
+#stage::before{left:0}
+#stage::after{right:0}
+#beam{position:absolute;height:3px;background:#211f1c;transition:transform .5s cubic-bezier(.34,1.2,.4,1)}
+#fulcrum{position:absolute;width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;border-bottom:46px solid #211f1c;transition:border-bottom-color .6s}
+.stage-bal #fulcrum{border-bottom-color:#a9822f}
+.string{position:absolute;width:1px;background:#b7ae9a;transition:left .5s,top .5s}
+.pan{position:absolute;border-radius:50%;border:1.5px solid #211f1c;background:#ece6d9;transition:left .5s,top .5s,width .3s,height .3s;display:flex;align-items:center;justify-content:center}
+.pan span{font-size:.7rem;letter-spacing:.05em}
+.lbl{position:absolute;font-style:italic;font-size:.85rem;letter-spacing:.08em;color:#6b6455;transition:left .5s,top .5s}
+#status{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;color:#8a8172;white-space:nowrap;text-align:center}
+#secret{display:block;margin-top:8px;font-style:italic;font-size:.72rem;letter-spacing:.04em;text-transform:none;opacity:0;transition:opacity .8s}
+.stage-bal #secret{opacity:1}
+</style>
+<div id="stage">
+<div id="fulcrum"></div>
+<div id="beam"></div>
+<div class="string" id="strL"></div>
+<div class="string" id="strR"></div>
+<div class="pan" id="panL"><span id="numL">0</span></div>
+<div class="pan" id="panR"><span id="numR">0</span></div>
+<div class="lbl" id="labL">sun</div>
+<div class="lbl" id="labR">moon</div>
+</div>
+<div id="status"><span id="line">press either half to add weight</span><i id="secret">for now, the day owes nothing to either side</i></div>
+<script>
+(function(){
+var sun=0,moon=0,cx,cy,L,S=64,stage=document.getElementById('stage');
+var beam=document.getElementById('beam'),ful=document.getElementById('fulcrum');
+var strL=document.getElementById('strL'),strR=document.getElementById('strR');
+var panL=document.getElementById('panL'),panR=document.getElementById('panR');
+var numL=document.getElementById('numL'),numR=document.getElementById('numR');
+var labL=document.getElementById('labL'),labR=document.getElementById('labR');
+var line=document.getElementById('line');
+function layout(){
+  cx=window.innerWidth/2;
+  cy=window.innerHeight/2-70;
+  L=Math.min(180,window.innerWidth*0.22);
+  ful.style.left=(cx-13)+'px';
+  ful.style.top=cy+'px';
+  render();
+}
+function render(){
+  var diff=sun-moon;
+  var deg=Math.max(-24,Math.min(24,diff*4));
+  var rad=deg*Math.PI/180;
+  beam.style.width=(2*L)+'px';
+  beam.style.left=(cx-L)+'px';
+  beam.style.top=(cy-1.5)+'px';
+  beam.style.transform='rotate('+deg+'deg)';
+  [-1,1].forEach(function(sign){
+    var ex=cx+sign*L*Math.cos(rad), ey=cy+sign*L*Math.sin(rad);
+    var str=sign<0?strL:strR, pan=sign<0?panL:panR, lab=sign<0?labL:labR;
+    str.style.left=ex+'px'; str.style.top=ey+'px'; str.style.height=S+'px';
+    var w=sign<0?sun:moon;
+    var d=Math.min(64,32+w*4);
+    pan.style.width=d+'px'; pan.style.height=d+'px';
+    pan.style.left=(ex-d/2)+'px'; pan.style.top=(ey+S)+'px';
+    (sign<0?numL:numR).textContent=w;
+    lab.style.left=(ex-16)+'px'; lab.style.top=(ey+S+d+10)+'px';
+  });
+  var bal=diff===0&&(sun+moon)>0;
+  stage.classList.toggle('stage-bal',bal);
+  line.textContent=diff===0?(sun===0?'press either half to add weight':'sun '+sun+' · moon '+moon+', held even'):(diff>0?'sun '+sun+' · moon '+moon+', sun leans heavy':'sun '+sun+' · moon '+moon+', moon leans heavy');
+}
+window.addEventListener('click',function(e){
+  if(e.clientX<window.innerWidth/2){sun++}else{moon++}
+  render();
+});
+window.addEventListener('resize',layout);
+layout();
+})();
+</script>
+</section>
+</body>
+</html>
