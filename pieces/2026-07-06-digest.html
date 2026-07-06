@@ -1,0 +1,99 @@
+<section data-date='2026-07-06' data-type='digest'>
+<style>
+#kd0706{position:relative;width:100%;height:520px;overflow:hidden;background:#0c1410;cursor:crosshair;font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace}
+#kd0706 canvas{display:block;width:100%;height:100%}
+#kd0706 .hint{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:rgba(150,255,190,.4);transition:opacity 1.2s;pointer-events:none;white-space:nowrap}
+#kd0706 .ct{position:absolute;top:14px;right:18px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(150,255,190,.45);pointer-events:none}
+#kd0706 .lb{position:absolute;top:14px;left:18px;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:rgba(150,255,190,.3);pointer-events:none}
+</style>
+<div id="kd0706">
+<canvas id="kd0706cv"></canvas>
+<div class="lb">emergence</div>
+<div class="ct" id="kd0706c"></div>
+<div class="hint" id="kd0706h">trace the field &middot; nearby facts will bond</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('kd0706'),cv=document.getElementById('kd0706cv'),ctx=cv.getContext('2d'),
+hint=document.getElementById('kd0706h'),ctr=document.getElementById('kd0706c');
+var W,H,DPR=Math.min(window.devicePixelRatio||1,2);
+function size(){
+W=root.clientWidth;H=root.clientHeight;
+cv.width=W*DPR;cv.height=H*DPR;
+ctx.setTransform(DPR,0,0,DPR,0,0);
+}
+size();
+window.addEventListener('resize',size);
+var N=54,pts=[];
+for(var i=0;i<N;i++){
+pts.push({x:Math.random()*W,y:Math.random()*H,r:1.4+Math.random()*1.8,on:false});
+}
+var edges=[],mx=-1,my=-1,active=false,bonded=0;
+function wake(){
+for(var i=0;i<pts.length;i++){
+var p=pts[i];
+if(p.on)continue;
+var dx=p.x-mx,dy=p.y-my;
+if(dx*dx+dy*dy<70*70){
+p.on=true;bonded++;
+var nearest=null,nd=1e9;
+for(var j=0;j<pts.length;j++){
+if(j===i||!pts[j].on)continue;
+var q=pts[j],ddx=q.x-p.x,ddy=q.y-p.y,d=ddx*ddx+ddy*ddy;
+if(d<nd){nd=d;nearest=j}
+}
+if(nearest!==null)edges.push([i,nearest]);
+ctr.textContent=bonded+'/'+N+' bonded';
+}
+}
+}
+root.addEventListener('mousemove',function(e){
+var b=root.getBoundingClientRect();
+mx=e.clientX-b.left;my=e.clientY-b.top;active=true;
+hint.style.opacity='0';
+wake();
+});
+root.addEventListener('mouseleave',function(){active=false});
+root.addEventListener('touchmove',function(e){
+var b=root.getBoundingClientRect(),t=e.touches[0];
+mx=t.clientX-b.left;my=t.clientY-b.top;active=true;
+hint.style.opacity='0';
+wake();
+},{passive:true});
+function draw(){
+ctx.clearRect(0,0,W,H);
+ctx.strokeStyle='rgba(140,255,190,.22)';
+ctx.lineWidth=1;
+for(var e=0;e<edges.length;e++){
+var a=pts[edges[e][0]],b=pts[edges[e][1]];
+ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+}
+if(active){
+for(var e2=0;e2<edges.length;e2++){
+var a2=pts[edges[e2][0]],b2=pts[edges[e2][1]];
+var mxp=(a2.x+b2.x)/2,myp=(a2.y+b2.y)/2,dx2=mxp-mx,dy2=myp-my;
+if(dx2*dx2+dy2*dy2<160*160){
+ctx.strokeStyle='rgba(190,255,220,.5)';
+ctx.beginPath();ctx.moveTo(a2.x,a2.y);ctx.lineTo(b2.x,b2.y);ctx.stroke();
+}
+}
+}
+for(var i=0;i<pts.length;i++){
+var p=pts[i];
+ctx.beginPath();
+ctx.fillStyle=p.on?'rgba(180,255,210,.95)':'rgba(90,120,105,.5)';
+ctx.arc(p.x,p.y,p.r+(p.on?1.1:0),0,Math.PI*2);
+ctx.fill();
+if(p.on){
+ctx.shadowColor='rgba(150,255,190,.8)';ctx.shadowBlur=8;
+ctx.fill();
+ctx.shadowBlur=0;
+}
+}
+requestAnimationFrame(draw);
+}
+ctr.textContent='0/'+N+' bonded';
+draw();
+})();
+</script>
+</section>
