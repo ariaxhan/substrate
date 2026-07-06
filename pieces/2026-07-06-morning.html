@@ -1,0 +1,49 @@
+<section data-date='2026-07-06' data-type='morning'>
+<style>
+section[data-date='2026-07-06']{position:relative;display:block;width:100%;min-height:480px;overflow:hidden;background:#f4efe4;cursor:pointer;font-family:Georgia,'Times New Roman',serif;-webkit-user-select:none;user-select:none}
+#sun0706{position:absolute;left:50%;top:120px;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle at 35% 30%,#fff,#e8c98a 55%,#c9924a 100%);box-shadow:0 0 24px 6px rgba(201,146,74,.25);transition:width .9s cubic-bezier(.2,.7,.3,1),height .9s cubic-bezier(.2,.7,.3,1),box-shadow .9s ease,top .9s ease,margin .3s ease}
+#lines0706{position:relative;max-width:560px;margin:0 auto;padding:260px 32px 60px;text-align:center;min-height:180px}
+#lines0706 div{font-size:1.3rem;line-height:1.6;color:#3a2f22;opacity:0;transform:translateY(6px);animation:in0706 .8s ease forwards}
+@keyframes in0706{to{opacity:1;transform:none}}
+#cap0706{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);font:11px/1.6 ui-monospace,'SF Mono',Consolas,monospace;letter-spacing:.3em;text-transform:uppercase;color:#8a7a5e;opacity:.8;white-space:nowrap}
+</style>
+<div id="sun0706"></div>
+<div id="lines0706"></div>
+<div id="cap0706">minute 0 &middot; click to begin</div>
+<script>
+(function(){
+var root=document.querySelector("section[data-date='2026-07-06']"),
+    sun=document.getElementById('sun0706'),
+    wrap=document.getElementById('lines0706'),
+    cap=document.getElementById('cap0706');
+var L=["grey.","grey, and quiet.","a bird, somewhere, deciding to.","the smallest warmth on the wall.","then a color, not yet named.","then another.","the window forgets it was ever dark.","everything that hasn't happened yet.","still time to be anyone.","now. write it."];
+var n=0;
+function lerp(a,b,t){return a+(b-a)*t}
+function grow(){
+  var t=n/(L.length-1);
+  var d=lerp(14,240,t);
+  sun.style.width=d+'px';
+  sun.style.height=d+'px';
+  sun.style.top=lerp(120,190,t)+'px';
+  sun.style.boxShadow='0 0 '+lerp(24,140,t)+'px '+lerp(6,40,t)+'px rgba('+Math.round(lerp(201,255,t))+','+Math.round(lerp(146,214,t))+','+Math.round(lerp(74,150,t))+',.35)';
+}
+root.addEventListener('click',function(){
+  if(n>=L.length)return;
+  var p=document.createElement('div');
+  p.textContent=L[n];
+  wrap.appendChild(p);
+  n++;
+  grow();
+  cap.textContent=(n<L.length?'minute '+n+' · click to continue':'now · the rest is yours');
+  if(wrap.children.length>4)wrap.removeChild(wrap.firstChild);
+});
+root.addEventListener('mousemove',function(e){
+  var mx=(e.clientX/window.innerWidth-.5)*14,
+      my=(e.clientY/window.innerHeight-.5)*8;
+  sun.style.marginLeft=mx+'px';
+  sun.style.marginTop=my+'px';
+});
+grow();
+})();
+</script>
+</section>
