@@ -1,0 +1,72 @@
+<section data-date='2026-07-06' data-type='reflection'>
+<style>
+#tpr0706{position:relative;width:100%;height:70vh;min-height:440px;overflow:hidden;cursor:crosshair;
+background:radial-gradient(ellipse at 50% 115%,#171226 0%,#0b0a14 45%,#050408 100%)}
+#tpr0706 .cap{position:absolute;top:38%;left:0;right:0;text-align:center;font:italic 22px/1.4 Georgia,'Iowan Old Style',serif;
+letter-spacing:.02em;color:rgba(232,224,255,.0);pointer-events:none;transition:color 3.5s ease, opacity 3.5s ease;opacity:0}
+#tpr0706 .cap.on{color:rgba(232,224,255,.55);opacity:1}
+#tpr0706 .hint{position:absolute;bottom:10px;left:14px;font:.65rem/1.4 -apple-system,sans-serif;letter-spacing:.2em;
+text-transform:uppercase;color:#5a5568;pointer-events:none;transition:opacity 1.5s}
+#tpr0706 .st{position:absolute;border-radius:50%;background:#f2ecff;opacity:0;transform:translate(-50%,-50%);
+transition:opacity 1.4s ease}
+#tpr0706 .st.on{animation:tprtw var(--d) ease-in-out var(--l) infinite}
+#tpr0706 .st.gold{background:#ffd89a}
+@keyframes tprtw{0%,100%{opacity:var(--a)}50%{opacity:var(--b)}}
+#tpr0706 .wd{position:absolute;transform:translate(-50%,-100%);font:13px Georgia,serif;font-style:italic;
+color:rgba(255,235,210,.9);opacity:0;transition:opacity 1.8s ease;pointer-events:none;white-space:nowrap}
+#tpr0706 .wd.on{opacity:1}
+</style>
+<div id="tpr0706">
+<div class="cap" id="tpr0706cap">the day, complete.</div>
+<div class="hint" id="tpr0706hint">click to leave a light</div>
+</div>
+<script>
+(function(){
+var wrap=document.getElementById('tpr0706'),cap=document.getElementById('tpr0706cap'),hint=document.getElementById('tpr0706hint');
+var words=["hush","enough","rest","unhurried","exhale","folded","complete","again","soon","gathered","quiet","done","tomorrow","still","home","after"];
+var count=0,MAX=90;
+function word(x,y,gold){
+  var w=document.createElement('span');
+  w.className='wd';
+  w.style.left=x+'%';w.style.top=(y-2)+'%';
+  w.textContent=words[Math.floor(Math.random()*words.length)];
+  if(gold)w.style.color='rgba(255,216,154,.95)';
+  wrap.appendChild(w);
+  requestAnimationFrame(function(){w.classList.add('on')});
+  setTimeout(function(){w.classList.remove('on');setTimeout(function(){w.remove()},2000)},1600);
+}
+function star(x,y,gold,withWord){
+  if(count>=MAX)return;
+  count++;
+  var s=document.createElement('div');
+  s.className='st'+(gold?' gold':'');
+  var size=gold?(3+Math.random()*2):(1.2+Math.random()*2);
+  s.style.width=size+'px';s.style.height=size+'px';
+  s.style.left=x+'%';s.style.top=y+'%';
+  s.style.boxShadow='0 0 '+(size*2.5)+'px '+(gold?'rgba(255,216,154,.8)':'rgba(230,225,255,.75)');
+  wrap.appendChild(s);
+  requestAnimationFrame(function(){
+    s.style.opacity=gold?.95:(.35+Math.random()*.5);
+    s.style.setProperty('--a',gold?.6:.25);
+    s.style.setProperty('--b',gold?1:.9);
+    s.style.setProperty('--d',(2.5+Math.random()*3.5)+'s');
+    s.style.setProperty('--l',(Math.random()*3)+'s');
+    s.classList.add('on');
+  });
+  if(withWord)word(x,y,gold);
+  if(count===1)setTimeout(function(){cap.classList.add('on')},2200);
+}
+function ambient(){
+  if(count<MAX)star(Math.random()*100,Math.random()*88,false,Math.random()<0.14);
+  setTimeout(ambient,900+Math.random()*1600);
+}
+ambient();
+wrap.addEventListener('click',function(e){
+  var r=wrap.getBoundingClientRect();
+  var x=(e.clientX-r.left)/r.width*100,y=(e.clientY-r.top)/r.height*100;
+  star(x,y,true,true);
+  hint.style.opacity=0;
+});
+})();
+</script>
+</section>
