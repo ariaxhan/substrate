@@ -1,0 +1,74 @@
+<section data-date='2026-07-07' data-type='digest'>
+<style>
+#kc0707{position:relative;width:100%;height:70vh;min-height:440px;overflow:hidden;background:radial-gradient(ellipse at 50% 40%,#0d0f1a 0%,#05060a 70%);font-family:ui-monospace,Menlo,Consolas,monospace;cursor:crosshair}
+#kc0707 canvas{position:absolute;inset:0;width:100%;height:100%}
+#kc0707 .hint{position:absolute;bottom:10px;left:14px;font-size:.66rem;letter-spacing:.08em;color:rgba(232,179,77,.35);pointer-events:none}
+#kc0707 .hint b{color:rgba(232,179,77,.6);font-weight:400}
+</style>
+<div id="kc0707">
+<canvas id="kc0707cv"></canvas>
+<div class="hint"><b>click</b> to crystallize a shard &middot; <b>hover</b> to trace its lattice</div>
+</div>
+<script>
+(function(){
+var wrap=document.getElementById('kc0707'),cv=document.getElementById('kc0707cv'),x=cv.getContext('2d');
+var W,H,dpr=Math.min(window.devicePixelRatio||1,2);
+function size(){var r=wrap.getBoundingClientRect();W=r.width;H=r.height;cv.width=W*dpr;cv.height=H*dpr;x.setTransform(dpr,0,0,dpr,0,0)}
+size();window.addEventListener('resize',size);
+var words='signal trace index shard vector layer weight prior thread node cluster fold echo context recall memory pattern lattice emerge axiom query cache kernel gradient anchor drift converge residue'.split(' ');
+var wi=0,nodes=[],edges=[],hoverIdx=-1,t=0;
+function seed(px,py){
+  var w=words[wi%words.length];wi++;
+  var n={x:px,y:py,word:w,mass:0,born:t};
+  var d=nodes.map(function(o,i){return {i:i,d:Math.hypot(o.x-px,o.y-py)}}).sort(function(a,b){return a.d-b.d});
+  var links=0;
+  for(var k=0;k<d.length&&links<2;k++){
+    if(links===0||d[k].d<170){
+      edges.push({a:nodes.length,b:d[k].i,born:t});
+      nodes[d[k].i].mass++;n.mass++;links++;
+    }
+  }
+  nodes.push(n);
+}
+seed(W*0.3,H*0.4);seed(W*0.65,H*0.55);seed(W*0.5,H*0.25);
+wrap.addEventListener('click',function(e){
+  var r=wrap.getBoundingClientRect();
+  seed(e.clientX-r.left,e.clientY-r.top);
+});
+wrap.addEventListener('mousemove',function(e){
+  var r=wrap.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top,best=-1,bd=26;
+  nodes.forEach(function(n,i){var d=Math.hypot(n.x-mx,n.y-my);if(d<bd){bd=d;best=i}});
+  hoverIdx=best;
+});
+wrap.addEventListener('mouseleave',function(){hoverIdx=-1});
+function draw(){
+  t+=1;
+  x.clearRect(0,0,W,H);
+  var pulse=0.5+0.5*Math.sin(t*0.015);
+  edges.forEach(function(e){
+    var a=nodes[e.a],b=nodes[e.b];
+    var lit=hoverIdx>-1&&(e.a===hoverIdx||e.b===hoverIdx);
+    var age=Math.min(1,(t-e.born)/60);
+    var alpha=lit?0.9:0.08+age*0.18+pulse*0.05;
+    x.strokeStyle=lit?'rgba(255,214,120,'+alpha+')':'rgba(232,179,77,'+alpha+')';
+    x.lineWidth=lit?1.6:0.8;
+    x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();
+  });
+  nodes.forEach(function(n,i){
+    var mature=Math.min(1,n.mass/4);
+    var lit=i===hoverIdx;
+    var r=1.5+mature*2.5+(lit?1.5:0);
+    x.beginPath();x.arc(n.x,n.y,r,0,7);
+    x.fillStyle=lit?'#ffe6ad':'rgba('+Math.round(140+115*mature)+','+Math.round(170+30*mature)+','+Math.round(255-155*mature)+',0.9)';
+    x.fill();
+    var fs=10+mature*3+(lit?2:0);
+    x.font=fs+'px ui-monospace,Menlo,monospace';
+    x.fillStyle=lit?'rgba(255,230,173,0.95)':'rgba(200,205,220,'+(0.35+mature*0.4)+')';
+    x.fillText(n.word,n.x+r+5,n.y+4);
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+})();
+</script>
+</section>
