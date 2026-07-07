@@ -1,0 +1,59 @@
+<section data-date='2026-07-07' data-type='morning'>
+<style>
+section[data-date='2026-07-07']{position:relative;display:block;width:100%;min-height:480px;overflow:hidden;background:#05061c;cursor:pointer;font-family:ui-monospace,'SF Mono',Consolas,monospace;-webkit-user-select:none;user-select:none}
+#sky0707{position:absolute;inset:0;transition:background 1.4s ease}
+#stars0707{position:absolute;inset:0;transition:opacity 1.2s ease,transform .6s ease}
+#stars0707 i{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff}
+#rise0707{position:relative;height:100%}
+#rise0707 span{position:absolute;white-space:nowrap;color:#ffe3c2;letter-spacing:.02em;opacity:0;animation:up0707 4.6s ease-out forwards}
+@keyframes up0707{0%{opacity:0;transform:translateY(0)}10%{opacity:.9}80%{opacity:.65}100%{opacity:0;transform:translateY(-170px)}}
+#cap0707{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#9aa0c0;opacity:.75;white-space:nowrap}
+</style>
+<div id="sky0707"></div>
+<div id="stars0707"></div>
+<div id="rise0707"></div>
+<div id="cap0707">dawn 0% &middot; click</div>
+<script>
+(function(){
+var root=document.querySelector("section[data-date='2026-07-07']"),
+    sky=document.getElementById('sky0707'),
+    stars=document.getElementById('stars0707'),
+    rise=document.getElementById('rise0707'),
+    cap=document.getElementById('cap0707');
+var L=["still asleep","the hour before names","not yet decided","a color with no name yet","possible","threshold","the world exhales","first light","open, barely","today, unmade","a door, ajar","waking edges","begin","the page holds still","light, deciding"];
+var n=0,MAX=14;
+function lerp(a,b,t){return a+(b-a)*t}
+function mix(c1,c2,t){return 'rgb('+Math.round(lerp(c1[0],c2[0],t))+','+Math.round(lerp(c1[1],c2[1],t))+','+Math.round(lerp(c1[2],c2[2],t))+')'}
+var top0=[5,6,28],top1=[64,84,138],mid0=[10,12,40],mid1=[196,110,132],bot0=[16,14,42],bot1=[255,186,120];
+function paint(){
+  var t=Math.min(1,n/MAX);
+  sky.style.background='linear-gradient(to bottom,'+mix(top0,top1,t)+' 0%,'+mix(mid0,mid1,t)+' 55%,'+mix(bot0,bot1,t)+' 100%)';
+  stars.style.opacity=1-t;
+  cap.textContent=t<1?('dawn '+Math.round(t*100)+'% · click'):'day, unwritten still · click';
+}
+for(var i=0;i<26;i++){
+  var s=document.createElement('i');
+  s.style.left=(Math.random()*100)+'%';
+  s.style.top=(Math.random()*60)+'%';
+  s.style.opacity=(Math.random()*.8+.2);
+  stars.appendChild(s);
+}
+root.addEventListener('click',function(){
+  var w=document.createElement('span');
+  w.textContent=L[n%L.length];
+  w.style.left=(10+Math.random()*70)+'%';
+  w.style.bottom=(5+Math.random()*10)+'%';
+  w.style.fontSize=(0.85+Math.random()*.6)+'rem';
+  rise.appendChild(w);
+  w.addEventListener('animationend',function(){w.remove()});
+  n++;
+  paint();
+});
+root.addEventListener('mousemove',function(e){
+  var mx=(e.clientX/window.innerWidth-.5)*10;
+  stars.style.transform='translateX('+mx+'px)';
+});
+paint();
+})();
+</script>
+</section>
