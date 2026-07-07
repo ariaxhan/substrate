@@ -1,0 +1,51 @@
+<section data-date='2026-07-07' data-type='pulse'>
+<style>
+#fu0707{position:relative;width:100%;height:70vh;min-height:440px;overflow:hidden;background:#0b0a14;font-family:Georgia,'Iowan Old Style',serif;cursor:pointer;user-select:none}
+#fu0707 .sky{position:absolute;inset:0;background:linear-gradient(90deg,#150f26 0%,#5c3a52 20%,#d98a5e 42%,#ffe9c7 50%,#8a6a96 58%,#332552 80%,#0c0a18 100%);transition:transform .9s ease}
+#fu0707.flip .sky{transform:scaleX(-1)}
+#fu0707 .pivot{position:absolute;top:50%;left:50%;transform:translate(-50%,2px);width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:10px solid rgba(255,233,199,.7)}
+#fu0707 .beam{position:absolute;top:50%;left:20%;width:60%;height:2px;margin-top:-1px;background:linear-gradient(90deg,rgba(255,233,199,.08),rgba(255,233,199,.9) 50%,rgba(255,233,199,.08));transform-origin:50% 50%;box-shadow:0 0 12px rgba(255,233,199,.4)}
+#fu0707 .pan{position:absolute;top:8px;font-size:.72rem;letter-spacing:.3em;text-transform:uppercase;white-space:nowrap}
+#fu0707 .pan.l{right:100%;margin-right:6px;color:#ffd9a8}
+#fu0707 .pan.r{left:100%;margin-left:6px;color:#c9b6ff}
+#fu0707 .mark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.85);font-size:1.05rem;letter-spacing:.5em;text-transform:uppercase;color:#fff3dd;opacity:0;text-shadow:0 0 18px rgba(255,233,199,.85);transition:opacity .5s,transform .5s;pointer-events:none}
+#fu0707 .hint{position:absolute;bottom:10px;left:14px;font:italic .68rem/1.4 Georgia,serif;letter-spacing:.05em;color:rgba(255,255,255,.35);pointer-events:none}
+</style>
+<div id="fu0707">
+<div class="sky"></div>
+<div class="pivot"></div>
+<div class="beam" id="fu0707beam">
+<span class="pan l" id="fu0707l">dawn</span>
+<span class="pan r" id="fu0707r">dusk</span>
+</div>
+<div class="mark" id="fu0707m">halfway</div>
+<div class="hint">tip the scale &middot; hold it still to find the middle &middot; click to turn the day over</div>
+</div>
+<script>
+(function(){
+var el=document.getElementById('fu0707'),beam=document.getElementById('fu0707beam'),lp=document.getElementById('fu0707l'),rp=document.getElementById('fu0707r'),mk=document.getElementById('fu0707m');
+var L=['dawn','wake','begin','rise'],R=['dusk','rest','end','set'],li=0,ri=0,flip=false,tilt=0,target=0;
+function words(){lp.textContent=flip?R[li]:L[li];rp.textContent=flip?L[ri]:R[ri]}
+words();
+el.addEventListener('mousemove',function(e){
+var r=el.getBoundingClientRect();
+target=((e.clientX-r.left)/r.width-0.5)*52;
+});
+el.addEventListener('mouseleave',function(){target=0});
+el.addEventListener('click',function(){
+flip=!flip;el.classList.toggle('flip');li=(li+1)%L.length;ri=(ri+1)%R.length;words();
+});
+function tick(){
+tilt+=(target-tilt)*0.07;
+beam.style.transform='rotate('+tilt.toFixed(2)+'deg)';
+var ct='rotate('+(-tilt).toFixed(2)+'deg)';
+lp.style.transform=ct;rp.style.transform=ct;
+var near=Math.abs(tilt)<1&&Math.abs(target)<1;
+mk.style.opacity=near?1:0;
+mk.style.transform='translate(-50%,-50%) scale('+(near?1:.85)+')';
+requestAnimationFrame(tick);
+}
+tick();
+})();
+</script>
+</section>
