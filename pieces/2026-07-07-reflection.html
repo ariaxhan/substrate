@@ -1,0 +1,93 @@
+<section data-date='2026-07-07' data-type='reflection'>
+<style>
+.taper-0707{position:relative;width:100%;height:100vh;background:radial-gradient(ellipse at 50% 100%,#0b1224 0%,#040611 60%,#000 100%);overflow:hidden;cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+.taper-0707 .sky{position:absolute;inset:0}
+.taper-0707 .horizon{position:absolute;bottom:0;left:0;width:100%;height:18%;background:linear-gradient(to top,#000,transparent)}
+.taper-0707 .word{position:absolute;bottom:6%;left:50%;transform:translateX(-50%);color:#5b6b8c;font-size:14px;letter-spacing:.35em;text-transform:lowercase;opacity:.55;text-align:center;width:90%;pointer-events:none;transition:opacity 2s}
+.taper-0707 .count{position:absolute;top:18px;left:22px;color:#3a4666;font-size:11px;letter-spacing:.2em;font-family:Georgia,serif;opacity:.6;pointer-events:none}
+.taper-0707 .hint{position:absolute;top:18px;right:22px;color:#3a4666;font-size:11px;letter-spacing:.1em;opacity:.5;pointer-events:none;font-style:italic}
+.taper-0707 .star{position:absolute;border-radius:50%;background:#fff;transform:translate(-50%,-50%);animation:tw0707 3.4s ease-in-out infinite}
+@keyframes tw0707{0%,100%{opacity:.35}50%{opacity:1}}
+.taper-0707 .burst{position:absolute;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);border:1px solid rgba(255,255,255,.5);animation:ring0707 1.2s ease-out forwards}
+@keyframes ring0707{0%{width:0;height:0;opacity:.9}100%{width:70px;height:70px;opacity:0}}
+</style>
+<div class="taper-0707" id="t0707">
+  <div class="sky" id="sky0707"></div>
+  <div class="horizon"></div>
+  <div class="count" id="ct0707">0 stars kept</div>
+  <div class="hint">the day is finished. rest here.</div>
+  <div class="word" id="wd0707">the sky was empty before you looked up</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('t0707');
+  var sky = document.getElementById('sky0707');
+  var ct = document.getElementById('ct0707');
+  var wd = document.getElementById('wd0707');
+  var phrases = [
+    "the sky was empty before you looked up",
+    "each light took years to arrive, and arrived anyway",
+    "nothing is asked of you now",
+    "the day closes its hand slowly",
+    "somewhere it is already tomorrow",
+    "stillness is not absence, it is arrival",
+    "you can stop here",
+    "the dark keeps what the light let go",
+    "rest is also a kind of light"
+  ];
+  var n = 0;
+  var W, H;
+  function size(){ W = root.clientWidth; H = root.clientHeight; }
+  size();
+  window.addEventListener('resize', size);
+
+  // ambient background stars, faint, non-interactive
+  for (var i=0;i<60;i++){
+    var s = document.createElement('div');
+    s.className = 'star';
+    var sz = Math.random()*1.6+0.6;
+    s.style.width = sz+'px';
+    s.style.height = sz+'px';
+    s.style.left = (Math.random()*100)+'%';
+    s.style.top = (Math.random()*82)+'%';
+    s.style.opacity = (Math.random()*0.3+0.15);
+    s.style.animationDelay = (Math.random()*3)+'s';
+    s.style.background = '#cdd7f2';
+    sky.appendChild(s);
+  }
+
+  function place(x,y){
+    var s = document.createElement('div');
+    s.className = 'star';
+    var sz = Math.random()*2.4+1.8;
+    s.style.width = sz+'px';
+    s.style.height = sz+'px';
+    s.style.left = x+'px';
+    s.style.top = y+'px';
+    s.style.animationDelay = (Math.random()*2)+'s';
+    s.style.boxShadow = '0 0 6px 1px rgba(255,255,255,.6)';
+    sky.appendChild(s);
+
+    var b = document.createElement('div');
+    b.className = 'burst';
+    b.style.left = x+'px';
+    b.style.top = y+'px';
+    root.appendChild(b);
+    setTimeout(function(){ b.remove(); }, 1300);
+
+    n++;
+    ct.textContent = n + (n===1 ? ' star kept' : ' stars kept');
+    wd.style.opacity = 0;
+    setTimeout(function(){
+      wd.textContent = phrases[Math.min(n, phrases.length-1)];
+      wd.style.opacity = 0.55;
+    }, 700);
+  }
+
+  root.addEventListener('click', function(e){
+    var r = root.getBoundingClientRect();
+    place(e.clientX - r.left, e.clientY - r.top);
+  });
+})();
+</script>
+</section>
