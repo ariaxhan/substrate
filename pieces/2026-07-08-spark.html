@@ -1,0 +1,31 @@
+<section data-date='2026-07-08' data-type='spark'>
+<style>
+#t0708{margin:0;background:#0b0b10;height:70vh;min-height:420px;overflow:hidden;position:relative;cursor:crosshair;font-family:Georgia,serif}
+#t0708 canvas{display:block;width:100%;height:100%}
+#t0708 .h{position:absolute;bottom:10px;left:14px;color:#55536a;font:11px/1.4 monospace;letter-spacing:.04em;pointer-events:none}
+</style>
+<div id="t0708"><canvas></canvas><div class="h">move to draw them together &middot; click to force it</div></div>
+<script>
+(function(){
+var R=document.getElementById('t0708'),cv=R.querySelector('canvas'),x=cv.getContext('2d'),W,H;
+function sz(){W=cv.width=R.clientWidth;H=cv.height=R.clientHeight}
+sz();window.addEventListener('resize',sz);
+var A=["I said","the wound","this hour","your name","what's left","the wire","a door"];
+var B=["you meant","the world","that ache","my hands","what's found","the current","a room"];
+var F=["what I meant to say","the shape of a scar","a held breath","two hands, one grip","the thing that remains","a live line","the space between rooms"];
+function sd(L,s){return L.map(function(t,i){return{t:t,i:i,x:s?W-Math.random()*W*.35:Math.random()*W*.35,y:40+Math.random()*(H-80),vx:(Math.random()-.5)*.15,vy:(Math.random()-.5)*.15,r:5+Math.random()*3,c:0}})}
+var a=sd(A,0),b=sd(B,1),sp=[],mx=W/2,my=H/2,ov=false;
+R.addEventListener('mousemove',function(e){var r=R.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;ov=true});
+R.addEventListener('mouseleave',function(){ov=false});
+R.addEventListener('click',function(){a.concat(b).forEach(function(p){var dx=mx-p.x,dy=my-p.y,d=Math.hypot(dx,dy)||1;p.vx+=dx/d*1.4;p.vy+=dy/d*1.4})});
+function st(L){L.forEach(function(p){if(ov){var dx=mx-p.x,dy=my-p.y,d=Math.hypot(dx,dy)||1;if(d<260){p.vx+=dx/d*.02;p.vy+=dy/d*.02}}p.vx*=.98;p.vy*=.98;p.x+=p.vx;p.y+=p.vy;if(p.x<10||p.x>W-10)p.vx*=-1;if(p.y<10||p.y>H-10)p.vy*=-1;if(p.c>0)p.c--})}
+function co(){a.forEach(function(pa){if(pa.c)return;b.forEach(function(pb){if(pb.c)return;var d=Math.hypot(pa.x-pb.x,pa.y-pb.y);if(d<pa.r+pb.r+14){var mX=(pa.x+pb.x)/2,mY=(pa.y+pb.y)/2;sp.push({x:mX,y:mY,t:F[pa.i%F.length],l:1});pa.c=240;pb.c=240;pa.vx=(pa.x-pb.x)*.06;pa.vy=(pa.y-pb.y)*.06-.3;pb.vx=(pb.x-pa.x)*.06;pb.vy=(pb.y-pa.y)*.06-.3}})})}
+function dr(){x.fillStyle='rgba(11,11,16,0.22)';x.fillRect(0,0,W,H);
+[[a,'#7fb3ff'],[b,'#ff9d7f']].forEach(function(pr){var L=pr[0],col=pr[1];L.forEach(function(p){x.beginPath();x.arc(p.x,p.y,p.c?p.r*1.6:p.r,0,7);x.fillStyle=p.c?'#fff':col;x.globalAlpha=p.c?.9:.65;x.fill();x.globalAlpha=1;x.font='13px Georgia,serif';x.fillStyle='rgba(220,220,235,0.55)';x.textAlign=L===a?'right':'left';x.fillText(p.t,L===a?p.x-p.r-6:p.x+p.r+6,p.y+4)})});
+sp.forEach(function(s){x.globalAlpha=Math.max(s.l,0);x.font='italic 16px Georgia,serif';x.textAlign='center';x.fillStyle='#ffe9d6';x.fillText(s.t,s.x,s.y-(1-s.l)*40);x.globalAlpha=1;s.l-=.006});
+sp=sp.filter(function(s){return s.l>0})}
+function tk(){st(a);st(b);co();dr();requestAnimationFrame(tk)}
+tk();
+})();
+</script>
+</section>
