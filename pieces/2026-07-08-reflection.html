@@ -1,0 +1,81 @@
+<section data-date='2026-07-08' data-type='reflection'>
+<style>
+.tpr{margin:0;overflow:hidden;height:70vh;min-height:420px;position:relative;
+background:radial-gradient(ellipse at 50% 120%,#0d1224 0%,#060814 45%,#020207 100%);
+cursor:crosshair;font-family:Georgia,'Iowan Old Style',serif}
+.tpr .msg{position:absolute;top:14px;left:0;right:0;text-align:center;
+color:#5b6488;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+font-family:Arial,sans-serif;opacity:.7;pointer-events:none;transition:opacity 2s}
+.tpr .horizon{position:absolute;left:0;right:0;bottom:0;height:1px;
+background:linear-gradient(90deg,transparent,#1b2140,transparent)}
+.tpr .cap{position:absolute;bottom:16px;left:0;right:0;text-align:center;
+color:#3a4270;font-size:13px;font-style:italic;opacity:0;transition:opacity 3s ease}
+.tpr .cap.on{opacity:.85}
+.tpr .star{position:absolute;border-radius:50%;background:#fff;
+box-shadow:0 0 6px 1px #cdd6ff;transform:scale(0);
+transition:transform 1.6s cubic-bezier(.2,1.4,.3,1),opacity 4s linear 2s}
+.tpr .star.in{transform:scale(1)}
+.tpr .word{position:absolute;color:#9aa4d4;font-style:italic;opacity:0;
+pointer-events:none;transition:opacity 2.4s ease,transform 5s linear;
+transform:translateY(0)}
+.tpr .word.in{opacity:.55;transform:translateY(-24px)}
+</style>
+<div class="tpr" id="tprSky">
+  <div class="msg" id="tprMsg">the day is complete &mdash; click to rest a star</div>
+  <div class="cap" id="tprCap">stillness, before the next beginning</div>
+  <div class="horizon"></div>
+</div>
+<script>
+(function(){
+  var sky=document.getElementById('tprSky'),
+      msg=document.getElementById('tprMsg'),
+      cap=document.getElementById('tprCap'),
+      words=['rest','quiet','done','enough','tomorrow','still','dark','soft','breathe','home'],
+      n=0;
+  function twinkle(el){
+    var flicker=function(){
+      if(!el.parentNode)return;
+      el.style.opacity=(0.55+Math.random()*0.45).toFixed(2);
+      setTimeout(flicker,900+Math.random()*2200);
+    };
+    flicker();
+  }
+  sky.addEventListener('click',function(e){
+    var r=sky.getBoundingClientRect(),
+        x=e.clientX-r.left,
+        y=e.clientY-r.top,
+        size=(1+Math.random()*2.4).toFixed(1),
+        s=document.createElement('div');
+    s.className='star';
+    s.style.width=s.style.height=size+'px';
+    s.style.left=x+'px';
+    s.style.top=y+'px';
+    sky.appendChild(s);
+    requestAnimationFrame(function(){s.classList.add('in')});
+    twinkle(s);
+
+    if(Math.random()<0.6){
+      var w=document.createElement('div');
+      w.className='word';
+      w.textContent=words[Math.floor(Math.random()*words.length)];
+      w.style.left=(x-20+Math.random()*40)+'px';
+      w.style.top=y+'px';
+      w.style.fontSize=(11+Math.random()*6).toFixed(0)+'px';
+      sky.appendChild(w);
+      requestAnimationFrame(function(){w.classList.add('in')});
+      setTimeout(function(){w.style.opacity=0},2600);
+      setTimeout(function(){w.remove()},7600);
+    }
+
+    n++;
+    if(n===1){msg.textContent='one star, and the day sets down';}
+    else if(n===6){msg.textContent='the sky remembers everything you gave it';}
+    else if(n===14){
+      msg.style.opacity=0;
+      cap.classList.add('on');
+    }
+    if(n>2)msg.style.opacity = n<14?0.7:0;
+  });
+})();
+</script>
+</section>
