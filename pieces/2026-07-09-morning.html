@@ -1,0 +1,63 @@
+<section data-date='2026-07-09' data-type='morning'>
+<style>
+#fl{position:fixed;inset:0;overflow:hidden;cursor:crosshair;
+background:linear-gradient(to bottom,#0b1026 0%,#1a1f4d 40%,#2b1f4d 70%,#0b1026 100%)}
+#fl #sky{position:absolute;inset:0;transition:background .4s linear}
+#fl #sun{position:absolute;width:46px;height:46px;border-radius:50%;
+background:radial-gradient(circle,#fff8e7,#ffd89b 45%,transparent 72%);
+pointer-events:none;transition:box-shadow .4s}
+#fl #horizon{position:absolute;left:0;right:0;bottom:32%;height:1px;
+background:rgba(255,255,255,.14);pointer-events:none}
+#fl #hint{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);
+color:rgba(255,255,255,.35);font:italic 12px Georgia,serif;letter-spacing:.5px;
+pointer-events:none;transition:opacity .6s}
+#fl .w{position:absolute;color:#fdf3e2;font-family:Georgia,serif;font-style:italic;
+opacity:0;pointer-events:none;letter-spacing:.4px;text-shadow:0 0 8px rgba(255,216,155,.4);
+animation:flrise 4.2s ease-out forwards}
+@keyframes flrise{0%{opacity:0;transform:translateY(18px)}14%{opacity:.9}100%{opacity:0;transform:translateY(-58px)}}
+</style>
+<div id="fl">
+  <div id="sky"></div>
+  <div id="sun"></div>
+  <div id="horizon"></div>
+  <div id="hint">move to shift the hour&nbsp;&middot;&nbsp;click to leave a word unwritten</div>
+</div>
+<script>
+(function(){
+var box=document.getElementById('fl'),sky=document.getElementById('sky'),
+    sun=document.getElementById('sun'),hint=document.getElementById('hint'),t=0;
+var words=['not yet','almost','still asleep','first light','unwritten','waking',
+  'threshold','quiet','becoming','possible','the day before it happens','dawn',
+  'begin','one more breath','open'];
+function tone(t){
+  var h1=230-180*t,h2=260-230*t,h3=30+10*t;
+  return 'linear-gradient(to bottom,'+
+    'hsl('+h1+',55%,'+(9+t*28)+'%) 0%,'+
+    'hsl('+h2+',65%,'+(16+t*36)+'%) 42%,'+
+    'hsl('+h3+',85%,'+(48+t*22)+'%) 100%)';
+}
+function move(e){
+  var r=box.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+  t=Math.max(0,Math.min(1,x/r.width));
+  sky.style.background=tone(t);
+  var sx=x-23,sy=r.height*0.72-t*r.height*0.42;
+  sun.style.left=sx+'px';sun.style.top=sy+'px';
+  sun.style.boxShadow='0 0 '+(30+t*60)+'px '+(10+t*24)+'px rgba(255,216,155,'+(.15+t*.55)+')';
+  hint.style.opacity=Math.max(.15,1-t*1.4);
+}
+box.addEventListener('mousemove',move);
+box.addEventListener('click',function(e){
+  var r=box.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+  var w=document.createElement('span');
+  w.className='w';
+  w.textContent=words[Math.floor(Math.random()*words.length)];
+  w.style.left=x+'px';w.style.top=y+'px';
+  w.style.fontSize=(12+Math.random()*10)+'px';
+  box.appendChild(w);
+  w.addEventListener('animationend',function(){w.remove()});
+});
+sky.style.background=tone(0);
+sun.style.left='30%';sun.style.top='68%';
+})();
+</script>
+</section>
