@@ -1,0 +1,76 @@
+<section data-date='2026-07-09' data-type='pulse'>
+<style>
+  #fulcrum-2026-07-09{position:relative;min-height:62vh;overflow:hidden;
+    background:linear-gradient(90deg,#241a35 0%,#111014 50%,#301811 100%);
+    font-family:Georgia,'Times New Roman',serif;color:#e8dfc8;
+    display:flex;align-items:center;justify-content:center;cursor:pointer}
+  #fulcrum-2026-07-09 .axis{position:absolute;left:50%;top:0;bottom:0;width:1px;
+    background:rgba(232,223,200,.12);transform:translateX(-50%)}
+  #fulcrum-2026-07-09 .stage{position:relative;width:min(84vw,760px);height:44vh}
+  #fulcrum-2026-07-09 .beam{position:absolute;left:50%;top:50%;width:78%;height:1px;
+    background:linear-gradient(90deg,#b79bd9,#e8dfc8 50%,#e2946c);
+    transform-origin:50% 50%;transition:transform .08s linear;
+    box-shadow:0 0 18px rgba(232,223,200,.15)}
+  #fulcrum-2026-07-09 .word{position:absolute;top:-.9em;font-size:clamp(.9rem,2vw,1.4rem);
+    letter-spacing:.34em;text-transform:uppercase}
+  #fulcrum-2026-07-09 .word.l{left:0;transform:translateX(-50%)}
+  #fulcrum-2026-07-09 .word.r{right:0;transform:translateX(50%);text-align:right}
+  #fulcrum-2026-07-09 .pivot{position:absolute;left:50%;top:50%;width:0;height:0;
+    border-left:9px solid transparent;border-right:9px solid transparent;
+    border-bottom:15px solid rgba(232,223,200,.35);transform:translate(-50%,0)}
+  #fulcrum-2026-07-09 .read{position:absolute;left:50%;bottom:6%;transform:translateX(-50%);
+    font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;opacity:.5}
+  #fulcrum-2026-07-09 .flash{position:absolute;left:50%;top:50%;width:6px;height:6px;
+    border-radius:50%;background:#e8dfc8;transform:translate(-50%,-50%);opacity:0;
+    pointer-events:none}
+  #fulcrum-2026-07-09 .flash.go{animation:fulc-ping .6s ease-out}
+  @keyframes fulc-ping{0%{opacity:.9;box-shadow:0 0 0 0 rgba(232,223,200,.5)}
+    100%{opacity:0;box-shadow:0 0 0 60px rgba(232,223,200,0)}}
+</style>
+<div id="fulcrum-2026-07-09">
+  <div class="axis"></div>
+  <div class="stage">
+    <div class="beam" id="fb">
+      <span class="word l" id="fwl">dawn</span>
+      <span class="word r" id="fwr">dusk</span>
+    </div>
+    <div class="pivot"></div>
+    <div class="flash" id="ff"></div>
+  </div>
+  <div class="read" id="fr">the day balances at neither end</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('fulcrum-2026-07-09'),
+      beam=document.getElementById('fb'),
+      wl=document.getElementById('fwl'),
+      wr=document.getElementById('fwr'),
+      rd=document.getElementById('fr'),
+      fl=document.getElementById('ff'),
+      flipped=false,
+      max=16;
+  function onMove(e){
+    var r=el.getBoundingClientRect(),
+        x=(e.clientX-r.left)/r.width,
+        t=Math.max(-1,Math.min(1,(x-.5)*2)),
+        deg=t*max;
+    beam.style.transform='translate(-50%,-50%) rotate('+deg+'deg)';
+    var eq=Math.round((1-Math.abs(t))*100);
+    rd.textContent=eq>=97?'equilibrium, however briefly':eq+'% toward center';
+  }
+  el.addEventListener('mousemove',onMove);
+  el.addEventListener('mouseleave',function(){
+    beam.style.transform='translate(-50%,-50%) rotate(0deg)';
+    rd.textContent='the day balances at neither end';
+  });
+  el.addEventListener('click',function(e){
+    flipped=!flipped;
+    var a=flipped?'dusk':'dawn', b=flipped?'dawn':'dusk';
+    wl.textContent=a; wr.textContent=b;
+    fl.style.left=e.clientX-el.getBoundingClientRect().left+'px';
+    fl.style.top=e.clientY-el.getBoundingClientRect().top+'px';
+    fl.classList.remove('go'); void fl.offsetWidth; fl.classList.add('go');
+  });
+})();
+</script>
+</section>
