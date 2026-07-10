@@ -1,0 +1,80 @@
+<section data-date='2026-07-10' data-type='pulse'>
+<style>
+#half-0710{position:relative;height:62vh;min-height:420px;overflow:hidden;
+  background:#0a0a0f;cursor:crosshair}
+#half-0710 .horizon{position:absolute;left:0;right:0;top:50%;height:1px;
+  background:rgba(255,255,255,.09)}
+#half-0710 .tick{position:absolute;top:50%;left:50%;width:5px;height:5px;
+  border-radius:50%;background:rgba(255,255,255,.5);
+  transform:translate(-50%,-50%);transition:background .3s}
+#half-0710 .ghost{position:absolute;left:50%;top:50%;
+  font-family:'Helvetica Neue',Arial,sans-serif;font-weight:800;
+  text-transform:uppercase;font-size:clamp(2.2rem,9vw,5.6rem);
+  letter-spacing:.16em;white-space:nowrap;mix-blend-mode:screen;
+  transition:text-shadow .5s}
+#half-0710 .ghost.a{color:#ff9d5c}
+#half-0710 .ghost.b{color:#5cc8ff}
+#half-0710.flip .ghost.a{color:#5cc8ff}
+#half-0710.flip .ghost.b{color:#ff9d5c}
+#half-0710 .caption{position:absolute;bottom:16%;left:50%;
+  transform:translateX(-50%);font-family:Georgia,'Times New Roman',serif;
+  font-style:italic;font-size:.85rem;letter-spacing:.05em;
+  color:rgba(255,255,255,0);transition:color .8s;pointer-events:none}
+#half-0710 .caption.on{color:rgba(255,255,255,.75)}
+#half-0710 .hint{position:absolute;bottom:16px;left:0;right:0;text-align:center;
+  font-family:monospace;font-size:11px;letter-spacing:.05em;
+  color:rgba(255,255,255,.28)}
+</style>
+<div id="half-0710">
+  <div class="horizon"></div>
+  <div class="tick" id="h-tick"></div>
+  <span class="ghost a" id="h-a">NOON</span>
+  <span class="ghost b" id="h-b">NOON</span>
+  <div class="caption" id="h-cap">the middle holds</div>
+  <div class="hint">move to split it &middot; click to flip</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('half-0710'),
+      a=document.getElementById('h-a'),
+      b=document.getElementById('h-b'),
+      tick=document.getElementById('h-tick'),
+      cap=document.getElementById('h-cap'),
+      words=['NOON','LEVEL'],
+      wi=0, max=44, target=0, auto=true;
+  function setWord(w){a.textContent=w;b.textContent=w}
+  function apply(){
+    var off=target*max, tilt=target*4;
+    a.style.transform='translate(calc(-50% - '+off.toFixed(1)+'px),-50%) rotate('+(-tilt).toFixed(1)+'deg)';
+    b.style.transform='translate(calc(-50% + '+off.toFixed(1)+'px),-50%) rotate('+tilt.toFixed(1)+'deg)';
+    var bal=Math.abs(off)<1.4;
+    cap.classList.toggle('on',bal);
+    tick.style.background=bal?'#fff':'rgba(255,255,255,.5)';
+    var glow=bal?'0 0 26px rgba(255,255,255,.55)':'none';
+    a.style.textShadow=glow; b.style.textShadow=glow;
+  }
+  el.addEventListener('mousemove',function(e){
+    auto=false;
+    var r=el.getBoundingClientRect(),
+        x=(e.clientX-r.left)/r.width;
+    target=Math.max(-1,Math.min(1,(x-.5)*2));
+    tick.style.left=(x*100)+'%';
+    apply();
+  });
+  el.addEventListener('mouseleave',function(){auto=true});
+  el.addEventListener('click',function(){
+    el.classList.toggle('flip');
+    wi=(wi+1)%words.length;
+    setWord(words[wi]);
+  });
+  (function drift(){
+    if(auto){
+      target=Math.sin(Date.now()/1900)*0.4;
+      tick.style.left=(50+target*50)+'%';
+      apply();
+    }
+    requestAnimationFrame(drift);
+  })();
+})();
+</script>
+</section>
