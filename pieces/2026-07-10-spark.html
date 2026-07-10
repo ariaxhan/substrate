@@ -1,0 +1,67 @@
+<section data-date='2026-07-10' data-type='spark'>
+<style>
+#taper-0710{position:relative;width:100%;height:70vh;min-height:420px;background:#070708;overflow:hidden;font-family:Georgia,serif;cursor:crosshair;border-radius:4px}
+#taper-0710 .hint{position:absolute;bottom:10px;left:14px;color:#555;font:11px sans-serif;letter-spacing:.05em;pointer-events:none}
+#taper-0710 canvas{display:block}
+</style>
+<div id="taper-0710">
+<canvas id="tpCv0710"></canvas>
+<div class="hint">move to bend the waves. click to make them meet.</div>
+</div>
+<script>
+(function(){
+var el=document.getElementById('taper-0710'),
+cv=document.getElementById('tpCv0710'),
+g=cv.getContext('2d'),
+W,H,Lx,Ly,Rx,Ry;
+function rs(){W=cv.width=el.clientWidth;H=cv.height=el.clientHeight;Lx=W*.28;Ly=H*.5;Rx=W*.72;Ry=H*.5}
+rs(); window.addEventListener('resize',rs);
+
+var mx=W/2,my=H/2,active=0,pulse=0,t=0,cool=0,labels=[];
+var words=['meet','bloom','align','arrive','becomes','witness','holds','stays'];
+
+el.addEventListener('mousemove',function(e){var r=el.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;active=1});
+el.addEventListener('mouseleave',function(){active=0});
+el.addEventListener('click',function(e){var r=el.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;active=1;pulse=50});
+
+function dist(x1,y1,x2,y2){var dx=x1-x2,dy=y1-y2;return Math.sqrt(dx*dx+dy*dy)}
+
+function frame(){
+  g.fillStyle='rgba(7,7,8,.5)';
+  g.fillRect(0,0,W,H);
+  if(pulse>0)pulse--;
+  t+=0.045;
+  var k=0.045,step=15,best=0,bx=0,by=0;
+  for(var y=step/2;y<H;y+=step){
+    for(var x=step/2;x<W;x+=step){
+      var dl=dist(x,y,Lx,Ly),dr=dist(x,y,Rx,Ry);
+      var vl=Math.sin(dl*k-t),vr=Math.sin(dr*k-t*1.13),vm=0;
+      if(active){var dm=dist(x,y,mx,my);vm=(0.6+pulse/50)*Math.sin(dm*k-t*1.4)}
+      var s=(vl+vr+vm)/(2.6+pulse/50);
+      var inten=Math.max(0,(s-0.55)/0.45);
+      if(inten>0.02){
+        g.globalAlpha=Math.min(1,inten);
+        g.fillStyle='rgb(255,'+(150+Math.floor(inten*90))+',110)';
+        g.fillRect(x-1.5,y-1.5,3,3);
+      }
+      if(inten>best){best=inten;bx=x;by=y}
+    }
+  }
+  g.globalAlpha=1;
+  if(cool>0)cool--;
+  if(best>0.9&&cool<=0){labels.push({x:bx,y:by,w:words[0|Math.random()*words.length],life:0});cool=45}
+  g.textAlign='center';g.textBaseline='middle';g.font='italic 15px Georgia';
+  for(var i=0;i<labels.length;i++){
+    var L=labels[i];L.life++;
+    var a=L.life<20?L.life/20:Math.max(0,1-(L.life-20)/40);
+    g.globalAlpha=a;g.fillStyle='#fff7e6';g.shadowColor='#ffb35c';g.shadowBlur=14;
+    g.fillText(L.w,L.x,L.y-14);
+  }
+  g.shadowBlur=0;g.globalAlpha=1;
+  labels=labels.filter(function(L){return L.life<60});
+  requestAnimationFrame(frame);
+}
+frame();
+})();
+</script>
+</section>
