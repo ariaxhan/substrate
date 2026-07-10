@@ -1,0 +1,123 @@
+<section data-date='2026-07-10' data-type='morning'>
+<style>
+#taper-0710 {
+  margin: 0;
+  height: 100vh;
+  min-height: 560px;
+  background: #06070c;
+  overflow: hidden;
+  position: relative;
+  cursor: none;
+  font-family: Georgia, 'Iowan Old Style', serif;
+}
+#taper-0710 .glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(420px circle at var(--x,50%) var(--y,50%),
+    rgba(255,214,150,0.35), rgba(255,150,90,0.14) 35%, rgba(6,7,12,0) 70%);
+  transition: background 60ms linear;
+}
+#taper-0710 .horizon {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: var(--h, 0%);
+  background: linear-gradient(to top, #1a0f18, #06070c 92%);
+  transition: height 1.4s ease-out;
+  pointer-events: none;
+}
+#taper-0710 .hint {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  color: #766a5c;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  pointer-events: none;
+  transition: opacity 0.6s;
+}
+#taper-0710 .word {
+  position: absolute;
+  color: #f4e3c8;
+  font-style: italic;
+  font-size: 22px;
+  transform: translate(-50%,-50%);
+  opacity: 0;
+  animation: taper-rise 4s ease-out forwards;
+  text-shadow: 0 0 18px rgba(255,190,110,0.55);
+  pointer-events: none;
+  white-space: nowrap;
+}
+@keyframes taper-rise {
+  0%   { opacity: 0; transform: translate(-50%,-40%) scale(0.85); }
+  12%  { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%,-92%) scale(1.06); }
+}
+#taper-0710 .cur {
+  position: absolute;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #ffe7c2;
+  box-shadow: 0 0 12px 4px rgba(255,210,140,0.8);
+  pointer-events: none;
+  transform: translate(-50%,-50%);
+}
+</style>
+<div id="taper-0710">
+  <div class="horizon"></div>
+  <div class="glow"></div>
+  <div class="cur"></div>
+  <div class="hint">the day has not been written yet &mdash; move, then touch it</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('taper-0710');
+  var glow = root.querySelector('.glow');
+  var cur = root.querySelector('.cur');
+  var hint = root.querySelector('.hint');
+  var hz = root.querySelector('.horizon');
+  var lex = ['light','begin','unwritten','still','maybe','first','breath','open','quiet','soon','again','rise','possible','blank','dawn','before','wake','ahead'];
+  var used = 0, dawn = 0, touched = false;
+
+  function setXY(x, y){
+    var r = root.getBoundingClientRect();
+    var px = ((x - r.left) / r.width * 100).toFixed(2) + '%';
+    var py = ((y - r.top) / r.height * 100).toFixed(2) + '%';
+    root.style.setProperty('--x', px);
+    root.style.setProperty('--y', py);
+    cur.style.left = (x - r.left) + 'px';
+    cur.style.top = (y - r.top) + 'px';
+    dawn = Math.min(38, dawn + 0.4);
+    root.style.setProperty('--h', dawn + '%');
+  }
+
+  root.addEventListener('mousemove', function(e){
+    setXY(e.clientX, e.clientY);
+    if (!touched) { hint.style.opacity = 0.35; }
+  });
+
+  root.addEventListener('click', function(e){
+    touched = true;
+    hint.style.opacity = 0;
+    var r = root.getBoundingClientRect();
+    var w = document.createElement('span');
+    w.className = 'word';
+    w.textContent = lex[used % lex.length];
+    used++;
+    w.style.left = (e.clientX - r.left) + 'px';
+    w.style.top = (e.clientY - r.top) + 'px';
+    w.style.fontSize = (16 + Math.random() * 20) + 'px';
+    root.appendChild(w);
+    setTimeout(function(){ w.remove(); }, 4200);
+  });
+
+  root.addEventListener('touchmove', function(e){
+    var t = e.touches[0];
+    if (t) setXY(t.clientX, t.clientY);
+  }, {passive:true});
+})();
+</script>
+</section>
