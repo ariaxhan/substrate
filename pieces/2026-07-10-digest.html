@@ -1,0 +1,61 @@
+<section data-date='2026-07-10' data-type='digest'>
+<style>
+#cr0710{position:relative;width:100%;height:70vh;min-height:420px;overflow:hidden;background:linear-gradient(160deg,#f7f2e6,#ece3d1 75%);cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+#cr0710 canvas{position:absolute;inset:0;pointer-events:none}
+#cr0710 .g{position:absolute;inset:0}
+#cr0710 .c{position:absolute;box-sizing:border-box;display:flex;align-items:center;justify-content:center;opacity:0;background:rgba(60,45,20,.03);font-style:italic;pointer-events:none;transition:opacity .9s ease}
+#cr0710 .hint{position:absolute;top:14px;left:18px;margin:0;font:italic 13px/1.4 Georgia,serif;color:rgba(70,55,35,.45);pointer-events:none;transition:opacity 1.1s ease}
+#cr0710 .ct{position:absolute;bottom:12px;right:16px;font:italic 11px/1 Georgia,serif;color:rgba(70,55,35,.4);pointer-events:none}
+</style>
+<div id="cr0710">
+<div class="g"></div>
+<p class="hint">click to settle a fragment &middot; hover to trace its lineage</p>
+<span class="ct">0 settled</span>
+</div>
+<script>
+(function(){
+var h=document.currentScript.closest('section').querySelector('#cr0710'),g=h.querySelector('.g'),ht=h.querySelector('.hint'),ct=h.querySelector('.ct');
+var cv=document.createElement('canvas');h.appendChild(cv);
+var x=cv.getContext('2d'),W,H,dp=Math.min(window.devicePixelRatio||1,2),CS=34,co,ro,cl,sd=0;
+function sz(f){var r=h.getBoundingClientRect();W=r.width;H=r.height;cv.style.width=W+'px';cv.style.height=H+'px';cv.width=W*dp;cv.height=H*dp;x.setTransform(dp,0,0,dp,0,0);if(f){co=Math.max(3,Math.floor(W/CS));ro=Math.max(3,Math.floor(H/CS));cl=new Array(co*ro).fill(null)}}
+sz(1);addEventListener('resize',function(){sz(0)});
+var wl='trace note thread fact grain mark shard clue spark sign seed link form gleam fold edge layer proof axiom glimpse strand root gist echo'.split(' ');
+function ctr(i){var c=i%co,r=(i/co)|0;return[c*CS+CS/2,r*CS+CS/2]}
+function nb(i){var c=i%co,r=(i/co)|0,o=[];if(c>0)o.push(i-1);if(c<co-1)o.push(i+1);if(r>0)o.push(i-co);if(r<ro-1)o.push(i+co);return o}
+function sd_(i,p){
+if(cl[i])return;
+var gn=p==null?0:cl[p].gn+1,c=i%co,r=(i/co)|0,w=wl[(Math.random()*wl.length)|0],d=document.createElement('div');
+d.className='c';d.style.left=(c*CS)+'px';d.style.top=(r*CS)+'px';d.style.width=CS+'px';d.style.height=CS+'px';
+d.style.color='rgba(45,34,22,'+Math.max(.28,.85-gn*.09)+')';d.style.fontSize=Math.max(8,12-gn*.6)+'px';d.textContent=w;
+g.appendChild(d);requestAnimationFrame(function(){d.style.opacity=1});
+cl[i]={gn:gn,p:p};sd++;ct.textContent=sd+' settled';if(sd===1)ht.style.opacity=0;
+setTimeout(function(){sp(i)},350+Math.random()*700)
+}
+function sp(i){
+var c=cl[i];if(!c)return;
+var op=nb(i).filter(function(n){return !cl[n]});if(!op.length)return;
+op.sort(function(){return Math.random()-.5});
+var pr=.62*Math.pow(.78,c.gn),mx=1+(Math.random()<.4?1:0),dn=0;
+for(var k=0;k<op.length&&dn<mx;k++){if(Math.random()<pr){sd_(op[k],i);dn++}}
+}
+function at(e){var r=h.getBoundingClientRect(),c=Math.floor((e.clientX-r.left)/CS),rw=Math.floor((e.clientY-r.top)/CS);if(c<0||rw<0||c>=co||rw>=ro)return -1;return rw*co+c}
+h.addEventListener('click',function(e){var i=at(e);if(i>-1&&!cl[i])sd_(i,null)});
+h.addEventListener('touchstart',function(e){var t=e.touches[0],i=at(t);if(i>-1&&!cl[i])sd_(i,null)},{passive:true});
+var chain=[];
+h.addEventListener('mousemove',function(e){var i=at(e);chain=[];while(i>-1&&cl[i]){chain.push(i);var p=cl[i].p;if(p==null)break;i=p}});
+h.addEventListener('mouseleave',function(){chain=[]});
+function dr(){
+x.clearRect(0,0,W,H);
+if(chain.length>1){
+x.strokeStyle='rgba(178,58,30,.55)';x.lineWidth=1.3;x.beginPath();
+var c0=ctr(chain[0]);x.moveTo(c0[0],c0[1]);
+for(var i=1;i<chain.length;i++){var c=ctr(chain[i]);x.lineTo(c[0],c[1])}
+x.stroke();
+for(i=0;i<chain.length;i++){var p=ctr(chain[i]);x.fillStyle=i===0?'rgba(178,58,30,.85)':'rgba(178,58,30,.35)';x.beginPath();x.arc(p[0],p[1],i===0?3:2,0,7);x.fill()}
+}
+requestAnimationFrame(dr)
+}
+dr()
+})();
+</script>
+</section>
