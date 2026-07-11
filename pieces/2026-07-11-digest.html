@@ -1,0 +1,77 @@
+<section data-date='2026-07-11' data-type='digest'>
+<style>
+#tpdig0711{position:relative;width:100%;height:70vh;min-height:440px;overflow:hidden;cursor:crosshair;
+  background:radial-gradient(ellipse at 50% 32%,#11142a,#07070d 72%);font-family:Georgia,'Times New Roman',serif}
+#tpdig0711 svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#tpdig0711 .n{position:absolute;transform:translate(-50%,-50%) scale(.2);opacity:0;color:#c9d2f2;
+  font-style:italic;white-space:nowrap;pointer-events:none;
+  transition:transform .5s cubic-bezier(.2,1.4,.4,1),opacity .5s,color .9s,font-size .7s;
+  text-shadow:0 0 8px rgba(140,170,255,.3)}
+#tpdig0711 .n.in{transform:translate(-50%,-50%) scale(1);opacity:.9}
+#tpdig0711 .n.ct{color:#f4c17a;font-style:normal;text-shadow:0 0 10px rgba(244,193,122,.5)}
+#tpdig0711 .hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);color:#454c72;
+  font-family:'SF Mono',Menlo,Consolas,monospace;font-size:10px;letter-spacing:.1em}
+</style>
+<div id="tpdig0711">
+<svg></svg>
+<div class="hint">click to place a thought &middot; patterns crystallize as they connect</div>
+</div>
+<script>
+(function(){
+var host=document.getElementById('tpdig0711'),svg=host.querySelector('svg');
+var NS='http://www.w3.org/2000/svg';
+var W=["trace","signal","fragment","thread","echo","seed","glimpse","shard","thought","spark",
+  "memory","link","form","drift","fold","root","structure","whole","pulse","grain"];
+var nodes=[],adj=[];
+function el(t){return document.createElementNS(NS,t)}
+function place(x,y){
+  var idx=nodes.length;
+  var w=document.createElement('span');
+  w.className='n';
+  w.textContent=W[idx%W.length];
+  w.style.left=x+'px';w.style.top=y+'px';
+  host.appendChild(w);
+  requestAnimationFrame(function(){w.classList.add('in')});
+  var node={x:x,y:y,el:w,deg:0};
+  nodes.push(node);adj.push({});
+  var near=[];
+  nodes.forEach(function(n,i){
+    if(i===idx)return;
+    var dx=n.x-x,dy=n.y-y,d=Math.sqrt(dx*dx+dy*dy);
+    if(d<170){
+      var ln=el('line');
+      ln.setAttribute('x1',n.x);ln.setAttribute('y1',n.y);
+      ln.setAttribute('x2',x);ln.setAttribute('y2',y);
+      ln.setAttribute('stroke','rgba(130,150,220,.32)');
+      ln.setAttribute('stroke-width','1');
+      svg.appendChild(ln);
+      adj[i][idx]=1;adj[idx][i]=1;
+      node.deg++;n.deg++;
+      near.push(i);
+    }
+  });
+  for(var a=0;a<near.length;a++){
+    for(var b=a+1;b<near.length;b++){
+      if(adj[near[a]][near[b]]){
+        let p=el('polygon'),i1=nodes[near[a]],i2=nodes[near[b]];
+        p.setAttribute('points',i1.x+','+i1.y+' '+i2.x+','+i2.y+' '+x+','+y);
+        p.setAttribute('fill','rgba(244,193,122,.02)');
+        p.setAttribute('stroke','rgba(244,193,122,.4)');
+        p.style.transition='fill 1.1s';
+        svg.appendChild(p);
+        setTimeout(function(){p.setAttribute('fill','rgba(244,193,122,.15)')},30);
+        [near[a],near[b],idx].forEach(function(k){nodes[k].el.classList.add('ct')});
+      }
+    }
+  }
+  node.el.style.fontSize=(13+Math.min(node.deg,6)*2)+'px';
+}
+host.addEventListener('click',function(e){
+  if(nodes.length>60)return;
+  var r=host.getBoundingClientRect();
+  place(e.clientX-r.left,e.clientY-r.top);
+});
+place(host.clientWidth*.5,host.clientHeight*.4);
+})();
+</script>
+</section>
