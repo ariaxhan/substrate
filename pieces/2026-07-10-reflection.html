@@ -1,0 +1,72 @@
+<section data-date='2026-07-10' data-type='reflection'>
+<style>
+#night-0710{position:relative;height:70vh;min-height:480px;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 120%,#0d1420 0%,#05050b 55%,#000 100%);
+  cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+#night-0710 .cap{position:absolute;top:10%;left:50%;transform:translateX(-50%);
+  font-size:.75rem;letter-spacing:.35em;text-transform:uppercase;
+  color:rgba(255,255,255,.26);white-space:nowrap;pointer-events:none}
+#night-0710 .star{position:absolute;border-radius:50%;background:#fff;
+  transform:translate(-50%,-50%) scale(0);
+  transition:transform 1.6s cubic-bezier(.2,.7,.3,1);
+  pointer-events:none;animation:tw 4s ease-in-out infinite}
+#night-0710 .star.lit{transform:translate(-50%,-50%) scale(1)}
+@keyframes tw{0%,100%{opacity:var(--o,.6)}50%{opacity:calc(var(--o,.6)*.35)}}
+#night-0710 .word{position:absolute;transform:translate(-50%,-50%);
+  font-style:italic;color:rgba(255,255,255,0);letter-spacing:.08em;
+  white-space:nowrap;pointer-events:none;transition:color 1.4s,opacity 2.4s 1.4s;opacity:1}
+#night-0710 .word.on{color:rgba(230,225,255,.75)}
+#night-0710 .hint{position:absolute;bottom:6%;left:50%;transform:translateX(-50%);
+  font-family:monospace;font-size:10px;letter-spacing:.06em;
+  color:rgba(255,255,255,.2);transition:opacity 2s}
+</style>
+<div id="night-0710">
+  <div class="cap">the day is complete</div>
+  <div class="hint" id="n-hint">touch the dark</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('night-0710'),
+      hint=document.getElementById('n-hint'),
+      words=['hush','rest','still','dim','fold','settle','dusk','ember','quiet','drift','close','breathe','soft','sleep','glow','again'],
+      n=0, MAX=140;
+  function star(x,y,big){
+    var s=document.createElement('div'),
+        size=big?(2+Math.random()*2):(1+Math.random()*1.6),
+        o=big?(.7+Math.random()*.3):(.25+Math.random()*.4);
+    s.className='star';
+    s.style.left=x+'%'; s.style.top=y+'%';
+    s.style.width=size+'px'; s.style.height=size+'px';
+    s.style.setProperty('--o',o);
+    s.style.animationDelay=(Math.random()*4)+'s';
+    if(big) s.style.boxShadow='0 0 '+(size*4)+'px rgba(255,255,255,.8)';
+    el.appendChild(s);
+    requestAnimationFrame(function(){ s.classList.add('lit') });
+    n++;
+  }
+  function word(x,y){
+    var w=document.createElement('div');
+    w.className='word';
+    w.textContent=words[Math.floor(Math.random()*words.length)];
+    w.style.left=x+'%'; w.style.top=(y-4)+'%';
+    w.style.fontSize=(.85+Math.random()*.5)+'rem';
+    el.appendChild(w);
+    requestAnimationFrame(function(){ w.classList.add('on') });
+    setTimeout(function(){ w.classList.remove('on') },1200);
+    setTimeout(function(){ w.remove() },4200);
+  }
+  el.addEventListener('click',function(e){
+    if(hint){ hint.style.opacity=0; hint=null }
+    var r=el.getBoundingClientRect(),
+        x=(e.clientX-r.left)/r.width*100,
+        y=(e.clientY-r.top)/r.height*100;
+    star(x,y,true);
+    word(x,y);
+  });
+  (function drift(){
+    if(n<MAX) star(Math.random()*100, Math.random()*85, false);
+    setTimeout(drift, 1800+Math.random()*2600);
+  })();
+})();
+</script>
+</section>
