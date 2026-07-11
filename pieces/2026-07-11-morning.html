@@ -1,0 +1,80 @@
+<section data-date='2026-07-11' data-type='morning'>
+<style>
+#taper11 *{box-sizing:border-box}
+#taper11{position:relative;width:100%;height:100vh;min-height:520px;overflow:hidden;
+background:linear-gradient(#04050b,#0b1220 60%,#0e1526);cursor:crosshair}
+#taper11 .glow{position:absolute;inset:0;pointer-events:none;
+background:radial-gradient(420px circle at var(--x,50%) var(--y,28%),
+rgba(244,184,96,.16),rgba(244,184,96,.05) 40%,transparent 70%)}
+#taper11 .w{position:absolute;font-family:Georgia,"Iowan Old Style",serif;
+font-style:italic;color:#3a4258;opacity:.18;transition:opacity .25s,color .4s;
+white-space:nowrap;letter-spacing:.02em;user-select:none}
+#taper11 .horizon{position:absolute;left:0;right:0;top:60%;height:1px;
+background:linear-gradient(90deg,transparent,rgba(244,184,96,.35),transparent)}
+#taper11 .build{position:absolute;left:0;right:0;bottom:8%;text-align:center;
+font-family:Georgia,serif;font-size:clamp(14px,2.4vw,26px);color:#f4b860;
+letter-spacing:.03em;padding:0 6vw;min-height:1.6em;text-shadow:0 0 18px rgba(244,184,96,.25)}
+#taper11 .hint{position:absolute;top:16px;left:20px;font:11px/1.4 monospace;
+color:#4a5270;letter-spacing:.08em;text-transform:uppercase;opacity:.6}
+</style>
+<div id="taper11">
+  <div class="glow" id="t11glow"></div>
+  <div class="horizon"></div>
+  <div class="hint">move. click. the day begins unwritten.</div>
+  <div id="t11words"></div>
+  <div class="build" id="t11build"></div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('taper11');
+  var glow=document.getElementById('t11glow');
+  var wrap=document.getElementById('t11words');
+  var build=document.getElementById('t11build');
+  var frags=['still','not yet','before names','possible','almost','waiting',
+    'blank','open','the hour before','unmade','quiet','becoming','threshold',
+    'nothing said yet','room for anything'];
+  var els=frags.map(function(t){
+    var s=document.createElement('span');
+    s.className='w';
+    s.textContent=t;
+    s.style.left=(6+Math.random()*82)+'%';
+    s.style.top=(8+Math.random()*74)+'%';
+    s.style.fontSize=(13+Math.random()*15)+'px';
+    wrap.appendChild(s);
+    return s;
+  });
+  var sentence=['the','day','has','not','been','written','yet','you','are',
+    'the','first','light','across','it'];
+  var i=0;
+  function pos(el,rect){
+    var r=el.getBoundingClientRect();
+    return {x:r.left+r.width/2-rect.left,y:r.top+r.height/2-rect.top};
+  }
+  root.addEventListener('mousemove',function(e){
+    var rect=root.getBoundingClientRect();
+    var mx=e.clientX-rect.left, my=e.clientY-rect.top;
+    root.style.setProperty('--x',(mx/rect.width*100)+'%');
+    root.style.setProperty('--y',(my/rect.height*100)+'%');
+    els.forEach(function(el){
+      var p=pos(el,rect);
+      var d=Math.hypot(p.x-mx,p.y-my);
+      var o=Math.max(.18,1-d/260);
+      el.style.opacity=o;
+      el.style.color=o>.55?'#f4d9a8':'#3a4258';
+    });
+  });
+  root.addEventListener('click',function(e){
+    var rect=root.getBoundingClientRect();
+    root.style.setProperty('--x',((e.clientX-rect.left)/rect.width*100)+'%');
+    root.style.setProperty('--y',((e.clientY-rect.top)/rect.height*100)+'%');
+    if(i>=sentence.length){
+      build.textContent='';
+      i=0;
+      return;
+    }
+    build.textContent=(build.textContent?build.textContent+' ':'')+sentence[i];
+    i++;
+  });
+})();
+</script>
+</section>
