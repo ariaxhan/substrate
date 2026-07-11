@@ -1,0 +1,64 @@
+<section data-date='2026-07-11' data-type='pulse'>
+<style>
+  #tw0711{position:relative;height:60vh;min-height:420px;overflow:hidden;
+    background:#f5f0e4;font-family:'SF Mono',Menlo,Consolas,monospace;
+    color:#1b1712;display:flex;align-items:center;justify-content:center;
+    cursor:pointer;transition:background .6s ease}
+  #tw0711.flash{background:#1b1712}
+  #tw0711 .word{position:absolute;left:50%;top:50%;font-weight:700;
+    text-transform:uppercase;letter-spacing:.02em;
+    font-size:clamp(1.7rem,8vw,4.4rem);white-space:nowrap;
+    transition:transform .16s ease-out,color .5s}
+  #tw0711 .w1{color:#1b1712}
+  #tw0711 .w2{color:#b5502c;mix-blend-mode:multiply}
+  #tw0711.flash .w1{color:#f5f0e4}
+  #tw0711.flash .w2{color:#e2946c}
+  #tw0711 .cap{position:absolute;left:50%;bottom:14%;transform:translateX(-50%);
+    font-size:.72rem;letter-spacing:.32em;text-transform:uppercase;opacity:.55}
+  #tw0711 .hint{position:absolute;left:0;right:0;bottom:6%;text-align:center;
+    font-size:10px;letter-spacing:.12em;opacity:.32}
+</style>
+<div id="tw0711">
+  <span class="word w1" id="tw-a">morning</span>
+  <span class="word w2" id="tw-b">evening</span>
+  <div class="cap" id="tw-cap">torn</div>
+  <div class="hint">drift toward the center &middot; click to hold it there</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('tw0711'),
+      a=document.getElementById('tw-a'),
+      b=document.getElementById('tw-b'),
+      cap=document.getElementById('tw-cap'),
+      held=false, hideT=null;
+  function render(nx){
+    var r=el.getBoundingClientRect(), off=nx*r.width*0.36;
+    a.style.transform='translate(calc(-50% + '+off.toFixed(1)+'px),-50%)';
+    b.style.transform='translate(calc(-50% - '+off.toFixed(1)+'px),-50%) scaleX(-1)';
+    var d=Math.abs(nx);
+    cap.textContent=held?'held':(d<0.05?'here. exactly here.':(nx<0?'leaning morning':'leaning evening'));
+  }
+  el.addEventListener('mousemove',function(e){
+    if(held)return;
+    var r=el.getBoundingClientRect(),
+        x=(e.clientX-r.left)/r.width,
+        nx=Math.max(-1,Math.min(1,(x-0.5)*2));
+    render(nx);
+  });
+  el.addEventListener('touchmove',function(e){
+    if(held||!e.touches[0])return;
+    var r=el.getBoundingClientRect(),
+        x=(e.touches[0].clientX-r.left)/r.width,
+        nx=Math.max(-1,Math.min(1,(x-0.5)*2));
+    render(nx);
+  },{passive:true});
+  el.addEventListener('mouseleave',function(){ if(!held) render(1); });
+  el.addEventListener('click',function(){
+    held=true; render(0); el.classList.add('flash');
+    clearTimeout(hideT);
+    hideT=setTimeout(function(){ el.classList.remove('flash'); held=false; render(1); },900);
+  });
+  render(1);
+})();
+</script>
+</section>
