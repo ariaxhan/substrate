@@ -1,0 +1,54 @@
+<section data-date='2026-07-12' data-type='morning'>
+<style>
+#tp-2026-07-12{position:relative;width:100%;height:70vh;min-height:420px;overflow:hidden;background:linear-gradient(#05070f,#0a0e1a 60%,#0d0f1a);cursor:crosshair;font-family:Georgia,serif}
+#tp-2026-07-12 .dawn{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 120%,#ffdca0,#ff9d6f 30%,#5a3a6b 55%,transparent 75%);opacity:0;transition:opacity 1.8s ease}
+#tp-2026-07-12 .glow{position:absolute;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(255,220,180,.35),transparent 70%);mix-blend-mode:screen;pointer-events:none;transform:translate(-50%,-50%);opacity:0;transition:opacity .3s}
+#tp-2026-07-12 .word{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fce9d8;font-size:clamp(18px,3vw,32px);letter-spacing:.03em;text-align:center;text-shadow:0 0 20px rgba(255,180,120,.5);opacity:0;transition:opacity 1.2s ease;pointer-events:none;white-space:nowrap}
+#tp-2026-07-12 .star{position:absolute;width:3px;height:3px;background:#ffe;border-radius:50%;box-shadow:0 0 6px 1px #ffdca0;pointer-events:none}
+#tp-2026-07-12 .hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);color:#4a5570;font-family:sans-serif;font-size:11px;letter-spacing:.08em;transition:opacity .8s}
+</style>
+<div id="tp-2026-07-12">
+  <div class="dawn"></div>
+  <div class="glow"></div>
+  <div class="word"></div>
+  <div class="hint">click to break the dark</div>
+</div>
+<script>
+(function(){
+  var host=document.getElementById('tp-2026-07-12');
+  var dawn=host.querySelector('.dawn');
+  var glow=host.querySelector('.glow');
+  var word=host.querySelector('.word');
+  var hint=host.querySelector('.hint');
+  var words=["nothing","yet","only a hush","the edge of light","still unwritten","yours, to begin"];
+  var i=0;
+  host.addEventListener('mousemove',function(e){
+    var r=host.getBoundingClientRect();
+    glow.style.left=(e.clientX-r.left)+'px';
+    glow.style.top=(e.clientY-r.top)+'px';
+    glow.style.opacity=1;
+  });
+  host.addEventListener('mouseleave',function(){glow.style.opacity=0;});
+  host.addEventListener('click',function(e){
+    if(i>=words.length) return;
+    var r=host.getBoundingClientRect();
+    dawn.style.opacity=Math.min(1,(i+1)/words.length);
+    word.style.opacity=0;
+    setTimeout(function(){
+      word.textContent=words[i];
+      word.style.opacity=1;
+    },300);
+    var s=document.createElement('div');
+    s.className='star';
+    s.style.left=(e.clientX-r.left)+'px';
+    s.style.top=(e.clientY-r.top)+'px';
+    host.appendChild(s);
+    i++;
+    if(i===1) hint.style.opacity=0;
+    if(i>=words.length){
+      setTimeout(function(){ word.style.fontStyle='italic'; },1200);
+    }
+  });
+})();
+</script>
+</section>
