@@ -1,0 +1,66 @@
+<section data-date='2026-07-12' data-type='pulse'>
+<style>
+#tp{margin:0;height:70vh;min-height:420px;overflow:hidden;background:radial-gradient(ellipse at 50% 45%,#151016 0%,#0a080b 70%);position:relative;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+#tp *{box-sizing:border-box}
+#axis{position:absolute;left:0;right:0;top:50%;height:1px;background:linear-gradient(90deg,transparent,#5a4a4a55,transparent)}
+#beam{position:absolute;left:10%;right:10%;top:50%;height:0;transform-origin:50% 0%;transition:transform .18s ease-out}
+#beam .w{position:absolute;top:-.6em;transform:translateX(-50%);white-space:nowrap;letter-spacing:.04em;transition:color .4s,opacity .4s}
+#beam .w.l{font-style:italic}
+#fulcrum{position:absolute;left:50%;top:50%;transform:translateX(-50%);width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:16px solid #6b5b4a;filter:drop-shadow(0 0 6px #00000088)}
+#now{position:absolute;left:50%;top:calc(50% + 20px);transform:translateX(-50%);font-size:11px;letter-spacing:.3em;color:#8a7a6a;text-transform:uppercase;opacity:.6;pointer-events:none}
+#tag{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);font-size:11px;color:#5a4f4f;letter-spacing:.15em;font-family:Georgia,serif;font-style:italic;opacity:.55;pointer-events:none}
+</style>
+<div id="tp">
+  <div id="axis"></div>
+  <div id="fulcrum"></div>
+  <div id="now">now</div>
+  <div id="beam">
+    <span class="w l" data-x="-38" style="color:#d9a05b">dawn</span>
+    <span class="w l" data-x="-27" style="color:#caa06e">rising</span>
+    <span class="w l" data-x="-15" style="color:#b89a7c">becoming</span>
+    <span class="w l" data-x="-6"  style="color:#a1948a">not yet</span>
+    <span class="w r" data-x="6"   style="color:#a1948a">not yet</span>
+    <span class="w r" data-x="15" style="color:#8a92a0">having been</span>
+    <span class="w r" data-x="27" style="color:#7086ab">falling</span>
+    <span class="w r" data-x="38" style="color:#5f76b0">dusk</span>
+  </div>
+  <div id="tag">the middle holds both directions at once</div>
+</div>
+<script>
+(function(){
+  var tp=document.getElementById('tp'),beam=document.getElementById('beam');
+  var words=beam.querySelectorAll('.w');
+  words.forEach(function(w){w.style.left=(50+parseFloat(w.dataset.x))+'%'});
+  var W=tp.clientWidth,cx=W/2,target=0,cur=0,locked=false,raf;
+  function place(){W=tp.clientWidth;cx=W/2}
+  window.addEventListener('resize',place);
+  tp.addEventListener('mousemove',function(e){
+    if(locked)return;
+    var r=tp.getBoundingClientRect();
+    var dx=(e.clientX-r.left-cx)/cx;
+    target=Math.max(-1,Math.min(1,dx))*9;
+  });
+  tp.addEventListener('mouseleave',function(){if(!locked)target=0});
+  tp.addEventListener('click',function(e){
+    locked=true;target=0;
+    tp.style.background='radial-gradient(ellipse at 50% 45%,#1c1620 0%,#0a080b 75%)';
+    setTimeout(function(){
+      locked=false;
+      tp.style.background='radial-gradient(ellipse at 50% 45%,#151016 0%,#0a080b 70%)';
+    },900);
+  });
+  function tick(){
+    cur+=(target-cur)*0.08;
+    beam.style.transform='rotate('+cur.toFixed(2)+'deg)';
+    var t=Math.abs(cur)/9;
+    words.forEach(function(w){
+      var side=w.classList.contains('l')?-1:1;
+      var lean=cur/9*side;
+      w.style.opacity=(0.55+0.45*Math.max(0,lean)).toFixed(2);
+    });
+    raf=requestAnimationFrame(tick);
+  }
+  tick();
+})();
+</script>
+</section>
