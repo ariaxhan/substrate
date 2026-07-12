@@ -1,0 +1,88 @@
+<section data-date='2026-07-11' data-type='reflection'>
+<style>
+#taper-2026-07-11{margin:0;overflow:hidden;background:#05070d;height:100vh;cursor:crosshair;position:relative}
+#taper-2026-07-11 canvas{display:block}
+#taper-2026-07-11 .cue{position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);
+  font:300 1.1rem/1.6 Georgia,'Times New Roman',serif;color:#5b6b8c;letter-spacing:.08em;
+  text-align:center;opacity:1;transition:opacity 4s ease;pointer-events:none;white-space:nowrap}
+#taper-2026-07-11 .cue.gone{opacity:0}
+#taper-2026-07-11 .w{position:absolute;font:italic 300 .95rem Georgia,serif;color:#8fa0c4;
+  opacity:0;transition:opacity 2.4s ease,transform 2.4s ease;pointer-events:none;transform:translateY(6px)}
+#taper-2026-07-11 .w.on{opacity:.85;transform:translateY(0)}
+</style>
+<div id="taper-2026-07-11">
+  <canvas id="tsky"></canvas>
+  <div class="cue" id="tcue">the day is complete. rest here a while.</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('taper-2026-07-11');
+  var cv=document.getElementById('tsky'), cue=document.getElementById('tcue');
+  var ctx=cv.getContext('2d'), W,H;
+  function size(){W=cv.width=root.clientWidth;H=cv.height=root.clientHeight}
+  size(); window.addEventListener('resize',size);
+
+  var stars=[], words=["hush","stillness","breathe out","dusk settles","the light keeps","before the next beginning","rest now","quiet holds"];
+  var t0=performance.now(), lastMove=0, mx=-999,my=-999;
+
+  function fade(){cue.classList.add('gone')}
+  setTimeout(fade,3800);
+
+  function spawnWord(x,y){
+    var w=document.createElement('div');
+    w.className='w'; w.textContent=words[(Math.random()*words.length)|0];
+    w.style.left=(x+14)+'px'; w.style.top=(y-10)+'px';
+    root.appendChild(w);
+    requestAnimationFrame(function(){w.classList.add('on')});
+    setTimeout(function(){w.classList.remove('on');setTimeout(function(){w.remove()},2500)},2800);
+  }
+
+  root.addEventListener('click',function(e){
+    var x=e.clientX, y=e.clientY;
+    stars.push({x:x,y:y,born:performance.now(),r:1+Math.random()*1.6,ph:Math.random()*6.28});
+    if(stars.length%2===0) spawnWord(x,y);
+    if(cue.style.opacity!=='0') fade();
+  });
+  root.addEventListener('mousemove',function(e){mx=e.clientX;my=e.clientY;lastMove=performance.now()});
+
+  function draw(now){
+    ctx.fillStyle='rgba(5,7,13,0.35)';
+    ctx.fillRect(0,0,W,H);
+
+    var near=(now-lastMove)<9000;
+    if(near){
+      ctx.lineWidth=0.6;
+      for(var i=0;i<stars.length;i++){
+        var a=stars[i], da=Math.hypot(a.x-mx,a.y-my);
+        if(da<160){
+          ctx.strokeStyle='rgba(130,160,220,'+(0.35*(1-da/160))+')';
+          ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(mx,my);ctx.stroke();
+        }
+        for(var j=i+1;j<stars.length;j++){
+          var b=stars[j], d=Math.hypot(a.x-b.x,a.y-b.y);
+          if(d<120){
+            ctx.strokeStyle='rgba(110,130,180,'+(0.18*(1-d/120))+')';
+            ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+          }
+        }
+      }
+    }
+
+    for(var k=0;k<stars.length;k++){
+      var s=stars[k], age=(now-s.born)/1000, grow=Math.min(1,age/1.8);
+      var tw=0.55+0.45*Math.sin(now/900+s.ph);
+      var rad=s.r*grow*(1+tw*0.3);
+      var glow=ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,rad*6);
+      glow.addColorStop(0,'rgba(220,230,255,'+(0.9*grow*tw)+')');
+      glow.addColorStop(1,'rgba(220,230,255,0)');
+      ctx.fillStyle=glow;
+      ctx.beginPath();ctx.arc(s.x,s.y,rad*6,0,6.283);ctx.fill();
+      ctx.fillStyle='rgba(255,255,255,'+grow+')';
+      ctx.beginPath();ctx.arc(s.x,s.y,rad,0,6.283);ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+</script>
+</section>
