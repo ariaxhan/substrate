@@ -1,0 +1,82 @@
+<section data-date='2026-07-13' data-type='spark'>
+<style>
+#tp{margin:0;height:70vh;min-height:420px;overflow:hidden;background:#0a0b0d;position:relative;font-family:Georgia,'Times New Roman',serif;cursor:pointer}
+#tp *{box-sizing:border-box}
+#tp .p{position:absolute;top:50%;white-space:nowrap;letter-spacing:.05em;transform:translateY(-50%);transition:color .5s,text-shadow .5s}
+#tp .l{color:#8fa6c9}
+#tp .r{color:#c98fa0}
+#zone{position:absolute;left:50%;top:0;bottom:0;width:2px;background:linear-gradient(180deg,transparent,#ffffff22,transparent);transform:translateX(-50%)}
+#syn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-style:italic;font-size:0;color:#f2e7c9;text-shadow:0 0 12px #f2e7c988;letter-spacing:.08em;transition:font-size .35s cubic-bezier(.2,1.4,.4,1),opacity .6s;opacity:0;pointer-events:none;white-space:nowrap}
+#tag{position:absolute;left:50%;bottom:7%;transform:translateX(-50%);font-size:11px;color:#5a5a5f;letter-spacing:.15em;font-style:italic;opacity:.55}
+</style>
+<div id="tp">
+  <div id="zone"></div>
+  <div id="syn"></div>
+  <div id="tag">move closer. let them meet.</div>
+</div>
+<script>
+(function(){
+  var tp=document.getElementById('tp'),syn=document.getElementById('syn');
+  var L=["wave","signal","ash","root","before","the sea"],
+      R=["particle","noise","ember","branch","after","the shore"],
+      M=["standing wave","meaning","light","the tree","threshold","the tide line"];
+  var n=L.length,parts=[],W=tp.clientWidth,H=tp.clientHeight,gap=1,fused=false,cool=0;
+  for(var i=0;i<n;i++){
+    var a=document.createElement('div'),b=document.createElement('div');
+    a.className='p l';a.textContent=L[i];
+    b.className='p r';b.textContent=R[i];
+    tp.appendChild(a);tp.appendChild(b);
+    var y=(i+1)/(n+1)*70+15;
+    parts.push({el:a,side:-1,y:y,base:0.5-i*0.04});
+    parts.push({el:b,side:1,y:y,base:0.5-i*0.04});
+  }
+  function place(){W=tp.clientWidth;H=tp.clientHeight}
+  window.addEventListener('resize',place);
+  var mx=W/2;
+  tp.addEventListener('mousemove',function(e){
+    var r=tp.getBoundingClientRect();
+    mx=e.clientX-r.left;
+  });
+  tp.addEventListener('mouseleave',function(){mx=W/2});
+  tp.addEventListener('click',function(){
+    if(cool>0)return;
+    cool=90;
+    syn.textContent=M[Math.floor(Math.random()*M.length)];
+    syn.style.fontSize='26px';
+    syn.style.opacity='1';
+    setTimeout(function(){syn.style.opacity='0';syn.style.fontSize='0'},1400);
+  });
+  function tick(){
+    W=tp.clientWidth;H=tp.clientHeight;
+    var pull=1-Math.min(1,Math.abs(mx-W/2)/(W/2||1));
+    gap=0.42-pull*0.36;
+    if(cool>0)cool--;
+    var closest=1;
+    parts.forEach(function(p){
+      var pct=50+p.side*(gap*100*p.base+ (1-p.base)*2);
+      p.el.style.left=pct+'%';
+      p.el.style.top=p.y+'%';
+      var dist=Math.abs(pct-50);
+      if(dist<closest)closest=dist;
+      var heat=Math.max(0,1-dist/14);
+      if(heat>0.05){
+        p.el.style.textShadow='0 0 '+(heat*10)+'px currentColor';
+      } else {
+        p.el.style.textShadow='none';
+      }
+    });
+    if(closest<6&&!fused){
+      fused=true;
+      syn.textContent=M[Math.floor(closest*7)%M.length];
+      syn.style.fontSize='20px';
+      syn.style.opacity=String(0.3+pull*0.7);
+    } else if(closest>=6&&fused){
+      fused=false;
+      if(cool<=0){syn.style.opacity='0';syn.style.fontSize='0'}
+    }
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+</script>
+</section>
