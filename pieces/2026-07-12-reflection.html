@@ -1,0 +1,52 @@
+<section data-date='2026-07-12' data-type='reflection'>
+<style>
+#n{position:relative;width:100%;height:100vh;background:radial-gradient(ellipse at 50% 100%,#0a1128 0%,#050818 55%,#000 100%);overflow:hidden;cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+#hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#5a6b8c;font-size:13px;letter-spacing:3px;opacity:.55;transition:opacity 2.5s;pointer-events:none;text-transform:lowercase;text-align:center;width:70vw}
+.star{position:absolute;width:3px;height:3px;margin:-1px 0 0 -1px;border-radius:50%;background:#fff;box-shadow:0 0 6px 2px rgba(255,255,255,.75);animation:tw 3.2s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.25}50%{opacity:1}}
+.word{position:absolute;color:#8ea3c9;font-style:italic;font-size:13px;opacity:0;pointer-events:none;transition:opacity 2.6s ease,transform 2.6s ease;white-space:nowrap}
+.word.show{opacity:.8;transform:translateY(-16px)}
+svg#lines{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+svg#lines line{stroke:#3a4a72;stroke-width:1;opacity:0;transition:opacity 3.2s}
+svg#lines line.show{opacity:.3}
+#sig{position:absolute;bottom:14px;right:18px;color:#3d4a6b;font-size:11px;letter-spacing:1px;opacity:.5;font-style:italic}
+</style>
+<div id="n">
+<div id="hint">the day is complete<br>rest before the next beginning<br>&mdash; touch the dark to place a star &mdash;</div>
+<svg id="lines"></svg>
+<div id="sig">still, 2026-07-12</div>
+</div>
+<script>
+(function(){
+var n=document.getElementById('n'),hint=document.getElementById('hint'),svg=document.getElementById('lines');
+var words=['hush','rest','stillness','dim','soft','slow','deep','quiet','dusk','close','dream','exhale','still','fold','done'];
+var last=null;
+n.addEventListener('click',function(e){
+if(e.target===hint)return;
+hint.style.opacity=0;
+var x=e.clientX,y=e.clientY;
+var s=document.createElement('div');
+s.className='star';
+s.style.left=x+'px';s.style.top=y+'px';
+s.style.animationDelay=(Math.random()*3)+'s';
+n.appendChild(s);
+var w=document.createElement('div');
+w.className='word';
+w.textContent=words[Math.floor(Math.random()*words.length)];
+w.style.left=(x+9)+'px';w.style.top=(y-9)+'px';
+n.appendChild(w);
+requestAnimationFrame(function(){w.classList.add('show')});
+setTimeout(function(){w.style.opacity=0},2700);
+setTimeout(function(){w.remove()},5400);
+if(last){
+var ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+ln.setAttribute('x1',last[0]);ln.setAttribute('y1',last[1]);
+ln.setAttribute('x2',x);ln.setAttribute('y2',y);
+svg.appendChild(ln);
+requestAnimationFrame(function(){ln.classList.add('show')});
+}
+last=[x,y];
+});
+})();
+</script>
+</section>
