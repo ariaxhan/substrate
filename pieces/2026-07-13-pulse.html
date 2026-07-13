@@ -1,0 +1,87 @@
+<section data-date='2026-07-13' data-type='pulse'>
+<style>
+section[data-date='2026-07-13'][data-type='pulse']{display:block}
+.tp-h{
+  --top:#0b0e1a;--bot:#1a1109;--fg:#e9e3d6;
+  position:relative;width:100%;height:88vh;min-height:520px;overflow:hidden;
+  background:linear-gradient(to bottom,var(--top) 0%,var(--top) 50%,var(--bot) 50%,var(--bot) 100%);
+  transition:background 1s ease;font-family:'Courier New',ui-monospace,monospace;
+  cursor:pointer;user-select:none;
+}
+.tp-h .fulcrum{
+  position:absolute;left:50%;top:50%;width:0;height:0;
+  border-left:15px solid transparent;border-right:15px solid transparent;
+  border-bottom:26px solid var(--fg);transform:translate(-50%,0);
+  filter:drop-shadow(0 0 8px var(--fg));transition:border-color 1s,filter 1s;
+}
+.tp-h .beam{
+  position:absolute;left:50%;top:50%;height:1px;width:72vw;background:var(--fg);
+  transform-origin:center center;transform:translate(-50%,-50%) rotate(0deg);
+  transition:transform .18s ease-out,background 1s;box-shadow:0 0 6px var(--fg);
+}
+.tp-h .label{
+  position:absolute;top:50%;font-size:clamp(13px,2vw,26px);letter-spacing:.4em;
+  color:var(--fg);opacity:.82;transition:opacity .5s,color 1s;
+}
+.tp-h .l{left:7vw;transform:translateY(-50%)}
+.tp-h .r{right:7vw;transform:translateY(-50%);text-align:right}
+.tp-h .reading{
+  position:absolute;bottom:7vh;left:50%;transform:translateX(-50%);
+  color:var(--fg);opacity:.45;font-size:11px;letter-spacing:.25em;transition:color 1s;
+}
+.tp-h .hint{
+  position:absolute;top:5vh;left:50%;transform:translateX(-50%);
+  color:var(--fg);opacity:.3;font-size:10px;letter-spacing:.3em;transition:color 1s;
+}
+</style>
+<div class="tp-h" id="tp-h-2607">
+  <div class="hint">MOVE TO TIP THE SCALE &middot; CLICK TO SHIFT</div>
+  <div class="beam"></div>
+  <div class="fulcrum"></div>
+  <div class="label l">MORNING</div>
+  <div class="label r">EVENING</div>
+  <div class="reading">12:00 &middot; +0.0&deg;</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('tp-h-2607');
+  var beam=root.querySelector('.beam');
+  var read=root.querySelector('.reading');
+  var labL=root.querySelector('.l');
+  var labR=root.querySelector('.r');
+  var pairs=[['MORNING','EVENING'],['DAWN','DUSK'],['BEFORE','AFTER'],['RISE','REST'],['WAKING','SLEEPING']];
+  var palettes=[
+    {top:'#0b0e1a',bot:'#1a1109',fg:'#e9e3d6'},
+    {top:'#eef1f6',bot:'#f6efe4',fg:'#17140f'}
+  ];
+  var pi=0,ci=0,max=11;
+  function paint(){
+    var p=palettes[pi];
+    root.style.setProperty('--top',p.top);
+    root.style.setProperty('--bot',p.bot);
+    root.style.setProperty('--fg',p.fg);
+    labL.textContent=pairs[ci][0];
+    labR.textContent=pairs[ci][1];
+  }
+  root.addEventListener('mousemove',function(e){
+    var r=root.getBoundingClientRect();
+    var t=((e.clientX-r.left)/r.width-0.5)*2;
+    var deg=t*max;
+    beam.style.transform='translate(-50%,-50%) rotate('+deg.toFixed(2)+'deg)';
+    var hh=12+Math.round(t*6);
+    var sign=deg>=0?'+':'';
+    read.textContent=hh+':00 · '+sign+deg.toFixed(1)+'°';
+  });
+  root.addEventListener('mouseleave',function(){
+    beam.style.transform='translate(-50%,-50%) rotate(0deg)';
+    read.textContent='12:00 · +0.0°';
+  });
+  root.addEventListener('click',function(){
+    pi=(pi+1)%palettes.length;
+    ci=(ci+1)%pairs.length;
+    paint();
+  });
+  paint();
+})();
+</script>
+</section>
