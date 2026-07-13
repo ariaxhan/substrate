@@ -1,0 +1,55 @@
+<section data-date='2026-07-13' data-type='digest'>
+<style>
+#taper-2026-07-13{position:relative;width:100%;height:100vh;background:#060608;overflow:hidden;cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+#taper-2026-07-13 svg{width:100%;height:100%;display:block}
+#taper-2026-07-13 text{font-size:13px;letter-spacing:.04em;pointer-events:none;user-select:none;animation:t2607 .6s ease-out}
+#taper-2026-07-13 circle{pointer-events:none}
+#taper-2026-07-13 .hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#555;font-size:12px;letter-spacing:.12em;text-transform:lowercase;font-family:Georgia,serif;transition:opacity .8s ease;text-align:center;pointer-events:none}
+#taper-2026-07-13 .ct{position:absolute;bottom:14px;right:18px;color:#3a3a40;font-size:10px;font-family:'Courier New',monospace;letter-spacing:.08em;pointer-events:none}
+@keyframes t2607{from{opacity:0}to{opacity:1}}
+</style>
+<div id="taper-2026-07-13">
+<svg xmlns="http://www.w3.org/2000/svg"></svg>
+<div class="hint" id="h2607">every mark seeks<br>its nearest kin</div>
+<div class="ct" id="c2607">0 fragments &middot; 0 bonds</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('taper-2026-07-13'),
+svg=root.querySelector('svg'),
+ns='http://www.w3.org/2000/svg',
+hint=document.getElementById('h2607'),
+ctr=document.getElementById('c2607'),
+words=['trace','fold','seed','echo','grain','weight','thread','root','shape','bind','layer','drift','hold','spark','loop','signal','stem','core','form','glean','rest','mark','know','keep','fuse'],
+pts=[];
+root.addEventListener('click',function(e){
+if(hint){hint.style.opacity=0;setTimeout(function(){hint.remove()},800);hint=null}
+var r=root.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,
+n=pts.length,hue=30+Math.min(n*5,300),
+w=words[Math.floor(Math.random()*words.length)];
+if(n){
+var best=null,bd=Infinity;
+pts.forEach(function(p){var d=(p.x-x)*(p.x-x)+(p.y-y)*(p.y-y);if(d<bd){bd=d;best=p}});
+var l=document.createElementNS(ns,'line');
+l.setAttribute('x1',best.x);l.setAttribute('y1',best.y);
+l.setAttribute('x2',x);l.setAttribute('y2',y);
+l.setAttribute('stroke','hsla('+hue+',70%,60%,'+Math.min(.12+n*.02,.85)+')');
+l.setAttribute('stroke-width',Math.min(.4+n*.04,2.4));
+svg.appendChild(l)
+}
+var c=document.createElementNS(ns,'circle');
+c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r',n?1.6:2.4);
+c.setAttribute('fill','hsl('+hue+',80%,80%)');
+svg.appendChild(c);
+var t=document.createElementNS(ns,'text');
+t.setAttribute('x',x);t.setAttribute('y',y-8);
+t.setAttribute('text-anchor','middle');
+t.setAttribute('fill','hsl('+hue+',65%,72%)');
+t.textContent=w;
+svg.appendChild(t);
+pts.push({x:x,y:y});
+ctr.textContent=pts.length+' fragments · '+Math.max(pts.length-1,0)+' bonds'
+});
+})();
+</script>
+</section>
