@@ -1,0 +1,120 @@
+<section data-date='2026-07-14' data-type='spark'>
+<style>
+#taper0714{margin:0;overflow:hidden;background:#050505;height:100vh;width:100%;position:relative;cursor:crosshair}
+#taper0714 canvas{display:block}
+#taper0714 .cap{position:absolute;bottom:8px;left:12px;color:#333;font:11px monospace;pointer-events:none}
+</style>
+<div id="taper0714">
+<canvas id="tc0714"></canvas>
+<div class="cap">two halves, drifting toward the middle — move / click</div>
+</div>
+<script>
+(function(){
+var el=document.getElementById('taper0714'),
+    cv=document.getElementById('tc0714'),
+    x=cv.getContext('2d'),
+    W,H,
+    pairs=[["star","light"],["over","lap"],["under","tow"],["sun","down"],["moon","rise"],["wind","fall"],["heart","beat"],["day","break"],["night","fall"],["home","land"],["out","side"],["in","side"],["with","in"],["be","tween"]],
+    mx=-999,my=-999,
+    flashes=[];
+
+function size(){W=cv.width=el.clientWidth;H=cv.height=el.clientHeight}
+size();
+addEventListener('resize',size);
+
+function P(side,i){
+  var p=pairs[i%pairs.length];
+  return{
+    txt: side===0?p[0]:p[1],
+    other: side===0?p[1]:p[0],
+    side: side,
+    x: side===0? -40-Math.random()*200 : W+40+Math.random()*200,
+    y: 30+Math.random()*(H-60),
+    vx: (side===0?1:-1)*(.3+Math.random()*.5),
+    vy: (Math.random()-.5)*.15
+  };
+}
+var n=9,
+    L=[],R=[];
+for(var i=0;i<n;i++){L.push(P(0,i));R.push(P(1,i))}
+
+function merge(a,b,mxp,myp){
+  flashes.push({x:mxp,y:myp,t:0,w:a.txt+b.other});
+  var reset=function(p,side){
+    p.x= side===0? -40-Math.random()*200 : W+40+Math.random()*200;
+    p.y= 30+Math.random()*(H-60);
+    var pi=Math.floor(Math.random()*pairs.length),pr=pairs[pi];
+    p.txt= side===0?pr[0]:pr[1];
+    p.other= side===0?pr[1]:pr[0];
+  };
+  reset(a,0);reset(b,1);
+}
+
+el.addEventListener('mousemove',function(e){
+  var r=el.getBoundingClientRect();
+  mx=e.clientX-r.left; my=e.clientY-r.top;
+});
+el.addEventListener('mouseleave',function(){mx=-999;my=-999});
+el.addEventListener('click',function(e){
+  var r=el.getBoundingClientRect(),
+      cx=e.clientX-r.left, cy=e.clientY-r.top,
+      bestL=L[0],bestR=R[0],bd=1e9;
+  L.forEach(function(a){R.forEach(function(b){
+    var d=Math.hypot(a.x-cx,a.y-cy)+Math.hypot(b.x-cx,b.y-cy);
+    if(d<bd){bd=d;bestL=a;bestR=b}
+  })});
+  bestL.x=cx-30; bestL.y=cy;
+  bestR.x=cx+30; bestR.y=cy;
+});
+
+x.font='16px monospace';
+function step(){
+  x.fillStyle='rgba(5,5,5,.35)';
+  x.fillRect(0,0,W,H);
+
+  [L,R].forEach(function(arr,side){
+    arr.forEach(function(p){
+      var d=Math.hypot(p.x-mx,p.y-my);
+      if(d<160){
+        var pull=(160-d)/160*.6;
+        p.x+= (mx-p.x)*pull*.02;
+        p.y+= (my-p.y)*pull*.02;
+      }
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.y<20||p.y>H-20)p.vy*=-1;
+      x.fillStyle= side===0? '#2dd9ff':'#ff3dc4';
+      x.fillText(p.txt,p.x,p.y);
+    });
+  });
+
+  for(var i=L.length-1;i>=0;i--){
+    for(var j=R.length-1;j>=0;j--){
+      var a=L[i],b=R[j],
+          dx=Math.abs(a.x-b.x),dy=Math.abs(a.y-b.y);
+      if(dx<26 && dy<14){
+        merge(a,b,(a.x+b.x)/2,(a.y+b.y)/2);
+      }
+    }
+  }
+
+  x.textAlign='center';
+  for(var k=flashes.length-1;k>=0;k--){
+    var f=flashes[k];
+    f.t+=1;
+    var life=f.t/60;
+    x.globalAlpha=Math.max(0,1-life);
+    x.fillStyle='#fff';
+    x.font=(16+life*20)+'px monospace';
+    x.fillText(f.w,f.x,f.y-life*20);
+    x.globalAlpha=1;
+    if(f.t>60)flashes.splice(k,1);
+  }
+  x.font='16px monospace';
+  x.textAlign='left';
+
+  requestAnimationFrame(step);
+}
+step();
+})();
+</script>
+</section>
