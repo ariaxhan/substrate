@@ -1,0 +1,78 @@
+<section data-date='2026-07-14' data-type='morning'>
+<style>
+#tpr0714{position:relative;height:100vh;overflow:hidden;background:linear-gradient(#05071a,#0a0e26);font-family:Georgia,'Times New Roman',serif}
+#tpr0714 .g{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at var(--x,50%) var(--y,50%),rgba(255,220,180,.10),transparent 40%);transition:background .05s linear}
+#tpr0714 .st{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%}
+#tpr0714 .hz{position:absolute;left:0;right:0;bottom:30%;height:1px;background:rgba(255,255,255,.15)}
+#tpr0714 .sn{position:absolute;left:50%;bottom:30%;width:54px;height:54px;border-radius:50%;background:radial-gradient(circle,#ffe4b8,#ff9d4d 60%,transparent 72%);transform:translate(-50%,50%);filter:blur(1px);opacity:0;transition:opacity 1.6s ease,bottom 1.6s ease}
+#tpr0714 .w{position:absolute;color:#5a6690;font-size:1.05rem;letter-spacing:.06em;cursor:pointer;opacity:.08;transition:opacity .35s,color .8s,transform .8s;user-select:none}
+#tpr0714 .w.lit{color:#ffd9a0;opacity:1!important;transform:scale(1.18)}
+#tpr0714 .cap{position:absolute;bottom:6%;width:100%;text-align:center;color:#7a8bb0;font-size:.82rem;letter-spacing:.2em;text-transform:uppercase;transition:color 1.5s}
+</style>
+<div id="tpr0714">
+  <div class="g" id="tpr0714g"></div>
+  <div class="hz"></div>
+  <div class="sn" id="tpr0714s"></div>
+  <div class="cap" id="tpr0714c">the day is unwritten</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('tpr0714');
+  var glow=document.getElementById('tpr0714g');
+  var sun=document.getElementById('tpr0714s');
+  var cap=document.getElementById('tpr0714c');
+  var words=['possibility','quiet','threshold','unmade','waking','soon','maybe','begin','still','open','almost','hush'];
+  var els=[];
+  words.forEach(function(w){
+    var d=document.createElement('div');
+    d.className='w';
+    d.textContent=w;
+    d.style.left=(8+Math.random()*80)+'%';
+    d.style.top=(6+Math.random()*56)+'%';
+    root.appendChild(d);
+    els.push(d);
+  });
+  for(var i=0;i<36;i++){
+    var s=document.createElement('div');
+    s.className='st';
+    s.style.left=Math.random()*100+'%';
+    s.style.top=Math.random()*68+'%';
+    s.style.opacity=(Math.random()*.6+.2);
+    root.appendChild(s);
+  }
+  var nT=[5,7,26],dT=[42,56,112],nB=[10,14,38],dB=[255,157,77];
+  function mix(a,b,t){return Math.round(a+(b-a)*t)}
+  var lit=0,max=words.length;
+  function paint(){
+    var t=lit/max;
+    var top='rgb('+mix(nT[0],dT[0],t)+','+mix(nT[1],dT[1],t)+','+mix(nT[2],dT[2],t)+')';
+    var bot='rgb('+mix(nB[0],dB[0],t)+','+mix(nB[1],dB[1],t)+','+mix(nB[2],dB[2],t)+')';
+    root.style.background='linear-gradient('+top+','+bot+')';
+    sun.style.opacity=t;
+    sun.style.bottom=(30+t*24)+'%';
+    if(t>=1){cap.textContent='begin.';cap.style.color='#ffd9a0'}
+  }
+  root.addEventListener('mousemove',function(e){
+    var r=root.getBoundingClientRect();
+    var mx=e.clientX-r.left,my=e.clientY-r.top;
+    glow.style.setProperty('--x',mx+'px');
+    glow.style.setProperty('--y',my+'px');
+    els.forEach(function(d){
+      if(d.classList.contains('lit'))return;
+      var dr=d.getBoundingClientRect();
+      var dx=(dr.left+dr.width/2-r.left)-mx,dy=(dr.top+dr.height/2-r.top)-my;
+      var dist=Math.sqrt(dx*dx+dy*dy);
+      d.style.opacity=Math.max(.08,1-dist/220);
+    });
+  });
+  els.forEach(function(d){
+    d.addEventListener('click',function(){
+      if(d.classList.contains('lit'))return;
+      d.classList.add('lit');
+      lit++;
+      paint();
+    });
+  });
+})();
+</script>
+</section>
