@@ -1,0 +1,83 @@
+<section data-date='2026-07-14' data-type='digest'>
+<style>
+#taper-2026-07-14{margin:0;overflow:hidden;background:#07080c;height:100vh;position:relative;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+#taper-2026-07-14 canvas{display:block}
+#taper-2026-07-14 .lbl{position:absolute;color:#c9b98a;font-size:11px;letter-spacing:.06em;opacity:0;transform:translate(-50%,-50%);pointer-events:none;transition:opacity 1.8s ease}
+#taper-2026-07-14 .lbl.on{opacity:.85}
+#taper-2026-07-14 .cnt{position:absolute;left:14px;bottom:12px;color:#4a5568;font:11px/1.5 Georgia,serif;letter-spacing:.08em}
+#taper-2026-07-14 .cnt b{color:#c9b98a;font-weight:normal}
+#taper-2026-07-14 .hint{position:absolute;right:14px;top:12px;color:#333c46;font:10px Georgia,serif;letter-spacing:.1em;text-transform:uppercase}
+</style>
+<div id="taper-2026-07-14">
+<canvas></canvas>
+<div class="cnt"><b id="tN">0</b> fragments &middot; <b id="tB">0</b> bonds</div>
+<div class="hint">click to know something</div>
+</div>
+<script>
+(function(){
+var wrap=document.getElementById('taper-2026-07-14');
+var cv=wrap.querySelector('canvas'),x=cv.getContext('2d');
+var W,H;
+function fit(){W=cv.width=wrap.clientWidth;H=cv.height=wrap.clientHeight}
+fit();window.addEventListener('resize',fit);
+var latent=[],active=[],words=['trace','residue','thread','vein','root','spark','echo','seed','shard','signal','pattern','memory','grain'],
+    deep=['the shape was always there','it only needed a name','structure precedes seeing','what repeats becomes real'];
+for(var i=0;i<40;i++){latent.push({x:Math.random()*W,y:Math.random()*H,r:1.1+Math.random()*1.3})}
+var tN=document.getElementById('tN'),tB=document.getElementById('tB'),bonds=0;
+function nearestLatent(px,py){
+  var best=null,bd=26*26;
+  for(var i=0;i<latent.length;i++){var p=latent[i];if(p.used)continue;var dx=p.x-px,dy=p.y-py,d=dx*dx+dy*dy;if(d<bd){bd=d;best=p}}
+  return best
+}
+function label(px,py,text,big){
+  var d=document.createElement('div');
+  d.className='lbl';d.style.left=px+'px';d.style.top=(py-16)+'px';
+  d.textContent=text;if(big)d.style.color='#e8d9ab';
+  wrap.appendChild(d);
+  requestAnimationFrame(function(){d.classList.add('on')});
+  setTimeout(function(){d.style.opacity=0;setTimeout(function(){d.remove()},2000)},4200)
+}
+function addNode(px,py){
+  var near=nearestLatent(px,py);
+  var nx=near?near.x:px, ny=near?near.y:py;
+  if(near)near.used=true;
+  var node={x:nx,y:ny,born:Date.now(),links:0};
+  var joined=[];
+  for(var i=0;i<active.length;i++){
+    var o=active[i],dx=o.x-nx,dy=o.y-ny,dist=Math.sqrt(dx*dx+dy*dy);
+    if(dist<150){joined.push(o);o.links++;node.links++;bonds++}
+  }
+  active.push(node);
+  node._joined=joined;
+  tN.textContent=active.length;tB.textContent=bonds;
+  var w=node.links>=4?deep[Math.floor(Math.random()*deep.length)]:words[Math.floor(Math.random()*words.length)];
+  label(nx,ny,w,node.links>=4)
+}
+wrap.addEventListener('click',function(e){
+  var r=cv.getBoundingClientRect();
+  addNode(e.clientX-r.left,e.clientY-r.top)
+});
+(function seed(){setTimeout(function(){addNode(W*0.5+(Math.random()-.5)*120,H*0.45+(Math.random()-.5)*80)},600)})();
+function draw(){
+  x.clearRect(0,0,W,H);
+  x.fillStyle='#1c2430';
+  for(var i=0;i<latent.length;i++){var p=latent[i];if(p.used)continue;x.globalAlpha=.5;x.beginPath();x.arc(p.x,p.y,p.r,0,7);x.fill()}
+  x.globalAlpha=1;
+  for(var i=0;i<active.length;i++){
+    var n=active[i],age=(Date.now()-n.born)/1000,pulse=2.2+Math.sin(age*1.6+i)*.8;
+    if(n._joined)for(var j=0;j<n._joined.length;j++){
+      var o=n._joined[j];
+      var g=x.createLinearGradient(n.x,n.y,o.x,o.y);
+      g.addColorStop(0,'rgba(201,185,138,.55)');g.addColorStop(1,'rgba(120,150,190,.25)');
+      x.strokeStyle=g;x.lineWidth=.7;
+      x.beginPath();x.moveTo(n.x,n.y);x.lineTo(o.x,o.y);x.stroke()
+    }
+    var c=n.links>=4?'#e8d9ab':(n.links>0?'#c9b98a':'#7a8ba8');
+    x.fillStyle=c;x.beginPath();x.arc(n.x,n.y,pulse,0,7);x.fill()
+  }
+  requestAnimationFrame(draw)
+}
+draw()
+})();
+</script>
+</section>
