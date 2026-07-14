@@ -1,0 +1,50 @@
+<section data-date='2026-07-13' data-type='reflection'>
+<style>
+#t20260713{position:relative;min-height:78vh;overflow:hidden;background:radial-gradient(ellipse at 50% 15%,#0d1b2e,#020409 70%);font-family:Georgia,'Times New Roman',serif;cursor:crosshair;isolation:isolate}
+#t20260713 .msg{position:absolute;top:38%;left:50%;transform:translate(-50%,-50%);color:#5b6b85;font-size:clamp(14px,2.4vw,22px);letter-spacing:.04em;text-align:center;width:80%;opacity:.55;transition:opacity 2.5s ease;pointer-events:none;font-style:italic}
+#t20260713 .msg.done{opacity:.9;color:#c9d3e6}
+#t20260713 .count{position:absolute;bottom:14px;right:18px;color:#334159;font:11px/1 monospace;letter-spacing:.08em;pointer-events:none}
+#t20260713 .star{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;box-shadow:0 0 6px 1px rgba(255,255,255,.8);animation:t20260713a .9s ease-out forwards,t20260713b 3.6s ease-in-out .9s infinite;pointer-events:none}
+@keyframes t20260713a{from{opacity:0;transform:scale(0)}to{opacity:1;transform:scale(1)}}
+@keyframes t20260713b{0%,100%{opacity:.5}50%{opacity:1}}
+</style>
+<div id="t20260713">
+  <div class="msg">click, where the dark is thinnest</div>
+  <div class="count">0 stars</div>
+</div>
+<script>
+(function(){
+  var host=document.getElementById('t20260713');
+  var msg=host.querySelector('.msg');
+  var cnt=host.querySelector('.count');
+  var phrase=['the','day','is','complete','.','rest','now','.','tomorrow','waits',',','unlit','.'];
+  var n=0;
+  var words=['click, where the dark is thinnest'];
+  host.addEventListener('click',function(e){
+    var r=host.getBoundingClientRect();
+    var x=e.clientX-r.left, y=e.clientY-r.top;
+    var s=document.createElement('div');
+    s.className='star';
+    var sz=(1+Math.random()*2.4).toFixed(1);
+    s.style.left=x+'px';
+    s.style.top=y+'px';
+    s.style.width=sz+'px';
+    s.style.height=sz+'px';
+    s.style.animationDelay=(Math.random()*1.2)+'s';
+    host.appendChild(s);
+    n++;
+    cnt.textContent=n+(n===1?' star':' stars');
+    if(n<=phrase.length){
+      msg.classList.add('done');
+      msg.textContent=phrase.slice(0,n).join(' ');
+    }
+    if(n===phrase.length){
+      setTimeout(function(){
+        msg.style.transition='opacity 4s ease';
+        msg.style.opacity='.3';
+      },1800);
+    }
+  });
+})();
+</script>
+</section>
