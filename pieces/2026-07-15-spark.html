@@ -1,0 +1,81 @@
+<section data-date='2026-07-15' data-type='spark'>
+<style>
+[data-date='2026-07-15'] .stg{position:relative;height:70vh;min-height:400px;background:#0a0a0c;overflow:hidden;font:16px/1.2 Georgia,serif;cursor:crosshair;border-radius:4px}
+[data-date='2026-07-15'] .hint{position:absolute;top:10px;left:50%;transform:translateX(-50%);color:#555;font:11px sans-serif;letter-spacing:.1em;text-transform:uppercase;z-index:5;pointer-events:none}
+[data-date='2026-07-15'] .w{position:absolute;color:#7fa;opacity:.85;white-space:nowrap;transition:top .6s linear}
+[data-date='2026-07-15'] .w.r{color:#f7a}
+[data-date='2026-07-15'] .fu{position:absolute;color:#fff;font-weight:bold;transform:translate(-50%,-50%) scale(.3);opacity:0;text-shadow:0 0 12px #fff,0 0 24px #ffd;transition:transform .9s cubic-bezier(.2,1.4,.4,1),opacity .9s ease-out}
+[data-date='2026-07-15'] .fu.go{transform:translate(-50%,-50%) scale(1.6);opacity:1}
+[data-date='2026-07-15'] .fu.go.done{opacity:0;transform:translate(-50%,-50%) scale(2.4)}
+[data-date='2026-07-15'] .axis{position:absolute;top:0;bottom:0;width:1px;background:linear-gradient(#0a0a0c,#333,#0a0a0c);transition:left .05s linear}
+</style>
+<div class="stg" id="tp-stg">
+  <div class="hint">move to bend the meeting point &middot; click to force one</div>
+  <div class="axis" id="tp-ax"></div>
+</div>
+<script>
+(function(){
+  var stg=document.getElementById('tp-stg'), ax=document.getElementById('tp-ax');
+  var L=['salt','ash','root','wire','tide','hour','rust','moss','glass','ember','husk','wick'];
+  var R=['bone','light','field','echo','mouth','spark','stone','vein','ring','fume','nerve','fold'];
+  var cx=stg.clientWidth/2, W=stg.clientWidth, H=stg.clientHeight;
+  function resize(){W=stg.clientWidth;H=stg.clientHeight}
+  window.addEventListener('resize',resize);
+  stg.addEventListener('mousemove',function(e){
+    var r=stg.getBoundingClientRect();
+    cx=e.clientX-r.left;
+    ax.style.left=cx+'px';
+  });
+  stg.addEventListener('click',function(e){for(var i=0;i<3;i++)spawn()});
+  ax.style.left=cx+'px';
+  var parts=[];
+  function fuse(a,b){
+    var w1=a.text,w2=b.text;
+    var word=w1.slice(0,Math.ceil(w1.length/2))+w2.slice(Math.floor(w2.length/2));
+    var el=document.createElement('div');
+    el.className='fu'; el.textContent=word;
+    var top=(a.top+b.top)/2;
+    el.style.left=cx+'px'; el.style.top=top+'%';
+    stg.appendChild(el);
+    requestAnimationFrame(function(){el.classList.add('go')});
+    setTimeout(function(){el.classList.add('done')},650);
+    setTimeout(function(){el.remove()},1600);
+    a.el.remove(); b.el.remove();
+  }
+  function spawn(){
+    var top=Math.random()*85+5;
+    var lw=L[Math.floor(Math.random()*L.length)], rw=R[Math.floor(Math.random()*R.length)];
+    var le=document.createElement('span'); le.className='w l'; le.textContent=lw;
+    var re=document.createElement('span'); re.className='w r'; re.textContent=rw;
+    le.style.top=re.style.top=top+'%'; le.style.left='-8%'; re.style.left=(W+40)+'px';
+    stg.appendChild(le); stg.appendChild(re);
+    var lp={el:le,x:-40,text:lw,top:top,speed:.7+Math.random()*.6,dir:1};
+    var rp={el:re,x:W+40,text:rw,top:top,speed:.7+Math.random()*.6,dir:-1,partner:lp};
+    lp.partner=rp;
+    parts.push(lp,rp);
+  }
+  function tick(){
+    var seen={};
+    for(var i=parts.length-1;i>=0;i--){
+      var p=parts[i];
+      if(p.done)continue;
+      p.x += p.dir*p.speed*4;
+      p.el.style.left=p.x+'px';
+      if(!seen[p.top] && !p.done && !p.partner.done){
+        if(Math.abs(p.x - p.partner.x) < 14 && ((p.dir>0 && p.x>=p.partner.x-14)||(p.dir<0 && p.x<=p.partner.x+14))){
+          p.done=true; p.partner.done=true;
+          fuse(p,p.partner);
+        }
+      }
+      if(p.x<-100||p.x>W+100)p.done=true;
+    }
+    parts=parts.filter(function(p){return !p.done});
+    requestAnimationFrame(tick);
+  }
+  resize();
+  for(var i=0;i<4;i++)setTimeout(spawn,i*400);
+  setInterval(spawn,1400);
+  requestAnimationFrame(tick);
+})();
+</script>
+</section>
