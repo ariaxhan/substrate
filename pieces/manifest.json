@@ -429,6 +429,7 @@
     {"file": "2026-07-14-morning.html", "date": "2026-07-14", "type": "morning", "timestamp": 1784037971},
     {"file": "2026-07-14-pulse.html", "date": "2026-07-14", "type": "pulse", "timestamp": 1784055997},
     {"file": "2026-07-14-reflection.html", "date": "2026-07-14", "type": "reflection", "timestamp": 1784084662},
-    {"file": "2026-07-14-spark.html", "date": "2026-07-14", "type": "spark", "timestamp": 1784045563}
+    {"file": "2026-07-14-spark.html", "date": "2026-07-14", "type": "spark", "timestamp": 1784045563},
+    {"file": "2026-07-15-morning.html", "date": "2026-07-15", "type": "morning", "timestamp": 1784124320}
   ]
 }
