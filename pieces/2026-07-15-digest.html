@@ -1,0 +1,88 @@
+<section data-date='2026-07-15' data-type='digest'>
+<style>
+[data-date='2026-07-15'][data-type='digest'] .stg{position:relative;height:70vh;min-height:420px;background:#07080a;overflow:hidden;font:15px/1.3 Georgia,serif;cursor:crosshair;border-radius:4px}
+[data-date='2026-07-15'][data-type='digest'] .hint{position:absolute;bottom:12px;left:14px;color:#5c5748;font:11px/1.4 'Courier New',monospace;letter-spacing:.08em;text-transform:uppercase;z-index:5;pointer-events:none}
+[data-date='2026-07-15'][data-type='digest'] .ct{position:absolute;top:14px;right:16px;color:#4a473c;font:10px/1.4 'Courier New',monospace;letter-spacing:.1em;pointer-events:none}
+</style>
+<div class="stg" id="tp-dg-stg">
+  <canvas id="tp-dg-cv"></canvas>
+  <div class="hint">click to log a fact &middot; watch it find its shape</div>
+  <div class="ct" id="tp-dg-ct">0 facts &middot; 0 bonds</div>
+</div>
+<script>
+(function(){
+  var stg=document.getElementById('tp-dg-stg'),
+      cv=document.getElementById('tp-dg-cv'),
+      ct=document.getElementById('tp-dg-ct'),
+      x=cv.getContext('2d'),
+      W=['a name','a date','a place','a habit','a wound','a rumor','a debt',
+         'a warning','a pattern','a silence','a return','a reason','a face',
+         'again','before','because','not yet','still','elsewhere'],
+      used=[], nodes=[], R=210, born=Date.now();
+
+  function size(){
+    cv.width=stg.clientWidth; cv.height=stg.clientHeight;
+  }
+  window.addEventListener('resize', size); size();
+
+  function word(){
+    if(!used.length) used=W.slice();
+    var i=(Math.random()*used.length)|0;
+    return used.splice(i,1)[0];
+  }
+
+  function add(px,py){
+    var n={x:px,y:py,w:word(),t:Date.now(),deg:0,edges:[]};
+    nodes.forEach(function(o){
+      var dx=o.x-n.x, dy=o.y-n.y, d=Math.sqrt(dx*dx+dy*dy);
+      if(d<R){ n.edges.push(o); o.edges.push(n); n.deg++; o.deg++; }
+    });
+    nodes.push(n);
+    var bonds=0; nodes.forEach(function(o){bonds+=o.edges.length});
+    ct.textContent=nodes.length+' fact'+(nodes.length==1?'':'s')+' · '+(bonds/2|0)+' bond'+(bonds/2==1?'':'s');
+  }
+
+  stg.addEventListener('click', function(e){
+    var r=stg.getBoundingClientRect();
+    add(e.clientX-r.left, e.clientY-r.top);
+  });
+
+  function draw(){
+    var t=Date.now(), age=(t-born)/1000;
+    x.fillStyle='rgba(7,8,10,.32)';
+    x.fillRect(0,0,cv.width,cv.height);
+
+    nodes.forEach(function(n){
+      n.edges.forEach(function(o){
+        if(o.x<n.x || (o.x==n.x && o.y<n.y)) return;
+        var solid = n.deg>=3 && o.deg>=3;
+        x.strokeStyle = solid ? 'rgba(214,178,110,.75)' : 'rgba(214,178,110,.22)';
+        x.lineWidth = solid ? 1.2 : .6;
+        x.beginPath(); x.moveTo(n.x,n.y); x.lineTo(o.x,o.y); x.stroke();
+      });
+    });
+
+    nodes.forEach(function(n){
+      var a=Math.min(1,(t-n.t)/700), locked=n.deg>=3,
+          pulse=locked?(Math.sin(age*2+n.x)*.15+.85):1,
+          rad=(locked?3.4:2.2)*pulse;
+      x.beginPath();
+      x.fillStyle= locked ? 'rgba(236,204,140,'+a+')' : 'rgba(180,175,158,'+(a*.8)+')';
+      x.arc(n.x,n.y,rad,0,7);
+      x.fill();
+      if(locked){
+        x.shadowColor='rgba(236,204,140,.9)'; x.shadowBlur=10*pulse;
+        x.beginPath(); x.arc(n.x,n.y,rad,0,7); x.fill();
+        x.shadowBlur=0;
+      }
+      x.fillStyle='rgba(232,221,200,'+(a*(locked?.95:.6))+')';
+      x.font=(locked?'italic 13px':'12px')+' Georgia,serif';
+      x.fillText(n.w, n.x+8, n.y-8);
+    });
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+</section>
