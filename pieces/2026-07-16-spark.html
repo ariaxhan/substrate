@@ -1,0 +1,71 @@
+<section data-date='2026-07-16' data-type='spark'>
+<style>
+[data-date='2026-07-16'] .stg{position:relative;height:70vh;min-height:400px;background:#05050a;overflow:hidden;border-radius:4px;cursor:crosshair}
+[data-date='2026-07-16'] canvas{display:block}
+[data-date='2026-07-16'] .cap{position:absolute;bottom:8px;left:12px;color:#3a3a44;font:11px monospace;letter-spacing:.03em;pointer-events:none}
+</style>
+<div class="stg" id="t0716">
+<canvas id="c0716"></canvas>
+<div class="cap">two lights drift, drawn toward what nears &middot; move to pull them together, click to force it</div>
+</div>
+<script>
+(function(){
+var wrap=document.getElementById('t0716'), cv=document.getElementById('c0716'), x=cv.getContext('2d'), W, H;
+function rz(){W=cv.width=wrap.clientWidth;H=cv.height=wrap.clientHeight}
+window.addEventListener('resize',rz); rz();
+var AW=['ember','hunger','root','static','hollow','wire','stone','dust'];
+var BW=['water','hush','bloom','signal','harbor','ash','echo','rain'];
+var SY=['silt','glow','thaw','hum','nest','smoke','moss','mist'];
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function sun(cx,cy,col,words){return {x:cx,y:cy,vx:0,vy:0,r:44,col:col,words:words,word:pick(words)}}
+var A=sun(W*.25,H*.3,'255,150,60',AW), B=sun(W*.75,H*.7,'70,190,255',BW);
+var mx=-999,my=-999,bursts=[],cool=0;
+wrap.addEventListener('mousemove',function(e){var r=wrap.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top});
+wrap.addEventListener('mouseleave',function(){mx=my=-999});
+wrap.addEventListener('click',function(){collide((A.x+B.x)/2,(A.y+B.y)/2)});
+function collide(px,py){
+  bursts.push({x:px,y:py,t:0,w:pick(SY)});
+  var dx=A.x-B.x,dy=A.y-B.y,d=Math.hypot(dx,dy)||1;
+  A.vx+=dx/d*3; A.vy+=dy/d*3; B.vx-=dx/d*3; B.vy-=dy/d*3;
+  A.word=pick(AW); B.word=pick(BW);
+}
+function step(s){
+  var t=Date.now()/1000;
+  s.vx+=Math.sin(t*.4+s.x*.01)*.02;
+  s.vy+=Math.cos(t*.35+s.y*.01)*.02;
+  if(mx>-500){s.vx+=(mx-s.x)*.0006; s.vy+=(my-s.y)*.0006}
+  s.vx*=.96; s.vy*=.96; s.x+=s.vx; s.y+=s.vy;
+  if(s.x<s.r){s.x=s.r;s.vx*=-1} if(s.x>W-s.r){s.x=W-s.r;s.vx*=-1}
+  if(s.y<s.r){s.y=s.r;s.vy*=-1} if(s.y>H-s.r){s.y=H-s.r;s.vy*=-1}
+}
+function tick(){
+  x.fillStyle='rgba(5,5,10,.18)'; x.fillRect(0,0,W,H);
+  step(A); step(B);
+  x.globalCompositeOperation='lighter';
+  [A,B].forEach(function(s){
+    var g=x.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r*2.2);
+    g.addColorStop(0,'rgba('+s.col+',.55)'); g.addColorStop(1,'rgba('+s.col+',0)');
+    x.fillStyle=g; x.beginPath(); x.arc(s.x,s.y,s.r*2.2,0,7); x.fill();
+  });
+  x.globalCompositeOperation='source-over';
+  x.font='13px Georgia,serif'; x.textAlign='center';
+  x.fillStyle='rgba(255,220,180,.85)'; x.fillText(A.word,A.x,A.y-A.r*.6);
+  x.fillStyle='rgba(180,230,255,.85)'; x.fillText(B.word,B.x,B.y+B.r*.6+14);
+  var d=Math.hypot(A.x-B.x,A.y-B.y);
+  if(cool>0)cool--;
+  if(d<A.r+B.r-6 && cool<=0){collide((A.x+B.x)/2,(A.y+B.y)/2); cool=70}
+  x.font='bold 15px Georgia,serif';
+  bursts.forEach(function(b){
+    b.t++;
+    var a=Math.max(0,1-b.t/60), sc=1+b.t*.02;
+    x.save(); x.globalAlpha=a; x.translate(b.x,b.y-b.t*.6); x.scale(sc,sc);
+    x.fillStyle='#fff'; x.shadowColor='#fff'; x.shadowBlur=12;
+    x.fillText(b.w,0,0); x.restore();
+  });
+  bursts=bursts.filter(function(b){return b.t<60});
+  requestAnimationFrame(tick);
+}
+tick();
+})();
+</script>
+</section>
