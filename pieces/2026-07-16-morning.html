@@ -1,0 +1,60 @@
+<section data-date='2026-07-16' data-type='morning'>
+<style>
+#taper-dawn{margin:0;overflow:hidden;position:relative;height:100vh;height:100dvh;background:linear-gradient(180deg,#04060f 0%,#0a0e1c 55%,#0e0a12 100%);cursor:crosshair;font-family:Georgia,'Iowan Old Style',serif}
+#taper-dawn .glow{position:absolute;width:420px;height:420px;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,196,120,.55),rgba(255,140,90,.14) 45%,transparent 70%);mix-blend-mode:screen;left:-999px;top:-999px;transition:opacity .3s}
+#taper-dawn .mark{position:absolute;width:260px;height:260px;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,180,110,.35),transparent 70%);mix-blend-mode:screen;animation:tdrise 2.4s ease-out forwards}
+@keyframes tdrise{from{opacity:0;transform:translate(-50%,-50%) scale(.4)}30%{opacity:1}to{opacity:.55;transform:translate(-50%,-50%) scale(1)}}
+#taper-dawn .w{position:absolute;color:#1c2033;letter-spacing:.02em;white-space:nowrap;transition:color .5s ease}
+#taper-dawn .w.lit{color:#ffd9a8;text-shadow:0 0 14px rgba(255,180,110,.5)}
+#taper-dawn .hint{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);color:#3a3f57;font-family:-apple-system,sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase;pointer-events:none}
+</style>
+<div id="taper-dawn">
+<div class="glow" id="td-glow"></div>
+<div id="td-words"></div>
+<div class="hint">the day has not decided what it is yet</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('taper-dawn'),wrap=document.getElementById('td-words'),glow=document.getElementById('td-glow');
+var phrases=['a coffee not yet poured','the sentence unbegun','a door still closed','a name unsaid','light finding a room','a route not yet walked','the first breath of it','a question unasked','a page, blank, waiting','a train not yet caught','the version of you still asleep','a plan half formed','something that could be kind','a window opening slowly','the hour before anyone needs you','a promise not made yet','the shape of a good idea','nothing has gone wrong yet','a walk with no destination','the light deciding where to fall'];
+var nodes=phrases.map(function(t,i){
+  var el=document.createElement('div');
+  el.className='w';
+  el.textContent=t;
+  el.style.left=(6+Math.random()*80)+'%';
+  el.style.top=(8+Math.random()*78)+'%';
+  el.style.fontSize=(13+Math.random()*15)+'px';
+  wrap.appendChild(el);
+  return el;
+});
+function light(x,y){
+  glow.style.left=x+'px';
+  glow.style.top=y+'px';
+  var r=root.getBoundingClientRect();
+  nodes.forEach(function(el){
+    var b=el.getBoundingClientRect();
+    var dx=(b.left+b.width/2)-x, dy=(b.top+b.height/2)-y;
+    var d=Math.sqrt(dx*dx+dy*dy);
+    el.classList.toggle('lit', d<190);
+  });
+}
+root.addEventListener('mousemove',function(e){
+  var r=root.getBoundingClientRect();
+  light(e.clientX-r.left,e.clientY-r.top);
+});
+root.addEventListener('mouseleave',function(){
+  glow.style.left='-999px';glow.style.top='-999px';
+  nodes.forEach(function(el){el.classList.remove('lit')});
+});
+root.addEventListener('click',function(e){
+  var r=root.getBoundingClientRect();
+  var x=e.clientX-r.left,y=e.clientY-r.top;
+  var m=document.createElement('div');
+  m.className='mark';
+  m.style.left=x+'px';m.style.top=y+'px';
+  root.appendChild(m);
+  setTimeout(function(){m.remove()},2600);
+});
+})();
+</script>
+</section>
