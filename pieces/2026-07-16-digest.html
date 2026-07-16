@@ -1,0 +1,73 @@
+<section data-date='2026-07-16' data-type='digest'>
+<style>
+#tpr{position:relative;width:100%;height:100vh;background:radial-gradient(ellipse at 50% 30%,#0d0f1a,#040408 75%);overflow:hidden;font-family:Georgia,'Times New Roman',serif;color:#cfd4e0}
+#tpr canvas{position:absolute;inset:0;cursor:crosshair}
+#tpr .hud{position:absolute;top:22px;left:26px;font-family:'Courier New',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#6a7288;pointer-events:none}
+#tpr .hud b{color:#e7c78a;font-weight:400}
+#tpr .cue{position:absolute;bottom:26px;left:26px;right:26px;font-size:13px;font-style:italic;color:#4d5266;transition:opacity 1.6s ease;pointer-events:none}
+#tpr .title{position:absolute;bottom:26px;right:30px;font-size:12px;letter-spacing:.24em;color:#3a3f52;pointer-events:none;text-transform:uppercase}
+</style>
+<div id="tpr">
+<canvas id="tprC"></canvas>
+<div class="hud">nodes <b id="tprN">0</b> &nbsp;·&nbsp; bonds <b id="tprB">0</b> &nbsp;·&nbsp; crystals <b id="tprX">0</b></div>
+<div class="cue" id="tprCue">click to lay a fact. proximity finds its kin.</div>
+<div class="title">emergence</div>
+</div>
+<script>
+(function(){
+var el=document.getElementById('tprC'),ctx=el.getContext('2d'),wrap=document.getElementById('tpr');
+var W,H,pts=[],words=['signal','trace','pattern','shape','order','echo','thread','memory','form','link','node','ledger','glyph','lattice','residue','drift'];
+function size(){W=el.width=wrap.clientWidth;H=el.height=wrap.clientHeight}
+size();window.addEventListener('resize',size);
+var nEl=document.getElementById('tprN'),bEl=document.getElementById('tprB'),xEl=document.getElementById('tprX'),cue=document.getElementById('tprCue');
+var bonds=0;
+function addPoint(x,y){
+  var p={x:x,y:y,deg:0,age:0,w:words[Math.floor(Math.random()*words.length)],glow:1};
+  var near=pts.map(function(q){return {q:q,d:Math.hypot(q.x-x,q.y-y)}}).filter(function(o){return o.d<190}).sort(function(a,b){return a.d-b.d}).slice(0,3);
+  near.forEach(function(o){o.q.deg++;p.deg++;bonds++});
+  p.links=near.map(function(o){return o.q});
+  pts.push(p);
+  nEl.textContent=pts.length;bEl.textContent=bonds;
+  xEl.textContent=pts.filter(function(q){return q.deg>=3}).length;
+  if(cue.style.opacity!=='0'){cue.style.opacity='0'}
+}
+wrap.addEventListener('click',function(e){
+  var r=el.getBoundingClientRect();
+  addPoint(e.clientX-r.left,e.clientY-r.top);
+});
+(function seed(){addPoint(W*0.5+(Math.random()-.5)*40,H*0.42+(Math.random()-.5)*40)})();
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  pts.forEach(function(p){
+    p.links.forEach(function(q){
+      var g=ctx.createLinearGradient(p.x,p.y,q.x,q.y);
+      var c1=p.deg>=3?'rgba(231,199,138,.55)':'rgba(120,140,190,.28)';
+      var c2=q.deg>=3?'rgba(231,199,138,.55)':'rgba(120,140,190,.28)';
+      g.addColorStop(0,c1);g.addColorStop(1,c2);
+      ctx.strokeStyle=g;ctx.lineWidth=p.deg>=3&&q.deg>=3?1.4:.6;
+      ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();
+    });
+  });
+  pts.forEach(function(p){
+    p.age+=1;
+    var r=3+Math.min(p.deg,6);
+    var crystal=p.deg>=3;
+    ctx.beginPath();
+    ctx.fillStyle=crystal?'rgba(231,199,138,'+(0.85)+')':'rgba(200,210,230,.75)';
+    ctx.arc(p.x,p.y,r,0,7);ctx.fill();
+    if(crystal){
+      ctx.beginPath();ctx.strokeStyle='rgba(231,199,138,.35)';ctx.lineWidth=1;
+      ctx.arc(p.x,p.y,r+5+Math.sin(p.age/22)*2,0,7);ctx.stroke();
+    }
+    if(p.age<40){
+      ctx.font='11px Georgia, serif';
+      ctx.fillStyle='rgba(207,212,224,'+(1-p.age/40)*0.8+')';
+      ctx.fillText(p.w,p.x+r+6,p.y-r-4);
+    }
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+})();
+</script>
+</section>
