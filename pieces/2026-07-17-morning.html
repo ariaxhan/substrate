@@ -1,0 +1,68 @@
+<section data-date='2026-07-17' data-type='morning'>
+<style>
+#sd0717{position:relative;height:100vh;height:100dvh;overflow:hidden;background:linear-gradient(160deg,#eef1f6 0%,#f7ece0 55%,#ffe1c9 100%);font-family:Futura,'Century Gothic',Avenir,Arial,sans-serif;cursor:crosshair;-webkit-user-select:none;user-select:none}
+#sd0717 .ring{position:absolute;left:50%;top:50%;width:48vmin;height:48vmin;margin:-24vmin 0 0 -24vmin;border:1px solid rgba(94,80,110,.28);border-radius:50%}
+#sd0717 .ring:before{content:'';position:absolute;inset:16%;border:1px solid rgba(94,80,110,.16);border-radius:50%}
+#sd0717 .beam{position:absolute;left:50%;top:50%;width:48vmin;height:48vmin;margin:-24vmin 0 0 -24vmin;border-radius:50%;background:conic-gradient(from 0deg,rgba(255,150,70,.5) 0deg 16deg,transparent 16deg 360deg);transition:opacity .4s}
+#sd0717 .lbl{position:absolute;left:50%;top:50%;font-size:.92rem;letter-spacing:.08em;color:#9089a0;transition:color .6s,text-shadow .6s,transform .6s;transform:translate(-50%,-50%);white-space:nowrap}
+#sd0717 .lbl.glow{color:#c97a3b}
+#sd0717 .lbl.claimed{color:#a8451c;font-weight:600;text-shadow:0 0 12px rgba(255,150,70,.55);transform:translate(-50%,-50%) scale(1.14)}
+#sd0717 .spoke{position:absolute;left:50%;top:50%;width:24vmin;height:1px;background:linear-gradient(90deg,rgba(168,69,28,.55),transparent);transform-origin:0 0;pointer-events:none}
+#sd0717 .cap{position:absolute;bottom:7%;left:50%;transform:translateX(-50%);font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:#8c8178;font-family:'Courier New',monospace;transition:color .6s}
+</style>
+<div id="sd0717">
+<div class="ring"></div>
+<div class="beam" id="sd17b"></div>
+<div id="sd17l"></div>
+<div id="sd17s"></div>
+<div class="cap" id="sd17c">turn toward the light</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('sd0717'),beam=document.getElementById('sd17b'),lwrap=document.getElementById('sd17l'),swrap=document.getElementById('sd17s'),cap=document.getElementById('sd17c');
+var words=['not yet','maybe','again','unknown','soon','begin'];
+var n=words.length,r=24,claimed=0;
+var els=words.map(function(w,i){
+  var a=i*360/n,rad=a*Math.PI/180,x=Math.sin(rad)*r,y=-Math.cos(rad)*r;
+  var d=document.createElement('div');
+  d.className='lbl';
+  d.textContent=w;
+  d.style.left='calc(50% + '+x+'vmin)';
+  d.style.top='calc(50% + '+y+'vmin)';
+  d.dataset.angle=a;
+  lwrap.appendChild(d);
+  return d;
+});
+function dist(a,b){var d=Math.abs(a-b);return Math.min(d,360-d)}
+function angleFrom(e){
+  var b=root.getBoundingClientRect(),cx=b.width/2,cy=b.height/2;
+  var dx=(e.clientX-b.left)-cx,dy=(e.clientY-b.top)-cy;
+  return (Math.atan2(dx,-dy)*180/Math.PI+360)%360;
+}
+root.addEventListener('mousemove',function(e){
+  var a=angleFrom(e);
+  beam.style.transform='translate(-50%,-50%) rotate('+(a-8)+'deg)';
+  els.forEach(function(d){
+    if(d.classList.contains('claimed'))return;
+    d.classList.toggle('glow',dist(a,+d.dataset.angle)<11);
+  });
+});
+root.addEventListener('click',function(e){
+  var a=angleFrom(e),best=null,bd=999;
+  els.forEach(function(d){
+    if(d.classList.contains('claimed'))return;
+    var dd=dist(a,+d.dataset.angle);
+    if(dd<bd){bd=dd;best=d}
+  });
+  if(!best)return;
+  best.classList.add('claimed');
+  claimed++;
+  var s=document.createElement('div');
+  s.className='spoke';
+  s.style.transform='rotate('+(+best.dataset.angle-90)+'deg)';
+  swrap.appendChild(s);
+  cap.textContent=claimed<n?claimed+' of '+n+' mornings, chosen':'the day is written.';
+});
+})();
+</script>
+</section>
