@@ -1,0 +1,97 @@
+<section data-date='2026-07-17' data-type='pulse'>
+<style>
+section[data-date='2026-07-17'][data-type='pulse']{display:block}
+#tp-eq{
+  position:relative;width:100%;height:82vh;min-height:460px;overflow:hidden;
+  background:radial-gradient(ellipse at center,#141417 0%,#09090b 72%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Helvetica Neue',Arial,sans-serif;cursor:crosshair;user-select:none;
+}
+#tp-eq .ring{
+  position:absolute;top:50%;left:50%;width:16vmin;height:16vmin;border-radius:50%;
+  transform:translate(-50%,-50%);opacity:0;pointer-events:none;
+  transition:opacity .6s ease,box-shadow .6s ease;
+}
+#tp-eq .ring.bal{opacity:1;box-shadow:0 0 70px 14px rgba(255,255,255,.14),0 0 0 1px rgba(255,255,255,.22)}
+#tp-eq .wrap{position:relative;display:inline-block}
+#tp-eq .t{
+  font-weight:800;font-size:clamp(2.3rem,9vw,6.2rem);letter-spacing:.02em;
+  line-height:1;white-space:nowrap;text-transform:uppercase;
+}
+#tp-eq .cool{color:#2fd8c6;position:relative}
+#tp-eq .warm{color:#f2a13c;position:absolute;top:0;left:0}
+#tp-eq .cap{
+  position:absolute;bottom:22%;left:50%;transform:translateX(-50%);
+  font:italic 12px/1 Arial,sans-serif;letter-spacing:.28em;color:rgba(255,255,255,.22);
+  transition:color .6s ease;text-transform:uppercase;white-space:nowrap;
+}
+#tp-eq .cap.bal{color:rgba(255,255,255,.85)}
+#tp-eq .track{
+  position:absolute;bottom:9%;left:50%;transform:translateX(-50%);
+  width:56vmin;max-width:480px;height:1px;background:rgba(255,255,255,.14);
+}
+#tp-eq .tick{
+  position:absolute;top:-5px;transform:translateX(-50%);
+  font-size:10px;letter-spacing:.15em;color:rgba(255,255,255,.32);
+}
+#tp-eq .mk{
+  position:absolute;top:-3px;width:6px;height:6px;border-radius:50%;background:#fff;
+  transform:translate(-50%,-50%);box-shadow:0 0 8px 2px rgba(255,255,255,.55);
+}
+#tp-eq .hint{
+  position:absolute;top:6%;left:50%;transform:translateX(-50%);
+  font-size:10px;letter-spacing:.3em;color:rgba(255,255,255,.22);text-transform:uppercase;
+}
+</style>
+<div id="tp-eq">
+  <div class="hint">move to tilt &middot; click to mirror</div>
+  <div class="ring" id="tpr"></div>
+  <div class="wrap">
+    <span class="t cool">Equipoise</span>
+    <span class="t warm" id="tpw">Equipoise</span>
+  </div>
+  <div class="cap" id="tpcap">12:00 &middot; the line agrees with itself</div>
+  <div class="track">
+    <span class="tick" style="left:0%">00</span>
+    <span class="tick" style="left:50%">12</span>
+    <span class="tick" style="left:100%">24</span>
+    <i class="mk" id="tpmk"></i>
+  </div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('tp-eq'),
+      warm=document.getElementById('tpw'),
+      ring=document.getElementById('tpr'),
+      cap=document.getElementById('tpcap'),
+      mk=document.getElementById('tpmk'),
+      flipped=false, split=50, target=50, active=false;
+  root.addEventListener('mousemove',function(e){
+    var r=root.getBoundingClientRect();
+    target=Math.max(0,Math.min(100,((e.clientX-r.left)/r.width)*100));
+    active=true;
+  });
+  root.addEventListener('mouseleave',function(){active=false});
+  root.addEventListener('click',function(){
+    flipped=!flipped;
+    root.classList.toggle('flip',flipped);
+  });
+  function frame(){
+    var goal=active?target:50;
+    split+=(goal-split)*0.08;
+    var inset=flipped?('0 0 0 '+split+'%'):('0 '+(100-split)+'% 0 0');
+    warm.style.clipPath='inset('+inset+')';
+    mk.style.left=split+'%';
+    var hh=Math.round(split/100*24), mm=Math.round((split/100*24-hh)*60);
+    if(mm<0){mm+=60}
+    var t=(hh<10?'0':'')+hh+':'+(mm<10?'0':'')+mm;
+    var bal=Math.abs(split-50)<1.3;
+    ring.classList.toggle('bal',bal);
+    cap.classList.toggle('bal',bal);
+    cap.textContent=bal?'12:00 · the line agrees with itself':t+' · not yet';
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+</script>
+</section>
