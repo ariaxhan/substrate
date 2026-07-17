@@ -1,0 +1,69 @@
+<section data-date='2026-07-16' data-type='reflection'>
+<style>
+  #tp-night { margin:0; overflow:hidden; height:100vh; background:radial-gradient(ellipse at 50% 100%,#0a0e1a 0%,#050710 55%,#000 100%); cursor:crosshair; position:relative; font-family:Georgia,'Iowan Old Style',serif; }
+  #tp-night .horizon { position:absolute; bottom:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,#1c2440,transparent); }
+  #tp-hint { position:absolute; top:44%; left:50%; transform:translate(-50%,-50%); color:#3a4468; font-size:14px; letter-spacing:.35em; text-transform:uppercase; text-align:center; pointer-events:none; transition:opacity 2.5s ease; user-select:none; }
+  #tp-hint span { display:block; font-size:11px; letter-spacing:.2em; margin-top:10px; opacity:.55; font-style:italic; text-transform:none; }
+  .tp-star { position:absolute; width:3px; height:3px; border-radius:50%; background:#dfe6ff; opacity:0; transform:scale(0); transition:opacity 1.8s ease, transform 1.8s cubic-bezier(.2,.7,.3,1), box-shadow .4s ease; box-shadow:0 0 2px 0 rgba(223,230,255,.4); }
+  .tp-star.tp-lit { opacity:.55; transform:scale(1); }
+  .tp-star.tp-near { opacity:1; box-shadow:0 0 12px 3px rgba(223,230,255,.85); }
+  .tp-word { position:absolute; color:#8891b8; font-size:12px; font-style:italic; letter-spacing:.06em; opacity:0; transform:translate(-50%,-6px); transition:opacity 2.2s ease, transform 2.2s ease; pointer-events:none; white-space:nowrap; }
+  .tp-word.tp-rise { opacity:.7; transform:translate(-50%,-26px); }
+  .tp-word.tp-gone { opacity:0; }
+  #tp-count { position:absolute; bottom:16px; right:20px; color:#2c3459; font-size:11px; letter-spacing:.15em; font-family:Georgia,serif; font-style:italic; }
+</style>
+<div id="tp-night">
+  <div class="horizon"></div>
+  <div id="tp-hint">the day is complete<span>touch the dark to rest a star</span></div>
+  <div id="tp-count"></div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('tp-night');
+  var hint = document.getElementById('tp-hint');
+  var count = document.getElementById('tp-count');
+  var words = ['hush','still','enough','done','soft','dusk','quiet','breathe','home','rest','tomorrow','slow'];
+  var stars = [];
+  var n = 0;
+  function place(x,y){
+    var s = document.createElement('div');
+    s.className = 'tp-star';
+    s.style.left = x+'px';
+    s.style.top = y+'px';
+    root.appendChild(s);
+    requestAnimationFrame(function(){ s.classList.add('tp-lit'); });
+    stars.push({el:s,x:x,y:y});
+
+    var w = document.createElement('div');
+    w.className = 'tp-word';
+    w.textContent = words[Math.floor(Math.random()*words.length)];
+    w.style.left = x+'px';
+    w.style.top = (y-10)+'px';
+    root.appendChild(w);
+    requestAnimationFrame(function(){ w.classList.add('tp-rise'); });
+    setTimeout(function(){
+      w.classList.add('tp-gone');
+      setTimeout(function(){ w.remove(); }, 2300);
+    }, 1600);
+
+    n++;
+    count.textContent = n===1 ? 'one star, and the night begins' : n+' stars, and still';
+    if(hint){ hint.style.opacity = 0; setTimeout(function(){ hint.remove(); hint = null; }, 2500); }
+  }
+  root.addEventListener('click', function(e){
+    var r = root.getBoundingClientRect();
+    place(e.clientX - r.left, e.clientY - r.top);
+  });
+  root.addEventListener('mousemove', function(e){
+    var r = root.getBoundingClientRect();
+    var mx = e.clientX - r.left, my = e.clientY - r.top;
+    for(var i=0;i<stars.length;i++){
+      var st = stars[i];
+      var d = Math.hypot(st.x-mx, st.y-my);
+      if(d < 70){ st.el.classList.add('tp-near'); }
+      else { st.el.classList.remove('tp-near'); }
+    }
+  });
+})();
+</script>
+</section>
