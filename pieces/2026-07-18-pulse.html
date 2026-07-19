@@ -1,0 +1,55 @@
+<section data-date='2026-07-18' data-type='pulse'>
+<style>
+section[data-date='2026-07-18'][data-type='pulse']{display:block}
+#hw{position:relative;width:100%;height:82vh;min-height:460px;overflow:hidden;background:linear-gradient(to bottom,#0a0e1a 0%,#1a2338 47%,#3b2414 53%,#170e08 100%);transition:background 1.4s ease;font-family:Palatino,'Palatino Linotype',Georgia,serif;user-select:none;cursor:ew-resize}
+#hw.flip{background:linear-gradient(to top,#0a0e1a 0%,#1a2338 47%,#3b2414 53%,#170e08 100%)}
+#hw .hint{position:absolute;top:6%;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:.28em;color:rgba(255,255,255,.28);text-transform:uppercase;font-family:Arial,sans-serif;white-space:nowrap}
+#hw .beam{position:absolute;top:50%;left:50%;width:min(46vmin,420px);height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);transform:translate(-50%,-50%) rotate(var(--t,0deg))}
+#hw .pan{position:absolute;top:0;font-size:clamp(1.6rem,5.6vw,3rem);letter-spacing:.14em;text-transform:uppercase;color:#f4ede0;text-shadow:0 0 18px rgba(255,200,140,.25);transform:translate(-50%,-50%) rotate(calc(var(--t,0deg) * -1))}
+#hw .pan.l{left:0}
+#hw .pan.r{left:100%}
+#hw .pivot{position:absolute;top:50%;left:50%;width:6px;height:6px;border-radius:50%;background:#f4d99a;transform:translate(-50%,-50%);box-shadow:0 0 8px 2px rgba(244,217,154,.5);transition:box-shadow .5s ease,width .5s ease,height .5s ease}
+#hw .pivot.bal{width:10px;height:10px;box-shadow:0 0 30px 8px rgba(244,217,154,.85)}
+#hw .secret{position:absolute;top:calc(50% + 34px);left:50%;transform:translateX(-50%);font-style:italic;font-size:12px;letter-spacing:.16em;color:rgba(244,217,154,0);transition:color .6s ease;white-space:nowrap}
+#hw .secret.bal{color:rgba(244,217,154,.75)}
+</style>
+<div id="hw">
+<div class="hint">tilt the line. click to turn the day over.</div>
+<div class="beam" id="hwbeam">
+<span class="pan l" id="hwl">DAWN</span>
+<span class="pan r" id="hwr">DUSK</span>
+</div>
+<div class="pivot" id="hwp"></div>
+<div class="secret" id="hws">neither is heavier</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('hw'),piv=document.getElementById('hwp'),sec=document.getElementById('hws'),
+l=document.getElementById('hwl'),r=document.getElementById('hwr'),
+tilt=0,target=0,flip=false;
+function setTarget(x){
+var b=root.getBoundingClientRect();
+var n=((x-b.left)/b.width-0.5)*2;
+target=Math.max(-1,Math.min(1,n))*16;
+}
+root.addEventListener('mousemove',function(e){setTarget(e.clientX)});
+root.addEventListener('mouseleave',function(){target=0});
+root.addEventListener('touchmove',function(e){setTarget(e.touches[0].clientX)},{passive:true});
+root.addEventListener('touchend',function(){target=0});
+root.addEventListener('click',function(){
+flip=!flip;
+root.classList.toggle('flip',flip);
+var t=l.textContent;l.textContent=r.textContent;r.textContent=t;
+});
+function frame(){
+tilt+=(target-tilt)*0.08;
+root.style.setProperty('--t',tilt+'deg');
+var bal=Math.abs(tilt)<1.2;
+piv.classList.toggle('bal',bal);
+sec.classList.toggle('bal',bal);
+requestAnimationFrame(frame);
+}
+frame();
+})();
+</script>
+</section>
