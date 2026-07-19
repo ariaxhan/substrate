@@ -1,0 +1,74 @@
+<section data-date='2026-07-18' data-type='digest'>
+<style>
+#a{position:relative;width:100%;height:100vh;background:radial-gradient(ellipse at 50% 45%,#faf6ec 0%,#ece1c4 58%,#d9c9a0 100%);overflow:hidden}
+#a canvas{position:absolute;inset:0;cursor:crosshair}
+#a .hud{position:absolute;top:22px;left:26px;font-family:Menlo,Consolas,monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8a7a5c;pointer-events:none}
+#a .hud b{color:#a8702b;font-weight:400}
+#a .q{position:absolute;bottom:28px;left:26px;right:26px;font-family:'Helvetica Neue',Arial,sans-serif;font-style:italic;font-size:13px;color:#8a7a5c;opacity:1;transition:opacity 1.4s ease;pointer-events:none}
+#a .s{position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);font-family:Baskerville,'Times New Roman',serif;font-size:15px;color:#5c4d33;opacity:0;transition:opacity 2.2s ease;pointer-events:none;text-align:center;white-space:nowrap}
+#a .t{position:absolute;bottom:28px;right:30px;font-family:Baskerville,'Times New Roman',serif;font-variant:small-caps;letter-spacing:.2em;font-size:13px;color:#6b5d42;pointer-events:none}
+</style>
+<div id="a">
+<canvas id="c"></canvas>
+<div class="hud">thoughts <b id="n">0</b> &nbsp;&middot;&nbsp; bonds <b id="k">0</b></div>
+<div class="s" id="s"></div>
+<div class="q" id="q">click anywhere. the shape was already there.</div>
+<div class="t">crystallize</div>
+</div>
+<script>
+(function(){
+var el=document.getElementById('c'),ctx=el.getContext('2d'),wrap=document.getElementById('a'),
+nEl=document.getElementById('n'),kEl=document.getElementById('k'),q=document.getElementById('q'),s=document.getElementById('s'),
+W,H,pts=[],idx=0,GA=2.399963,
+FIB=[8,13,21,34,55],
+MS={8:'eight, and a shape appears',13:'the arms remember each other',21:'not chosen. found.',34:'this was always the pattern',55:'enough of them, and it emerges'},
+shown={},
+WORDS=['fact','trace','thread','signal','form','residue','glyph','order','ledger','axiom','pattern','memory','index','structure','echo','datum'];
+function size(){W=el.width=wrap.clientWidth;H=el.height=wrap.clientHeight}
+size();window.addEventListener('resize',size);
+function pos(i,c){var a=i*GA,r=c*Math.sqrt(i);return[W/2+r*Math.cos(a),H/2+r*Math.sin(a)]}
+function has(i){return pts.some(function(p){return p.i===i})}
+function bonds(){var b=0;pts.forEach(function(p){FIB.forEach(function(f){if(p.i>f&&has(p.i-f))b++})});return b}
+function milestone(){var m=MS[pts.length];if(m&&!shown[pts.length]){shown[pts.length]=1;s.textContent=m;s.style.opacity=1;setTimeout(function(){s.style.opacity=0},2600)}}
+wrap.addEventListener('click',function(){
+  idx++;
+  pts.push({i:idx,w:WORDS[idx%WORDS.length],age:0});
+  nEl.textContent=pts.length;kEl.textContent=bonds();
+  if(q.style.opacity!=='0')q.style.opacity=0;
+  milestone();
+});
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  var c=Math.min(W,H)*0.44/Math.sqrt(Math.max(pts.length,1)),
+  glow=Math.min(.5,pts.length/70);
+  pts.forEach(function(p){
+    FIB.forEach(function(f){
+      if(p.i>f&&has(p.i-f)){
+        var P=pos(p.i,c),Q=pos(p.i-f,c);
+        ctx.strokeStyle='rgba(168,112,43,'+glow+')';
+        ctx.lineWidth=.6;
+        ctx.beginPath();ctx.moveTo(P[0],P[1]);ctx.lineTo(Q[0],Q[1]);ctx.stroke();
+      }
+    });
+  });
+  pts.forEach(function(p){
+    var P=pos(p.i,c),
+    deg=FIB.filter(function(f){return has(p.i-f)||has(p.i+f)}).length,
+    cry=deg>=2;
+    ctx.beginPath();
+    ctx.fillStyle=cry?'#a8702b':'#3a3226';
+    ctx.arc(P[0],P[1],cry?3.6:2,0,7);
+    ctx.fill();
+    if(p.age<50){
+      ctx.font='11px Menlo, Consolas, monospace';
+      ctx.fillStyle='rgba(58,50,38,'+(1-p.age/50)*.8+')';
+      ctx.fillText(p.w,P[0]+7,P[1]-6);
+      p.age++;
+    }
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+})();
+</script>
+</section>
