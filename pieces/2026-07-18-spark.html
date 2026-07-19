@@ -1,0 +1,63 @@
+<section data-date='2026-07-18' data-type='spark'>
+<style>
+[data-date='2026-07-18'] .stg{position:relative;height:70vh;min-height:400px;background:#07070a;overflow:hidden;border-radius:4px;cursor:crosshair}
+[data-date='2026-07-18'] canvas{display:block}
+[data-date='2026-07-18'] .cap{position:absolute;bottom:8px;left:12px;color:#3a3a44;font:11px monospace;letter-spacing:.03em;pointer-events:none}
+</style>
+<div class="stg" id="tp0718">
+<canvas id="cv0718"></canvas>
+<div class="cap">two waves, drifting &middot; move to bring yours near &middot; click to drop a stone</div>
+</div>
+<script>
+(function(){
+var wrap=document.getElementById('tp0718'), cv=document.getElementById('cv0718'), x=cv.getContext('2d'), W,H,cell=14,cols,rows;
+function rz(){W=cv.width=wrap.clientWidth;H=cv.height=wrap.clientHeight;cols=Math.ceil(W/cell);rows=Math.ceil(H/cell)}
+window.addEventListener('resize',rz); rz();
+var TA="the sound of you arriving   ", TB="the shape i kept before you   ", TC="where we agree   ";
+var A={x:W*.3,y:H*.5,vx:.4,vy:.26};
+var mx=null,my=null,bx=W*.7,by=H*.5,bvx=-.3,bvy=.22,stones=[],t=0;
+wrap.addEventListener('mousemove',function(e){var r=wrap.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top});
+wrap.addEventListener('mouseleave',function(){mx=my=null});
+wrap.addEventListener('click',function(e){var r=wrap.getBoundingClientRect();stones.push({x:e.clientX-r.left,y:e.clientY-r.top,born:t})});
+function wander(p){p.x+=p.vx;p.y+=p.vy;if(p.x<40||p.x>W-40)p.vx*=-1;if(p.y<40||p.y>H-40)p.vy*=-1}
+function tick(){
+  t+=.06; wander(A);
+  if(mx!==null){bx+=(mx-bx)*.06;by+=(my-by)*.06} else {bx+=bvx;by+=bvy;if(bx<40||bx>W-40)bvx*=-1;if(by<40||by>H-40)bvy*=-1}
+  x.fillStyle='#07070a'; x.fillRect(0,0,W,H);
+  x.font=(cell-2)+'px monospace'; x.textBaseline='middle'; x.textAlign='center';
+  var d=Math.hypot(A.x-bx,A.y-by), near=Math.max(0,1-d/260);
+  for(var gy=0;gy<rows;gy++){
+    for(var gx=0;gx<cols;gx++){
+      var px=gx*cell+cell/2, py=gy*cell+cell/2;
+      var d1=Math.hypot(px-A.x,py-A.y), d2=Math.hypot(px-bx,py-by);
+      var w1=Math.sin(d1*.25-t*2)/(1+d1*.02);
+      var w2=Math.sin(d2*.25-t*2)/(1+d2*.02);
+      var s=0;
+      for(var k=0;k<stones.length;k++){
+        var st=stones[k], ds=Math.hypot(px-st.x,py-st.y), age=t-st.born;
+        if(age<6) s+=Math.sin(ds*.3-age*4)/(1+ds*.03)*(1-age/6);
+      }
+      var amp=w1+w2+s, mag=Math.abs(amp);
+      if(mag<.12) continue;
+      var ch,col;
+      if(near>.4 && mag>.55){
+        ch=TC[(gx+gy+Math.floor(t*3))%TC.length];
+        col='rgba(255,235,180,'+Math.min(1,mag)+')';
+      } else if(Math.abs(w1)>=Math.abs(w2)){
+        ch=TA[(gx+gy*3+Math.floor(t*4))%TA.length];
+        col='rgba(255,140,90,'+Math.min(.9,mag)+')';
+      } else {
+        ch=TB[(gy+gx*2+Math.floor(t*4))%TB.length];
+        col='rgba(90,180,255,'+Math.min(.9,mag)+')';
+      }
+      if(ch===' ') continue;
+      x.fillStyle=col; x.fillText(ch,px,py);
+    }
+  }
+  stones=stones.filter(function(st){return t-st.born<6});
+  requestAnimationFrame(tick);
+}
+tick();
+})();
+</script>
+</section>
