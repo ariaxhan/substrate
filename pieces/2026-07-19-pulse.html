@@ -1,0 +1,62 @@
+<section data-date='2026-07-19' data-type='pulse'>
+<style>
+#tp-stage{height:100vh;margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 42%,#161622,#08080c 72%);font-family:Georgia,'Times New Roman',serif;color:#e8e4da;cursor:pointer;user-select:none;overflow:hidden}
+#tp-stage .wrap{position:relative;width:min(78vw,640px)}
+#tp-stage .beam{display:flex;justify-content:space-between;align-items:center;border-top:2px solid #c9a54a;padding-top:18px;transform-origin:50% 0;transition:transform .04s linear}
+#tp-stage .w{font-size:clamp(1rem,3.2vw,1.9rem);letter-spacing:.16em;transition:opacity .15s,transform .15s}
+#tp-stage .pivot{position:absolute;left:50%;top:0;width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-top:16px solid #c9a54a;transform:translateX(-50%)}
+#tp-stage .pivot.pulse{animation:tp-pulse .5s ease}
+#tp-stage .read{margin-top:38px;font-family:'Courier New',monospace;font-size:.82rem;letter-spacing:.3em;opacity:.5;transition:opacity .2s,color .2s}
+#tp-stage .read.eq{opacity:1;color:#e8b45f}
+#tp-stage .hint{position:absolute;bottom:22px;font-family:'Courier New',monospace;font-size:.62rem;letter-spacing:.2em;opacity:.28;left:50%;transform:translateX(-50%);white-space:nowrap}
+@keyframes tp-pulse{0%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.45)}100%{transform:translateX(-50%) scale(1)}}
+</style>
+<div id="tp-stage">
+  <div class="wrap">
+    <div class="beam" id="tp-beam">
+      <span class="w" id="tp-wl">WAKE</span>
+      <span class="w" id="tp-wr">SLEEP</span>
+    </div>
+    <div class="pivot" id="tp-pivot"></div>
+  </div>
+  <div class="read" id="tp-read">50 &middot; 50</div>
+  <div class="hint">move to tilt / click to reweigh</div>
+</div>
+<script>
+(function(){
+  var pairs=[["WAKE","SLEEP"],["DAWN","DUSK"],["RISE","REST"],["BEFORE","AFTER"],["LIGHT","DARK"],["BEGIN","END"],["HERE","GONE"]];
+  var pi=0, maxDeg=16;
+  var stage=document.getElementById('tp-stage'),
+      beam=document.getElementById('tp-beam'),
+      wl=document.getElementById('tp-wl'),
+      wr=document.getElementById('tp-wr'),
+      pivot=document.getElementById('tp-pivot'),
+      read=document.getElementById('tp-read');
+  function pad(n){return (n<10?'0':'')+n}
+  function tilt(x){
+    var cx=window.innerWidth/2;
+    var deg=Math.max(-maxDeg,Math.min(maxDeg,((x-cx)/cx)*maxDeg));
+    beam.style.transform='rotate('+deg.toFixed(2)+'deg)';
+    var r=Math.round(50+(deg/maxDeg)*50); r=Math.max(0,Math.min(100,r));
+    var l=100-r;
+    read.textContent=pad(l)+' · '+pad(r);
+    read.classList.toggle('eq',Math.abs(deg)<0.7);
+    wl.style.opacity=0.5+(l/100)*0.5;
+    wr.style.opacity=0.5+(r/100)*0.5;
+    wl.style.transform='scale('+(0.88+l/100*0.28)+')';
+    wr.style.transform='scale('+(0.88+r/100*0.28)+')';
+  }
+  window.addEventListener('mousemove',function(e){tilt(e.clientX)});
+  window.addEventListener('touchmove',function(e){if(e.touches[0])tilt(e.touches[0].clientX)},{passive:true});
+  stage.addEventListener('click',function(){
+    pi=(pi+1)%pairs.length;
+    wl.textContent=pairs[pi][0];
+    wr.textContent=pairs[pi][1];
+    pivot.classList.remove('pulse');
+    void pivot.offsetWidth;
+    pivot.classList.add('pulse');
+  });
+  tilt(window.innerWidth/2);
+})();
+</script>
+</section>
