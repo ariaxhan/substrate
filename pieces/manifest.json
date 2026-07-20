@@ -445,6 +445,7 @@
     {"file": "2026-07-18-pulse.html", "date": "2026-07-18", "type": "pulse", "timestamp": 1784444836},
     {"file": "2026-07-18-spark.html", "date": "2026-07-18", "type": "spark", "timestamp": 1784444235},
     {"file": "2026-07-19-morning.html", "date": "2026-07-19", "type": "morning", "timestamp": 1784486202},
-    {"file": "2026-07-19-pulse.html", "date": "2026-07-19", "type": "pulse", "timestamp": 1784488074}
+    {"file": "2026-07-19-pulse.html", "date": "2026-07-19", "type": "pulse", "timestamp": 1784488074},
+    {"file": "2026-07-20-morning.html", "date": "2026-07-20", "type": "morning", "timestamp": 1784556724}
   ]
 }

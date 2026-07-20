@@ -1,0 +1,54 @@
+<section data-date='2026-07-20' data-type='morning'>
+<style>
+#dw0720{position:relative;height:100vh;height:100dvh;overflow:hidden;background:#05060f;cursor:crosshair;font-family:'SF Mono','Menlo','Courier New',monospace;-webkit-user-select:none;user-select:none}
+#dw0720 .sky{position:absolute;inset:0}
+#dw0720 .sun{position:absolute;left:50%;width:9vmin;height:9vmin;border-radius:50%;background:radial-gradient(circle,#fff6d8,#ffb457 55%,#ff7a3d 100%);transform:translate(-50%,-50%)}
+#dw0720 .horizon{position:absolute;left:0;right:0;top:62%;height:1px;background:rgba(255,255,255,.18)}
+#dw0720 .cap{position:absolute;left:50%;bottom:6%;transform:translateX(-50%);font-size:.66rem;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.4);transition:color 1s}
+#dw0720 .word{position:absolute;left:50%;top:37%;transform:translate(-50%,-50%) scale(.82);font-family:Georgia,'Iowan Old Style',serif;font-style:italic;font-size:3rem;color:#ffe9c2;opacity:0;letter-spacing:.02em;text-shadow:0 0 3vmin rgba(255,180,90,.6);transition:opacity 1.2s ease,transform 1.2s ease;white-space:nowrap}
+#dw0720 .word.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+</style>
+<div id="dw0720">
+<div class="sky" id="dw0720sky"></div>
+<div class="horizon"></div>
+<div class="sun" id="dw0720sun"></div>
+<div class="word" id="dw0720w"></div>
+<div class="cap" id="dw0720c">raise the light &middot; click to begin</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('dw0720'),sky=document.getElementById('dw0720sky'),sun=document.getElementById('dw0720sun'),word=document.getElementById('dw0720w'),cap=document.getElementById('dw0720c'),fixed=false;
+function mix(a,b,t){return Math.round(a+(b-a)*t)}
+function paint(p){
+  var nr=5,ng=6,nb=15,mr=45,mg=30,mb=70,dr=255,dg=170,db=110,r,g,b,t;
+  if(p<0.5){t=p/0.5;r=mix(nr,mr,t);g=mix(ng,mg,t);b=mix(nb,mb,t)}
+  else{t=(p-0.5)/0.5;r=mix(mr,dr,t);g=mix(mg,dg,t);b=mix(mb,db,t)}
+  sky.style.background='linear-gradient(to top, rgb('+r+','+g+','+b+') 0%, #05060f 78%)';
+  sun.style.top=(100-p*62)+'%';
+  sun.style.opacity=0.15+p*0.85;
+  sun.style.boxShadow='0 0 '+(2+p*8)+'vmin rgba(255,150,70,'+(0.2+p*0.5)+')';
+}
+paint(0);
+function pFromY(clientY){
+  var r=root.getBoundingClientRect();
+  return 1-Math.min(1,Math.max(0,(clientY-r.top)/r.height));
+}
+root.addEventListener('mousemove',function(e){
+  if(fixed)return;
+  paint(pFromY(e.clientY));
+});
+root.addEventListener('click',function(e){
+  if(fixed)return;
+  fixed=true;
+  var p=pFromY(e.clientY);
+  var words=['begin','unwritten','first light','still becoming','open','not yet, now'];
+  var idx=Math.min(words.length-1,Math.floor(p*words.length));
+  word.textContent=words[idx];
+  requestAnimationFrame(function(){word.classList.add('show')});
+  cap.textContent='the day has begun';
+  cap.style.color='rgba(255,220,180,.6)';
+  root.style.cursor='default';
+});
+})();
+</script>
+</section>
