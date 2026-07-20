@@ -1,0 +1,66 @@
+<section data-date='2026-07-20' data-type='pulse'>
+<style>
+#flc{position:relative;height:100vh;margin:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(90deg,#f8eedb 0%,#f3ece6 50%,#ece6f1 100%);font-family:Georgia,'Times New Roman',serif;overflow:hidden;cursor:crosshair;user-select:none}
+#flc .row{display:flex;align-items:flex-end;height:210px;width:min(84vw,760px)}
+#flc .row i{flex:1;margin:0 1.5px;border-radius:2px 2px 0 0;font-style:normal;transition:opacity .4s}
+#flc .row i.c{background:#c79a36!important;box-shadow:0 0 10px rgba(199,154,54,.6)}
+#flc .word{margin-top:30px;font-style:italic;font-size:clamp(1.1rem,4vw,2.2rem);letter-spacing:.5em;padding-left:.5em;color:#a8792a;opacity:0;transition:opacity .7s}
+#flc .word.on{opacity:1}
+#flc .hint{position:absolute;bottom:24px;font-family:'Courier New',monospace;font-size:.62rem;letter-spacing:.28em;color:rgba(50,40,30,.4)}
+</style>
+<div id="flc">
+<div class="row" id="flcrow"></div>
+<div class="word" id="flcword">even</div>
+<div class="hint">hover the line &middot; the middle remembers</div>
+</div>
+<script>
+(function(){
+var n=49,mid=(n-1)/2,row=document.getElementById('flcrow'),word=document.getElementById('flcword'),
+els=[],base=[],y=new Array(n).fill(0),v=new Array(n).fill(0);
+for(var i=0;i<n;i++){
+  var d=Math.abs(i-mid)/mid;
+  base[i]=26+150*(1-d*d);
+  var el=document.createElement('i');
+  el.style.opacity=0.25+0.75*(1-d);
+  if(i===mid){el.className='c';}
+  else{el.style.background=i<mid?'rgba(196,120,70,.88)':'rgba(107,91,138,.88)';}
+  row.appendChild(el);
+  els.push(el);
+}
+function nearest(x){
+  var r=row.getBoundingClientRect();
+  var f=(x-r.left)/r.width;
+  return Math.max(0,Math.min(n-1,Math.round(f*(n-1))));
+}
+function poke(idx){
+  y[idx]+=34;
+  if(idx>0)y[idx-1]+=14;
+  if(idx<n-1)y[idx+1]+=14;
+  word.classList.toggle('on',idx===mid);
+}
+row.addEventListener('mousemove',function(e){poke(nearest(e.clientX));});
+row.addEventListener('mouseleave',function(){word.classList.remove('on');});
+row.addEventListener('touchmove',function(e){
+  var t=e.touches[0]; if(!t)return;
+  poke(nearest(t.clientX));
+},{passive:true});
+function step(){
+  var i,l,r,a;
+  for(i=0;i<n;i++){
+    l=i>0?y[i-1]:y[i];
+    r=i<n-1?y[i+1]:y[i];
+    a=-0.06*y[i]+0.18*(l+r-2*y[i]);
+    v[i]=(v[i]+a)*0.9;
+  }
+  for(i=0;i<n;i++){
+    y[i]+=v[i];
+    var h=base[i]+y[i];
+    if(h<6)h=6;
+    els[i].style.height=h+'px';
+  }
+  requestAnimationFrame(step);
+}
+step();
+})();
+</script>
+</section>
