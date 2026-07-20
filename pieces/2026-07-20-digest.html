@@ -1,0 +1,54 @@
+<section data-date='2026-07-20' data-type='digest'>
+<style>
+#tp{position:relative;width:100%;height:100vh;overflow:hidden;background:radial-gradient(ellipse at 50% 20%,#12151c 0%,#080a0e 70%);font-family:Menlo,Consolas,'Courier New',monospace}
+#tp::before{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(to bottom,rgba(255,255,255,.02) 0px,rgba(255,255,255,.02) 1px,transparent 1px,transparent 3px);opacity:.5}
+#tp .hud{position:absolute;top:22px;left:26px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#4d5560;pointer-events:none;z-index:2}
+#tp .hud b{color:#d9a441;font-weight:400}
+#tp .cue{position:absolute;bottom:24px;left:26px;right:26px;font-size:12px;font-style:italic;color:#3a4048;transition:opacity 1.6s ease;pointer-events:none;z-index:2}
+#tp .done{position:absolute;bottom:24px;right:30px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#d9a441;opacity:0;transition:opacity 2s ease;pointer-events:none;z-index:2}
+#tp .w{position:absolute;top:0;left:0;width:78%;max-width:820px;margin:0;padding:90px 8% 60px;font-size:clamp(15px,2vw,21px);line-height:2.15;color:#8a93a0}
+#tp .w span{display:inline-block;transition:transform .8s cubic-bezier(.2,.8,.2,1),color .8s ease,opacity .8s ease,text-shadow 1s ease;cursor:default}
+#tp .w span.c{color:#f2d9a0;text-shadow:0 0 10px rgba(217,164,65,.55)}
+</style>
+<div id="tp">
+<div class="hud">known <b id="n">0</b>/<b id="tot">0</b></div>
+<p class="w" id="p"></p>
+<div class="cue" id="cue">hover a word. let it find where it always belonged.</div>
+<div class="done" id="done">the shape was already there</div>
+</div>
+<script>
+(function(){
+var TXT="nothing arrives whole. a fact lands here, another lands there, unrelated, quiet, waiting to be asked for. you touch one and it remembers the one beside it. touch enough of them and the scatter becomes a shape you did not draw. this was never new information. it was old information finding its neighbor at last. this is how a mind becomes a structure it did not know it was building all along.",
+words=TXT.split(' '),
+p=document.getElementById('p'),
+nEl=document.getElementById('n'),
+totEl=document.getElementById('tot'),
+cue=document.getElementById('cue'),
+done=document.getElementById('done'),
+n=0;
+totEl.textContent=words.length;
+words.forEach(function(w){
+  var s=document.createElement('span'),
+  rx=(Math.random()*2-1)*46,
+  ry=(Math.random()*2-1)*22,
+  rr=(Math.random()*2-1)*20,
+  ro=(0.22+Math.random()*0.3).toFixed(2);
+  s.textContent=w+' ';
+  s.style.transform='translate('+rx.toFixed(1)+'px,'+ry.toFixed(1)+'px) rotate('+rr.toFixed(1)+'deg)';
+  s.style.opacity=ro;
+  s.addEventListener('mouseenter',function(){
+    if(s.dataset.on)return;
+    s.dataset.on='1';
+    s.className='c';
+    s.style.transform='none';
+    s.style.opacity=1;
+    n++;
+    nEl.textContent=n;
+    if(cue){cue.style.opacity=0;cue=null}
+    if(n===words.length){done.style.opacity=1}
+  });
+  p.appendChild(s);
+});
+})();
+</script>
+</section>
