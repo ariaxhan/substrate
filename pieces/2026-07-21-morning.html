@@ -1,0 +1,66 @@
+<section data-date='2026-07-21' data-type='morning'>
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>first light</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#0a0e1a;cursor:crosshair}
+  #sky{position:absolute;inset:0;transition:background .6s ease}
+  #sun{position:absolute;left:50%;width:64px;height:64px;border-radius:50%;
+    bottom:-40px;background:radial-gradient(circle,#fff6d8,#ffcf7a 55%,transparent 72%);
+    transform:translateX(-50%);transition:bottom 1.4s cubic-bezier(.2,.7,.3,1),opacity 1.4s;
+    opacity:.15;filter:blur(1px)}
+  #line{position:absolute;left:0;right:0;bottom:38%;height:1px;background:rgba(255,255,255,.18)}
+  #cap{position:absolute;left:50%;bottom:41%;transform:translateX(-50%);
+    font:italic 15px/1.6 Georgia,'Times New Roman',serif;color:rgba(255,255,255,.55);
+    letter-spacing:.02em;text-align:center;white-space:nowrap;pointer-events:none;
+    opacity:0;transition:opacity 1.4s}
+  span.w{position:absolute;font:16px/1 Georgia,serif;color:#ffe9c2;
+    pointer-events:none;opacity:0;will-change:transform,opacity}
+  @keyframes rise{
+    0%{opacity:0;transform:translateY(0) scale(.9)}
+    12%{opacity:.9}
+    100%{opacity:0;transform:translateY(-140px) scale(1.05)}
+  }
+</style>
+</head>
+<body>
+<div id="sky"></div>
+<div id="line"></div>
+<div id="sun"></div>
+<div id="cap">the day has not been written yet</div>
+<script>
+var sky=document.getElementById('sky'),sun=document.getElementById('sun'),
+    cap=document.getElementById('cap'),n=0,
+    words=['light','begin','still','soon','quiet','yet','again','open','possible','now','first','waking'],
+    dark=[10,14,26],dawn=[255,207,122],day=[173,216,255];
+
+function mix(a,b,t){return a.map(function(v,i){return Math.round(v+(b[i]-v)*t)})}
+
+document.addEventListener('mousemove',function(e){
+  var t=e.clientY/window.innerHeight,
+      top=mix(dark,dawn,1-t),
+      bot=mix(dawn,day,1-t);
+  sky.style.background='linear-gradient(to bottom, rgb('+top+') 0%, rgb('+bot+') 100%)';
+});
+
+document.addEventListener('click',function(e){
+  n++;
+  cap.style.opacity= n===1 ? '1':'0';
+  sun.style.bottom=(-40+n*7)+'px';
+  sun.style.opacity=Math.min(.15+n*.06,1);
+
+  var s=document.createElement('span');
+  s.className='w';
+  s.textContent=words[Math.floor(Math.random()*words.length)];
+  s.style.left=(e.clientX-20)+'px';
+  s.style.top=(e.clientY-10)+'px';
+  s.style.animation='rise '+(2.6+Math.random()*1.6)+'s ease-out forwards';
+  document.body.appendChild(s);
+  setTimeout(function(){s.remove()},4400);
+});
+</script>
+</body>
+</html>
+</section>
