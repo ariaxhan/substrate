@@ -1,0 +1,64 @@
+<section data-date='2026-07-21' data-type='digest'>
+<style>
+#lt21{position:relative;width:100%;height:440px;background:#07070a;overflow:hidden;font-family:Georgia,serif;cursor:crosshair}
+#lt21 canvas{display:block;width:100%;height:100%}
+#lt21 .lbl{position:absolute;bottom:10px;left:14px;color:#4a4a52;font:11px/1.4 monospace;letter-spacing:.05em;pointer-events:none}
+#lt21 .lbl b{color:#8899aa}
+#lt21 .ct{position:absolute;top:10px;right:14px;color:#3a3a42;font:11px/1.4 monospace;pointer-events:none}
+</style>
+<div id="lt21">
+<canvas id="lt21c"></canvas>
+<div class="lbl">click to know something <b>&mdash; watch it find its kind</b></div>
+<div class="ct" id="lt21ct"></div>
+</div>
+<script>
+(function(){
+var el=document.getElementById('lt21'),cv=document.getElementById('lt21c'),x=cv.getContext('2d'),ct=document.getElementById('lt21ct');
+function fit(){cv.width=el.clientWidth;cv.height=el.clientHeight}
+fit();window.addEventListener('resize',fit);
+var W=['trace','signal','fragment','echo','thread','memory','link','shape','order','drift','cluster','weave','recall','glimpse','axiom','seed','bloom','lattice','shard','pattern'],
+    N=[],wi=0,root={};
+function find(i){while(root[i]!==i){root[i]=root[root[i]];i=root[i]}return i}
+function union(a,b){a=find(a);b=find(b);if(a!==b)root[a]=b}
+function hue(i){var h=(i*137.508)%360;return h}
+el.addEventListener('click',function(e){
+  var r=el.getBoundingClientRect(),cx=e.clientX-r.left,cy=e.clientY-r.top,id=N.length;
+  var node={x:cx,y:cy,w:W[wi%W.length],born:performance.now(),edges:[]};
+  wi++;N.push(node);root[id]=id;
+  for(var i=0;i<N.length-1;i++){
+    var o=N[i],d=Math.hypot(o.x-cx,o.y-cy);
+    if(d<170){node.edges.push({to:i,born:performance.now(),d:d});union(id,i)}
+  }
+  ct.textContent=N.length+' known';
+});
+function tick(){
+  x.fillStyle='rgba(7,7,10,0.22)';x.fillRect(0,0,cv.width,cv.height);
+  var sizes={};
+  for(var i=0;i<N.length;i++)sizes[find(i)]=(sizes[find(i)]||0)+1;
+  for(var i=0;i<N.length;i++){
+    var n=N[i],root_i=find(i),sz=sizes[root_i],h=hue(root_i),
+        age=Math.min(1,(performance.now()-n.born)/1200);
+    for(var j=0;j<n.edges.length;j++){
+      var ed=n.edges[j],o=N[ed.to],ea=Math.min(1,(performance.now()-ed.born)/900),
+          ex=n.x+(o.x-n.x)*ea,ey=n.y+(o.y-n.y)*ea;
+      x.strokeStyle='hsla('+h+',70%,'+(40+Math.min(sz,10)*3)+'%,'+(0.35*ea)+')';
+      x.lineWidth=1;x.beginPath();x.moveTo(n.x,n.y);x.lineTo(ex,ey);x.stroke();
+    }
+  }
+  for(var i=0;i<N.length;i++){
+    var n=N[i],root_i=find(i),sz=sizes[root_i],h=hue(root_i),
+        age=Math.min(1,(performance.now()-n.born)/1200),
+        rad=3+Math.min(sz,14)*0.9;
+    x.beginPath();x.arc(n.x,n.y,rad*age,0,7);
+    x.fillStyle='hsla('+h+',75%,'+(45+Math.min(sz,10)*3)+'%,'+(0.85*age)+')';
+    x.fill();
+    x.font=(11+Math.min(sz,10))+'px Georgia,serif';
+    x.fillStyle='hsla('+h+',60%,80%,'+(0.55*age)+')';
+    x.fillText(n.w,n.x+rad+4,n.y+3);
+  }
+  requestAnimationFrame(tick);
+}
+tick();
+})();
+</script>
+</section>
