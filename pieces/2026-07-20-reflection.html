@@ -1,0 +1,45 @@
+<section data-date='2026-07-20' data-type='reflection'>
+<style>
+[data-date='2026-07-20'] .nr{position:relative;height:70vh;min-height:420px;overflow:hidden;border-radius:4px;cursor:crosshair;background:radial-gradient(ellipse at 50% 15%,#0e1830 0%,#050810 55%,#000 100%)}
+[data-date='2026-07-20'] .nr-line{position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);margin:0;width:80%;text-align:center;font-family:Georgia,'Times New Roman',serif;font-style:italic;font-size:1.35rem;color:#93a3bd;letter-spacing:.03em;opacity:0;animation:nr-in 7s ease forwards;pointer-events:none}
+@keyframes nr-in{0%{opacity:0}25%{opacity:.6}75%{opacity:.6}100%{opacity:.14}}
+[data-date='2026-07-20'] .nr-cap{position:absolute;bottom:8px;left:12px;color:#3a4356;font:11px monospace;letter-spacing:.03em;pointer-events:none}
+[data-date='2026-07-20'] .nr-star{position:absolute;border-radius:50%;background:#f4f2ff;pointer-events:none;animation:nr-pop 1.1s ease forwards}
+@keyframes nr-pop{0%{transform:scale(0);opacity:0}55%{transform:scale(1.6);opacity:1}100%{transform:scale(1);opacity:.8}}
+[data-date='2026-07-20'] .nr-word{position:absolute;font-family:Georgia,serif;font-style:italic;font-size:.8rem;color:rgba(210,218,235,.85);white-space:nowrap;pointer-events:none;animation:nr-word 3.8s ease forwards}
+@keyframes nr-word{0%{opacity:0;transform:translateY(5px)}18%{opacity:1;transform:translateY(0)}82%{opacity:1}100%{opacity:0;transform:translateY(-6px)}}
+</style>
+<div class="nr" id="nr0720">
+<p class="nr-line">the day is complete.</p>
+<div class="nr-cap">click into the dark &middot; a star for what's done</div>
+</div>
+<script>
+(function(){
+var wrap=document.getElementById('nr0720');
+var words=['hush','still','rest','enough','tomorrow','quiet','arrived','breathe','so it goes','held'];
+var n=0;
+wrap.addEventListener('click',function(e){
+if(e.target.className==='nr-cap')return;
+var r=wrap.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+var sz=1+Math.random()*2.6;
+var s=document.createElement('div');
+s.className='nr-star';
+s.style.width=s.style.height=sz+'px';
+s.style.left=(x-sz/2)+'px';
+s.style.top=(y-sz/2)+'px';
+s.style.boxShadow='0 0 '+(sz*3)+'px '+(sz)+'px rgba(244,242,255,.55)';
+wrap.appendChild(s);
+n++;
+if(n%3===0){
+var w=document.createElement('div');
+w.className='nr-word';
+w.textContent=words[Math.floor(Math.random()*words.length)];
+w.style.left=Math.min(Math.max(x+10,4),r.width-90)+'px';
+w.style.top=(y-16)+'px';
+wrap.appendChild(w);
+setTimeout(function(){w.remove()},3900);
+}
+});
+})();
+</script>
+</section>
