@@ -1,0 +1,58 @@
+<section data-date='2026-07-22' data-type='morning'>
+<style>
+  [data-date='2026-07-22'] { margin:0; height:100vh; overflow:hidden; position:relative;
+    background:#04050b; font-family: Georgia, 'Times New Roman', serif; cursor:crosshair }
+  #tp-sky { position:absolute; inset:0; transition:background .25s ease-out }
+  #tp-word { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    margin:0; font-size:clamp(2.4rem,9vw,7rem); font-weight:400; letter-spacing:.5em;
+    color:#f4ead2; opacity:.06; user-select:none; transition:opacity .6s ease, letter-spacing .6s ease }
+  #tp-hint { position:absolute; bottom:1.4em; left:50%; transform:translateX(-50%);
+    font-size:.72rem; letter-spacing:.3em; text-transform:uppercase; color:#8a8470; opacity:.5 }
+  .tp-mote { position:absolute; bottom:-1.5em; font-size:1rem; color:#f4ead2;
+    opacity:0; white-space:nowrap; pointer-events:none;
+    animation: tp-rise 4.5s ease-out forwards }
+  @keyframes tp-rise {
+    0% { opacity:0; transform:translateY(0) }
+    12% { opacity:.85 }
+    80% { opacity:.35 }
+    100% { opacity:0; transform:translateY(-70vh) }
+  }
+</style>
+<div id="tp-sky"></div>
+<h1 id="tp-word">begin</h1>
+<div id="tp-hint">the day has not chosen its name — move, then click</div>
+<script>
+(() => {
+  const root = document.currentScript.parentElement;
+  const sky = root.querySelector('#tp-sky'), word = root.querySelector('#tp-word'),
+        hint = root.querySelector('#tp-hint');
+  const words = ['unwritten','possible','quiet','open','still','wide','first light','not yet','again','close'];
+  let dawn = 0, mx = innerWidth/2, my = innerHeight/2;
+  const paint = () => {
+    const ratio = Math.max(0, Math.min(1, 1 - my / innerHeight));
+    const hue = 42 + dawn * 12, glowA = .12 + ratio * .35 + dawn * .1;
+    sky.style.background =
+      `radial-gradient(circle at ${mx}px ${my}px, hsla(${hue},90%,${58+ratio*22}%,${glowA}), transparent 62%),` +
+      `linear-gradient(to top, #04050b, hsl(${232 - dawn*185},${38+dawn*10}%,${7+dawn*24}%))`;
+    word.style.opacity = .06 + dawn * .82 + ratio * .1;
+    word.style.letterSpacing = (0.5 - dawn * 0.38) + 'em';
+  };
+  root.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY; paint();
+  });
+  root.addEventListener('click', e => {
+    dawn = Math.min(1, dawn + 0.11);
+    hint.style.opacity = Math.max(0, .5 - dawn * .6);
+    const m = document.createElement('span');
+    m.className = 'tp-mote';
+    m.textContent = words[Math.floor(Math.random() * words.length)];
+    m.style.left = Math.max(2, Math.min(94, (e.clientX / innerWidth) * 100 + (Math.random()*10-5))) + '%';
+    m.style.fontSize = (0.85 + Math.random() * 0.9) + 'rem';
+    root.appendChild(m);
+    m.addEventListener('animationend', () => m.remove());
+    paint();
+  });
+  paint();
+})();
+</script>
+</section>
