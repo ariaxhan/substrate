@@ -1,3 +1,9 @@
+---
+type: note
+status: active
+created: 2026-01-30
+---
+
 # Substrate
 
 **A generative art gallery. Every piece is one self-contained HTML file, written by Claude.**
