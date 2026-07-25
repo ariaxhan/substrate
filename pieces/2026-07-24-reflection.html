@@ -1,0 +1,58 @@
+<section data-date='2026-07-24' data-type='reflection'>
+<style>
+.tp0724{position:relative;width:100%;height:100vh;min-height:420px;overflow:hidden;background:radial-gradient(ellipse at 50% 120%,#0d1b2e 0%,#060b14 55%,#020408 100%);cursor:crosshair;font-family:Georgia,'Iowan Old Style',serif}
+.tp0724 .veil{position:absolute;inset:0;pointer-events:none;opacity:.8;background:
+radial-gradient(1px 1px at 20% 30%,#ffffff55 50%,transparent 51%),
+radial-gradient(1px 1px at 65% 15%,#ffffff40 50%,transparent 51%),
+radial-gradient(1px 1px at 80% 60%,#ffffff33 50%,transparent 51%),
+radial-gradient(1px 1px at 35% 75%,#ffffff40 50%,transparent 51%),
+radial-gradient(1px 1px at 90% 85%,#ffffff2a 50%,transparent 51%),
+radial-gradient(1px 1px at 10% 90%,#ffffff33 50%,transparent 51%),
+radial-gradient(1px 1px at 50% 50%,#ffffff22 50%,transparent 51%)}
+.tp0724 .msg{position:absolute;top:16px;left:50%;transform:translateX(-50%);color:#5b6d8a;font-size:13px;letter-spacing:.12em;opacity:.75;pointer-events:none;transition:opacity 1s}
+.tp0724 svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.tp0724 svg line{stroke:#8fb4ff;stroke-width:.6;opacity:.22}
+.tp0724 .star{position:absolute;width:3px;height:3px;border-radius:50%;background:#eaf2ff;box-shadow:0 0 4px 1px #cfe0ff;transform:translate(-50%,-50%);animation:tp0724bloom 1.4s ease-out forwards}
+.tp0724 .word{position:absolute;color:#a9c1e8;font-style:italic;font-size:13px;white-space:nowrap;transform:translate(-50%,6px);opacity:0;animation:tp0724word 6s ease forwards;pointer-events:none}
+@keyframes tp0724bloom{0%{width:0;height:0;box-shadow:0 0 0 0 #cfe0ff}30%{width:10px;height:10px;box-shadow:0 0 22px 6px #cfe0ff}100%{width:3px;height:3px;box-shadow:0 0 4px 1px #cfe0ff88}}
+@keyframes tp0724word{0%{opacity:0;transform:translate(-50%,10px)}15%{opacity:1;transform:translate(-50%,4px)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-8px)}}
+</style>
+<div class="tp0724" id="tp0724">
+<div class="veil"></div>
+<div class="msg" id="tp0724m">the day is done. touch the dark.</div>
+<svg id="tp0724svg"></svg>
+</div>
+<script>
+(function(){
+var host=document.getElementById('tp0724'),svg=document.getElementById('tp0724svg'),msg=document.getElementById('tp0724m');
+var words=['hushed','still','folded','kept','unhurried','whole','enough','quiet','dusk','soft','done','settled','close','rest'];
+var msgs=['the day is done. touch the dark.','one more, if you like.','the sky remembers where you touched.','still here. still quiet.','enough stars for one night.'];
+var pts=[];
+host.addEventListener('click',function(e){
+var r=host.getBoundingClientRect();
+var x=e.clientX-r.left,y=e.clientY-r.top;
+var s=document.createElement('div');
+s.className='star';s.style.left=x+'px';s.style.top=y+'px';
+host.appendChild(s);
+var w=document.createElement('div');
+w.className='word';w.style.left=x+'px';w.style.top=y+'px';
+w.textContent=words[Math.floor(Math.random()*words.length)];
+host.appendChild(w);
+setTimeout(function(){w.remove()},6000);
+if(pts.length){
+var p=pts[pts.length-1];
+var ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+ln.setAttribute('x1',p.x);ln.setAttribute('y1',p.y);
+ln.setAttribute('x2',x);ln.setAttribute('y2',y);
+svg.appendChild(ln);
+}
+pts.push({x:x,y:y});
+msg.style.opacity=0;
+setTimeout(function(){
+msg.textContent=msgs[Math.min(pts.length,msgs.length-1)];
+msg.style.opacity=.75;
+},900);
+});
+})();
+</script>
+</section>
