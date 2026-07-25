@@ -1,0 +1,91 @@
+<section data-date='2026-07-25' data-type='spark'>
+<style>
+.tp-25{margin:0;overflow:hidden;background:#0a0a0f;height:100vh;width:100vw;position:relative;cursor:crosshair;font-family:Georgia,serif}
+.tp-25 .w{position:absolute;color:#cfd8ff;opacity:.85;white-space:nowrap;transition:filter .3s;user-select:none;text-shadow:0 0 8px rgba(140,160,255,.35)}
+.tp-25 .w.right{color:#ffd7c2;text-shadow:0 0 8px rgba(255,170,120,.35)}
+.tp-25 .fused{position:absolute;color:#fff;font-weight:bold;pointer-events:none;text-shadow:0 0 14px #fff,0 0 30px #9ad}
+.tp-25 .spark{position:absolute;width:3px;height:3px;background:#fff;border-radius:50%;pointer-events:none}
+.tp-25 .hint{position:absolute;bottom:10px;left:14px;color:#556;font:11px sans-serif;letter-spacing:.05em}
+</style>
+<div class="tp-25" id="tp25">
+<div class="hint">move to draw them together / click to force it</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('tp25');
+var L=["signal","before","self","question","north","memory"];
+var R=["noise","after","other","answer","south","forgetting"];
+var pairs=[];
+var n=5, W=root.clientWidth, H=root.clientHeight;
+for(var i=0;i<n;i++){
+  var y=(i+0.5)/n*H;
+  var a=document.createElement('div'); a.className='w'; a.textContent=L[i%L.length];
+  var b=document.createElement('div'); b.className='w right'; b.textContent=R[i%R.length];
+  root.appendChild(a); root.appendChild(b);
+  pairs.push({a:a,b:b,y:y,ax:20,bx:W-140,fused:false,t:Math.random()*10});
+}
+var mx=W/2,my=H/2,active=false;
+window.addEventListener('mousemove',function(e){
+  var r=root.getBoundingClientRect(); mx=e.clientX-r.left; my=e.clientY-r.top; active=true;
+});
+function burst(x,y,word){
+  var f=document.createElement('div'); f.className='fused'; f.textContent=word;
+  f.style.left=(x-word.length*4)+'px'; f.style.top=(y-10)+'px'; f.style.fontSize='18px';
+  root.appendChild(f);
+  for(var i=0;i<14;i++){
+    var s=document.createElement('div'); s.className='spark';
+    s.style.left=x+'px'; s.style.top=y+'px';
+    root.appendChild(s);
+    (function(s){
+      var ang=Math.random()*Math.PI*2, spd=1+Math.random()*3, life=0;
+      var iv=setInterval(function(){
+        life++;
+        var px=parseFloat(s.style.left)+Math.cos(ang)*spd;
+        var py=parseFloat(s.style.top)+Math.sin(ang)*spd;
+        s.style.left=px+'px'; s.style.top=py+'px';
+        s.style.opacity=1-life/30;
+        if(life>30){clearInterval(iv); s.remove();}
+      },16);
+    })(s);
+  }
+  setTimeout(function(){
+    f.style.transition='opacity 1.2s'; f.style.opacity='0';
+    setTimeout(function(){f.remove();},1200);
+  },600);
+}
+function fuse(w1,w2){
+  var h1=Math.ceil(w1.length/2), h2=Math.floor(w2.length/2);
+  return w1.slice(0,h1)+w2.slice(-h2);
+}
+root.addEventListener('click',function(){
+  pairs.forEach(function(p){ p.ax+=(mx-p.ax)*0.6; p.bx+=(mx-p.bx)*0.6; });
+});
+function tick(){
+  pairs.forEach(function(p){
+    p.t+=0.02;
+    var wob=Math.sin(p.t)*6;
+    var targetA = active ? mx-40 : W*0.35;
+    var targetB = active ? mx+40 : W*0.65;
+    p.ax += (targetA-p.ax)*0.01;
+    p.bx += (targetB-p.bx)*0.01;
+    var dist=p.bx-p.ax;
+    if(!p.fused && dist<26){
+      p.fused=true;
+      burst((p.ax+p.bx)/2, p.y, fuse(p.a.textContent,p.b.textContent));
+      p.a.style.opacity=0; p.b.style.opacity=0;
+      setTimeout(function(){
+        p.ax=20+Math.random()*40; p.bx=W-140-Math.random()*40;
+        p.a.style.opacity=0.85; p.b.style.opacity=0.85; p.fused=false;
+      },1400);
+    }
+    p.a.style.left=p.ax+'px'; p.a.style.top=(p.y+wob)+'px';
+    p.b.style.left=p.bx+'px'; p.b.style.top=(p.y-wob)+'px';
+    p.a.style.filter = dist<80 ? 'brightness(1.6)' : 'none';
+    p.b.style.filter = dist<80 ? 'brightness(1.6)' : 'none';
+  });
+  requestAnimationFrame(tick);
+}
+tick();
+})();
+</script>
+</section>
