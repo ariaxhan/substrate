@@ -1,0 +1,73 @@
+<section data-date='2026-07-25' data-type='pulse'>
+<style>
+#tf-stage{position:relative;width:100%;height:100vh;overflow:hidden;margin:0;
+background:linear-gradient(180deg,#f4ead8 0%,#efe0c4 46%,#e8d4ae 100%);
+font-family:'Courier New',Courier,monospace;cursor:ns-resize;transition:background 1.1s ease}
+#tf-stage.tf-flip{background:linear-gradient(180deg,#0c0e16 0%,#151a28 46%,#1d2436 100%)}
+#tf-pivot{position:absolute;left:50%;bottom:36%;width:0;height:0;
+border-left:14px solid transparent;border-right:14px solid transparent;
+border-bottom:22px solid #2a2118;transform:translateX(-50%);transition:border-bottom-color 1.1s ease}
+#tf-stage.tf-flip #tf-pivot{border-bottom-color:#e8e2d4}
+#tf-beam{position:absolute;left:50%;bottom:calc(36% + 22px);width:64%;height:2px;
+background:#2a2118;transform-origin:50% 50%;transform:translateX(-50%) rotate(0deg);
+transition:background 1.1s ease}
+#tf-stage.tf-flip #tf-beam{background:#e8e2d4}
+#tf-beam .tf-arm{position:absolute;top:50%;width:1px;height:26px;background:inherit}
+#tf-beam .tf-arm.tf-l{left:6%}
+#tf-beam .tf-arm.tf-r{right:6%}
+.tf-word{position:absolute;top:26px;font-size:13px;letter-spacing:.06em;
+white-space:nowrap;color:#2a2118;transition:color 1.1s ease}
+#tf-stage.tf-flip .tf-word{color:#e8e2d4}
+.tf-l .tf-word{left:50%;transform:translateX(-100%);text-align:right}
+.tf-r .tf-word{left:50%;transform:translateX(0);text-align:left}
+#tf-now{position:absolute;left:50%;bottom:calc(36% + 22px);transform:translate(-50%,-50%);
+width:6px;height:6px;border-radius:50%;background:#a8471f;
+box-shadow:0 0 0 0 rgba(168,71,31,.5);animation:tf-pulse 2.4s ease-in-out infinite}
+@keyframes tf-pulse{0%,100%{box-shadow:0 0 0 0 rgba(168,71,31,.35)}50%{box-shadow:0 0 0 10px rgba(168,71,31,0)}}
+#tf-read{position:absolute;left:50%;bottom:14%;transform:translateX(-50%);
+font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:rgba(42,33,24,.5);
+transition:color 1.1s ease}
+#tf-stage.tf-flip #tf-read{color:rgba(232,226,212,.5)}
+</style>
+<div id="tf-stage">
+  <div id="tf-pivot"></div>
+  <div id="tf-now"></div>
+  <div id="tf-beam">
+    <div class="tf-arm tf-l"><span class="tf-word" id="tf-wl">waking</span></div>
+    <div class="tf-arm tf-r"><span class="tf-word" id="tf-wr">dimming</span></div>
+  </div>
+  <div id="tf-read">balance&nbsp;0&deg;</div>
+</div>
+<script>
+(function(){
+  var stage=document.getElementById('tf-stage'),
+      beam=document.getElementById('tf-beam'),
+      read=document.getElementById('tf-read'),
+      wl=document.getElementById('tf-wl'),
+      wr=document.getElementById('tf-wr'),
+      left=['waking','hungering','rising','becoming'],
+      right=['dimming','resting','settling','undoing'],
+      flipped=false, i=0;
+
+  stage.addEventListener('mousemove', function(e){
+    var r=stage.getBoundingClientRect(),
+        fx=(e.clientX-r.left)/r.width-0.5,
+        deg=Math.max(-18,Math.min(18,fx*36));
+    beam.style.transform='translateX(-50%) rotate('+deg.toFixed(1)+'deg)';
+    read.innerHTML='balance&nbsp;'+deg.toFixed(0)+'&deg;';
+    i=Math.min(left.length-1,Math.floor(Math.abs(fx)*2*left.length));
+    wl.textContent=fx<0?left[i]:left[0];
+    wr.textContent=fx>0?right[i]:right[0];
+  });
+
+  stage.addEventListener('click', function(){
+    flipped=!flipped;
+    stage.classList.toggle('tf-flip',flipped);
+    var t=left.slice(); left=right; right=t;
+    wl.textContent=left[0]; wr.textContent=right[0];
+    beam.style.transform='translateX(-50%) rotate(0deg)';
+    read.innerHTML='balance&nbsp;0&deg;';
+  });
+})();
+</script>
+</section>
