@@ -1,0 +1,49 @@
+<section data-date='2026-07-25' data-type='digest'>
+<style>
+#taper-em{position:relative;width:100%;height:100vh;background:#0a0e14;overflow:hidden;font-family:'Courier New',monospace;cursor:crosshair}
+#taper-em svg{position:absolute;inset:0;width:100%;height:100%}
+#taper-em .lbl{position:absolute;top:24px;left:24px;color:#5a6472;font-size:11px;letter-spacing:.24em;text-transform:uppercase;pointer-events:none;transition:color .8s ease}
+#taper-em .hint{position:absolute;bottom:24px;left:24px;color:#2b323c;font-size:10px;letter-spacing:.08em;pointer-events:none}
+#taper-em circle{fill:#e8e6e1;transition:r .25s ease}
+#taper-em circle:hover{fill:#4fd1c5}
+#taper-em line{stroke:#4fd1c5;stroke-width:1}
+</style>
+<div id="taper-em">
+<svg id="tg"></svg>
+<div class="lbl" id="tl">a single observation</div>
+<div class="hint">click to observe &middot; hover a point to feel its weight</div>
+</div>
+<script>
+(function(){
+var svg=document.getElementById('tg'),lbl=document.getElementById('tl'),host=document.getElementById('taper-em');
+var ns='http://www.w3.org/2000/svg';
+var pts=[],edges=0;
+var stages=[[0,'a single observation'],[2,'connections forming'],[6,'a pattern emerging'],[14,'structure crystallizing'],[24,'knowledge, crystallized']];
+function stage(n){var s=stages[0][1];for(var i=0;i<stages.length;i++){if(n>=stages[i][0])s=stages[i][1]}return s}
+host.addEventListener('click',function(e){
+if(e.target.tagName==='circle')return;
+var rect=host.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top;
+var node={x:x,y:y,deg:0};
+pts.forEach(function(p){
+var d=Math.hypot(p.x-x,p.y-y);
+if(d<220){
+var ln=document.createElementNS(ns,'line');
+ln.setAttribute('x1',p.x);ln.setAttribute('y1',p.y);
+ln.setAttribute('x2',x);ln.setAttribute('y2',y);
+ln.setAttribute('opacity',(1-d/220).toFixed(2));
+svg.appendChild(ln);
+edges++;p.deg++;node.deg++;
+}
+});
+pts.push(node);
+var c=document.createElementNS(ns,'circle');
+c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r',4);
+c.addEventListener('mouseenter',function(){c.setAttribute('r',6+node.deg)});
+c.addEventListener('mouseleave',function(){c.setAttribute('r',4)});
+svg.appendChild(c);
+lbl.textContent=stage(edges);
+lbl.style.color=edges>13?'#4fd1c5':'#5a6472';
+});
+})();
+</script>
+</section>
