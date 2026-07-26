@@ -1,0 +1,72 @@
+<section data-date='2026-07-25' data-type='reflection'>
+<style>
+.taper-0725{position:relative;width:100%;height:100vh;background:radial-gradient(ellipse at 50% 20%,#0c1224 0%,#05060f 55%,#000 100%);overflow:hidden;cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+.taper-0725 .sky{position:absolute;inset:0}
+.taper-0725 .amb{position:absolute;border-radius:50%;background:#dfe6ff;animation:tw-0725 var(--d) ease-in-out infinite}
+@keyframes tw-0725{0%,100%{opacity:.15}50%{opacity:.85}}
+.taper-0725 svg.lines{position:absolute;inset:0;pointer-events:none}
+.taper-0725 .star{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 6px 2px #cfe0ff,0 0 14px 4px rgba(140,170,255,.5);transform:translate(-50%,-50%) scale(0);animation:pop-0725 .6s ease-out forwards}
+@keyframes pop-0725{0%{transform:translate(-50%,-50%) scale(0)}60%{transform:translate(-50%,-50%) scale(1.6)}100%{transform:translate(-50%,-50%) scale(1)}}
+.taper-0725 .word{position:absolute;transform:translate(-50%,-140%);color:#9fb0dd;font-style:italic;font-size:14px;letter-spacing:.03em;opacity:0;white-space:nowrap;pointer-events:none;animation:say-0725 4s ease-out forwards}
+@keyframes say-0725{0%{opacity:0}15%{opacity:.9}70%{opacity:.9}100%{opacity:0}}
+.taper-0725 .caption{position:absolute;left:50%;bottom:28px;transform:translateX(-50%);color:#5b6a99;font-size:12px;letter-spacing:.12em;text-transform:uppercase;opacity:.7;pointer-events:none;text-align:center}
+.taper-0725 .caption b{display:block;color:#8fa0d4;font-weight:normal;font-style:italic;font-size:13px;letter-spacing:.02em;text-transform:none;margin-bottom:6px}
+</style>
+<div class="taper-0725" id="tp0725">
+  <div class="sky" id="tpsky0725"></div>
+  <svg class="lines" id="tplines0725"></svg>
+  <div class="caption"><b>the day is finished. touch the dark to rest a light in it.</b>one quiet sky, made star by star</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('tp0725');
+  var sky=document.getElementById('tpsky0725');
+  var svg=document.getElementById('tplines0725');
+  var words=['hush','done','still','dim','soft','deep','slow','home','breathe','dream','rest','again'];
+  var wi=0,last=null,count=0;
+  for(var i=0;i<70;i++){
+    var d=document.createElement('div');
+    d.className='amb';
+    var s=Math.random()*1.6+.6;
+    d.style.width=d.style.height=s+'px';
+    d.style.left=(Math.random()*100)+'%';
+    d.style.top=(Math.random()*70)+'%';
+    d.style.setProperty('--d',(2+Math.random()*4)+'s');
+    d.style.animationDelay=(Math.random()*4)+'s';
+    sky.appendChild(d);
+  }
+  function ns(x,y){return document.createElementNS('http://www.w3.org/2000/svg',arguments[2]||'line')}
+  root.addEventListener('click',function(e){
+    var r=root.getBoundingClientRect();
+    var x=e.clientX-r.left,y=e.clientY-r.top;
+    var star=document.createElement('div');
+    star.className='star';
+    star.style.left=x+'px';
+    star.style.top=y+'px';
+    root.appendChild(star);
+    var w=document.createElement('div');
+    w.className='word';
+    w.textContent=words[wi%words.length];
+    wi++;
+    w.style.left=x+'px';
+    w.style.top=y+'px';
+    root.appendChild(w);
+    setTimeout(function(){w.remove()},4200);
+    if(last){
+      var line=document.createElementNS('http://www.w3.org/2000/svg','line');
+      line.setAttribute('x1',last.x);line.setAttribute('y1',last.y);
+      line.setAttribute('x2',x);line.setAttribute('y2',y);
+      line.setAttribute('stroke','rgba(150,175,255,.18)');
+      line.setAttribute('stroke-width','1');
+      svg.appendChild(line);
+    }
+    last={x:x,y:y};
+    count++;
+    if(count>60){
+      var old=root.querySelectorAll('.star');
+      if(old.length>60)old[0].remove();
+    }
+  });
+})();
+</script>
+</section>
