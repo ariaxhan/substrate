@@ -1,0 +1,54 @@
+<section data-date='2026-07-26' data-type='morning'>
+<style>
+[data-type="morning"]{position:relative;width:100%;height:100vh;overflow:hidden;margin:0;background:#050208;cursor:crosshair;font-family:Georgia,'Iowan Old Style',serif}
+[data-type="morning"] .sky{position:absolute;inset:0;transition:background .4s ease}
+[data-type="morning"] .sun{position:absolute;width:220px;height:220px;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);filter:blur(30px);transition:opacity .6s}
+[data-type="morning"] .word{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#f4ead2;font-size:clamp(1.4rem,4vw,3rem);letter-spacing:.06em;font-style:italic;opacity:0;transition:opacity 1.1s ease;text-shadow:0 0 20px rgba(0,0,0,.5);text-align:center;white-space:nowrap;user-select:none}
+[data-type="morning"] .hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);margin:0;color:rgba(244,234,210,.35);font-family:sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;transition:opacity 1.5s}
+[data-type="morning"] .ticks{position:absolute;bottom:0;left:0;width:100%;height:60px;pointer-events:none}
+[data-type="morning"] .ticks i{position:absolute;bottom:0;width:1px;background:linear-gradient(to top,rgba(244,200,130,.9),rgba(244,200,130,0));opacity:0;transition:opacity 1.2s,height 1.2s}
+</style>
+<div class="sky"></div>
+<div class="sun"></div>
+<div class="word">unwritten</div>
+<div class="ticks"></div>
+<p class="hint">move to raise the light, click to begin</p>
+<script>
+(function(){
+var s=document.currentScript.parentElement,
+sky=s.querySelector('.sky'), sun=s.querySelector('.sun'), word=s.querySelector('.word'), ticks=s.querySelector('.ticks'), hint=s.querySelector('.hint'),
+W=["unwritten","threshold","hush","ember","becoming","not yet","almost","open","first light","possible"],
+n=0, lerp=function(a,b,t){return Math.round(a+(b-a)*t)};
+function paint(fx,fy){
+var t=1-fy,
+tr=lerp(10,255,t), tg=lerp(8,205,t), tb=lerp(30,130,t),
+br=lerp(0,255,t), bg=lerp(0,150,t), bb=lerp(10,95,t);
+sky.style.background='linear-gradient(to bottom, rgb('+tr+','+tg+','+tb+'), rgb('+br+','+bg+','+bb+'))';
+sun.style.left=fx*100+'%'; sun.style.top=fy*100+'%';
+sun.style.background='radial-gradient(circle, rgba(255,235,190,'+(0.15+t*0.5)+'), rgba(255,180,120,0))';
+sun.style.opacity=0.4+t*0.6;
+}
+s.addEventListener('mousemove', function(e){
+var r=s.getBoundingClientRect();
+paint((e.clientX-r.left)/r.width, (e.clientY-r.top)/r.height);
+});
+paint(0.5, 0.62);
+setTimeout(function(){ word.style.opacity=1 }, 300);
+s.addEventListener('click', function(e){
+hint.style.opacity=0;
+word.style.opacity=0;
+n++;
+var r=s.getBoundingClientRect(), x=(e.clientX-r.left)/r.width*100;
+var i=document.createElement('i');
+i.style.left=x+'%';
+i.style.height=(10+Math.random()*30)+'px';
+ticks.appendChild(i);
+setTimeout(function(){ i.style.opacity=1 },20);
+setTimeout(function(){
+word.textContent=W[n%W.length];
+word.style.opacity=1;
+}, 550);
+});
+})();
+</script>
+</section>
