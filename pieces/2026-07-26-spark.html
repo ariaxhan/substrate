@@ -1,0 +1,76 @@
+<section data-date='2026-07-26' data-type='spark'>
+<style>
+[data-date='2026-07-26'] { display:block; position:relative; height:70vh; min-height:420px;
+  background:#07080c; overflow:hidden; font-family:Georgia,serif; cursor:crosshair }
+[data-date='2026-07-26'] .w { position:absolute; font-size:1.1em; user-select:none;
+  transition:transform .35s ease,opacity .35s ease,filter .35s ease; will-change:transform }
+[data-date='2026-07-26'] .l { color:#6fd8ff; text-shadow:0 0 6px rgba(111,216,255,.5);
+  animation:fl 6s ease-in-out infinite }
+[data-date='2026-07-26'] .r { color:#ffb15e; text-shadow:0 0 6px rgba(255,177,94,.5);
+  animation:fr 7s ease-in-out infinite }
+@keyframes fl { 50%{ transform:translateY(-10px) } }
+@keyframes fr { 50%{ transform:translateY(10px) } }
+[data-date='2026-07-26'] .spark { position:absolute; color:#fff; font-weight:bold;
+  font-size:1.4em; pointer-events:none; text-shadow:0 0 14px #fff,0 0 30px #d1b6ff;
+  transform:translate(-50%,-50%) scale(.2); opacity:0; transition:transform .6s ease,opacity 1.4s ease }
+[data-date='2026-07-26'] .spark.go { transform:translate(-50%,-50%) scale(1); opacity:1 }
+[data-date='2026-07-26'] .trail { position:absolute; left:0; right:0; bottom:0; padding:10px 14px;
+  color:#9aa0ad; font-size:.8em; font-family:monospace; line-height:1.6; max-height:32%;
+  overflow:hidden; border-top:1px solid #1c1f28; background:linear-gradient(#07080c00,#07080cdd) }
+[data-date='2026-07-26'] .hint { position:absolute; top:10px; left:14px; color:#4a4f5c;
+  font-size:.72em; font-family:monospace; letter-spacing:.04em }
+</style>
+<div class="hint">two words drifting &mdash; click where they might meet</div>
+<div class="trail" id="tr2607"></div>
+<script>
+(function(){
+  var root=document.currentScript.previousElementSibling.parentElement;
+  var L=['sun','star','moon','wind','sea','rain','snow','fire','over','under','out','some'];
+  var R=['light','dust','flower','storm','shore','drop','flake','fly','board','ground','come','thing'];
+  var els=[],trail=root.querySelector('#tr2607'),made=[];
+  function mk(txt,cls,x,y){
+    var s=document.createElement('span');
+    s.className='w '+cls; s.textContent=txt;
+    s.style.left=x+'%'; s.style.top=y+'%';
+    s.dataset.side=cls;
+    root.appendChild(s); els.push(s);
+  }
+  L.forEach(function(w,i){ mk(w,'l', 4+Math.random()*20, 8+ (i/L.length)*75); });
+  R.forEach(function(w,i){ mk(w,'r', 76-Math.random()*20, 8+ (i/R.length)*75); });
+
+  root.addEventListener('mousemove', function(e){
+    var b=root.getBoundingClientRect();
+    els.forEach(function(s){
+      var r=s.getBoundingClientRect();
+      var dx=(r.left+r.width/2)-e.clientX, dy=(r.top+r.height/2)-e.clientY;
+      var d=Math.sqrt(dx*dx+dy*dy), k=Math.max(0,1-d/180);
+      s.style.filter='brightness('+(1+k*1.6)+')';
+      s.style.transform='translate('+(-dx*k*0.25)+'px,'+(-dy*k*0.25)+'px) scale('+(1+k*0.4)+')';
+    });
+  });
+
+  root.addEventListener('click', function(e){
+    var best={l:null,r:null,dl:1e9,dr:1e9};
+    els.forEach(function(s){
+      var r=s.getBoundingClientRect();
+      var dx=(r.left+r.width/2)-e.clientX, dy=(r.top+r.height/2)-e.clientY;
+      var d=dx*dx+dy*dy;
+      if(s.dataset.side==='l' && d<best.dl){best.dl=d;best.l=s;}
+      if(s.dataset.side==='r' && d<best.dr){best.dr=d;best.r=s;}
+    });
+    if(!best.l||!best.r) return;
+    var word=best.l.textContent+best.r.textContent;
+    var rb=root.getBoundingClientRect();
+    var sp=document.createElement('div');
+    sp.className='spark'; sp.textContent=word;
+    sp.style.left=(e.clientX-rb.left)+'px'; sp.style.top=(e.clientY-rb.top)+'px';
+    root.appendChild(sp);
+    requestAnimationFrame(function(){ sp.classList.add('go'); });
+    setTimeout(function(){ sp.remove(); },1500);
+    made.unshift(word);
+    if(made.length>18) made.length=18;
+    trail.textContent=made.join('  ·  ');
+  });
+})();
+</script>
+</section>
