@@ -1,0 +1,86 @@
+<section data-date='2026-07-26' data-type='pulse'>
+<style>
+[data-date='2026-07-26'][data-type='pulse'] * { box-sizing: border-box; }
+[data-date='2026-07-26'][data-type='pulse'] {
+  display: block; margin: 0; padding: 0; height: 100vh; min-height: 560px;
+  background: linear-gradient(90deg, #f3d9a4 0%, #2a2340 50%, #1a1730 100%);
+  overflow: hidden; position: relative; font-family: Georgia, 'Times New Roman', serif;
+  cursor: crosshair; user-select: none;
+}
+[data-date='2026-07-26'][data-type='pulse'] .stage {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+}
+[data-date='2026-07-26'][data-type='pulse'] .beam {
+  position: relative; width: 78vw; max-width: 900px; height: 2px;
+  background: rgba(255,255,255,.35); transform-origin: 50% 50%;
+  transition: transform .35s cubic-bezier(.2,.8,.2,1);
+}
+[data-date='2026-07-26'][data-type='pulse'] .pivot {
+  position: absolute; left: 50%; top: 50%; width: 10px; height: 10px;
+  background: #fff; border-radius: 50%; transform: translate(-50%,-50%);
+  box-shadow: 0 0 24px 6px rgba(255,255,255,.6);
+}
+[data-date='2026-07-26'][data-type='pulse'] .half {
+  position: absolute; top: 50%; white-space: nowrap; letter-spacing: .12em;
+  font-size: clamp(1.4rem, 4vw, 3rem); transition: opacity .35s, font-weight .1s, transform .35s;
+}
+[data-date='2026-07-26'][data-type='pulse'] .a { right: calc(50% + 22px); transform: translateY(-50%); color: #2a2340; text-align: right; }
+[data-date='2026-07-26'][data-type='pulse'] .b { left: calc(50% + 22px); transform: translateY(-50%); color: #f3d9a4; text-align: left; }
+[data-date='2026-07-26'][data-type='pulse'] .cap {
+  position: absolute; bottom: 8%; left: 50%; transform: translateX(-50%);
+  font-size: .72rem; letter-spacing: .3em; color: rgba(255,255,255,.4); text-transform: uppercase;
+}
+[data-date='2026-07-26'][data-type='pulse'] .flip { animation: fl .5s ease; }
+@keyframes fl { 0% { transform: translateY(-50%) scale(1); } 50% { transform: translateY(-50%) scale(.7); opacity:.2; } 100% { transform: translateY(-50%) scale(1); } }
+</style>
+<div class="stage">
+  <div class="beam" id="tp-beam">
+    <span class="half a" id="tp-a">waking</span>
+    <span class="pivot"></span>
+    <span class="half b" id="tp-b">sleeping</span>
+  </div>
+  <div class="cap" id="tp-cap">move to tip &middot; click to turn</div>
+</div>
+<script>
+(function(){
+  var root = document.currentScript.parentElement;
+  var beam = root.querySelector('#tp-beam');
+  var a = root.querySelector('#tp-a');
+  var b = root.querySelector('#tp-b');
+  var pairs = [
+    ['waking','sleeping'],
+    ['rising','setting'],
+    ['light','shadow'],
+    ['arrival','leaving'],
+    ['noise','silence'],
+    ['becoming','having been']
+  ];
+  var i = 0;
+  function paint(){ a.textContent = pairs[i][0]; b.textContent = pairs[i][1]; }
+  paint();
+  root.addEventListener('mousemove', function(e){
+    var r = root.getBoundingClientRect();
+    var x = (e.clientX - r.left) / r.width;
+    var tilt = (x - 0.5) * 34;
+    beam.style.transform = 'rotate(' + tilt + 'deg)';
+    var wa = 400 + (0.5 - x) * 700;
+    var wb = 400 + (x - 0.5) * 700;
+    a.style.fontWeight = Math.max(200, Math.min(900, wa));
+    b.style.fontWeight = Math.max(200, Math.min(900, wb));
+    a.style.opacity = 0.5 + (0.5 - x) * 0.9;
+    b.style.opacity = 0.5 + (x - 0.5) * 0.9;
+  });
+  root.addEventListener('mouseleave', function(){
+    beam.style.transform = 'rotate(0deg)';
+    a.style.fontWeight = b.style.fontWeight = 400;
+    a.style.opacity = b.style.opacity = 1;
+  });
+  root.addEventListener('click', function(){
+    i = (i + 1) % pairs.length;
+    a.classList.add('flip'); b.classList.add('flip');
+    setTimeout(paint, 250);
+    setTimeout(function(){ a.classList.remove('flip'); b.classList.remove('flip'); }, 500);
+  });
+})();
+</script>
+</section>
