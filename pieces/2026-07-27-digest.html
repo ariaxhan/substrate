@@ -1,0 +1,60 @@
+<section data-date='2026-07-27' data-type='digest'>
+<style>
+#taper-cr{position:relative;width:100%;height:100vh;background:#f3ead8;overflow:hidden;font-family:Georgia,'Times New Roman',serif;cursor:text}
+#taper-cr svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#taper-cr path{fill:none;stroke:#a8792b;stroke-width:.7}
+#taper-cr .w{position:absolute;transform:translate(-50%,-50%);font-style:italic;color:#3a2c1a;letter-spacing:.02em;white-space:nowrap;transition:color .6s,font-size .4s;cursor:default}
+#taper-cr .w.bound{color:#8a5a1e;font-weight:600}
+#taper-cr .cap{position:absolute;left:26px;bottom:22px;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#8a7a5c;transition:color 1s}
+#taper-cr .cnt{position:absolute;right:26px;bottom:22px;font-size:11px;color:#b0a486;letter-spacing:.05em}
+#taper-cr .hint{position:absolute;left:26px;top:20px;font-size:11px;letter-spacing:.1em;color:#c2b492}
+</style>
+<div id="taper-cr">
+<svg id="tcg"></svg>
+<div class="cap" id="tcCap">an unmarked page</div>
+<div class="cnt" id="tcCnt"></div>
+<div class="hint">click the page to leave a mark</div>
+</div>
+<script>
+(function(){
+var host=document.getElementById('taper-cr'),svg=document.getElementById('tcg'),cap=document.getElementById('tcCap'),cnt=document.getElementById('tcCnt');
+var ns='http://www.w3.org/2000/svg';
+var lex=['axiom','cipher','ember','filament','glyph','herald','index','kernel','lattice','marrow','motif','origin','quill','residue','root','seed','tessera','thread','trace','weave','archive','ledger'];
+var bag=[],pts=[],edges=0;
+function next(){if(!bag.length)bag=lex.slice();var i=Math.floor(Math.random()*bag.length);return bag.splice(i,1)[0]}
+var stages=[[0,'an unmarked page'],[2,'ink finding ink'],[6,'a pattern emerging'],[14,'structure crystallizing'],[24,'a body of knowledge']];
+function stageText(n){var s=stages[0][1];for(var i=0;i<stages.length;i++){if(n>=stages[i][0])s=stages[i][1]}return s}
+host.addEventListener('click',function(e){
+if(e.target.classList&&e.target.classList.contains('w'))return;
+var rect=host.getBoundingClientRect(),x=e.clientX-rect.left,y=e.clientY-rect.top;
+var node={x:x,y:y,deg:0,word:next()};
+pts.forEach(function(p){
+var d=Math.hypot(p.x-x,p.y-y);
+if(d<210){
+var mx=(p.x+x)/2,my=(p.y+y)/2-30;
+var pth=document.createElementNS(ns,'path');
+pth.setAttribute('d','M'+p.x+' '+p.y+' Q '+mx+' '+my+' '+x+' '+y);
+pth.setAttribute('opacity',(0.85-d/210*0.7).toFixed(2));
+svg.appendChild(pth);
+edges++;p.deg++;node.deg++;
+p.el.classList.add('bound');
+p.el.style.fontSize=(15+Math.min(p.deg,8)*1.4)+'px';
+}
+});
+pts.push(node);
+var s=document.createElement('span');
+s.className='w';
+s.textContent=node.word;
+s.style.left=x+'px';s.style.top=y+'px';
+s.style.fontSize='15px';
+s.title=node.word;
+host.appendChild(s);
+node.el=s;
+if(node.deg){s.classList.add('bound');s.style.fontSize=(15+node.deg*1.4)+'px'}
+cap.textContent=stageText(edges);
+cap.style.color=edges>13?'#8a5a1e':'#8a7a5c';
+cnt.textContent=pts.length+' marks · '+edges+' bonds';
+});
+})();
+</script>
+</section>
