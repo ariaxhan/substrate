@@ -1,0 +1,81 @@
+<section data-date='2026-07-27' data-type='pulse'>
+<style>
+[data-date='2026-07-27'][data-type='pulse'] { display:block; position:relative; height:70vh; min-height:420px;
+  overflow:hidden; cursor:ns-resize; font-family:Georgia,'Times New Roman',serif;
+  background:linear-gradient(90deg,#1b1330 0%,#4a2f4f 42%,#c98f4a 50%,#4a2f4f 58%,#1b1330 100%) }
+[data-date='2026-07-27'][data-type='pulse'] .hint { position:absolute; top:12px; left:16px;
+  color:rgba(255,255,255,.32); font:.7em/1.4 'Courier New',monospace; letter-spacing:.05em }
+[data-date='2026-07-27'][data-type='pulse'] .stand { position:absolute; left:50%; top:44%; bottom:14%;
+  width:1px; background:rgba(255,255,255,.22); transform:translateX(-.5px) }
+[data-date='2026-07-27'][data-type='pulse'] .pivot { position:absolute; left:50%; top:44%; width:9px; height:9px;
+  background:#f4d9a3; border-radius:50%; transform:translate(-50%,-50%);
+  box-shadow:0 0 16px 3px rgba(244,217,163,.55); z-index:3 }
+[data-date='2026-07-27'][data-type='pulse'] .beam { position:absolute; left:50%; top:44%; width:52%; height:2px;
+  background:rgba(255,255,255,.55); transform:translate(-50%,-50%) rotate(var(--t,0deg));
+  transition:transform .12s ease-out }
+[data-date='2026-07-27'][data-type='pulse'] .beam.snap { transition:transform .7s cubic-bezier(.34,1.6,.5,1) }
+[data-date='2026-07-27'][data-type='pulse'] .pan { position:absolute; top:0; width:74px; text-align:center;
+  transform:translate(-50%,6px) rotate(calc(var(--t,0deg) * -1)) }
+[data-date='2026-07-27'][data-type='pulse'] .pan.l { left:2% }
+[data-date='2026-07-27'][data-type='pulse'] .pan.r { left:98% }
+[data-date='2026-07-27'][data-type='pulse'] .pan i { display:block; font-style:italic; color:#fbeeda;
+  font-size:1.1em; letter-spacing:.02em; text-shadow:0 0 10px rgba(0,0,0,.5) }
+[data-date='2026-07-27'][data-type='pulse'] .pan b { display:block; font:.68em/1 'Courier New',monospace;
+  font-weight:400; color:rgba(255,255,255,.5); margin-top:5px }
+[data-date='2026-07-27'][data-type='pulse'] .now { position:absolute; left:50%; top:66%; transform:translateX(-50%);
+  color:rgba(255,255,255,.7); font:italic .82em/1.5 Georgia,serif; letter-spacing:.02em; text-align:center;
+  pointer-events:none; transition:opacity .5s ease }
+[data-date='2026-07-27'][data-type='pulse'] .ripple { position:absolute; left:50%; top:44%; width:8px; height:8px;
+  border:1px solid rgba(244,217,163,.7); border-radius:50%; transform:translate(-50%,-50%); pointer-events:none;
+  animation:rp27 1s ease-out forwards }
+@keyframes rp27 { to { width:340px; height:340px; opacity:0 } }
+</style>
+<div class="hint">tilt the day &middot; click to rest at center</div>
+<div class="stand"></div>
+<div class="beam" id="bm27p">
+  <div class="pan l"><i>dawn</i><b id="hl27p">12.0h</b></div>
+  <div class="pan r"><i>dusk</i><b id="hr27p">12.0h</b></div>
+</div>
+<div class="pivot"></div>
+<div class="now" id="nw27p">the hinge of the day</div>
+<script>
+(function(){
+  var root=document.currentScript.parentElement;
+  var beam=root.querySelector('#bm27p'), hl=root.querySelector('#hl27p'), hr=root.querySelector('#hr27p'),
+      now=root.querySelector('#nw27p');
+  var MAX=16, resting=false;
+  function set(deg){
+    deg=Math.max(-MAX,Math.min(MAX,deg));
+    root.style.setProperty('--t',deg+'deg');
+    var shift=(deg/MAX)*11.5;
+    hl.textContent=(12-shift).toFixed(1)+'h';
+    hr.textContent=(12+shift).toFixed(1)+'h';
+  }
+  root.addEventListener('mousemove',function(e){
+    if(resting) return;
+    var b=root.getBoundingClientRect();
+    var rel=(e.clientX-b.left-b.width/2)/(b.width/2);
+    set(rel*MAX);
+    now.style.opacity=(Math.abs(rel)<.05)?1:.55;
+    now.textContent=(Math.abs(rel)<.05)?'balanced, for a moment':'the hinge of the day';
+  });
+  root.addEventListener('click',function(e){
+    resting=true;
+    beam.classList.add('snap');
+    set(0);
+    now.style.opacity=1;
+    now.textContent='equilibrium';
+    var r=document.createElement('div');
+    r.className='ripple';
+    root.appendChild(r);
+    setTimeout(function(){ r.remove(); },1000);
+    setTimeout(function(){
+      beam.classList.remove('snap');
+      resting=false;
+      now.textContent='the hinge of the day';
+      now.style.opacity=.7;
+    },900);
+  });
+})();
+</script>
+</section>
