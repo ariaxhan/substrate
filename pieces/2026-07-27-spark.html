@@ -1,0 +1,76 @@
+<section data-date='2026-07-27' data-type='spark'>
+<style>
+#taper0727{position:relative;width:100%;height:70vh;min-height:420px;background:#0a0e12;overflow:hidden;cursor:crosshair;font-family:Georgia,serif}
+#taper0727 .w{position:absolute;font-size:1.1em;letter-spacing:.02em;white-space:nowrap;user-select:none;transition:text-shadow .4s,color .4s}
+#taper0727 .a{color:#5fd0d8}
+#taper0727 .b{color:#e0a458}
+#taper0727 .syn{position:absolute;color:#fff;font-style:italic;pointer-events:none;opacity:0;font-size:1.3em;text-shadow:0 0 10px #fff,0 0 22px #fff}
+#taper0727 .hint{position:absolute;bottom:8px;left:12px;color:#3a4550;font-size:.65em;font-family:sans-serif;letter-spacing:.08em}
+</style>
+<div id="taper0727"><div class="hint">move through them. let them touch.</div></div>
+<script>
+(function(){
+var s=document.getElementById('taper0727'),W=s.clientWidth||600,H=s.clientHeight||420;
+var A=["signal","root","ember","tide","static","bone","hollow moon","riverbed"];
+var B=["shore","stone","glass","wire","light","salt","broken wire","old tongue"];
+var SYN=["undertow","filament","reliquary","aftertone","threshold","bloom","seam of light","the space between"];
+var els=[],mx=-999,my=-999;
+function mk(txt,cls){
+  var d=document.createElement('div');
+  d.className='w '+cls; d.textContent=txt;
+  d.x=Math.random()*(W-120); d.y=Math.random()*(H-40);
+  d.vx=(Math.random()-.5)*.4; d.vy=(Math.random()-.5)*.4;
+  d.cls=cls; d.cool=0;
+  s.appendChild(d); els.push(d);
+}
+A.forEach(function(t){mk(t,'a')});
+B.forEach(function(t){mk(t,'b')});
+s.addEventListener('mousemove',function(e){
+  var r=s.getBoundingClientRect(); mx=e.clientX-r.left; my=e.clientY-r.top;
+});
+s.addEventListener('mouseleave',function(){mx=-999;my=-999});
+function synth(x,y){
+  var d=document.createElement('div');
+  d.className='syn'; d.textContent=SYN[0|Math.random()*SYN.length];
+  d.style.left=x+'px'; d.style.top=y+'px';
+  s.appendChild(d);
+  requestAnimationFrame(function(){d.style.transition='opacity 1.6s, transform 1.6s';d.style.opacity=1;d.style.transform='translateY(-18px)';});
+  setTimeout(function(){d.style.opacity=0;},1200);
+  setTimeout(function(){s.removeChild(d);},2900);
+}
+function tick(){
+  var dx=mx- -1,dy=my- -1;
+  for(var i=0;i<els.length;i++){
+    var e=els[i];
+    var ddx=mx-e.x, ddy=my-e.y, dist=Math.sqrt(ddx*ddx+ddy*ddy)+.001;
+    if(dist<140){ e.vx+=ddx/dist*.03; e.vy+=ddy/dist*.03; }
+    e.x+=e.vx; e.y+=e.vy;
+    e.vx*=.98; e.vy*=.98;
+    if(e.x<0||e.x>W-40){e.vx*=-1;}
+    if(e.y<0||e.y>H-24){e.vy*=-1;}
+    e.x=Math.max(0,Math.min(W-40,e.x)); e.y=Math.max(0,Math.min(H-24,e.y));
+    e.style.left=e.x+'px'; e.style.top=e.y+'px';
+    if(e.cool>0)e.cool--;
+  }
+  for(var i=0;i<els.length;i++){
+    if(els[i].cls!=='a')continue;
+    for(var j=0;j<els.length;j++){
+      if(els[j].cls!=='b')continue;
+      var a=els[i],b=els[j];
+      var ddx=a.x-b.x, ddy=a.y-b.y, dist=Math.sqrt(ddx*ddx+ddy*ddy);
+      if(dist<46 && a.cool===0 && b.cool===0){
+        a.style.textShadow='0 0 12px currentColor'; b.style.textShadow='0 0 12px currentColor';
+        setTimeout(function(x,y){return function(){x.style.textShadow='';y.style.textShadow='';}}(a,b),700);
+        synth((a.x+b.x)/2,(a.y+b.y)/2-20);
+        a.vx-=ddx*.02; a.vy-=ddy*.02;
+        b.vx+=ddx*.02; b.vy+=ddy*.02;
+        a.cool=90; b.cool=90;
+      }
+    }
+  }
+  requestAnimationFrame(tick);
+}
+tick();
+})();
+</script>
+</section>
