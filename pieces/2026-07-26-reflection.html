@@ -1,0 +1,70 @@
+<section data-date='2026-07-26' data-type='reflection'>
+<style>
+  #taper-night{position:relative;width:100%;height:100vh;background:radial-gradient(ellipse at 50% 18%,#0d1b2e 0%,#050a12 55%,#020306 100%);overflow:hidden;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+  #taper-night canvas{position:absolute;inset:0;display:block}
+  #taper-night .msg{position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);width:80%;color:#e8e6dc;font-style:italic;font-size:1.35rem;line-height:1.6;letter-spacing:.03em;opacity:0;animation:tnfade 10s ease forwards;pointer-events:none;text-align:center;text-shadow:0 0 14px rgba(255,255,255,.14)}
+  #taper-night .hint{position:absolute;bottom:6%;left:50%;transform:translateX(-50%);color:#5a6478;font-size:.72rem;font-style:italic;letter-spacing:.1em;opacity:.5;pointer-events:none;font-family:Georgia,serif}
+  @keyframes tnfade{0%{opacity:0}14%{opacity:1}70%{opacity:1}100%{opacity:0}}
+</style>
+<div id="taper-night">
+  <canvas></canvas>
+  <div class="msg">the day is complete.<br>rest, before the next beginning.</div>
+  <div class="hint">touch the dark</div>
+</div>
+<script>
+(function(){
+  var box = document.getElementById('taper-night');
+  var cv = box.querySelector('canvas'), ctx = cv.getContext('2d');
+  function size(){ cv.width = box.clientWidth; cv.height = box.clientHeight; }
+  size();
+  window.addEventListener('resize', size);
+
+  var stars = [];
+  function addStar(x, y, r){
+    stars.push({ x:x, y:y, r:r || (0.6 + Math.random()*1.3), ph:Math.random()*6.28, sp:0.4+Math.random()*1.1, born:performance.now() });
+  }
+  for (var i=0; i<36; i++) addStar(Math.random()*cv.width, Math.random()*cv.height*0.88);
+
+  var ambient = setInterval(function(){
+    if (stars.length < 160) addStar(Math.random()*cv.width, Math.random()*cv.height*0.88);
+  }, 2800);
+
+  box.addEventListener('click', function(e){
+    var r = box.getBoundingClientRect();
+    addStar(e.clientX - r.left, e.clientY - r.top, 1.5 + Math.random()*1.7);
+  });
+
+  function draw(t){
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    for (var i=0; i<stars.length; i++){
+      var s = stars[i];
+      var age = Math.min(1, (t - s.born) / 1400);
+      var tw = 0.5 + 0.5*Math.sin(t/1000*s.sp + s.ph);
+      var op = age * tw;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, 6.283);
+      ctx.fillStyle = 'rgba(232,230,220,' + op + ')';
+      ctx.shadowBlur = 7;
+      ctx.shadowColor = 'rgba(190,205,255,' + (op*0.6) + ')';
+      ctx.fill();
+    }
+    ctx.shadowBlur = 0;
+    for (var a=0; a<stars.length; a++){
+      for (var b=a+1; b<stars.length; b++){
+        var dx = stars[a].x - stars[b].x, dy = stars[a].y - stars[b].y;
+        var d = Math.sqrt(dx*dx + dy*dy);
+        if (d < 110){
+          ctx.strokeStyle = 'rgba(150,170,210,' + ((1 - d/110) * 0.16) + ')';
+          ctx.beginPath();
+          ctx.moveTo(stars[a].x, stars[a].y);
+          ctx.lineTo(stars[b].x, stars[b].y);
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+</script>
+</section>
