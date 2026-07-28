@@ -1,0 +1,58 @@
+<section data-date='2026-07-28' data-type='digest'>
+<style>
+#taper-2026-07-28{margin:0;overflow:hidden;height:100vh;background:#07070a;font-family:Georgia,serif;color:#cfd2da;position:relative;cursor:crosshair}
+#taper-2026-07-28 canvas{display:block}
+#taper-2026-07-28 .hud{position:absolute;top:18px;left:22px;pointer-events:none;font-size:13px;letter-spacing:.04em;color:#6b7280;text-transform:lowercase}
+#taper-2026-07-28 .hud b{color:#e8e6df;font-weight:400;font-variant-numeric:tabular-nums;font-family:'Courier New',monospace}
+#taper-2026-07-28 .word{position:absolute;bottom:20px;right:24px;pointer-events:none;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#4b4f5a;transition:opacity 1.2s ease}
+#taper-2026-07-28 .hint{position:absolute;bottom:20px;left:22px;pointer-events:none;font-size:11px;color:#3a3d45;font-style:italic}
+</style>
+<div id="taper-2026-07-28">
+  <canvas id="t28c"></canvas>
+  <div class="hud">nodes <b id="t28n">0</b> &nbsp; bonds <b id="t28e">0</b></div>
+  <div class="word" id="t28w">a single fact</div>
+  <div class="hint" id="t28h">click to know something</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('taper-2026-07-28'),cv=document.getElementById('t28c'),x=cv.getContext('2d');
+var nEl=document.getElementById('t28n'),eEl=document.getElementById('t28e'),wEl=document.getElementById('t28w'),hEl=document.getElementById('t28h');
+function size(){cv.width=root.clientWidth;cv.height=root.clientHeight;render()}
+var pts=[],edges=[],mouse=null;
+var words=[[0,'a single fact'],[3,'a few facts, unrelated'],[8,'echoes forming'],[14,'a cluster'],[22,'a lattice'],[32,'load-bearing structure'],[45,'the pattern knows itself'],[60,'emergence']];
+function label(n){var w=words[0][1];for(var i=0;i<words.length;i++)if(n>=words[i][0])w=words[i][1];return w}
+function dist(a,b){var dx=a.x-b.x,dy=a.y-b.y;return Math.sqrt(dx*dx+dy*dy)}
+function addNode(px,py){
+  var p={x:px,y:py};
+  pts.map(function(q){return{q:q,d:dist(p,q)}}).filter(function(c){return c.d<220}).sort(function(a,b){return a.d-b.d}).slice(0,3).forEach(function(c){edges.push([p,c.q,c.d])});
+  pts.push(p);
+  nEl.textContent=pts.length;eEl.textContent=edges.length;wEl.textContent=label(pts.length);
+  if(pts.length===1)hEl.style.opacity=0;
+  render();
+}
+function render(){
+  x.fillStyle='#07070a';x.fillRect(0,0,cv.width,cv.height);
+  edges.forEach(function(e){
+    var a=e[0],b=e[1],d=e[2];
+    x.strokeStyle='rgba(140,150,190,'+(0.55-d/220*0.45).toFixed(3)+')';x.lineWidth=1;
+    x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();
+  });
+  if(mouse&&pts.length){
+    var nearest=pts.reduce(function(best,p){var d=dist(p,mouse);return(!best||d<best.d)?{p:p,d:d}:best},null);
+    if(nearest&&nearest.d<260){
+      x.strokeStyle='rgba(90,200,180,.35)';x.setLineDash([2,4]);
+      x.beginPath();x.moveTo(nearest.p.x,nearest.p.y);x.lineTo(mouse.x,mouse.y);x.stroke();x.setLineDash([]);
+    }
+  }
+  pts.forEach(function(p,i){
+    var age=pts.length-i,r=age<6?3.4:2;
+    x.beginPath();x.fillStyle=age<6?'#f2efe6':'#8b90a3';x.arc(p.x,p.y,r,0,7);x.fill();
+  });
+}
+root.addEventListener('click',function(e){var r=root.getBoundingClientRect();addNode(e.clientX-r.left,e.clientY-r.top)});
+root.addEventListener('mousemove',function(e){var r=root.getBoundingClientRect();mouse={x:e.clientX-r.left,y:e.clientY-r.top};render()});
+window.addEventListener('resize',size);
+size();
+})();
+</script>
+</section>
