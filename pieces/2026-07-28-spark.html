@@ -1,0 +1,72 @@
+<section data-date='2026-07-28' data-type='spark'>
+<style>
+[data-date='2026-07-28'] .stage{position:relative;height:70vh;min-height:420px;background:#0a0a12;overflow:hidden;cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+[data-date='2026-07-28'] .hint{position:absolute;top:8px;left:50%;transform:translateX(-50%);color:#555;font-size:.7em;letter-spacing:.15em;text-transform:uppercase;font-family:Arial,sans-serif;pointer-events:none}
+[data-date='2026-07-28'] .w{position:absolute;font-size:1.25em;letter-spacing:.04em;white-space:nowrap}
+[data-date='2026-07-28'] .l{color:#5ad1e6;text-shadow:0 0 8px rgba(90,209,230,.5)}
+[data-date='2026-07-28'] .r{color:#e6a15a;text-shadow:0 0 8px rgba(230,161,90,.5)}
+[data-date='2026-07-28'] .syn{position:absolute;transform:translate(-50%,-50%);color:#fff;font-size:1.6em;font-weight:bold;text-shadow:0 0 16px #fff,0 0 30px #ffd27a;animation:tp-pop 1.6s ease-out forwards;pointer-events:none}
+[data-date='2026-07-28'] .p{position:absolute;width:3px;height:3px;background:#ffd27a;border-radius:50%;animation:tp-fly .9s ease-out forwards;pointer-events:none}
+@keyframes tp-pop{0%{opacity:0;transform:translate(-50%,-50%) scale(.5)}15%{opacity:1;transform:translate(-50%,-50%) scale(1.15)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.4)}}
+@keyframes tp-fly{to{transform:translate(var(--dx),var(--dy));opacity:0}}
+</style>
+<div class="stage" id="tp-stage-0728">
+<div class="hint">move to quicken &middot; click to summon</div>
+</div>
+<script>
+(function(){
+var stage=document.getElementById('tp-stage-0728');
+var L=["spark","glass","tide","wire","dust","bone","glow","rust","echo","salt"];
+var R=["light","break","meet","song","fold","hum","seed","fault","chord","bloom"];
+var speed=1,pairs=[],rows=0;
+function spawn(){
+var i=Math.floor(Math.random()*L.length);
+var y=(rows++%9)*10+6;
+var l=document.createElement('div');
+l.className='w l';l.textContent=L[i];l.style.top=y+'%';l.style.left='2%';
+var r=document.createElement('div');
+r.className='w r';r.textContent=R[i];r.style.top=y+'%';r.style.right='2%';
+stage.appendChild(l);stage.appendChild(r);
+pairs.push({l:l,r:r,x:2,word:L[i]+R[i],y:y});
+}
+function burst(x,y,word){
+var s=document.createElement('div');
+s.className='syn';s.textContent=word;s.style.top=y+'%';s.style.left=x+'%';
+stage.appendChild(s);
+for(var k=0;k<6;k++){
+var p=document.createElement('div');
+p.className='p';
+var a=Math.random()*6.28,d=20+Math.random()*30;
+p.style.top=y+'%';p.style.left=x+'%';
+p.style.setProperty('--dx',Math.cos(a)*d+'px');
+p.style.setProperty('--dy',Math.sin(a)*d+'px');
+stage.appendChild(p);
+(function(el){setTimeout(function(){el.remove()},900)})(p);
+}
+setTimeout(function(){s.remove()},1600);
+}
+function tick(){
+for(var j=pairs.length-1;j>=0;j--){
+var p=pairs[j];
+p.x+=speed*0.35;
+p.l.style.left=p.x+'%';
+p.r.style.right=p.x+'%';
+if(p.x>=46){
+burst(50,p.y,p.word);
+p.l.remove();p.r.remove();
+pairs.splice(j,1);
+}
+}
+requestAnimationFrame(tick);
+}
+stage.addEventListener('mousemove',function(e){
+var b=stage.getBoundingClientRect();
+var dx=Math.abs(e.clientX-(b.left+b.width/2))/(b.width/2);
+speed=0.4+(1-dx)*2.2;
+});
+stage.addEventListener('click',spawn);
+for(var i=0;i<4;i++)spawn();
+tick();
+})();
+</script>
+</section>
