@@ -1,0 +1,139 @@
+<section data-date='2026-07-27' data-type='reflection'>
+<style>
+.taper-2026-07-27 {
+  margin: 0;
+  height: 100vh;
+  background: radial-gradient(ellipse at 50% 100%, #0b0f1c 0%, #04040a 70%);
+  overflow: hidden;
+  position: relative;
+  cursor: crosshair;
+  font-family: Georgia, 'Iowan Old Style', serif;
+}
+.taper-2026-07-27 canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.taper-2026-07-27 .t-label {
+  position: absolute;
+  top: 28px;
+  left: 32px;
+  color: #6a7396;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  font-style: italic;
+  opacity: 0.6;
+  pointer-events: none;
+  user-select: none;
+}
+.taper-2026-07-27 .t-close {
+  position: absolute;
+  bottom: 34px;
+  width: 100%;
+  text-align: center;
+  color: #9aa3c4;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  opacity: 0;
+  transition: opacity 3.5s ease;
+  pointer-events: none;
+  user-select: none;
+}
+.taper-2026-07-27 .t-close.show { opacity: 0.75; }
+</style>
+<div class="taper-2026-07-27" id="t0727">
+  <div class="t-label">night &middot; the day is complete</div>
+  <canvas id="t0727c"></canvas>
+  <div class="t-close" id="t0727close">rest before the next beginning</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('t0727');
+  var cv = document.getElementById('t0727c');
+  var ctx = cv.getContext('2d');
+  var close = document.getElementById('t0727close');
+  var words = ['still','dim','hush','soft','far','low','slow','deep','calm','quiet'];
+  var stars = [];
+  var W, H, dpr;
+
+  function size(){
+    dpr = window.devicePixelRatio || 1;
+    W = root.clientWidth; H = root.clientHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  size();
+  window.addEventListener('resize', size);
+
+  function addStar(x, y){
+    stars.push({
+      x: x, y: y, born: performance.now(),
+      r: 1 + Math.random() * 1.6,
+      phase: Math.random() * Math.PI * 2,
+      word: words[Math.floor(Math.random() * words.length)],
+      wordLife: 2600 + Math.random() * 1400
+    });
+    if (stars.length >= 7) {
+      close.classList.add('show');
+    }
+  }
+
+  root.addEventListener('click', function(e){
+    var rect = root.getBoundingClientRect();
+    addStar(e.clientX - rect.left, e.clientY - rect.top);
+  });
+  root.addEventListener('touchstart', function(e){
+    var t = e.touches[0];
+    var rect = root.getBoundingClientRect();
+    addStar(t.clientX - rect.left, t.clientY - rect.top);
+  }, {passive:true});
+
+  function draw(now){
+    ctx.clearRect(0,0,W,H);
+
+    for (var i=1;i<stars.length;i++){
+      var a = stars[i-1], b = stars[i];
+      var age = now - b.born;
+      var lineOpacity = Math.min(age/1200, 1) * 0.14;
+      ctx.strokeStyle = 'rgba(150,165,220,' + lineOpacity + ')';
+      ctx.lineWidth = 0.6;
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.stroke();
+    }
+
+    for (var j=0;j<stars.length;j++){
+      var s = stars[j];
+      var age = now - s.born;
+      var appear = Math.min(age/900, 1);
+      var twinkle = 0.55 + 0.45 * Math.sin(now/900 + s.phase);
+      var glow = appear * twinkle;
+
+      var grad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 6);
+      grad.addColorStop(0, 'rgba(220,228,255,' + (0.55*glow) + ')');
+      grad.addColorStop(1, 'rgba(220,228,255,0)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r * 6, 0, Math.PI*2);
+      ctx.fill();
+
+      ctx.fillStyle = 'rgba(255,255,255,' + (0.85*appear) + ')';
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fill();
+
+      if (age < s.wordLife) {
+        var wOp = age < 500 ? age/500 : 1 - Math.max(0,(age - (s.wordLife-800)))/800;
+        wOp = Math.max(0, Math.min(1, wOp)) * 0.5;
+        ctx.fillStyle = 'rgba(170,180,220,' + wOp + ')';
+        ctx.font = '11px Georgia, serif';
+        ctx.fillText(s.word, s.x + 8, s.y - 8);
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+</script>
+</section>
