@@ -1,0 +1,54 @@
+<section data-date='2026-07-28' data-type='morning'>
+<style>
+#dawn-piece{position:relative;width:100%;height:100vh;overflow:hidden;background:#05060f;transition:background 0.6s ease;cursor:crosshair}
+#dawn-piece .line{position:absolute;left:0;width:100%;height:1px;top:68%;background:rgba(255,255,255,0.12);z-index:2}
+#dawn-piece .sun{position:absolute;left:50%;width:9vmin;height:9vmin;border-radius:50%;background:#fff8e7;top:100%;transform:translate(-50%,-50%);box-shadow:0 0 40px 10px rgba(255,214,140,0.0);transition:top 0.5s cubic-bezier(.2,.7,.3,1),box-shadow 0.5s ease,background 0.5s ease;z-index:1}
+#dawn-piece .word{position:absolute;left:50%;top:30%;transform:translate(-50%,-50%);font-family:Georgia,'Times New Roman',serif;font-style:italic;font-weight:400;font-size:clamp(1.6rem,4.5vw,3.4rem);letter-spacing:0.02em;color:rgba(255,255,255,0.88);opacity:0;transition:opacity 1.1s ease;z-index:3;user-select:none;text-align:center}
+#dawn-piece .word.show{opacity:1}
+#dawn-piece .hint{position:absolute;bottom:6%;left:50%;transform:translateX(-50%);font-family:Georgia,serif;font-size:0.75rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(255,255,255,0.28);z-index:3}
+</style>
+<div id="dawn-piece">
+  <div class="line"></div>
+  <div class="sun" id="dp-sun"></div>
+  <div class="word show" id="dp-word">unwritten</div>
+  <div class="hint">move &middot; click</div>
+</div>
+<script>
+(function(){
+  var el = document.getElementById('dawn-piece');
+  var sun = document.getElementById('dp-sun');
+  var word = document.getElementById('dp-word');
+  var words = ['unwritten','unnamed','unmade','not yet','possible','waiting','becoming','wide open','still quiet','yours to make'];
+  var idx = 0;
+  var night = [10,12,30];
+  var dawn = [255,190,120];
+  var deep = [255,120,90];
+  function mix(a,b,t){ return Math.round(a + (b-a)*t); }
+  function onMove(e){
+    var y = (e.touches ? e.touches[0].clientY : e.clientY);
+    var t = Math.max(0, Math.min(1, y / window.innerHeight));
+    var rise = 1 - t;
+    var top = 100 - rise * 92;
+    sun.style.top = top + '%';
+    var glow = Math.max(0, rise - 0.15) * 1.2;
+    sun.style.boxShadow = '0 0 ' + (glow*70) + 'px ' + (glow*20) + 'px rgba(255,200,140,' + (glow*0.9).toFixed(2) + ')';
+    var r1 = mix(night[0], dawn[0], rise), g1 = mix(night[1], dawn[1], rise), b1 = mix(night[2], dawn[2], rise);
+    var r2 = mix(5, deep[0]*0.4, rise), g2 = mix(6, deep[1]*0.25, rise), b2 = mix(15, deep[2]*0.3, rise);
+    el.style.background = 'linear-gradient(to bottom, rgb('+r1+','+g1+','+b1+') 0%, rgb('+r2+','+g2+','+b2+') 70%, #05060f 100%)';
+    sun.style.background = rise > 0.5 ? '#fff8e7' : '#f4e9d8';
+  }
+  function onClick(){
+    word.classList.remove('show');
+    setTimeout(function(){
+      idx = (idx + 1) % words.length;
+      word.textContent = words[idx];
+      word.classList.add('show');
+    }, 550);
+  }
+  el.addEventListener('mousemove', onMove);
+  el.addEventListener('touchmove', onMove, {passive:true});
+  el.addEventListener('click', onClick);
+  onMove({clientY: window.innerHeight * 0.75});
+})();
+</script>
+</section>
