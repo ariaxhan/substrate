@@ -1,0 +1,50 @@
+<section data-date='2026-07-29' data-type='morning'>
+<style>
+.tp0729{position:relative;width:100%;height:100vh;background:#0b0e1a;overflow:hidden;font-family:Georgia,'Palatino Linotype',serif;cursor:crosshair}
+.tp0729 .horizon{position:absolute;left:0;right:0;top:62%;height:1px;background:rgba(255,255,255,.15);z-index:2}
+.tp0729 .sun{position:absolute;top:62%;left:50%;width:14vmin;height:14vmin;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(circle,var(--c1,#3a2d55) 0%,var(--c2,#161229) 70%);box-shadow:0 0 8vmin 2vmin var(--glow,rgba(60,40,90,.35));transition:background .4s,box-shadow .4s;z-index:1}
+.tp0729 .poem{position:absolute;bottom:14%;left:0;right:0;text-align:center;z-index:3;color:#e8e2d8;font-size:clamp(16px,2.4vw,26px);letter-spacing:.02em;padding:0 6vw;user-select:none}
+.tp0729 .poem span{display:inline-block;transition:opacity .6s,color .6s;opacity:.4}
+.tp0729 .poem span.filled{opacity:1;color:#f4d9a0}
+.tp0729 .hint{position:absolute;top:6%;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.35);font-size:12px;letter-spacing:.15em;text-transform:uppercase;z-index:3}
+</style>
+<div class="tp0729" id="tp0729">
+  <div class="hint">click to write the day</div>
+  <div class="horizon"></div>
+  <div class="sun" id="tp0729sun"></div>
+  <div class="poem" id="tp0729poem"></div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('tp0729'),sun=document.getElementById('tp0729sun'),poem=document.getElementById('tp0729poem');
+  var banks=[
+    ["Light","Dawn","Morning","Silence","The hour"],
+    ["finds","opens","unlocks","holds","still learns"],
+    ["a name","a door","the edges","its shape","no shadow"],
+    ["for what isn't yet.","before it's chosen.","the day forgets.","it cannot keep."]
+  ];
+  var picks=[null,null,null,null],n=0;
+  function render(){
+    poem.innerHTML=picks.map(function(p,i){
+      return '<span class="'+(p?'filled':'')+'">'+(p||'____')+'</span>';
+    }).join(' ');
+  }
+  function pick(i){return banks[i][Math.floor(Math.random()*banks[i].length)]}
+  render();
+  root.addEventListener('mousemove',function(e){
+    var y=e.clientY/window.innerHeight,x=e.clientX;
+    sun.style.left=x+'px';
+    sun.style.top=(30+y*40)+'%';
+    var g=Math.round(200+55*(1-y)),b=Math.round(90+40*y);
+    root.style.setProperty('--c1','rgb('+g+',150,'+b+')');
+    root.style.setProperty('--c2','rgb('+Math.round(g*.3)+',30,'+Math.round(b*.5)+')');
+    root.style.setProperty('--glow','rgba('+g+',150,'+b+',.4)');
+  });
+  root.addEventListener('click',function(){
+    if(n<4){picks[n]=pick(n);n++;}
+    else{n=0;picks=picks.map(function(_,i){return pick(i)});n=4;}
+    render();
+  });
+})();
+</script>
+</section>
