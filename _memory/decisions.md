@@ -1,3 +1,9 @@
+---
+type: note
+status: active
+created: 2026-01-30
+---
+
 # Architecture Decisions
 
 Why we chose X over Y. Check here BEFORE proposing architectural changes.

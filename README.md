@@ -1,3 +1,9 @@
+---
+type: note
+status: active
+created: 2026-01-28
+---
+
 # substrate
 
 Taper-style generative gallery. Accumulates abstract HTML pieces from daily emails.

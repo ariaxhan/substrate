@@ -1,3 +1,9 @@
+---
+type: note
+status: active
+created: 2026-01-30
+---
+
 # Hotspots
 
 Areas that are complex or sensitive. Change with care.

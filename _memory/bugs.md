@@ -1,3 +1,9 @@
+---
+type: note
+status: active
+created: 2026-01-30
+---
+
 # Bug Memory
 
 Searchable record of bugs encountered and solutions. Check here FIRST when hitting errors.
