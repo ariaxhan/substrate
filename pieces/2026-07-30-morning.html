@@ -1,0 +1,55 @@
+<section data-date='2026-07-30' data-type='morning'>
+<style>
+.d730-root{position:relative;height:100vh;min-height:480px;overflow:hidden;background:#080a16;font-family:Georgia,'Times New Roman',serif;cursor:crosshair;color:#eee}
+.d730-root *{box-sizing:border-box}
+.d730-glow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 70% 50% at 50% 100%, rgba(255,196,140,.55), transparent 70%);opacity:0}
+.d730-sun{position:absolute;left:50%;bottom:-60px;width:110px;height:110px;margin-left:-55px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff2d8,#ffb15e 60%,#ff8a3d);box-shadow:0 0 60px 10px rgba(255,150,80,.35);transition:transform .35s cubic-bezier(.2,.7,.3,1),opacity .4s;opacity:.15}
+.d730-line{position:relative;z-index:2;margin:0;padding:0 6vw;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:clamp(20px,4vw,42px);letter-spacing:.02em;line-height:1.55}
+.d730-line span{opacity:.06;transition:opacity .5s ease}
+.d730-hint{position:absolute;left:0;right:0;bottom:18px;text-align:center;z-index:2;font-family:Helvetica,Arial,sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.35)}
+.d730-spark{position:absolute;z-index:3;font-family:Georgia,serif;font-style:italic;font-size:15px;color:#ffd9a3;text-shadow:0 0 8px rgba(255,180,100,.6);pointer-events:none;opacity:0;animation:d730Rise 2.6s ease-out forwards}
+@keyframes d730Rise{0%{opacity:0;transform:translateY(0) scale(.9)}12%{opacity:1}100%{opacity:0;transform:translateY(-140px) scale(1.05)}}
+</style>
+<div class="d730-root">
+  <div class="d730-glow"></div>
+  <div class="d730-sun"></div>
+  <p class="d730-line">
+    <span>nothing</span> <span>is</span> <span>written</span> <span>yet.</span><br>
+    <span>only</span> <span>the</span> <span>hour,</span> <span>arriving.</span>
+  </p>
+  <p class="d730-hint">rise toward the light, click to begin</p>
+</div>
+<script>
+(function(){
+  var root = document.currentScript.parentElement.querySelector('.d730-root');
+  var glow = root.querySelector('.d730-glow');
+  var sun = root.querySelector('.d730-sun');
+  var spans = root.querySelectorAll('.d730-line span');
+  var words = ["maybe","open","begin","still blank","first light","unmade","possible","becoming","not yet","almost"];
+  var night = [8,10,22], dawn = [255,178,110];
+  function lerp(a,b,t){ return Math.round(a+(b-a)*t) }
+  root.addEventListener('mousemove', function(e){
+    var r = root.getBoundingClientRect();
+    var ratio = 1 - Math.max(0, Math.min(1, (e.clientY - r.top) / r.height));
+    var c = [lerp(night[0],dawn[0],ratio), lerp(night[1],dawn[1],ratio), lerp(night[2],dawn[2],ratio)];
+    root.style.background = 'rgb(' + c.join(',') + ')';
+    glow.style.opacity = ratio;
+    sun.style.transform = 'translateY(' + (-ratio*260) + 'px)';
+    sun.style.opacity = 0.15 + ratio*0.85;
+    spans.forEach(function(s, i){
+      s.style.opacity = ratio > (i / spans.length) ? 1 : 0.06;
+    });
+  });
+  root.addEventListener('click', function(e){
+    var r = root.getBoundingClientRect();
+    var w = document.createElement('span');
+    w.className = 'd730-spark';
+    w.textContent = words[Math.floor(Math.random()*words.length)];
+    w.style.left = (e.clientX - r.left) + 'px';
+    w.style.top = (e.clientY - r.top) + 'px';
+    root.appendChild(w);
+    setTimeout(function(){ w.remove(); }, 2700);
+  });
+})();
+</script>
+</section>
