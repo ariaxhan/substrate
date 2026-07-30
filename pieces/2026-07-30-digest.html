@@ -1,0 +1,76 @@
+<section data-date='2026-07-30' data-type='digest'>
+<style>
+#tp30{position:relative;width:100%;height:100vh;background:#0a0a0c;overflow:hidden;font-family:Georgia,'Times New Roman',serif}
+#tp30 canvas{position:absolute;inset:0;cursor:crosshair}
+#tp30 .hint{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:#55524a;font-size:11px;letter-spacing:.14em;font-family:'Courier New',monospace;text-transform:uppercase;pointer-events:none;opacity:.7}
+#tp30 .ttl{position:absolute;top:18px;left:22px;color:#8a8370;font-size:12px;letter-spacing:.2em;font-family:'Courier New',monospace;text-transform:uppercase;pointer-events:none}
+#tp30 .ct{position:absolute;top:18px;right:22px;color:#8a8370;font-size:12px;font-family:'Courier New',monospace;pointer-events:none}
+</style>
+<div id="tp30">
+<canvas id="tp30c"></canvas>
+<div class="ttl">accretion</div>
+<div class="ct" id="tp30n">0 known</div>
+<div class="hint">click to know a thing &middot; watch it find its kin</div>
+</div>
+<script>
+(function(){
+var el=document.getElementById('tp30'),cv=document.getElementById('tp30c'),x=cv.getContext('2d'),ctr=document.getElementById('tp30n');
+var W,H,dpr=Math.min(devicePixelRatio||1,2);
+function sz(){W=el.clientWidth;H=el.clientHeight;cv.width=W*dpr;cv.height=H*dpr;x.setTransform(dpr,0,0,dpr,0,0)}
+sz();addEventListener('resize',sz);
+var words=['pattern','thread','signal','memory','shape','order','emergence','lattice','echo','trace','weave','crystal','seed','root','branch','bloom','form','structure','residue','origin'];
+var nodes=[],edges=[],mx=W/2,my=H/2,t=0;
+function seed(px,py){
+  var n={x:px,y:py,r:2.6,deg:0,cryst:false,w:null,born:t,pulse:0};
+  var near=nodes.map(function(o){return {o:o,d:Math.hypot(o.x-px,o.y-py)}}).filter(function(p){return p.d<210}).sort(function(a,b){return a.d-b.d}).slice(0,3);
+  near.forEach(function(p){edges.push({a:n,b:p.o,age:0});n.deg++;p.o.deg++});
+  nodes.push(n);
+  ctr.textContent=nodes.length+' known';
+  return n;
+}
+el.addEventListener('click',function(e){
+  var r=cv.getBoundingClientRect();
+  seed(e.clientX-r.left,e.clientY-r.top);
+});
+el.addEventListener('mousemove',function(e){
+  var r=cv.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;
+});
+if(nodes.length===0){setTimeout(function(){seed(W*0.5,H*0.45)},400)}
+function draw(){
+  t++;
+  x.fillStyle='rgba(10,10,12,0.16)';x.fillRect(0,0,W,H);
+  var near=null,nd=1e9;
+  nodes.forEach(function(n){var d=Math.hypot(n.x-mx,n.y-my);if(d<nd){nd=d;near=n}});
+  if(near&&nd<260){
+    x.strokeStyle='rgba(180,170,140,'+(0.35*(1-nd/260))+')';
+    x.lineWidth=1;
+    x.beginPath();x.moveTo(mx,my);x.lineTo(near.x,near.y);x.stroke();
+  }
+  edges.forEach(function(e){
+    e.age++;
+    var o=Math.min(1,e.age/40);
+    var glow=(e.a.cryst||e.b.cryst)?0.5:0.22;
+    x.strokeStyle='rgba(200,180,130,'+(glow*o)+')';
+    x.lineWidth=(e.a.cryst&&e.b.cryst)?1.4:0.7;
+    x.beginPath();x.moveTo(e.a.x,e.a.y);x.lineTo(e.b.x,e.b.y);x.stroke();
+  });
+  nodes.forEach(function(n){
+    if(n.deg>=3&&!n.cryst){n.cryst=true;n.w=words[Math.floor(Math.random()*words.length)]}
+    var age=Math.min(1,(t-n.born)/30);
+    var rad=n.cryst?5.5+Math.sin(t*0.04+n.born)*0.8:n.r;
+    x.beginPath();x.arc(n.x,n.y,rad*age,0,7);
+    x.fillStyle=n.cryst?'rgba(235,210,150,0.95)':'rgba(210,205,190,0.75)';
+    x.fill();
+    if(n.cryst){
+      x.shadowColor='rgba(235,200,130,0.55)';x.shadowBlur=10;x.fill();x.shadowBlur=0;
+      x.fillStyle='rgba(220,205,175,0.75)';
+      x.font='11px Georgia, serif';
+      x.fillText(n.w,n.x+9,n.y+3);
+    }
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+})();
+</script>
+</section>
