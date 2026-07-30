@@ -1,0 +1,65 @@
+<section data-date='2026-07-30' data-type='pulse'>
+<style>
+#taper-halfway{margin:0;overflow:hidden;background:#0d0d0f;height:70vh;min-height:420px;position:relative;font-family:Georgia,'Times New Roman',serif;user-select:none}
+#taper-halfway .sky{position:absolute;inset:0;background:linear-gradient(to bottom,#101014,#0d0d0f 60%)}
+#taper-halfway .post{position:absolute;left:50%;bottom:18%;width:3px;height:34%;background:#3a3a3f;transform:translateX(-50%)}
+#taper-halfway .fulcrum{position:absolute;left:50%;bottom:18%;width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-bottom:26px solid #55555c;transform:translateX(-50%)}
+#taper-halfway .beam{position:absolute;left:50%;bottom:calc(18% + 26px);width:70vw;max-width:640px;height:4px;background:#c9c9ce;transform-origin:center center;transition:transform .08s linear}
+#taper-halfway .side{position:absolute;top:-1px;width:1px;height:1px}
+#taper-halfway .side.l{left:0}
+#taper-halfway .side.r{right:0}
+#taper-halfway .weight{position:absolute;top:8px;font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:#8f8f96;white-space:nowrap;transition:color .3s}
+#taper-halfway .side.l .weight{right:0;transform:translate(50%,0)}
+#taper-halfway .side.r .weight{left:0;transform:translate(-50%,0)}
+#taper-halfway .weight.dawn{color:#e3b98a}
+#taper-halfway .weight.dusk{color:#8aa8e3}
+#taper-halfway .center{position:absolute;left:50%;bottom:calc(18% + 26px);transform:translate(-50%,-50%);width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 12px 2px rgba(255,255,255,.5);cursor:pointer;z-index:5}
+#taper-halfway .ripple{position:absolute;left:50%;bottom:calc(18% + 26px);width:9px;height:9px;border-radius:50%;transform:translate(-50%,-50%);border:1px solid rgba(255,255,255,.5);pointer-events:none;animation:taper-rip 1.1s ease-out forwards}
+@keyframes taper-rip{to{width:180px;height:180px;opacity:0;border-color:rgba(255,255,255,0)}}
+#taper-halfway .word{position:absolute;bottom:9%;left:50%;transform:translateX(-50%);font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:#5c5c63;transition:color .4s}
+#taper-halfway .word.tip{color:#d8d8dc}
+#taper-halfway .hint{position:absolute;top:14px;left:18px;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#4a4a50;font-family:Georgia,serif}
+</style>
+<div id="taper-halfway">
+  <div class="sky"></div>
+  <div class="hint">halfway &mdash; move, then rest a hand at the center</div>
+  <div class="post"></div>
+  <div class="fulcrum"></div>
+  <div class="beam" id="th-beam">
+    <div class="side l"><div class="weight dawn" id="th-l">morning</div></div>
+    <div class="side r"><div class="weight dusk" id="th-r">evening</div></div>
+  </div>
+  <div class="center" id="th-center"></div>
+  <div class="word" id="th-word">equilibrium</div>
+</div>
+<script>
+(function(){
+var wrap=document.getElementById('taper-halfway'),beam=document.getElementById('th-beam'),
+L=document.getElementById('th-l'),R=document.getElementById('th-r'),
+word=document.getElementById('th-word'),center=document.getElementById('th-center'),
+locked=false,w=['equilibrium','the fulcrum','still turning','both at once'];
+function angleFor(x){var r=wrap.getBoundingClientRect(),p=Math.max(0,Math.min(1,(x-r.left)/r.width));return(p-.5)*34}
+function apply(a){
+beam.style.transform='rotate('+a.toFixed(2)+'deg)';
+var t=Math.abs(a)<1.2;
+word.className='word'+(t?' tip':'');
+word.textContent=t?w[0]:(a<0?w[2]:w[3]);
+L.style.color=a<-2?'':'#5c5c63';
+R.style.color=a>2?'':'#5c5c63'
+}
+wrap.addEventListener('mousemove',function(e){if(!locked)apply(angleFor(e.clientX))});
+wrap.addEventListener('mouseleave',function(){if(!locked)apply(0)});
+center.addEventListener('click',function(e){
+e.stopPropagation();
+locked=!locked;
+var rip=document.createElement('div');
+rip.className='ripple';
+wrap.appendChild(rip);
+setTimeout(function(){rip.remove()},1150);
+word.className='word tip';
+word.textContent=locked?(apply(0),w[1]):w[2]
+});
+apply(0)
+})();
+</script>
+</section>

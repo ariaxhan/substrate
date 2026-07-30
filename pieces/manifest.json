@@ -483,6 +483,7 @@
     {"file": "2026-07-29-morning.html", "date": "2026-07-29", "type": "morning", "timestamp": 1785333950},
     {"file": "2026-07-29-pulse.html", "date": "2026-07-29", "type": "pulse", "timestamp": 1785352131},
     {"file": "2026-07-29-reflection.html", "date": "2026-07-29", "type": "reflection", "timestamp": 1785380783},
-    {"file": "2026-07-30-morning.html", "date": "2026-07-30", "type": "morning", "timestamp": 1785420405}
+    {"file": "2026-07-30-morning.html", "date": "2026-07-30", "type": "morning", "timestamp": 1785420405},
+    {"file": "2026-07-30-pulse.html", "date": "2026-07-30", "type": "pulse", "timestamp": 1785438298}
   ]
 }
