@@ -1,0 +1,65 @@
+<section data-date='2026-07-29' data-type='reflection'>
+<style>
+[data-date='2026-07-29'] .stage{position:relative;height:70vh;min-height:420px;background:radial-gradient(ellipse at 50% 20%,#111428,#05060d 60%,#000);overflow:hidden;cursor:crosshair;font-family:Georgia,serif}
+[data-date='2026-07-29'] .hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);color:#4a4f66;font-size:.65em;letter-spacing:.2em;text-transform:uppercase;font-family:Arial;opacity:0;animation:i 3s ease .5s forwards}
+[data-date='2026-07-29'] .title{position:absolute;top:14%;left:50%;transform:translateX(-50%);color:#c8cbe0;font-size:1.5em;letter-spacing:.06em;font-style:italic;text-align:center;opacity:0;animation:i 4s ease 1s forwards;margin:0}
+[data-date='2026-07-29'] svg{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
+[data-date='2026-07-29'] svg line{stroke:#3a4166;opacity:.5}
+[data-date='2026-07-29'] .amb{position:absolute;border-radius:50%;background:#8a90b8;animation:t linear infinite}
+[data-date='2026-07-29'] .st{position:absolute;width:4px;height:4px;border-radius:50%;background:#fff4d6;box-shadow:0 0 6px 2px rgba(255,244,214,.8),0 0 16px 4px rgba(255,244,214,.3);transform:translate(-50%,-50%);animation:p .8s ease-out,t 3s ease-in-out infinite .8s}
+[data-date='2026-07-29'] .wd{position:absolute;transform:translate(-50%,-100%);color:#e8e3cf;font-size:.85em;font-style:italic;white-space:nowrap;opacity:0;animation:w 2.6s ease-out forwards;pointer-events:none}
+[data-date='2026-07-29'] .close{position:absolute;bottom:16%;left:50%;transform:translateX(-50%);color:#8a90b8;font-size:.95em;font-style:italic;text-align:center;opacity:0;letter-spacing:.03em;animation:i 3.5s ease forwards;max-width:80%}
+@keyframes i{to{opacity:1}}
+@keyframes t{0%,100%{opacity:.25}50%{opacity:1}}
+@keyframes p{0%{transform:translate(-50%,-50%) scale(0)}60%{transform:translate(-50%,-50%) scale(1.6)}100%{transform:translate(-50%,-50%) scale(1)}}
+@keyframes w{0%{opacity:0;transform:translate(-50%,-90%)}20%{opacity:1}100%{opacity:0;transform:translate(-50%,-140%)}}
+</style>
+<div class="stage" id="tp-stage-0729">
+<svg id="tp-lines-0729"></svg>
+<p class="title" id="tp-title-0729">the day is complete</p>
+<p class="hint">rest here. touch the dark.</p>
+</div>
+<script>
+(function(){
+var g=document.getElementById('tp-stage-0729'),
+sv=document.getElementById('tp-lines-0729'),
+tt=document.getElementById('tp-title-0729'),
+W=["rest","hush","still","enough","quiet","breathe","home","done"],
+used=[],last=null,n=0,ns='http://www.w3.org/2000/svg';
+for(var i=0;i<10;i++){
+var d=document.createElement('div'),s=Math.random()*1.6+.6;
+d.className='amb';
+d.style.cssText='width:'+s+'px;height:'+s+'px;left:'+(Math.random()*100)+'%;top:'+(Math.random()*85)+'%;animation-duration:'+(2+Math.random()*4)+'s;animation-delay:'+(Math.random()*4)+'s';
+g.appendChild(d);
+}
+function nx(){
+if(used.length===W.length)used=[];
+var p=W.filter(function(x){return used.indexOf(x)<0}),w=p[Math.floor(Math.random()*p.length)];
+used.push(w);
+return w;
+}
+g.addEventListener('click',function(e){
+var b=g.getBoundingClientRect(),xp=(e.clientX-b.left)/b.width*100,yp=(e.clientY-b.top)/b.height*100,
+st=document.createElement('div'),wd=document.createElement('div');
+st.className='st';st.style.left=xp+'%';st.style.top=yp+'%';g.appendChild(st);
+wd.className='wd';wd.textContent=nx();wd.style.left=xp+'%';wd.style.top=yp+'%';g.appendChild(wd);
+setTimeout(function(){wd.remove()},2700);
+if(last){
+var l=document.createElementNS(ns,'line');
+l.setAttribute('x1',last.x+'%');l.setAttribute('y1',last.y+'%');
+l.setAttribute('x2',xp+'%');l.setAttribute('y2',yp+'%');
+sv.appendChild(l);
+}
+last={x:xp,y:yp};
+n++;
+if(n===7&&!document.getElementById('tp-close-0729')){
+tt.style.animation='none';tt.style.opacity='.15';
+var c=document.createElement('p');
+c.id='tp-close-0729';c.className='close';
+c.textContent='rest now. morning can wait.';
+g.appendChild(c);
+}
+});
+})();
+</script>
+</section>
