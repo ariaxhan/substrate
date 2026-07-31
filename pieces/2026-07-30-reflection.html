@@ -1,0 +1,72 @@
+<section data-date='2026-07-30' data-type='reflection'>
+<style>
+  #tp30 { position:relative; height:100vh; margin:0; overflow:hidden; cursor:crosshair;
+    background:radial-gradient(ellipse at 50% 100%, #0c1230 0%, #05061a 55%, #000 100%); }
+  #tp30 svg { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; }
+  #tp30 .star { position:absolute; width:2px; height:2px; background:#fdfcf7; border-radius:50%;
+    box-shadow:0 0 5px 1px rgba(253,252,247,.9); transform:translate(-50%,-50%);
+    animation:tp30appear .9s ease forwards, tp30tw 3.4s ease-in-out infinite; }
+  #tp30 .amb { animation:tp30tw 3.4s ease-in-out infinite; opacity:.5; }
+  @keyframes tp30appear { from{opacity:0; transform:translate(-50%,-50%) scale(0);} to{opacity:1; transform:translate(-50%,-50%) scale(1);} }
+  @keyframes tp30tw { 0%,100%{opacity:.35;} 50%{opacity:1;} }
+  #tp30line { position:absolute; left:0; right:0; bottom:9vh; text-align:center; pointer-events:none;
+    font:italic 1.05rem/1.5 Palatino, Georgia, serif; letter-spacing:.02em; color:#a9b3d9;
+    opacity:0; transition:opacity 2.1s ease; padding:0 8vw; }
+  #tp30line.show { opacity:1; }
+  #tp30 .cap { position:absolute; top:6vh; left:0; right:0; text-align:center;
+    font:300 .72rem/1 -apple-system, sans-serif; letter-spacing:.32em; text-transform:uppercase;
+    color:#4a5488; }
+</style>
+<div id="tp30">
+  <svg id="tp30web"></svg>
+  <div class="cap">night, complete</div>
+  <div id="tp30line" class="show">touch the dark to wake the sky</div>
+</div>
+<script>
+(function(){
+  var sky = document.getElementById('tp30'),
+      web = document.getElementById('tp30web'),
+      line = document.getElementById('tp30line'),
+      poem = ["the day is done.", "the light lets go, slowly.", "what was loud, quiets.",
+        "the dark holds what remains.", "stillness gathers here.", "one more point of light.",
+        "tomorrow is not yet.", "rest now."],
+      i = 0, prev = null, hideT;
+
+  for (var n = 0; n < 22; n++) {
+    var a = document.createElement('div');
+    a.className = 'star amb';
+    a.style.left = (Math.random() * 100) + '%';
+    a.style.top = (Math.random() * 68) + '%';
+    a.style.animationDelay = (Math.random() * 3.4) + 's';
+    sky.appendChild(a);
+  }
+
+  sky.addEventListener('click', function (e) {
+    var x = e.clientX, y = e.clientY;
+    var s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = x + 'px';
+    s.style.top = y + 'px';
+    sky.appendChild(s);
+
+    if (prev) {
+      var ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      ln.setAttribute('x1', prev.x); ln.setAttribute('y1', prev.y);
+      ln.setAttribute('x2', x); ln.setAttribute('y2', y);
+      ln.setAttribute('stroke', 'rgba(169,179,217,.16)');
+      ln.setAttribute('stroke-width', '1');
+      web.appendChild(ln);
+    }
+    prev = { x: x, y: y };
+
+    line.classList.remove('show');
+    clearTimeout(hideT);
+    setTimeout(function () {
+      if (i < poem.length) { line.textContent = poem[i++]; }
+      line.classList.add('show');
+      hideT = setTimeout(function () { line.classList.remove('show'); }, 4200);
+    }, 320);
+  });
+})();
+</script>
+</section>
