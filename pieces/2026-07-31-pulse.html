@@ -1,0 +1,74 @@
+<section data-date='2026-07-31' data-type='pulse'>
+<style>
+#taper-halfway{margin:0;overflow:hidden;height:70vh;min-height:420px;position:relative;background:#0b0b0d;font-family:Georgia,'Times New Roman',serif;color:#eee;cursor:ns-resize;user-select:none}
+#taper-halfway .bar{position:absolute;left:0;right:0;top:50%;height:1px;background:#555;transform-origin:center}
+#taper-halfway .fulcrum{position:absolute;left:50%;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:#eee;box-shadow:0 0 24px 6px rgba(255,255,255,.35);transition:background .4s}
+#taper-halfway .half{position:absolute;left:0;right:0;text-align:center;font-size:clamp(28px,6vw,64px);letter-spacing:.04em;transition:opacity .3s}
+#taper-halfway .top{bottom:52%;padding-bottom:2vh}
+#taper-halfway .bot{top:52%;padding-top:2vh;font-style:italic;opacity:.6}
+#taper-halfway .top{opacity:.9}
+#taper-halfway .now{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:'Courier New',monospace;font-size:11px;letter-spacing:.15em;color:#777;pointer-events:none;white-space:nowrap}
+#taper-halfway .hint{position:absolute;bottom:12px;right:16px;font-family:'Courier New',monospace;font-size:10px;color:#444;letter-spacing:.1em}
+</style>
+<div id="taper-halfway">
+  <div class="half top">day gone</div>
+  <div class="bar" id="th-bar"></div>
+  <div class="fulcrum" id="th-dot"></div>
+  <div class="now" id="th-now">balanced</div>
+  <div class="half bot">day left</div>
+  <div class="hint">tilt the day. click to rest at true center.</div>
+</div>
+<script>
+(function(){
+  var wrap=document.getElementById('taper-halfway');
+  var bar=document.getElementById('th-bar');
+  var dot=document.getElementById('th-dot');
+  var now=document.getElementById('th-now');
+  var top=wrap.querySelector('.top');
+  var bot=wrap.querySelector('.bot');
+  var tilt=0, target=0, resting=false, raf=null;
+
+  function label(t){
+    var a=Math.abs(t);
+    if(a<1) return 'exactly halfway';
+    return t<0 ? Math.round(a*40)+'% toward morning' : Math.round(a*40)+'% toward night';
+  }
+
+  function render(){
+    tilt += (target-tilt)*0.12;
+    var deg = tilt*10;
+    bar.style.transform='rotate('+deg+'deg)';
+    dot.style.top = (50 + tilt*14) + '%';
+    top.style.opacity = 0.9 - Math.abs(tilt)*0.3;
+    bot.style.opacity = 0.6 - Math.abs(tilt)*0.2;
+    dot.style.background = Math.abs(tilt)<0.03 ? '#fff' : '#eee';
+    now.textContent = label(tilt);
+    now.style.top = (50 + tilt*14) + '%';
+    if(Math.abs(target-tilt)>0.001 || Math.abs(tilt)>0.001){
+      raf=requestAnimationFrame(render);
+    } else { raf=null; }
+  }
+  function kick(){ if(!raf) raf=requestAnimationFrame(render); }
+
+  wrap.addEventListener('mousemove', function(e){
+    if(resting) return;
+    var r=wrap.getBoundingClientRect();
+    var y=(e.clientY-r.top)/r.height;
+    target = Math.max(-1,Math.min(1,(y-0.5)*2));
+    kick();
+  });
+  wrap.addEventListener('mouseleave', function(){
+    if(resting) return;
+    target=0; kick();
+  });
+  wrap.addEventListener('click', function(){
+    resting = !resting;
+    target = 0;
+    dot.style.background = resting ? '#fff' : '#eee';
+    now.textContent = resting ? 'held at center' : 'balanced';
+    kick();
+  });
+  render();
+})();
+</script>
+</section>
