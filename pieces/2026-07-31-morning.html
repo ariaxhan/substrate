@@ -1,0 +1,25 @@
+<section data-date='2026-07-31' data-type='morning'>
+<style>
+.d731-root{position:relative;height:100vh;min-height:480px;overflow:hidden;background:linear-gradient(180deg,#2b1f3d 0%,#7a4a6b 30%,#e28a5f 55%,#f6c66b 75%,#fdeecb 100%);font-family:Georgia,'Times New Roman',serif}
+.d731-poem{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 8vw;color:#3a2410;font-size:clamp(18px,3.2vw,34px);font-style:italic;line-height:1.65;letter-spacing:.01em;user-select:none}
+.d731-canvas{position:absolute;inset:0;cursor:crosshair;touch-action:none}
+.d731-hint{position:absolute;left:0;right:0;bottom:18px;text-align:center;font-family:Helvetica,Arial,sans-serif;font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.6);pointer-events:none}
+</style>
+<div class="d731-root" id="d731">
+  <div class="d731-poem">nothing has been written yet.<br>only the color before the word,<br>only the hour before the hour.<br>this is where a day begins.</div>
+  <canvas class="d731-canvas" id="d731c"></canvas>
+  <div class="d731-hint">move to wake the light. click to break the day open</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('d731'), cv=document.getElementById('d731c'), ctx=cv.getContext('2d');
+  function size(){ cv.width=root.clientWidth; cv.height=root.clientHeight; ctx.fillStyle='#0b0a14'; ctx.fillRect(0,0,cv.width,cv.height); }
+  size();
+  window.addEventListener('resize', size);
+  function wipe(x,y,r){ ctx.save(); ctx.globalCompositeOperation='destination-out'; ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill(); ctx.restore(); }
+  cv.addEventListener('mousemove', function(e){ var r=cv.getBoundingClientRect(); wipe(e.clientX-r.left, e.clientY-r.top, 42); });
+  cv.addEventListener('click', function(e){ var r=cv.getBoundingClientRect(); wipe(e.clientX-r.left, e.clientY-r.top, 160); });
+  cv.addEventListener('touchmove', function(e){ var t=e.touches[0], r=cv.getBoundingClientRect(); wipe(t.clientX-r.left, t.clientY-r.top, 42); e.preventDefault(); }, {passive:false});
+})();
+</script>
+</section>
