@@ -1,0 +1,76 @@
+<section data-date='2026-08-01' data-type='spark'>
+<style>
+[data-date='2026-08-01'] .tp-wrap{position:relative;height:70vh;min-height:360px;background:#0b0b10;overflow:hidden;font-family:Georgia,serif;cursor:crosshair}
+[data-date='2026-08-01'] .tp-w{position:absolute;top:50%;font-size:clamp(1.2rem,4vw,2.6rem);color:#e8e2d8;letter-spacing:.03em;transform:translateY(-50%);transition:filter .25s,opacity .25s;white-space:nowrap;user-select:none}
+[data-date='2026-08-01'] .tp-a{left:8%}
+[data-date='2026-08-01'] .tp-b{right:8%;color:#c98a5a}
+[data-date='2026-08-01'] .tp-mid{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:clamp(1.4rem,5vw,3.2rem);color:#f4d35e;opacity:0;letter-spacing:.06em;text-shadow:0 0 18px rgba(244,211,94,.7)}
+[data-date='2026-08-01'] .tp-hint{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-family:sans-serif;font-size:11px;color:#555;letter-spacing:.08em}
+[data-date='2026-08-01'] .tp-spark{position:absolute;top:50%;left:50%;width:3px;height:3px;border-radius:50%;background:#f4d35e;pointer-events:none}
+</style>
+<div class="tp-wrap" id="tp-w-0801">
+  <div class="tp-w tp-a" id="tp-a-0801">signal</div>
+  <div class="tp-mid" id="tp-m-0801"></div>
+  <div class="tp-w tp-b" id="tp-b-0801">stranger</div>
+  <div class="tp-hint">move to close the distance&nbsp;&middot;&nbsp;click to collide</div>
+</div>
+<script>
+(function(){
+  var pairs=[["signal","stranger","recognition"],["question","silence","weight"],["you","me","us"],["static","voice","message"],["before","after","now"],["ash","seed","ground"]];
+  var wrap=document.getElementById('tp-w-0801'),
+      a=document.getElementById('tp-a-0801'),
+      b=document.getElementById('tp-b-0801'),
+      m=document.getElementById('tp-m-0801'),
+      pi=0, collided=false, W=1;
+  function setPair(i){
+    var p=pairs[i%pairs.length];
+    a.textContent=p[0]; b.textContent=p[1]; m.textContent=p[2];
+    m.style.opacity=0; collided=false;
+    a.style.left='8%'; b.style.right='8%'; a.style.filter='none'; b.style.filter='none';
+  }
+  setPair(0);
+  function closeness(x){
+    W=wrap.offsetWidth;
+    var t=Math.max(0,Math.min(1,x/W));
+    var pull=Math.abs(t-0.5)*2;
+    var gap=8+pull*34;
+    a.style.left=gap+'%';
+    b.style.right=gap+'%';
+    var blur=(1-pull)*3;
+    a.style.filter='blur('+blur+'px)';
+    b.style.filter='blur('+blur+'px)';
+    if(pull<0.12 && !collided){
+      collided=true;
+      burst();
+      m.style.transition='opacity .4s';
+      m.style.opacity=1;
+      setTimeout(function(){pi++; setPair(pi);},1600);
+    }
+  }
+  function burst(){
+    for(var i=0;i<14;i++){
+      var s=document.createElement('div');
+      s.className='tp-spark';
+      wrap.appendChild(s);
+      var ang=Math.random()*Math.PI*2, dist=20+Math.random()*90;
+      s.animate([
+        {transform:'translate(0,0)',opacity:1},
+        {transform:'translate('+Math.cos(ang)*dist+'px,'+Math.sin(ang)*dist+'px)',opacity:0}
+      ],{duration:600+Math.random()*400,easing:'ease-out'});
+      setTimeout(function(el){el.remove();},1100,s);
+    }
+  }
+  wrap.addEventListener('mousemove',function(e){
+    var r=wrap.getBoundingClientRect();
+    closeness(e.clientX-r.left);
+  });
+  wrap.addEventListener('touchmove',function(e){
+    var r=wrap.getBoundingClientRect();
+    closeness(e.touches[0].clientX-r.left);
+  },{passive:true});
+  wrap.addEventListener('click',function(){
+    if(!collided){ closeness(wrap.offsetWidth/2); }
+  });
+})();
+</script>
+</section>
