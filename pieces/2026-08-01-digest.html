@@ -1,0 +1,83 @@
+<section data-date='2026-08-01' data-type='digest'>
+<style>
+#taper-2026-08-01{margin:0;overflow:hidden;height:100vh;background:#08090c;cursor:crosshair;position:relative;font-family:Georgia,'Times New Roman',serif}
+#taper-2026-08-01 canvas{display:block;position:absolute;inset:0}
+#taper-2026-08-01 .tp-hint{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:#5a6270;font:italic 12px/1.4 Georgia,serif;letter-spacing:.04em;pointer-events:none;opacity:.8}
+#taper-2026-08-01 .tp-word{position:absolute;color:#e8e1d0;font:14px/1 Georgia,serif;letter-spacing:.03em;pointer-events:none;opacity:0;transition:opacity 1.2s ease}
+</style>
+<div id="taper-2026-08-01">
+  <canvas id="tp0801-c"></canvas>
+  <div class="tp-hint">click to know something</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('taper-2026-08-01');
+  var cv=document.getElementById('tp0801-c');
+  var ctx=cv.getContext('2d');
+  var W,H;
+  function size(){W=cv.width=root.clientWidth;H=cv.height=root.clientHeight}
+  size();
+  window.addEventListener('resize',size);
+  var words=["pattern","signal","trace","thread","echo","shape","weight","edge","root","form","memory","link","node","field","order"];
+  var pts=[];
+  var t=0;
+  function addPoint(x,y){
+    pts.push({x:x,y:y,r:0,age:0,label:words[pts.length%words.length]});
+    var lab=document.createElement('div');
+    lab.className='tp-word';
+    lab.textContent=words[(pts.length-1)%words.length];
+    lab.style.left=(x+10)+'px';
+    lab.style.top=(y-8)+'px';
+    root.appendChild(lab);
+    requestAnimationFrame(function(){lab.style.opacity=1});
+    setTimeout(function(){lab.style.opacity=0;setTimeout(function(){lab.remove()},1300)},2600);
+  }
+  root.addEventListener('click',function(e){
+    var b=root.getBoundingClientRect();
+    addPoint(e.clientX-b.left,e.clientY-b.top);
+  });
+  if(pts.length===0){
+    addPoint(W*0.5,H*0.5);
+  }
+  function dist(a,b){var dx=a.x-b.x,dy=a.y-b.y;return Math.sqrt(dx*dx+dy*dy)}
+  function draw(){
+    t+=1;
+    ctx.fillStyle='rgba(8,9,12,0.14)';
+    ctx.fillRect(0,0,W,H);
+    for(var i=0;i<pts.length;i++){
+      pts[i].age+=1;
+      if(pts[i].r<5)pts[i].r+=0.15;
+    }
+    for(var i=0;i<pts.length;i++){
+      for(var j=i+1;j<pts.length;j++){
+        var d=dist(pts[i],pts[j]);
+        var reach=Math.min(pts[i].age,pts[j].age)*0.6;
+        if(d<Math.min(reach,260)){
+          var op=(1-d/260)*0.5;
+          ctx.strokeStyle='rgba(212,175,120,'+op.toFixed(3)+')';
+          ctx.lineWidth=0.6;
+          ctx.beginPath();
+          ctx.moveTo(pts[i].x,pts[i].y);
+          ctx.lineTo(pts[j].x,pts[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+    for(var i=0;i<pts.length;i++){
+      var p=pts[i];
+      var pulse=1+0.25*Math.sin((t+i*17)*0.05);
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r*pulse,0,Math.PI*2);
+      ctx.fillStyle='rgba(232,225,208,0.9)';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,p.r*pulse*3,0,Math.PI*2);
+      ctx.fillStyle='rgba(212,175,120,0.08)';
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+</section>
