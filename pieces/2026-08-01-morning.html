@@ -1,0 +1,85 @@
+<section data-date='2026-08-01' data-type='morning'>
+<style>
+#tp1 * { box-sizing: border-box }
+#tp1 {
+  margin: 0; position: relative; height: 100vh; min-height: 480px;
+  background: #05070c; overflow: hidden; cursor: pointer;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+#tp1 .sky {
+  position: absolute; inset: 0;
+  background: radial-gradient(circle at var(--mx,50%) var(--my,72%), #ffdca6 0%, #ff9d5c 8%, #a24a5e 22%, #3c2242 42%, #0d0f24 65%, #05070c 100%);
+  transition: background 0.6s ease;
+}
+#tp1 .horizon {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 34%;
+  background: #05070c; clip-path: polygon(0 40%, 12% 32%, 26% 44%, 40% 28%, 55% 46%, 68% 30%, 82% 42%, 100% 34%, 100% 100%, 0 100%);
+}
+#tp1 .sun {
+  position: absolute; left: 50%; bottom: 28%; width: 46px; height: 46px;
+  border-radius: 50%; background: #fff3d6; transform: translate(-50%, 50%) scale(0.2);
+  opacity: 0; box-shadow: 0 0 40px 10px rgba(255,220,160,0.4);
+  transition: transform 2.5s cubic-bezier(.2,.8,.2,1), opacity 2.5s ease, bottom 2.5s cubic-bezier(.2,.8,.2,1);
+}
+#tp1.risen .sun { opacity: 1; transform: translate(-50%, 50%) scale(1); bottom: 46%; }
+#tp1 .word {
+  position: absolute; color: rgba(255,240,220,0);
+  font-style: italic; font-size: clamp(13px, 1.6vw, 19px); letter-spacing: 0.02em;
+  transition: color 1.8s ease, transform 1.8s ease; transform: translateY(6px);
+  pointer-events: none; white-space: nowrap;
+}
+#tp1.risen .word { color: rgba(255,240,220,0.82); transform: translateY(0); }
+#tp1 h1 {
+  position: absolute; top: 8%; left: 50%; transform: translateX(-50%);
+  margin: 0; color: rgba(255,255,255,0.15); font-weight: 400; font-size: clamp(20px, 3vw, 34px);
+  letter-spacing: 0.06em; transition: color 1.6s ease; text-align: center;
+}
+#tp1.risen h1 { color: rgba(255,244,225,0.92); }
+#tp1 .hint {
+  position: absolute; bottom: 6%; left: 50%; transform: translateX(-50%);
+  color: rgba(255,255,255,0.3); font-family: monospace; font-size: 11px; letter-spacing: 0.15em;
+  text-transform: uppercase; transition: opacity 1s ease;
+}
+#tp1.risen .hint { opacity: 0; }
+</style>
+<div id="tp1">
+  <div class="sky"></div>
+  <div class="sun"></div>
+  <div class="horizon"></div>
+  <h1>nothing is written yet</h1>
+  <div class="hint">click to begin</div>
+</div>
+<script>
+(function(){
+  var el = document.getElementById('tp1');
+  var words = ['possible','unmade','quiet','open','waking','unwritten','soft','first','wide','unnamed','still','beginning'];
+  var risen = false;
+  function scatter(){
+    var frag = document.createDocumentFragment();
+    for (var i = 0; i < words.length; i++){
+      var s = document.createElement('span');
+      s.className = 'word';
+      s.textContent = words[i];
+      s.style.left = (6 + Math.random() * 82) + '%';
+      s.style.top = (18 + Math.random() * 55) + '%';
+      s.style.transitionDelay = (Math.random() * 1.2) + 's';
+      frag.appendChild(s);
+    }
+    el.appendChild(frag);
+  }
+  el.addEventListener('click', function(){
+    if (risen) return;
+    risen = true;
+    scatter();
+    requestAnimationFrame(function(){ el.classList.add('risen'); });
+  });
+  el.addEventListener('mousemove', function(e){
+    var r = el.getBoundingClientRect();
+    var mx = ((e.clientX - r.left) / r.width * 100).toFixed(1);
+    var my = ((e.clientY - r.top) / r.height * 100).toFixed(1);
+    el.style.setProperty('--mx', mx + '%');
+    el.style.setProperty('--my', my + '%');
+  });
+})();
+</script>
+</section>
