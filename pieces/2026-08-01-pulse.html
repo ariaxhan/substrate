@@ -1,0 +1,60 @@
+<section data-date='2026-08-01' data-type='pulse'>
+<style>
+#tp-fulcrum{--r:0deg;--k:1;margin:0;overflow:hidden;height:70vh;min-height:420px;background:#0b0c0e;position:relative;font-family:Georgia,'Times New Roman',serif;cursor:ns-resize;user-select:none}
+#tp-fulcrum .tp-sky{position:absolute;inset:0;background:linear-gradient(180deg,#eae2d0 0%,#0b0c0e 62%);opacity:calc(.35 + .65 * var(--k));transition:opacity .6s ease}
+#tp-fulcrum .tp-stage{position:absolute;left:50%;top:52%;width:2px;height:2px}
+#tp-fulcrum .tp-beam{position:absolute;left:-46vw;top:0;width:92vw;max-width:900px;height:1px;background:#cfc8b8;transform-origin:50% 50%;transform:translateX(-50%) rotate(var(--r));transition:transform .12s ease-out}
+#tp-fulcrum .tp-beam::before,#tp-fulcrum .tp-beam::after{content:'';position:absolute;top:-1px;width:2px;height:3px;background:#cfc8b8}
+#tp-fulcrum .tp-beam::before{left:0}
+#tp-fulcrum .tp-beam::after{right:0}
+#tp-fulcrum .tp-pan{position:absolute;top:0;width:120px;text-align:center;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#d8d2c2}
+#tp-fulcrum .tp-pan span{display:block;transform:translateX(-50%);opacity:.85}
+#tp-fulcrum .tp-am{left:0}
+#tp-fulcrum .tp-pm{left:calc(92vw - 120px);max-width:calc(900px - 120px);left:min(calc(92vw - 120px), calc(900px - 120px))}
+#tp-fulcrum .tp-fulc{position:absolute;left:0;top:0;width:0;height:0;transform:translate(-50%,0)}
+#tp-fulcrum .tp-fulc::before{content:'';position:absolute;left:-9px;top:0;border-left:9px solid transparent;border-right:9px solid transparent;border-top:15px solid #6b6154}
+#tp-fulcrum .tp-word{position:absolute;left:0;top:-42px;transform:translateX(-50%);font-size:13px;letter-spacing:.2em;color:#9a9280;text-transform:lowercase;font-style:italic}
+#tp-fulcrum .tp-hint{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-family:sans-serif;font-size:10px;letter-spacing:.08em;color:#5c584f}
+</style>
+<div id="tp-fulcrum">
+  <div class="tp-sky"></div>
+  <div class="tp-stage">
+    <div class="tp-beam" id="tp-beam">
+      <div class="tp-pan tp-am"><span>morning</span></div>
+      <div class="tp-pan tp-pm"><span>evening</span></div>
+    </div>
+    <div class="tp-word" id="tp-word">halfway</div>
+    <div class="tp-fulc"></div>
+  </div>
+  <div class="tp-hint">tilt the day. click to hold it still.</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('tp-fulcrum'),
+      beam=document.getElementById('tp-beam'),
+      word=document.getElementById('tp-word'),
+      locked=false, tilt=0,
+      words=['halfway','even','still','poised','level','held'];
+  function apply(v){
+    tilt=Math.max(-24,Math.min(24,v));
+    el.style.setProperty('--r', tilt+'deg');
+    el.style.setProperty('--k', 1-Math.abs(tilt)/24);
+    var idx=Math.min(words.length-1, Math.round(Math.abs(tilt)/24*(words.length-1)));
+    word.textContent = words[idx];
+  }
+  el.addEventListener('mousemove', function(e){
+    if(locked) return;
+    var r=el.getBoundingClientRect();
+    var p=(e.clientX-r.left)/r.width - 0.5;
+    apply(p*48);
+  });
+  el.addEventListener('mouseleave', function(){ if(!locked) apply(0); });
+  el.addEventListener('click', function(){
+    locked=!locked;
+    el.style.cursor = locked ? 'crosshair' : 'ns-resize';
+    if(locked){ word.textContent='held'; }
+  });
+  apply(0);
+})();
+</script>
+</section>
