@@ -1,0 +1,68 @@
+<section data-date='2026-08-01' data-type='reflection'>
+<style>
+#taper-0801{position:relative;min-height:70vh;background:radial-gradient(ellipse at 50% 100%,#0d1220 0%,#04050a 70%);overflow:hidden;font-family:Georgia,'Times New Roman',serif;color:#cfd6e6;cursor:crosshair;border-radius:2px}
+#taper-0801 .msg{position:absolute;top:38%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;transition:opacity 2s ease}
+#taper-0801 .msg h2{font-weight:400;font-size:1.4rem;letter-spacing:.12em;margin:0 0 .5rem;opacity:.55}
+#taper-0801 .msg p{font-size:.85rem;font-style:italic;opacity:.35;margin:0}
+#taper-0801 .horizon{position:absolute;bottom:0;left:0;right:0;height:22%;background:linear-gradient(to top,#05060c,transparent)}
+#taper-0801 .count{position:absolute;bottom:10px;right:14px;font-size:.65rem;letter-spacing:.15em;opacity:.25;font-family:monospace}
+#taper-0801 .star{position:absolute;border-radius:50%;background:#fff;pointer-events:none;animation:tp-bloom 2.6s ease-out forwards}
+@keyframes tp-bloom{
+0%{transform:scale(0);opacity:0;box-shadow:0 0 0 rgba(255,255,255,0)}
+15%{transform:scale(1.6);opacity:1;box-shadow:0 0 14px 4px rgba(255,255,255,.9)}
+100%{transform:scale(1);opacity:.85;box-shadow:0 0 4px 1px rgba(200,210,255,.5)}
+}
+</style>
+<div id="taper-0801">
+  <div class="horizon"></div>
+  <div class="msg" id="tp-msg">
+    <h2>the day is finished</h2>
+    <p>touch the dark to rest a light in it</p>
+  </div>
+  <div class="count" id="tp-count">0 held</div>
+</div>
+<script>
+(function(){
+  var host=document.getElementById('taper-0801');
+  var msg=document.getElementById('tp-msg');
+  var count=document.getElementById('tp-count');
+  var n=0;
+  var words=['still','enough','quiet','done','soft','held','dim','slow','ease','close'];
+  host.addEventListener('click',function(e){
+    var r=host.getBoundingClientRect();
+    var x=e.clientX-r.left, y=e.clientY-r.top;
+    var s=document.createElement('span');
+    var size=1+Math.random()*2.4;
+    s.className='star';
+    s.style.width=size+'px';
+    s.style.height=size+'px';
+    s.style.left=x+'px';
+    s.style.top=y+'px';
+    host.appendChild(s);
+    n++;
+    count.textContent=n+' held';
+    if(n===1){ msg.style.opacity='0'; }
+    if(n%7===0){
+      var w=document.createElement('div');
+      w.textContent=words[Math.floor(Math.random()*words.length)];
+      w.style.position='absolute';
+      w.style.left=x+'px';
+      w.style.top=(y-18)+'px';
+      w.style.fontSize='.7rem';
+      w.style.letterSpacing='.1em';
+      w.style.color='#aab2cc';
+      w.style.opacity='.8';
+      w.style.pointerEvents='none';
+      w.style.transition='opacity 3.5s ease, transform 3.5s ease';
+      host.appendChild(w);
+      requestAnimationFrame(function(){
+        w.style.opacity='0';
+        w.style.transform='translateY(-14px)';
+      });
+      setTimeout(function(){ w.remove(); },3600);
+    }
+    if(n>160){ var first=host.querySelector('.star'); if(first) first.remove(); }
+  });
+})();
+</script>
+</section>
