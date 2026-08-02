@@ -1,0 +1,107 @@
+<section data-date='2026-08-02' data-type='digest'>
+<style>
+#lat{background:#0a0a0c;color:#cfd2d6;font-family:Georgia,serif;position:relative;overflow:hidden;height:520px;border-radius:2px}
+#lat small{position:absolute;top:10px;left:14px;font-family:'Courier New',monospace;font-size:11px;letter-spacing:.12em;color:#666;text-transform:uppercase}
+#lat i{position:absolute;bottom:10px;right:14px;font-family:'Courier New',monospace;font-size:10px;color:#4a4d52;font-style:normal}
+#latSvg{width:100%;height:100%;cursor:crosshair}
+.latN{fill:#e7e2d6}
+.latN.old{fill:#585d63}
+.latL{stroke:#3a3f45;stroke-width:1;opacity:0}
+.latL.lit{stroke:#8f8362;opacity:.65;transition:opacity 1.2s}
+.latW{font-family:Georgia,serif;font-style:italic;font-size:12px;fill:#8f8362;opacity:0;pointer-events:none}
+</style>
+<div id="lat">
+<small>knowledge, accumulating</small>
+<i id="latCt">0 points</i>
+<svg id="latSvg"></svg>
+</div>
+<script>
+(function(){
+var NS="http://www.w3.org/2000/svg",
+svg=document.getElementById("latSvg"),
+ct=document.getElementById("latCt"),
+words=["trace","pattern","recall","link","thread","form","echo","weight","shape","gather","fold","hold"],
+pts=[],
+lines=[];
+function seed(cx,cy){
+return {x:cx,y:cy,age:0};
+}
+function draw(){
+svg.innerHTML="";
+var vb=svg.getBoundingClientRect();
+lines.forEach(function(l){
+var e=document.createElementNS(NS,"line");
+e.setAttribute("x1",l.a.x);e.setAttribute("y1",l.a.y);
+e.setAttribute("x2",l.b.x);e.setAttribute("y2",l.b.y);
+e.setAttribute("class","latL lit");
+svg.appendChild(e);
+});
+pts.forEach(function(p,i){
+var c=document.createElementNS(NS,"circle");
+c.setAttribute("cx",p.x);c.setAttribute("cy",p.y);
+c.setAttribute("r",p.age>2?2.2:3.4);
+c.setAttribute("class","latN"+(p.age>2?" old":""));
+svg.appendChild(c);
+});
+}
+function connect(p){
+var near=pts.filter(function(q){
+if(q===p) return false;
+var d=Math.hypot(q.x-p.x,q.y-p.y);
+return d<140;
+}).sort(function(a,b){
+return Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y);
+}).slice(0,2);
+near.forEach(function(q){
+lines.push({a:p,b:q});
+});
+}
+function label(p){
+var t=document.createElementNS(NS,"text");
+t.setAttribute("x",p.x+8);
+t.setAttribute("y",p.y-8);
+t.setAttribute("class","latW");
+t.textContent=words[Math.floor(Math.random()*words.length)];
+svg.appendChild(t);
+var d=0;
+(function fade(){
+d+=0.02;
+t.style.opacity=Math.min(0.8,d);
+if(d<0.8){requestAnimationFrame(fade);}
+else{
+setTimeout(function(){
+var o=0.8;
+(function out(){
+o-=0.02;
+t.style.opacity=Math.max(0,o);
+if(o>0) requestAnimationFrame(out);
+else t.remove();
+})();
+},2600);
+}
+})();
+}
+svg.addEventListener("click",function(e){
+var r=svg.getBoundingClientRect();
+var p=seed(e.clientX-r.left,e.clientY-r.top);
+pts.push(p);
+connect(p);
+pts.forEach(function(q){q.age++;});
+draw();
+label(p);
+ct.textContent=pts.length+" point"+(pts.length===1?"":"s")+(pts.length>4?" — structure emerging":"");
+});
+function init(){
+var r=svg.getBoundingClientRect();
+for(var i=0;i<3;i++){
+var p=seed(r.width*(0.25+Math.random()*0.5),r.height*(0.25+Math.random()*0.5));
+pts.push(p);
+}
+pts.forEach(connect);
+draw();
+ct.textContent=pts.length+" points";
+}
+window.addEventListener("load",init);
+})();
+</script>
+</section>
