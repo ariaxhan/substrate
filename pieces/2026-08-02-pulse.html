@@ -1,0 +1,62 @@
+<section data-date='2026-08-02' data-type='pulse'>
+<style>
+#tp02{position:relative;height:70vh;min-height:420px;background:#0c0b09;color:#e8ddc8;overflow:hidden;font-family:'Georgia',serif;cursor:none}
+#tp02 .bar{position:absolute;top:50%;left:8%;right:8%;height:1px;background:#6a5c42;transform-origin:center;transition:transform .12s ease-out}
+#tp02 .pivot{position:absolute;top:50%;left:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:#e8ddc8;box-shadow:0 0 0 0 rgba(232,221,200,.5);transition:box-shadow .3s}
+#tp02 .side{position:absolute;top:50%;width:40%;font-size:clamp(14px,2.4vw,26px);letter-spacing:.06em;transition:transform .12s ease-out, opacity .3s}
+#tp02 .l{left:8%;text-align:right;transform-origin:right center}
+#tp02 .r{right:8%;text-align:left;transform-origin:left center}
+#tp02 .l span,#tp02 .r span{display:block;margin:.15em 0;opacity:.55}
+#tp02 .mark{position:absolute;bottom:22px;left:0;right:0;text-align:center;font:11px/1.4 monospace;letter-spacing:.2em;text-transform:uppercase;color:#6a5c42}
+#tp02 .flip{position:absolute;top:14px;right:20px;font:11px monospace;letter-spacing:.15em;color:#6a5c42;opacity:.7}
+#tp02.tipped .pivot{box-shadow:0 0 24px 8px rgba(232,221,200,.35)}
+</style>
+<div id="tp02">
+  <div class="flip">click to flip the fulcrum</div>
+  <div class="bar" id="tp02bar"></div>
+  <div class="pivot" id="tp02pivot"></div>
+  <div class="side l" id="tp02l">
+    <span>waking</span><span>the list</span><span>coffee going cold</span><span>everything still possible</span>
+  </div>
+  <div class="side r" id="tp02r">
+    <span>sleeping</span><span>the tally</span><span>the light going amber</span><span>everything already decided</span>
+  </div>
+  <div class="mark" id="tp02mark">12:00 &mdash; dead level</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('tp02'),
+      bar=document.getElementById('tp02bar'),
+      pivot=document.getElementById('tp02pivot'),
+      l=document.getElementById('tp02l'),
+      r=document.getElementById('tp02r'),
+      mark=document.getElementById('tp02mark'),
+      flipped=false;
+  function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+  function set(t){
+    var deg = clamp(t,-1,1) * 14 * (flipped?-1:1);
+    bar.style.transform = 'translateY(-50%) rotate(' + deg + 'deg)';
+    var lt = clamp(-t,-1,1), rt = clamp(t,-1,1);
+    if(flipped){ lt=-lt; rt=-rt; }
+    l.style.transform = 'translateY(-50%) translateY(' + (lt*18) + 'px)';
+    r.style.transform = 'translateY(-50%) translateY(' + (rt*18) + 'px)';
+    l.style.opacity = 0.55 + Math.max(0,-t*(flipped?-1:1))*0.45;
+    r.style.opacity = 0.55 + Math.max(0, t*(flipped?-1:1))*0.45;
+    var pct = Math.round(Math.abs(t)*100);
+    if(pct < 4){ mark.textContent = '12:00 — dead level'; el.classList.remove('tipped'); }
+    else { mark.textContent = pct + '% toward ' + (t*(flipped?-1:1) > 0 ? 'sleeping' : 'waking'); el.classList.add('tipped'); }
+  }
+  el.addEventListener('mousemove', function(e){
+    var rect = el.getBoundingClientRect();
+    var t = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+    set(t);
+  });
+  el.addEventListener('mouseleave', function(){ set(0) });
+  el.addEventListener('click', function(){
+    flipped = !flipped;
+    pivot.style.background = flipped ? '#c8a878' : '#e8ddc8';
+  });
+  set(0);
+})();
+</script>
+</section>
