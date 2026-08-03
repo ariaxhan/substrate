@@ -1,0 +1,110 @@
+<section data-date='2026-08-03' data-type='morning'>
+<style>
+#taper-0803 {
+  --h: 220;
+  margin: 0;
+  height: 72vh;
+  min-height: 420px;
+  overflow: hidden;
+  position: relative;
+  background: linear-gradient(to bottom, hsl(var(--h) 60% 12%), hsl(calc(var(--h) + 20) 70% 55%));
+  transition: background 1.4s ease, --h 1.4s;
+  font-family: Georgia, 'Times New Roman', serif;
+  cursor: crosshair;
+  user-select: none;
+}
+#taper-0803 .sun {
+  position: absolute;
+  left: 50%;
+  bottom: -14%;
+  width: 30vmin;
+  height: 30vmin;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff6d8, #ffcf7a 60%, transparent 72%);
+  transform: translate(-50%, 0);
+  transition: bottom 1.4s ease, opacity 1.4s;
+  opacity: 0.85;
+}
+#taper-0803 .line {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: clamp(1rem, 4vw, 2.4rem);
+  letter-spacing: 0.02em;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.15);
+  text-align: center;
+}
+#taper-0803 .line span {
+  color: rgba(255,255,255,0.15);
+  transition: color 0.4s ease, text-shadow 0.4s ease;
+}
+#taper-0803 .line span.lit {
+  color: #fffef2;
+  text-shadow: 0 0 14px rgba(255,240,180,0.9);
+}
+#taper-0803 .hint {
+  position: absolute;
+  bottom: 14px;
+  right: 18px;
+  font-family: monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.08em;
+}
+#taper-0803 .count {
+  position: absolute;
+  top: 14px;
+  left: 18px;
+  font-family: monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+}
+</style>
+<div id="taper-0803">
+  <div class="sun"></div>
+  <p class="line" id="tp-line"></p>
+  <div class="count" id="tp-count">0 of 24 hours written</div>
+  <div class="hint">move to find light &middot; click to advance</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('taper-0803');
+  var line = document.getElementById('tp-line');
+  var count = document.getElementById('tp-count');
+  var words = "today has not decided what it will become".split(' ');
+  words.forEach(function(w){
+    var s = document.createElement('span');
+    s.textContent = w + ' ';
+    line.appendChild(s);
+  });
+  var spans = line.querySelectorAll('span');
+  var hour = 0;
+
+  root.addEventListener('mousemove', function(e){
+    var r = root.getBoundingClientRect();
+    var frac = (e.clientX - r.left) / r.width;
+    var lit = Math.round(frac * spans.length);
+    for (var i = 0; i < spans.length; i++) {
+      spans[i].classList.toggle('lit', i < lit);
+    }
+  });
+
+  root.addEventListener('mouseleave', function(){
+    for (var i = 0; i < spans.length; i++) spans[i].classList.remove('lit');
+  });
+
+  root.addEventListener('click', function(){
+    hour = (hour + 1) % 25;
+    var h = 220 - hour * 4;
+    root.style.setProperty('--h', h);
+    var sun = root.querySelector('.sun');
+    sun.style.bottom = (-14 + hour * 3) + '%';
+    sun.style.opacity = hour === 0 ? 0.85 : Math.max(0.15, 0.85 - hour * 0.03);
+    count.textContent = hour + ' of 24 hours written';
+  });
+})();
+</script>
+</section>
