@@ -1,0 +1,92 @@
+<section data-date='2026-08-03' data-type='digest'>
+<style>
+#taper-emergence{position:relative;width:100%;height:100vh;background:#07070a;overflow:hidden;cursor:crosshair}
+#taper-emergence canvas{position:absolute;inset:0}
+#taper-emergence .hint{position:absolute;top:22px;left:26px;color:#8a8a94;font:italic 15px Georgia,serif;letter-spacing:.02em;pointer-events:none;transition:opacity 1.6s}
+#taper-emergence .count{position:absolute;bottom:20px;left:26px;color:#6c6c78;font:12px Georgia,serif;font-style:italic;pointer-events:none}
+#taper-emergence .w{position:absolute;color:#e8c384;font:11px "Courier New",monospace;letter-spacing:.14em;text-transform:uppercase;opacity:0;transition:opacity 2.4s ease-out;pointer-events:none;transform:translate(-50%,-140%)}
+</style>
+<div id="taper-emergence">
+<canvas id="tc"></canvas>
+<div class="hint" id="th">click, and click again &mdash; watch what holds together</div>
+<div class="count" id="tn">0 traces</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('taper-emergence'),
+    cv=document.getElementById('tc'),
+    ctx=cv.getContext('2d'),
+    hint=document.getElementById('th'),
+    ct=document.getElementById('tn'),
+    W=root.clientWidth||root.offsetWidth||window.innerWidth,
+    H=root.clientHeight||root.offsetHeight||window.innerHeight,
+    pts=[],
+    conn=[],
+    crystals=0,
+    words=['signal','thread','trace','echo','seed','fold','weight','node','bloom','lattice','memory','pattern','weave','hold','link','form','grow','know','census','residue'],
+    wi=0;
+function size(){
+  W=root.clientWidth; H=root.clientHeight;
+  cv.width=W; cv.height=H;
+  ctx.fillStyle='#07070a';
+  ctx.fillRect(0,0,W,H);
+}
+size();
+window.addEventListener('resize',size);
+
+function label(x,y,word){
+  var s=document.createElement('div');
+  s.className='w';
+  s.textContent=word;
+  s.style.left=x+'px';
+  s.style.top=y+'px';
+  root.appendChild(s);
+  requestAnimationFrame(function(){ s.style.opacity=0.85; });
+  setTimeout(function(){ s.style.opacity=0.3; },2600);
+}
+
+root.addEventListener('click',function(e){
+  if(hint.style.opacity!=='0'){ hint.style.opacity=0; }
+  var r=root.getBoundingClientRect(),
+      x=e.clientX-r.left,
+      y=e.clientY-r.top,
+      i=pts.length,
+      near=0;
+  pts.push([x,y]);
+  conn.push(0);
+  for(var j=0;j<i;j++){
+    var dx=x-pts[j][0], dy=y-pts[j][1], d=Math.sqrt(dx*dx+dy*dy);
+    if(d<150){
+      var a=(1-d/150)*0.55;
+      ctx.strokeStyle='rgba(160,175,196,'+a.toFixed(3)+')';
+      ctx.lineWidth=1;
+      ctx.beginPath();
+      ctx.moveTo(x,y);
+      ctx.lineTo(pts[j][0],pts[j][1]);
+      ctx.stroke();
+      conn[j]++; conn[i]++;
+      near++;
+    }
+  }
+  var lit = near>=3;
+  ctx.beginPath();
+  ctx.fillStyle = lit ? '#e8c384' : '#d8d8de';
+  ctx.arc(x,y, lit?4:2.4, 0, 6.3);
+  ctx.fill();
+  if(lit){
+    if(ctx.save){ctx.save();}
+    ctx.beginPath();
+    ctx.strokeStyle='rgba(232,195,132,0.35)';
+    ctx.lineWidth=1;
+    ctx.arc(x,y,9,0,6.3);
+    ctx.stroke();
+    if(ctx.restore){ctx.restore();}
+    crystals++;
+    label(x,y,words[wi%words.length]);
+    wi++;
+  }
+  ct.textContent = pts.length + (pts.length===1?' trace':' traces') + (crystals? ' · '+crystals+' crystallized':'');
+});
+})();
+</script>
+</section>
