@@ -1,0 +1,87 @@
+<section data-date='2026-08-03' data-type='pulse'>
+<style>
+[data-date='2026-08-03'][data-type='pulse']{
+  position:fixed;inset:0;overflow:hidden;
+  background:radial-gradient(ellipse at 50% 38%,#14161d,#050608 72%);
+  font-family:Georgia,'Iowan Old Style',serif;cursor:pointer;
+}
+.stage{position:absolute;inset:0}
+.fulcrum{
+  position:absolute;left:50%;top:52%;width:0;height:0;
+  border-left:14px solid transparent;border-right:14px solid transparent;
+  border-bottom:26px solid #1c1f28;transform:translateX(-50%);
+}
+.beam{
+  position:absolute;left:50%;top:50%;width:min(74vw,720px);height:1px;
+  transform:translate(-50%,-50%) rotate(var(--deg,0deg));
+  transform-origin:50% 50%;transition:transform .18s cubic-bezier(.2,.7,.3,1);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.beam::before{
+  content:'';position:absolute;inset:0;margin:auto;height:1px;width:100%;
+  background:linear-gradient(90deg,transparent,#4a4e5c 12%,#4a4e5c 88%,transparent);
+}
+.w{
+  position:relative;z-index:2;background:#0a0b0e;padding:0 14px;
+  font-size:clamp(14px,2.4vw,26px);letter-spacing:.14em;
+  color:#8a8f9e;transition:opacity .18s,color .18s,font-weight .18s;
+  user-select:none;
+}
+.now{
+  position:absolute;left:50%;top:52%;transform:translate(-50%,10px);
+  font-size:11px;letter-spacing:.5em;color:#e8ddb8;opacity:0;
+  transition:opacity .6s ease;pointer-events:none;text-transform:uppercase;
+}
+.ratio{
+  position:absolute;left:50%;bottom:8vh;transform:translateX(-50%);
+  font-size:11px;letter-spacing:.3em;color:#3d4150;font-variant-numeric:tabular-nums;
+}
+.hint{
+  position:absolute;left:50%;top:14vh;transform:translateX(-50%);
+  font-size:10px;letter-spacing:.35em;color:#2c2f3a;text-transform:uppercase;
+}
+</style>
+<div class="stage" id="stage">
+  <div class="hint">halfway</div>
+  <div class="fulcrum"></div>
+  <div class="beam" id="beam">
+    <span class="w" id="wl">BEHIND</span>
+    <span class="w" id="wr">AHEAD</span>
+  </div>
+  <div class="now" id="now">now</div>
+  <div class="ratio" id="ratio">50 · 50</div>
+</div>
+<script>
+(function(){
+  var root=document.currentScript.parentElement;
+  var beam=root.querySelector('#beam'),wl=root.querySelector('#wl'),
+      wr=root.querySelector('#wr'),now=root.querySelector('#now'),
+      ratio=root.querySelector('#ratio'),stage=root.querySelector('#stage');
+  function apply(rel){
+    rel=Math.max(-1,Math.min(1,rel));
+    var deg=rel*22;
+    beam.style.setProperty('--deg',deg+'deg');
+    var bal=Math.round(50+rel*50);
+    ratio.textContent=(100-bal)+' · '+bal;
+    wl.style.opacity=(0.35+(1-((rel+1)/2))*0.65).toFixed(2);
+    wr.style.opacity=(0.35+((rel+1)/2)*0.65).toFixed(2);
+    wl.style.fontWeight=rel<-0.05?'700':'400';
+    wl.style.color=rel<-0.05?'#e8ddb8':'#8a8f9e';
+    wr.style.fontWeight=rel>0.05?'700':'400';
+    wr.style.color=rel>0.05?'#e8ddb8':'#8a8f9e';
+    now.style.opacity=Math.abs(rel)<0.035?1:0;
+  }
+  stage.addEventListener('mousemove',function(e){
+    var cx=window.innerWidth/2;
+    apply((e.clientX-cx)/cx);
+  });
+  stage.addEventListener('touchmove',function(e){
+    var t=e.touches[0];if(!t)return;
+    var cx=window.innerWidth/2;
+    apply((t.clientX-cx)/cx);
+  },{passive:true});
+  stage.addEventListener('click',function(){apply(0)});
+  apply(0);
+})();
+</script>
+</section>
