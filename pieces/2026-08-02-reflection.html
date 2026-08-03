@@ -1,0 +1,61 @@
+<section data-date='2026-08-02' data-type='reflection'>
+<style>
+#taper-0802{position:relative;height:70vh;min-height:420px;background:radial-gradient(ellipse at 50% 100%,#0a0f1c 0%,#020308 70%);overflow:hidden;font-family:Georgia,'Iowan Old Style',serif;cursor:crosshair;border-radius:2px}
+#taper-0802 .horizon{position:absolute;left:0;right:0;bottom:0;height:30%;background:linear-gradient(to top,#000 0%,rgba(0,0,0,0) 100%)}
+#taper-0802 .msg{position:absolute;top:14%;left:0;right:0;text-align:center;color:#5a6b8c;font-size:13px;letter-spacing:.14em;text-transform:lowercase;opacity:.85;transition:opacity 2s ease;pointer-events:none}
+#taper-0802 .star{position:absolute;border-radius:50%;background:#fff;transform:translate(-50%,-50%);opacity:0;pointer-events:none}
+#taper-0802 .word{position:absolute;transform:translate(-50%,-50%);color:#e8ecf5;font-style:italic;font-size:12px;letter-spacing:.05em;opacity:0;pointer-events:none;white-space:nowrap}
+</style>
+<div id="taper-0802">
+  <div class="horizon"></div>
+  <div class="msg">the day is complete. touch the dark to rest a light in it.</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('taper-0802');
+  var msg = root.querySelector('.msg');
+  var words = ['done','still','enough','quiet','held','breathe','later','soft','close now','arrived'];
+  var count = 0;
+  function fade(el, ms){
+    setTimeout(function(){ el.style.opacity = '0'; setTimeout(function(){ el.remove(); }, 2600); }, ms);
+  }
+  root.addEventListener('click', function(e){
+    var r = root.getBoundingClientRect();
+    var x = e.clientX - r.left, y = e.clientY - r.top;
+    var star = document.createElement('div');
+    var size = 1.5 + Math.random() * 2.5;
+    star.className = 'star';
+    star.style.left = x + 'px';
+    star.style.top = y + 'px';
+    star.style.width = size + 'px';
+    star.style.height = size + 'px';
+    star.style.boxShadow = '0 0 ' + (size * 3) + 'px ' + (size) + 'px rgba(255,255,255,.55)';
+    root.appendChild(star);
+    requestAnimationFrame(function(){
+      star.style.transition = 'opacity 1.8s ease';
+      star.style.opacity = String(0.55 + Math.random() * 0.45);
+    });
+    count++;
+    if (count === 1) { msg.style.opacity = '0'; }
+    if (count % 3 === 0 && count < 40) {
+      var w = document.createElement('div');
+      w.className = 'word';
+      w.textContent = words[Math.floor(Math.random() * words.length)];
+      w.style.left = x + (Math.random() * 40 - 20) + 'px';
+      w.style.top = (y - 22) + 'px';
+      root.appendChild(w);
+      requestAnimationFrame(function(){
+        w.style.transition = 'opacity 2.2s ease, top 3s ease';
+        w.style.opacity = '0.75';
+        w.style.top = (y - 40) + 'px';
+      });
+      fade(w, 1800);
+    }
+    if (count >= 90) {
+      var kids = root.querySelectorAll('.star');
+      for (var i = 0; i < kids.length - 60; i++) { kids[i].remove(); }
+    }
+  });
+})();
+</script>
+</section>
