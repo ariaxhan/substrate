@@ -1,0 +1,55 @@
+<section data-date='2026-08-03' data-type='reflection'>
+<style>
+.tpr-night{margin:0;overflow:hidden;position:relative;height:70vh;min-height:420px;background:radial-gradient(ellipse at 50% 100%,#0d1224 0%,#03040c 70%);cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+.tpr-night .tpr-hz{position:absolute;left:0;right:0;bottom:0;height:22%;background:linear-gradient(to top,#000 0%,rgba(0,0,0,0) 100%)}
+.tpr-night .tpr-cap{position:absolute;top:16px;left:20px;color:#5a6a8a;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-family:Georgia,serif;opacity:.7;pointer-events:none}
+.tpr-night .tpr-star{position:absolute;border-radius:50%;background:#fff;box-shadow:0 0 6px 1px rgba(255,255,255,.8);animation:tpr-tw 3.4s ease-in-out infinite;pointer-events:none}
+@keyframes tpr-tw{0%,100%{opacity:.35}50%{opacity:1}}
+.tpr-night .tpr-line{position:absolute;bottom:14%;left:0;right:0;text-align:center;color:#8a95b8;font-style:italic;font-size:15px;letter-spacing:.02em;opacity:0;transition:opacity 2.5s ease}
+.tpr-night .tpr-line.tpr-on{opacity:.85}
+.tpr-night .tpr-count{position:absolute;bottom:16px;right:20px;color:#3f4a6b;font-size:10px;letter-spacing:.1em;font-family:Georgia,serif;pointer-events:none}
+</style>
+<div class="tpr-night" id="tprNight">
+  <div class="tpr-cap">the day is complete</div>
+  <div class="tpr-hz"></div>
+  <div class="tpr-line" id="tprLine">rest, now, before the next beginning</div>
+  <div class="tpr-count" id="tprCount"></div>
+</div>
+<script>
+(function(){
+  var box=document.getElementById('tprNight'), line=document.getElementById('tprLine'), count=document.getElementById('tprCount');
+  var n=0, msgs=["one","two","three, faint","four","the sky remembers","enough, for tonight"];
+  box.addEventListener('click',function(e){
+    var r=box.getBoundingClientRect();
+    var x=e.clientX-r.left, y=e.clientY-r.top;
+    if(y>r.height*0.8) return;
+    var s=document.createElement('div');
+    var size=1+Math.random()*2.4;
+    s.className='tpr-star';
+    s.style.width=size+'px';
+    s.style.height=size+'px';
+    s.style.left=x+'px';
+    s.style.top=y+'px';
+    s.style.animationDelay=(Math.random()*3)+'s';
+    box.appendChild(s);
+    n++;
+    if(n>=1) line.classList.add('tpr-on');
+    count.textContent=n+(n===1?' star placed':' stars placed');
+    if(n<msgs.length) line.textContent=msgs[n-1];
+  });
+  for(var i=0;i<40;i++){
+    var s=document.createElement('div');
+    var size=Math.random()*1.6+.4;
+    s.className='tpr-star';
+    s.style.width=size+'px';
+    s.style.height=size+'px';
+    s.style.left=(Math.random()*100)+'%';
+    s.style.top=(Math.random()*72)+'%';
+    s.style.opacity=(.15+Math.random()*.3);
+    s.style.animationDelay=(Math.random()*4)+'s';
+    s.style.boxShadow='none';
+    box.appendChild(s);
+  }
+})();
+</script>
+</section>
