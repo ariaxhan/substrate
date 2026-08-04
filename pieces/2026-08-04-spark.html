@@ -1,0 +1,135 @@
+<section data-date='2026-08-04' data-type='spark'>
+<style>
+#tp-2026-08-04 {
+  position: relative;
+  height: 70vh;
+  min-height: 420px;
+  background: #0a0a0c;
+  overflow: hidden;
+  font: 16px/1.2 Georgia, serif;
+  color: #ddd;
+  cursor: crosshair;
+}
+#tp-2026-08-04 .w {
+  position: absolute;
+  white-space: nowrap;
+  transition: color .6s, text-shadow .6s;
+  will-change: transform;
+  user-select: none;
+}
+#tp-2026-08-04 .l { color: #6fa8dc; }
+#tp-2026-08-04 .r { color: #dc8f6f; }
+#tp-2026-08-04 .fused {
+  color: #f3e9c7 !important;
+  text-shadow: 0 0 10px #f3e9c7, 0 0 20px #f3e9c7;
+  font-style: italic;
+}
+#tp-2026-08-04 .hint {
+  position: absolute;
+  bottom: 10px;
+  left: 12px;
+  font: 11px sans-serif;
+  color: #555;
+  letter-spacing: .05em;
+}
+</style>
+<div id="tp-2026-08-04">
+  <div class="hint">move to draw them in. click a pair to fuse.</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('tp-2026-08-04');
+  var W = ["you", "before", "the storm", "a name", "salt", "the last train", "silence", "your hand", "spring", "the question"];
+  var R = ["me", "after", "the calm", "a stranger", "wound", "the platform", "an answer", "mine", "thaw", "an answer"];
+  var FUSE = {
+    "you|me": "us",
+    "before|after": "the moment it happened",
+    "the storm|the calm": "weather",
+    "a name|a stranger": "recognition",
+    "salt|wound": "healing, eventually",
+    "the last train|the platform": "arrival",
+    "silence|an answer": "the space you left",
+    "your hand|mine": "held",
+    "spring|thaw": "everything softening at once",
+    "the question|an answer": "understanding"
+  };
+  var n = W.length, words = [];
+  var w0 = root.clientWidth, h0 = root.clientHeight;
+  var mx = w0/2, my = h0/2;
+
+  function mk(text, side, i){
+    var el = document.createElement('div');
+    el.className = 'w ' + (side === 0 ? 'l' : 'r');
+    el.textContent = text;
+    root.appendChild(el);
+    return {
+      el: el,
+      x: side === 0 ? -40 : w0 + 40,
+      y: 30 + i * (h0 - 60) / n,
+      side: side,
+      fused: false
+    };
+  }
+  for (var i = 0; i < n; i++){
+    words.push(mk(W[i], 0, i));
+    words.push(mk(R[i], 1, i));
+  }
+
+  root.addEventListener('mousemove', function(e){
+    var b = root.getBoundingClientRect();
+    mx = e.clientX - b.left;
+    my = e.clientY - b.top;
+  });
+
+  function dist(a, b){
+    var dx = a.x - b.x, dy = a.y - b.y;
+    return Math.sqrt(dx*dx + dy*dy);
+  }
+
+  function fuse(a, b){
+    if (a.fused || b.fused) return;
+    var key = a.text0 + '|' + b.text0;
+    var text = FUSE[key] || FUSE[b.text0 + '|' + a.text0];
+    if (!text) return;
+    a.fused = true; b.fused = true;
+    var fx = (a.x + b.x) / 2, fy = (a.y + b.y) / 2;
+    a.el.remove(); b.el.remove();
+    var el = document.createElement('div');
+    el.className = 'w fused';
+    el.textContent = text;
+    root.appendChild(el);
+    var f = { el: el, x: fx, y: fy, side: -1, fused: false, done: true };
+    words.push(f);
+  }
+
+  root.addEventListener('click', function(e){
+    var b = root.getBoundingClientRect();
+    var cx = e.clientX - b.left, cy = e.clientY - b.top;
+    var near = words.filter(function(w){
+      return !w.done && !w.fused && dist(w, {x:cx,y:cy}) < 60;
+    });
+    for (var i = 0; i < near.length; i++){
+      for (var j = i+1; j < near.length; j++){
+        if (near[i].side !== near[j].side) fuse(near[i], near[j]);
+      }
+    }
+  });
+
+  words.forEach(function(w, idx){ w.text0 = w.el.textContent; });
+
+  function tick(){
+    w0 = root.clientWidth; h0 = root.clientHeight;
+    words.forEach(function(w){
+      if (w.done) return;
+      var pull = 0.012;
+      var tx = mx + (w.side === 0 ? -80 : 80);
+      w.x += (tx - w.x) * pull;
+      w.y += (my/2 + w.y) / 2 - w.y > 0 ? (my - w.y) * 0.003 : (my - w.y) * 0.003;
+      w.el.style.transform = 'translate(' + w.x + 'px,' + w.y + 'px)';
+    });
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+</script>
+</section>
