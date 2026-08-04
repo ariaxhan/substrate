@@ -1,0 +1,88 @@
+<section data-date='2026-08-04' data-type='pulse'>
+<style>
+[data-date='2026-08-04'][data-type='pulse']{
+  position:fixed;inset:0;overflow:hidden;background:#f4efe3;
+  font-family:'Futura','Century Gothic',system-ui,sans-serif;
+}
+[data-date='2026-08-04'][data-type='pulse'] .axis{
+  position:absolute;left:50%;top:0;bottom:0;width:1px;
+  background:linear-gradient(to bottom,transparent,#cabfa4 18%,#cabfa4 82%,transparent);
+}
+[data-date='2026-08-04'][data-type='pulse'] .core{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  width:13px;height:13px;border-radius:50%;background:#1a1a1a;cursor:pointer;
+  animation:breathe 3.6s ease-in-out infinite;z-index:3;
+}
+[data-date='2026-08-04'][data-type='pulse'] .tag{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,26px);
+  font-size:10px;letter-spacing:.42em;text-transform:uppercase;color:#a8987a;
+  pointer-events:none;
+}
+[data-date='2026-08-04'][data-type='pulse'] .count{
+  position:absolute;left:50%;bottom:7vh;transform:translateX(-50%);
+  font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:#c9bfa4;
+  pointer-events:none;
+}
+[data-date='2026-08-04'][data-type='pulse'] .word{
+  position:absolute;left:50%;top:50%;white-space:nowrap;
+  color:#b6a888;opacity:.26;text-transform:lowercase;letter-spacing:.02em;
+  transition:color .35s,opacity .35s;pointer-events:none;
+}
+[data-date='2026-08-04'][data-type='pulse'] .field.ripple .word{
+  animation:pulseword 1.5s ease both;animation-delay:var(--d);
+}
+@keyframes breathe{
+  0%,100%{box-shadow:0 0 0 0 rgba(26,26,26,.25)}
+  50%{box-shadow:0 0 0 11px rgba(26,26,26,0)}
+}
+@keyframes pulseword{
+  0%{opacity:.26;color:#b6a888;transform:translate(-50%,-50%) translate(var(--x),var(--y)) scale(1)}
+  35%{opacity:1;color:#181818;transform:translate(-50%,-50%) translate(var(--x),var(--y)) scale(1.2)}
+  100%{opacity:.4;color:#8a7c5e;transform:translate(-50%,-50%) translate(var(--x),var(--y)) scale(1)}
+}
+</style>
+<div class="axis"></div>
+<div class="core"></div>
+<div class="tag">noon</div>
+<div class="field"></div>
+<div class="count">the day, dropped at its center</div>
+<script>
+(function(){
+  var root=document.currentScript.parentElement,
+      core=root.querySelector('.core'),
+      field=root.querySelector('.field'),
+      count=root.querySelector('.count'),
+      before=["woke","light","coffee","inbox","traffic","meetings","sun climbed"],
+      after=["unread","dinner","dusk","unwritten","quiet","sleep","sun falls"],
+      n=0;
+  function place(list,dir){
+    list.forEach(function(w,i){
+      var r=16+i*10,
+          ang=((dir<0?180:0)+(i-3)*22)*Math.PI/180,
+          x=(r*Math.cos(ang)).toFixed(1)+'vmin',
+          y=(r*Math.sin(ang)).toFixed(1)+'vmin',
+          el=document.createElement('span');
+      el.className='word';
+      el.textContent=w;
+      el.style.fontSize=Math.max(10,20-r*0.15)+'px';
+      el.style.setProperty('--x',x);
+      el.style.setProperty('--y',y);
+      el.style.setProperty('--d',(r/76*0.9).toFixed(2)+'s');
+      el.style.transform='translate(-50%,-50%) translate('+x+','+y+')';
+      field.appendChild(el);
+    });
+  }
+  place(before,-1);
+  place(after,1);
+  function ripple(){
+    field.classList.remove('ripple');
+    void field.offsetWidth;
+    field.classList.add('ripple');
+    n++;
+    count.textContent=n+(n===1?' ripple felt':' ripples felt');
+  }
+  core.addEventListener('pointerenter',ripple);
+  core.addEventListener('click',ripple);
+})();
+</script>
+</section>
