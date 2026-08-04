@@ -1,0 +1,93 @@
+<section data-date='2026-08-04' data-type='digest'>
+<style>
+#tg{position:relative;width:100%;height:100vh;background:#f2ecdd;overflow:hidden;cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+#tg svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#tg .hint{position:absolute;top:22px;left:26px;font:italic 14px Georgia,serif;color:#8a7f68;letter-spacing:.02em;transition:opacity 1.4s}
+#tg .ct{position:absolute;bottom:20px;right:26px;font:12px 'Courier New',monospace;color:#a39777;font-style:italic;pointer-events:none}
+#tg .f{position:absolute;font:italic 13px Georgia,serif;color:#b7ab8d;opacity:.55;user-select:none;pointer-events:none;transform:translate(-50%,-50%);animation:tgfloat 6s ease-in-out infinite}
+#tg .f.lit{color:#6b4f1f;opacity:1;font-weight:bold;font-style:normal;animation:none;transition:color .6s,transform .4s;transform:translate(-50%,-50%) scale(1.18)}
+@keyframes tgfloat{0%,100%{margin-top:0}50%{margin-top:-6px}}
+#tg .trail{position:absolute;width:5px;height:5px;border-radius:50%;background:#c9a24a;opacity:.5;pointer-events:none;transform:translate(-50%,-50%);transition:opacity .9s ease-out}
+.tl{stroke:#a8813c;stroke-width:1;opacity:.5}
+#tg .poem{position:absolute;left:26px;right:26px;bottom:48px;font:italic 17px/1.5 Georgia,serif;color:#4a3f2c;min-height:1.6em}
+#tg .poem span{margin-right:.5em}
+</style>
+<div id="tg">
+<div class="hint" id="tgh">trace with your cursor. what you pass close to, stays.</div>
+<div class="ct" id="tgc">0 gathered</div>
+<svg id="tgs"></svg>
+<div class="poem" id="tgp"></div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('tg'),
+    svg=document.getElementById('tgs'),
+    hint=document.getElementById('tgh'),
+    ct=document.getElementById('tgc'),
+    poem=document.getElementById('tgp'),
+    NS='http://www.w3.org/2000/svg',
+    words=['signal','trace','observe','gather','thread','recall','pattern','form','fold','weight','link','hold','shape','grow','know','seed','layer','bind','emerge','settle','witness','echo'],
+    W=root.clientWidth,H=root.clientHeight,
+    frags=[],chain=[],lastX=-999,lastY=-999;
+
+function place(){
+  for(var i=0;i<words.length;i++){
+    var x=40+Math.random()*(W-80), y=70+Math.random()*(H-170),
+        s=document.createElement('div');
+    s.className='f';
+    s.textContent=words[i];
+    s.style.left=x+'px'; s.style.top=y+'px';
+    s.style.animationDelay=(Math.random()*6).toFixed(2)+'s';
+    root.appendChild(s);
+    frags.push({el:s,x:x,y:y,w:words[i],lit:false});
+  }
+}
+place();
+
+function capture(f){
+  f.lit=true;
+  f.el.classList.add('lit');
+  if(chain.length){
+    var p=chain[chain.length-1],
+        ln=document.createElementNS(NS,'line');
+    ln.setAttribute('x1',p.x); ln.setAttribute('y1',p.y);
+    ln.setAttribute('x2',f.x); ln.setAttribute('y2',f.y);
+    ln.setAttribute('class','tl');
+    svg.appendChild(ln);
+  }
+  chain.push(f);
+  var sp=document.createElement('span');
+  sp.textContent=f.w;
+  poem.appendChild(sp);
+  ct.textContent=chain.length+' gathered'+(chain.length>=words.length?'. the pattern is whole.':'');
+}
+
+function move(x,y){
+  if(hint.style.opacity!=='0') hint.style.opacity=0;
+  if(Math.hypot(x-lastX,y-lastY)>9){
+    lastX=x; lastY=y;
+    var dot=document.createElement('div');
+    dot.className='trail';
+    dot.style.left=x+'px'; dot.style.top=y+'px';
+    root.appendChild(dot);
+    requestAnimationFrame(function(){dot.style.opacity=0});
+    setTimeout(function(){dot.remove()},900);
+  }
+  frags.forEach(function(f){
+    if(f.lit) return;
+    if(Math.hypot(x-f.x,y-f.y)<34) capture(f);
+  });
+}
+
+root.addEventListener('mousemove',function(e){
+  var r=root.getBoundingClientRect();
+  move(e.clientX-r.left,e.clientY-r.top);
+});
+root.addEventListener('touchmove',function(e){
+  var t=e.touches[0],r=root.getBoundingClientRect();
+  move(t.clientX-r.left,t.clientY-r.top);
+},{passive:true});
+window.addEventListener('resize',function(){W=root.clientWidth;H=root.clientHeight;});
+})();
+</script>
+</section>
