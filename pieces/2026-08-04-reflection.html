@@ -1,0 +1,70 @@
+<section data-date='2026-08-04' data-type='reflection'>
+<style>
+.tp0804{position:relative;height:70vh;min-height:420px;background:radial-gradient(ellipse at 50% 65%,#130f09 0%,#060504 75%);overflow:hidden;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;cursor:crosshair;border-radius:2px}
+.tp0804 canvas{position:absolute;inset:0;width:100%;height:100%}
+.tp0804-cap{position:absolute;top:16px;left:20px;margin:0;color:#8a7a56;font-size:11px;letter-spacing:.18em;text-transform:uppercase;pointer-events:none}
+.tp0804-h{position:absolute;bottom:16px;left:0;right:0;margin:0;text-align:center;color:#6b6250;font-size:11px;font-style:italic;letter-spacing:.03em;pointer-events:none;transition:opacity 2s ease}
+.tp0804-w{position:absolute;transform:translate(-50%,-160%);color:#e6c48c;font-size:12px;letter-spacing:.05em;font-style:italic;pointer-events:none;opacity:0;transition:opacity 1.1s ease;white-space:nowrap}
+</style>
+<div class="tp0804" id="tp0804">
+<canvas id="tp0804c"></canvas>
+<p class="tp0804-cap">the day, set down</p>
+<p class="tp0804-h" id="tp0804h">wander the dark — it remembers where light has rested</p>
+</div>
+<script>
+(function(){
+  var host=document.getElementById('tp0804');
+  var cv=document.getElementById('tp0804c');
+  var hint=document.getElementById('tp0804h');
+  var ctx=cv.getContext('2d');
+  var cw=host.clientWidth||600, ch=host.clientHeight||420;
+  cv.width=cw; cv.height=ch;
+  var pts=[], mx=null, my=null;
+  var words=['hush','still','enough','done','drift','quiet','held','dim','ease','rest','soft','later','close now','arrived','settled','no more tonight'];
+  function draw(){
+    ctx.clearRect(0,0,cw,ch);
+    for(var i=0;i<pts.length;i++){
+      for(var j=i+1;j<pts.length;j++){
+        var a=pts[i], b=pts[j];
+        var mxm=(a.x+b.x)/2, mym=(a.y+b.y)/2;
+        var d=mx==null?9999:Math.hypot(mx-mxm,my-mym);
+        var op=Math.max(0,1-d/150)*0.55;
+        if(op>0.02){
+          ctx.strokeStyle='rgba(202,164,106,'+op+')';
+          ctx.lineWidth=1;
+          ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke();
+        }
+      }
+    }
+    for(var k=0;k<pts.length;k++){
+      var p=pts[k];
+      ctx.fillStyle='rgba(230,196,140,.9)';
+      ctx.beginPath();ctx.arc(p.x,p.y,1.8,0,6.3);ctx.fill();
+    }
+  }
+  host.addEventListener('mousemove',function(e){
+    var r=host.getBoundingClientRect();
+    mx=e.clientX-r.left; my=e.clientY-r.top;
+    draw();
+  });
+  host.addEventListener('mouseleave',function(){ mx=null; my=null; draw(); });
+  host.addEventListener('click',function(e){
+    var r=host.getBoundingClientRect();
+    var x=e.clientX-r.left, y=e.clientY-r.top;
+    pts.push({x:x,y:y});
+    if(pts.length>70) pts.shift();
+    draw();
+    hint.style.opacity='0';
+    var w=document.createElement('div');
+    w.className='tp0804-w';
+    w.textContent=words[Math.floor(Math.random()*words.length)];
+    w.style.left=x+'px'; w.style.top=y+'px';
+    host.appendChild(w);
+    requestAnimationFrame(function(){ w.style.opacity='.9'; });
+    setTimeout(function(){ w.style.opacity='0'; },1200);
+    setTimeout(function(){ w.remove(); },2600);
+  });
+  draw();
+})();
+</script>
+</section>
