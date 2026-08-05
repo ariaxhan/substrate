@@ -1,0 +1,68 @@
+<section data-date='2026-08-05' data-type='spark'>
+<style>
+#tp-0805{background:#0b0b0e;color:#ddd;font:16px/1.5 Georgia,serif;padding:40px 20px;min-height:100vh;position:relative;overflow:hidden;cursor:crosshair}
+#tp-0805 .w{position:absolute;padding:2px 5px;transition:transform .25s ease,color .4s;white-space:nowrap;user-select:none}
+#tp-0805 .w.left{color:#7fa8c9}
+#tp-0805 .w.right{color:#c98a7f}
+#tp-0805 .hit{color:#fff;text-shadow:0 0 12px #fff8;transform:scale(1.3)}
+#tp-0805 .spark{position:absolute;width:3px;height:3px;background:#fff;border-radius:50%;pointer-events:none;animation:tpfade .6s ease-out forwards}
+@keyframes tpfade{to{opacity:0;transform:scale(6)}}
+#tp-0805 .cap{position:absolute;bottom:14px;left:20px;font:11px sans-serif;color:#555;letter-spacing:.05em}
+</style>
+<div id="tp-0805">
+<div class="cap">two sentences, drifting toward each other &mdash; move the cursor between them</div>
+<script>
+(function(){
+var root=document.getElementById('tp-0805');
+var A=["the wave","reaches","toward","the shore","carrying","what it","cannot","keep"];
+var B=["the shore","reaches","back,","already","shaped by","every wave","it has","forgotten"];
+var els=[];
+function place(words,side,baseY){
+  words.forEach(function(word,i){
+    var el=document.createElement('span');
+    el.className='w '+side;
+    el.textContent=word;
+    var x = side==='left' ? 6+i*2 : 60-i*2;
+    var y = baseY+i*34;
+    el.style.left=x+'%';
+    el.style.top=y+'px';
+    el.dataset.bx=x; el.dataset.by=y;
+    root.appendChild(el);
+    els.push(el);
+  });
+}
+place(A,'left',60);
+place(B,'right',60);
+
+function dist(ax,ay,bx,by){var dx=ax-bx,dy=ay-by;return Math.sqrt(dx*dx+dy*dy);}
+
+root.addEventListener('mousemove',function(e){
+  var r=root.getBoundingClientRect();
+  var mx=e.clientX-r.left, my=e.clientY-r.top;
+  els.forEach(function(el){
+    var ex=el.offsetLeft, ey=el.offsetTop;
+    var d=dist(mx,my,ex,ey);
+    var pull=Math.max(0,1-d/220);
+    var dx=(mx-ex)*pull*0.35;
+    var dy=(my-ey)*pull*0.35;
+    el.style.transform='translate('+dx+'px,'+dy+'px)';
+    if(pull>0.6 && !el.classList.contains('hit')){
+      el.classList.add('hit');
+      var sp=document.createElement('div');
+      sp.className='spark';
+      sp.style.left=ex+'px'; sp.style.top=ey+'px';
+      root.appendChild(sp);
+      setTimeout(function(){sp.remove();},600);
+    } else if(pull<=0.6){
+      el.classList.remove('hit');
+    }
+  });
+});
+
+root.addEventListener('mouseleave',function(){
+  els.forEach(function(el){el.style.transform='translate(0,0)';el.classList.remove('hit');});
+});
+})();
+</script>
+</div>
+</section>
