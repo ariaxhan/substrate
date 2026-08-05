@@ -1,0 +1,106 @@
+<section data-date='2026-08-05' data-type='digest'>
+<style>
+[data-date='2026-08-05'][data-type='digest']{
+  display:block;position:relative;width:100%;height:100vh;
+  background:#08090b;overflow:hidden;
+  font-family:'Courier New',ui-monospace,monospace;
+  color:#cfd6d6;cursor:crosshair
+}
+[data-date='2026-08-05'][data-type='digest'] canvas{position:absolute;inset:0}
+[data-date='2026-08-05'][data-type='digest'] .hud{
+  position:absolute;left:14px;bottom:12px;font-size:11px;
+  letter-spacing:.14em;color:#5b6b6a;text-transform:uppercase;
+  pointer-events:none;transition:opacity .6s
+}
+[data-date='2026-08-05'][data-type='digest'] .hint{
+  position:absolute;left:14px;top:12px;font-size:11px;
+  letter-spacing:.1em;color:#3d4b4a;pointer-events:none;
+  transition:opacity 1.4s ease
+}
+</style>
+<canvas></canvas>
+<div class="hud">known 0 &middot; linked 0</div>
+<div class="hint">click to know something</div>
+<script>
+(function(){
+  var root=document.currentScript.parentElement;
+  var cv=root.querySelector('canvas'), hud=root.querySelector('.hud'),
+      hint=root.querySelector('.hint'), x=cv.getContext('2d');
+  var W,H,dpr=Math.min(2,window.devicePixelRatio||1);
+  function size(){
+    W=root.clientWidth; H=root.clientHeight;
+    cv.width=W*dpr; cv.height=H*dpr;
+    cv.style.width=W+'px'; cv.style.height=H+'px';
+    x.setTransform(dpr,0,0,dpr,0,0);
+  }
+  size(); window.addEventListener('resize',size);
+
+  var words=['fact','trace','signal','pattern','thread','node','echo','shape',
+    'order','memory','link','recall','weight','edge','field','seed','grow',
+    'hold','known','form','root','sum'];
+  var pts=[], edges=[], R=Math.max(160,Math.min(260,W/5));
+
+  function add(px,py){
+    var w=words[Math.floor(Math.random()*words.length)];
+    var p={x:px,y:py,w:w,born:performance.now(),r:0};
+    for(var i=0;i<pts.length;i++){
+      var o=pts[i], d=Math.hypot(o.x-px,o.y-py);
+      if(d<R) edges.push({a:o,b:p,t:0,d:d});
+    }
+    pts.push(p);
+    hud.textContent='known '+pts.length+' · linked '+edges.length;
+    hint.style.opacity=0;
+  }
+
+  root.addEventListener('click',function(e){
+    var b=cv.getBoundingClientRect();
+    add(e.clientX-b.left, e.clientY-b.top);
+  });
+
+  function drawGrid(){
+    var density=Math.min(1,pts.length/24);
+    if(density<=0) return;
+    var step=54;
+    x.strokeStyle='rgba(90,120,118,'+(0.03+density*0.05)+')';
+    x.lineWidth=1;
+    for(var gx=0; gx<W; gx+=step){
+      x.beginPath(); x.moveTo(gx,0); x.lineTo(gx,H); x.stroke();
+    }
+    for(var gy=0; gy<H; gy+=step){
+      x.beginPath(); x.moveTo(0,gy); x.lineTo(W,gy); x.stroke();
+    }
+  }
+
+  function tick(){
+    x.clearRect(0,0,W,H);
+    drawGrid();
+
+    for(var i=0;i<edges.length;i++){
+      var e=edges[i];
+      if(e.t<1) e.t=Math.min(1,e.t+0.02);
+      var ex=e.a.x+(e.b.x-e.a.x)*e.t, ey=e.a.y+(e.b.y-e.a.y)*e.t;
+      var glow=1-e.d/R;
+      x.strokeStyle='rgba(140,200,190,'+(0.08+glow*0.35)+')';
+      x.lineWidth=1;
+      x.beginPath(); x.moveTo(e.a.x,e.a.y); x.lineTo(ex,ey); x.stroke();
+    }
+
+    var now=performance.now();
+    for(var j=0;j<pts.length;j++){
+      var p=pts[j], age=(now-p.born)/1000;
+      p.r=Math.min(3.2,p.r+0.15);
+      var pulse=1+0.25*Math.sin(age*1.6+j);
+      x.beginPath();
+      x.fillStyle='rgba(210,230,225,0.85)';
+      x.arc(p.x,p.y,p.r*pulse,0,7);
+      x.fill();
+      x.font='11px monospace';
+      x.fillStyle='rgba(150,175,170,'+Math.min(0.75,age*0.5)+')';
+      x.fillText(p.w,p.x+7,p.y-7);
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
+</section>
