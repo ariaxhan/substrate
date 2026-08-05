@@ -1,0 +1,120 @@
+<section data-date='2026-08-05' data-type='morning'>
+<style>
+#tp-morn{margin:0;overflow:hidden;height:70vh;min-height:420px;position:relative;background:#0a0e1a;cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+#tp-morn canvas{display:block;width:100%;height:100%}
+#tp-morn .tp-word{position:absolute;left:50%;top:8%;transform:translateX(-50%);color:#f5e6d3;font-size:clamp(1.1rem,2.6vw,2rem);letter-spacing:.12em;text-transform:lowercase;opacity:0;transition:opacity 1.8s ease;pointer-events:none;text-shadow:0 0 20px rgba(255,180,90,.4)}
+</style>
+<div id="tp-morn">
+  <canvas id="tp-sky"></canvas>
+  <div class="tp-word" id="tp-word"></div>
+</div>
+<script>
+(function(){
+  var host = document.getElementById('tp-morn');
+  var cv = document.getElementById('tp-sky');
+  var ctx = cv.getContext('2d');
+  var wordEl = document.getElementById('tp-word');
+  var words = ['still','waking','unwritten','begin','open','yours'];
+  var stage = 0;
+  var mx = 0.5, my = 0.3;
+  var lines = [];
+  var W, H;
+
+  function resize(){
+    W = cv.width = host.clientWidth * devicePixelRatio;
+    H = cv.height = host.clientHeight * devicePixelRatio;
+    cv.style.width = host.clientWidth + 'px';
+    cv.style.height = host.clientHeight + 'px';
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  var palettes = [
+    ['#0a0e1a','#131a2e','#1b2440'],
+    ['#241633','#6b2d4f','#c24d5a'],
+    ['#4a2438','#f0a04b','#ffe1a8']
+  ];
+
+  function paletteAt(t){
+    var idx = Math.min(palettes.length - 1, Math.floor(t * palettes.length));
+    return palettes[idx];
+  }
+
+  for (var i = 0; i < 40; i++){
+    lines.push({
+      y: i / 40,
+      amp: 4 + Math.random() * 18,
+      freq: 0.5 + Math.random() * 2.5,
+      phase: Math.random() * Math.PI * 2,
+      speed: 0.1 + Math.random() * 0.4
+    });
+  }
+
+  var t0 = null;
+  function frame(ts){
+    if (!t0) t0 = ts;
+    var dt = (ts - t0) / 1000;
+
+    var light = Math.min(1, stage / (words.length - 1) * 0.5 + my * 0.5);
+    var pal = paletteAt(light);
+    var grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, pal[0]);
+    grad.addColorStop(0.5, pal[1]);
+    grad.addColorStop(1, pal[2]);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    var sunY = H * (0.85 - light * 0.55);
+    var sunX = W * mx;
+    var sunR = W * 0.05 + light * W * 0.03;
+    var sunGrad = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, sunR * 6);
+    sunGrad.addColorStop(0, 'rgba(255,225,180,' + (0.35 + light * 0.5) + ')');
+    sunGrad.addColorStop(1, 'rgba(255,225,180,0)');
+    ctx.fillStyle = sunGrad;
+    ctx.fillRect(0, 0, W, H);
+    ctx.beginPath();
+    ctx.arc(sunX, sunY, sunR, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,236,205,' + (0.55 + light * 0.4) + ')';
+    ctx.fill();
+
+    ctx.lineWidth = Math.max(1, W * 0.0009);
+    for (var i = 0; i < lines.length; i++){
+      var ln = lines[i];
+      var yy = ln.y * H;
+      var pull = Math.max(0, 1 - Math.abs(ln.y - my) * 2.2);
+      ctx.beginPath();
+      for (var x = 0; x <= W; x += W / 60){
+        var w = Math.sin(x * 0.01 * ln.freq + ln.phase + dt * ln.speed) * ln.amp * devicePixelRatio * (1 + pull * 3);
+        var yPos = yy + w * (0.3 + light * 0.7);
+        if (x === 0) ctx.moveTo(x, yPos); else ctx.lineTo(x, yPos);
+      }
+      var op = 0.04 + pull * 0.18 + light * 0.06;
+      ctx.strokeStyle = 'rgba(255,' + (200 + light * 40) + ',' + (150 + light * 60) + ',' + op + ')';
+      ctx.stroke();
+    }
+
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  host.addEventListener('mousemove', function(e){
+    var r = host.getBoundingClientRect();
+    mx = (e.clientX - r.left) / r.width;
+    my = (e.clientY - r.top) / r.height;
+  });
+
+  function showWord(){
+    wordEl.textContent = words[stage];
+    wordEl.style.opacity = 1;
+    setTimeout(function(){ wordEl.style.opacity = 0; }, 2200);
+  }
+
+  host.addEventListener('click', function(){
+    stage = (stage + 1) % words.length;
+    showWord();
+  });
+
+  showWord();
+})();
+</script>
+</section>
