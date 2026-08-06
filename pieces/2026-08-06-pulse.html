@@ -1,0 +1,86 @@
+<section data-date='2026-08-06' data-type='pulse'>
+<style>
+[data-date='2026-08-06'][data-type='pulse']{
+  display:block;position:relative;height:78vh;min-height:460px;
+  background:radial-gradient(ellipse at 50% 30%,#181a20,#0b0c10 70%);
+  overflow:hidden;font-family:Georgia,'Times New Roman',serif;color:#e8e3d8;
+  cursor:crosshair;user-select:none
+}
+[data-date='2026-08-06'][data-type='pulse'] .stg{
+  position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center
+}
+[data-date='2026-08-06'][data-type='pulse'] .beam{
+  display:flex;justify-content:space-between;align-items:center;
+  width:min(78vw,680px);border-top:1px solid rgba(232,227,216,.28);
+  transform-origin:50% 50%;position:relative;padding-top:2px
+}
+[data-date='2026-08-06'][data-type='pulse'] .beam span{
+  font-style:italic;font-size:clamp(2.2rem,7vw,4.6rem);letter-spacing:.02em;
+  transition:color .3s,text-shadow .3s
+}
+[data-date='2026-08-06'][data-type='pulse'] .beam span::before{
+  content:'';display:block;width:1px;height:26px;background:rgba(232,227,216,.28);
+  margin:0 auto 4px
+}
+[data-date='2026-08-06'][data-type='pulse'] .piv{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-2px);
+  width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;
+  border-bottom:14px solid rgba(232,227,216,.4)
+}
+[data-date='2026-08-06'][data-type='pulse'] .rd{
+  margin-top:34px;font-family:'Courier New',monospace;font-size:.72rem;
+  letter-spacing:.14em;color:rgba(232,227,216,.45);text-transform:uppercase
+}
+[data-date='2026-08-06'][data-type='pulse'] .tk{
+  position:absolute;bottom:0;width:1px;height:9px;background:rgba(212,175,106,.7)
+}
+[data-date='2026-08-06'][data-type='pulse'] .rule{
+  position:relative;width:min(78vw,680px);height:9px;margin-top:10px;
+  border-top:1px solid rgba(232,227,216,.12)
+}
+[data-date='2026-08-06'][data-type='pulse'] .bal span{color:#d4af6a;text-shadow:0 0 18px rgba(212,175,106,.55)}
+</style>
+<div class="stg">
+  <div class="piv"></div>
+  <div class="beam" id="tb">
+    <span id="h1">half</span><span id="h2">way</span>
+  </div>
+  <div class="rule" id="rl"></div>
+  <div class="rd" id="rd">tilt&nbsp;0%&nbsp;&middot;&nbsp;move to find the fulcrum</div>
+</div>
+<script>
+(function(){
+  var root=document.currentScript.parentElement;
+  var beam=root.querySelector('#tb'),rd=root.querySelector('#rd'),
+      rl=root.querySelector('#rl'),marks=0,best=1;
+  function onmove(e){
+    var r=root.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width;
+    var dx=Math.max(-1,Math.min(1,(x-.5)*2));
+    beam.style.transform='rotate('+(dx*13)+'deg)';
+    var pct=Math.round(Math.abs(dx)*100);
+    var bal=pct<3;
+    root.classList.toggle('bal',bal);
+    if(Math.abs(dx)<best)best=Math.abs(dx);
+    rd.innerHTML=bal
+      ? '&mdash;&nbsp;equilibrium&nbsp;&mdash;'
+      : 'tilt&nbsp;'+pct+'%&nbsp;&middot;&nbsp;closest&nbsp;'+Math.round(best*100)+'%';
+  }
+  root.addEventListener('mousemove',onmove);
+  root.addEventListener('touchmove',function(e){
+    onmove(e.touches[0]);
+  },{passive:true});
+  root.addEventListener('click',function(e){
+    if(marks>22)return;
+    var r=root.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width;
+    var t=document.createElement('div');
+    t.className='tk';
+    t.style.left=(x*100)+'%';
+    rl.appendChild(t);
+    marks++;
+  });
+})();
+</script>
+</section>
