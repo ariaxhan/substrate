@@ -1,0 +1,59 @@
+<section data-date='2026-08-06' data-type='morning'>
+<style>
+#taper-0806{margin:0;overflow:hidden;height:100vh;background:#0a0d16;position:relative;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+#taper-0806 .sky{position:absolute;inset:0;background:linear-gradient(to top,#ff9a4d,#ffcf8a 22%,#6f8fb8 55%,#0a0d16 85%);opacity:0;transition:opacity .6s ease-out}
+#taper-0806 .sun{position:absolute;left:50%;bottom:-60px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,#fff3d6,#ffb454 60%,transparent 72%);transform:translateX(-50%);transition:bottom 1.4s cubic-bezier(.2,.7,.2,1),opacity .8s;opacity:0}
+#taper-0806 .horizon{position:absolute;left:0;right:0;bottom:0;height:2px;background:#1a1d2b;z-index:2}
+#taper-0806 .word{position:absolute;color:#0a0d16;mix-blend-mode:screen;font-style:italic;letter-spacing:.04em;opacity:0;transition:opacity 1.1s ease;white-space:nowrap;pointer-events:none}
+#taper-0806 .hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#4a5470;font-size:13px;letter-spacing:.18em;text-transform:uppercase;transition:opacity .8s;pointer-events:none;text-align:center}
+#taper-0806 .lit .hint{opacity:0}
+#taper-0806 .lit .sky{opacity:1}
+#taper-0806 .lit .sun{bottom:18%;opacity:1}
+#taper-0806 .count{position:absolute;bottom:14px;right:18px;color:#5c6785;font-size:11px;letter-spacing:.12em;opacity:.6}
+</style>
+<div id="taper-0806">
+  <div class="sky"></div>
+  <div class="sun"></div>
+  <div class="horizon"></div>
+  <div class="hint">move to raise the light<br>click to begin again</div>
+  <div class="count"></div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('taper-0806');
+  var words=['unwritten','unopened','still','possible','quiet','no shape yet','waiting','before','beginning','a first line','unspoken','not yet decided'];
+  var placed=0,max=9,seen=false,timer=null;
+  var countEl=root.querySelector('.count');
+  function place(x,y){
+    if(placed>=max)return;
+    var w=document.createElement('div');
+    w.className='word';
+    w.textContent=words[placed%words.length];
+    w.style.left=Math.max(0,Math.min(94,x))+'%';
+    w.style.top=Math.max(4,Math.min(90,y))+'%';
+    w.style.fontSize=(14+Math.random()*20)+'px';
+    root.appendChild(w);
+    requestAnimationFrame(function(){w.style.opacity=(0.35+Math.random()*0.4)});
+    placed++;
+    countEl.textContent=placed+' / '+max+' unwritten';
+  }
+  root.addEventListener('mousemove',function(e){
+    var r=root.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width*100;
+    var y=(e.clientY-r.top)/r.height*100;
+    if(!seen){seen=true;root.classList.add('lit')}
+    if(!timer){
+      timer=setTimeout(function(){timer=null},260);
+      place(x,y);
+    }
+  });
+  root.addEventListener('click',function(){
+    root.classList.remove('lit');
+    seen=false;placed=0;
+    countEl.textContent='';
+    var ws=root.querySelectorAll('.word');
+    for(var i=0;i<ws.length;i++){ws[i].remove()}
+  });
+})();
+</script>
+</section>
