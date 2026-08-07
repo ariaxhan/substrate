@@ -1,0 +1,91 @@
+<section data-date='2026-08-07' data-type='spark'>
+<style>
+#tp07{margin:0;height:70vh;min-height:420px;background:#08080c;position:relative;overflow:hidden;cursor:crosshair;font-family:Georgia,serif}
+#tp07 .w{position:absolute;top:50%;font-size:2.2vw;letter-spacing:.04em;white-space:nowrap;transition:filter .3s}
+#tp07 .l{color:#5fd6ff;text-shadow:0 0 10px #1b7fa8;transform:translate(-100%,-50%)}
+#tp07 .r{color:#ff8a5f;text-shadow:0 0 10px #a8461b;transform:translate(0,-50%)}
+#tp07 .s{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#f2f2e6;font-size:2.6vw;font-style:italic;opacity:0;pointer-events:none;text-shadow:0 0 18px #fff}
+#tp07 .p{position:absolute;width:4px;height:4px;border-radius:50%;background:#f2f2e6;pointer-events:none}
+#tp07 .h{position:absolute;bottom:10px;left:14px;color:#555;font:11px monospace}
+@media(max-width:700px){#tp07 .w,#tp07 .s{font-size:5vw}}
+</style>
+<div id="tp07">
+  <div class="w l" id="tp07l">the question</div>
+  <div class="w r" id="tp07r">the answer</div>
+  <div class="s" id="tp07s"></div>
+  <div class="h">move to draw them close · click to fuse</div>
+</div>
+<script>
+(function(){
+  var box=document.getElementById('tp07'),
+      L=document.getElementById('tp07l'),
+      R=document.getElementById('tp07r'),
+      S=document.getElementById('tp07s'),
+      pairs=[['the question','the answer','the argument'],
+             ['what i said','what you heard','the third thing'],
+             ['this shore','that shore','the bridge'],
+             ['the signal','the noise','the pattern'],
+             ['before','after','the crease'],
+             ['a body','a body','a room'],
+             ['the map','the territory','the walk'],
+             ['my silence','your silence','a held breath']],
+      idx=0, gap=1, fused=false;
+
+  function place(){
+    var p=pairs[idx];
+    L.textContent=p[0]; R.textContent=p[1];
+  }
+  place();
+
+  box.addEventListener('mousemove',function(e){
+    if(fused) return;
+    var r=box.getBoundingClientRect(),x=(e.clientX-r.left)/r.width;
+    gap=Math.max(.04,Math.abs(x-0.5)*2);
+    var pull=(1-gap)*46;
+    L.style.left=(50-pull)+'%';
+    R.style.left=(50+pull-14)+'%';
+    var heat=1-gap;
+    L.style.filter='brightness('+(1+heat)+')';
+    R.style.filter='brightness('+(1+heat)+')';
+  });
+
+  box.addEventListener('click',function(e){
+    if(fused) return;
+    fused=true;
+    var r=box.getBoundingClientRect(),
+        cx=e.clientX-r.left, cy=e.clientY-r.top;
+    for(var i=0;i<18;i++){
+      var p=document.createElement('div');
+      p.className='p';
+      var ang=Math.random()*Math.PI*2, d=20+Math.random()*90;
+      p.style.left=cx+'px'; p.style.top=cy+'px';
+      p.style.background=i%2?'#5fd6ff':'#ff8a5f';
+      box.appendChild(p);
+      (function(p,ang,d){
+        var t0=performance.now();
+        function step(t){
+          var u=(t-t0)/700;
+          if(u>=1){p.remove();return;}
+          p.style.transform='translate('+Math.cos(ang)*d*u+'px,'+Math.sin(ang)*d*u+'px)';
+          p.style.opacity=1-u;
+          requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      })(p,ang,d);
+    }
+    L.style.opacity=0; R.style.opacity=0;
+    S.textContent=pairs[idx][2];
+    S.style.opacity=1;
+    setTimeout(function(){
+      S.style.opacity=0;
+      L.style.opacity=1; R.style.opacity=1;
+      L.style.filter='none'; R.style.filter='none';
+      idx=(idx+1)%pairs.length;
+      place();
+      L.style.left='4%'; R.style.left='82%';
+      fused=false;
+    },1400);
+  });
+})();
+</script>
+</section>
