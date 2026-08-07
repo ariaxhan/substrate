@@ -1,0 +1,76 @@
+<section data-date='2026-08-07' data-type='morning'>
+<style>
+#t0807{position:relative;height:100vh;overflow:hidden;background:#f2ede8;font-family:'Courier New',monospace;cursor:crosshair}
+#t0807 .w{position:absolute;font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:#2a2724;opacity:.035;transition:color .3s;white-space:nowrap;pointer-events:none;transform:translate(-50%,-50%)}
+#t0807 .w.found{opacity:1!important;color:#b5502f}
+#t0807 .glow{position:absolute;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(255,214,150,.55),transparent 70%);transform:translate(-50%,-50%);pointer-events:none;transition:opacity .3s;opacity:0}
+#t0807 .hint{position:absolute;bottom:22px;left:0;right:0;text-align:center;font-size:11px;letter-spacing:.2em;color:#a39a8c;text-transform:uppercase;transition:opacity .8s}
+#t0807 .hint.gone{opacity:0}
+#t0807 .count{position:absolute;top:18px;right:20px;font-size:11px;color:#c2b8a6;letter-spacing:.15em}
+</style>
+<div id="t0807">
+<div class="glow"></div>
+<div class="hint">move to find the light. click to keep a word.</div>
+<div class="count">0 / 14 written</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('t0807');
+var words=['light','not yet','possible','hour','waking','blank','still time','begin','quiet','open','unmade','soon','again','breath'];
+var pos=[[8,18],[72,12],[22,32],[54,26],[36,52],[82,42],[14,68],[62,64],[44,80],[90,74],[6,46],[68,88],[30,10],[86,58]];
+var glow=root.querySelector('.glow');
+var hint=root.querySelector('.hint');
+var count=root.querySelector('.count');
+var els=words.map(function(w,i){
+  var e=document.createElement('div');
+  e.className='w';
+  e.textContent=w;
+  e.style.left=pos[i][0]+'%';
+  e.style.top=pos[i][1]+'%';
+  e.dataset.found='0';
+  root.appendChild(e);
+  return e;
+});
+var found=0;
+function upd(x,y){
+  glow.style.opacity=1;
+  glow.style.left=x+'px';
+  glow.style.top=y+'px';
+  els.forEach(function(e){
+    if(e.dataset.found==='1')return;
+    var r=e.getBoundingClientRect();
+    var rr=root.getBoundingClientRect();
+    var ex=r.left-rr.left+r.width/2,ey=r.top-rr.top+r.height/2;
+    var d=Math.hypot(x-ex,y-ey);
+    var o=Math.max(.035,1-d/140);
+    e.style.opacity=o;
+  });
+}
+root.addEventListener('mousemove',function(ev){
+  var r=root.getBoundingClientRect();
+  var x=ev.clientX-r.left,y=ev.clientY-r.top;
+  if(hint.className.indexOf('gone')<0){hint.className='hint gone'}
+  upd(x,y);
+});
+root.addEventListener('mouseleave',function(){glow.style.opacity=0});
+root.addEventListener('click',function(ev){
+  var r=root.getBoundingClientRect();
+  var x=ev.clientX-r.left,y=ev.clientY-r.top;
+  var best=null,bd=60;
+  els.forEach(function(e){
+    if(e.dataset.found==='1')return;
+    var rr=e.getBoundingClientRect();
+    var ex=rr.left-r.left+rr.width/2,ey=rr.top-r.top+rr.height/2;
+    var d=Math.hypot(x-ex,y-ey);
+    if(d<bd){bd=d;best=e}
+  });
+  if(best){
+    best.dataset.found='1';
+    best.className='w found';
+    found++;
+    count.textContent=found+' / '+words.length+' written';
+  }
+});
+})();
+</script>
+</section>
