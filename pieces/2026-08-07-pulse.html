@@ -1,0 +1,63 @@
+<section data-date='2026-08-07' data-type='pulse'>
+<style>
+#tp0807{position:relative;width:100%;height:100vh;background:radial-gradient(ellipse at 50% 40%,#14151b 0%,#0a0a0d 70%);overflow:hidden;font-family:Georgia,'Times New Roman',serif;cursor:crosshair;transition:filter .6s ease}
+#tp0807.flip{filter:invert(1) hue-rotate(180deg)}
+#tp0807 .axis{position:absolute;left:50%;top:50%;width:1px;height:120px;background:linear-gradient(#caa96a,transparent);transform:translate(-50%,-100%);opacity:.5}
+#tp0807 .foot{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:15px solid #caa96a;filter:drop-shadow(0 0 6px rgba(202,169,106,.5))}
+#tp0807 .beam{position:absolute;left:50%;top:50%;width:66vw;max-width:640px;height:1px;background:#e8e6e1;transform:translate(-50%,-50%) rotate(0deg);transform-origin:center center;transition:transform .12s ease-out}
+#tp0807 .word{position:absolute;top:50%;font-size:clamp(1rem,2.6vw,1.8rem);letter-spacing:.28em;color:#e8e6e1;text-transform:uppercase;transform:translateY(-50%);white-space:nowrap;transition:font-weight .1s,opacity .2s}
+#tp0807 .w1{left:0}
+#tp0807 .w2{right:0;text-align:right}
+#tp0807 .now{position:absolute;left:50%;top:50%;transform:translate(-50%,-260%);color:#6b6d76;font-size:.7rem;letter-spacing:.4em;text-transform:uppercase}
+#tp0807 .read{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);color:#4b4d56;font-size:.65rem;letter-spacing:.2em;font-style:italic;text-transform:lowercase}
+#tp0807 .hint{position:absolute;right:14px;bottom:10px;color:#3a3b42;font-size:.6rem;letter-spacing:.15em}
+</style>
+<div id="tp0807">
+  <div class="now">now</div>
+  <div class="axis"></div>
+  <div class="foot"></div>
+  <div class="beam" id="tp0807beam">
+    <span class="word w1" id="tp0807a">before</span>
+    <span class="word w2" id="tp0807b">after</span>
+  </div>
+  <div class="read" id="tp0807read">equal, for a moment</div>
+  <div class="hint">tilt · click to invert</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('tp0807'),
+      beam=document.getElementById('tp0807beam'),
+      a=document.getElementById('tp0807a'),
+      b=document.getElementById('tp0807b'),
+      read=document.getElementById('tp0807read'),
+      flipped=false;
+  function tilt(e){
+    var r=root.getBoundingClientRect(),
+        x=(e.clientX-r.left)/r.width*2-1,
+        deg=x*16;
+    beam.style.transform='translate(-50%,-50%) rotate('+deg+'deg)';
+    var wa=(1-x)*350+450, wb=(1+x)*350+450;
+    a.style.fontWeight=Math.max(300,Math.min(800,wa));
+    b.style.fontWeight=Math.max(300,Math.min(800,wb));
+    var pct=Math.round((x+1)/2*100);
+    read.textContent = Math.abs(x)<0.03 ? 'equal, for a moment'
+      : pct+'% '+(flipped?'after':'before')+', '+(100-pct)+'% '+(flipped?'before':'after');
+  }
+  root.addEventListener('mousemove',tilt);
+  root.addEventListener('touchmove',function(e){
+    if(e.touches[0]) tilt(e.touches[0]);
+  },{passive:true});
+  root.addEventListener('click',function(){
+    flipped=!flipped;
+    root.classList.toggle('flip');
+    var t=a.textContent; a.textContent=b.textContent; b.textContent=t;
+    beam.style.transition='transform .5s cubic-bezier(.2,1.6,.4,1)';
+    beam.style.transform='translate(-50%,-50%) rotate(360deg)';
+    setTimeout(function(){
+      beam.style.transition='transform .12s ease-out';
+      beam.style.transform='translate(-50%,-50%) rotate(0deg)';
+    },520);
+  });
+})();
+</script>
+</section>
