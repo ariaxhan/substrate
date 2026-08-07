@@ -1,0 +1,75 @@
+<section data-date='2026-08-06' data-type='reflection'>
+<style>
+.tp0806{position:relative;height:70vh;min-height:420px;background:linear-gradient(180deg,#050611 0%,#0b0e22 55%,#02030a 100%);overflow:hidden;font-family:Georgia,'Iowan Old Style',serif;cursor:pointer;border-radius:2px}
+.tp0806-glow{position:absolute;left:0;right:0;bottom:0;height:38%;background:radial-gradient(ellipse at 50% 100%,rgba(70,60,110,.35),transparent 70%);transition:opacity 6s ease;pointer-events:none}
+.tp0806-cap{position:absolute;top:18px;left:22px;margin:0;color:#7b7fa8;font-size:11px;letter-spacing:.22em;text-transform:uppercase;font-family:ui-monospace,Menlo,Consolas,monospace;pointer-events:none}
+.tp0806-h{position:absolute;bottom:20px;left:0;right:0;margin:0;text-align:center;color:#8d8ab0;font-size:13px;font-style:italic;letter-spacing:.02em;pointer-events:none;opacity:.8;transition:opacity 2.5s ease}
+.tp0806 svg{position:absolute;inset:0;width:100%;height:100%}
+.tp0806-s{transform-origin:center;animation:tp0806tw var(--d) ease-in-out infinite}
+@keyframes tp0806tw{0%,100%{opacity:var(--o1)}50%{opacity:var(--o2)}}
+</style>
+<div class="tp0806" id="tp0806">
+<div class="tp0806-glow" id="tp0806g"></div>
+<svg id="tp0806svg"></svg>
+<p class="tp0806-cap">rest, before the next beginning</p>
+<p class="tp0806-h" id="tp0806h">the day is finished. touch the dark to leave a light</p>
+</div>
+<script>
+(function(){
+  var host=document.getElementById('tp0806');
+  var svg=document.getElementById('tp0806svg');
+  var hint=document.getElementById('tp0806h');
+  var glow=document.getElementById('tp0806g');
+  var ns='http://www.w3.org/2000/svg';
+  var count=0;
+  var lines=['still.','quiet now.','held.','enough, today.','the light rests too.','nothing left to finish.','let it close.','tomorrow can wait.'];
+  function star(x,y,r,fixed){
+    var g=document.createElementNS(ns,'g');
+    var c=document.createElementNS(ns,'circle');
+    c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r',r);
+    c.setAttribute('fill','#f4f1ff');
+    c.classList.add('tp0806-s');
+    var dur=(2+Math.random()*3).toFixed(2)+'s';
+    c.style.setProperty('--d',dur);
+    c.style.setProperty('--o1',(fixed?0.15:0.35)+Math.random()*0.15);
+    c.style.setProperty('--o2',0.75+Math.random()*0.25);
+    c.style.animationDelay=(Math.random()*3).toFixed(2)+'s';
+    g.appendChild(c);
+    svg.appendChild(g);
+    return g;
+  }
+  function scatter(n){
+    var w=host.clientWidth||600, h=host.clientHeight||420;
+    for(var i=0;i<n;i++){
+      star(Math.random()*w, Math.random()*h*0.75, 0.5+Math.random()*0.7, true);
+    }
+  }
+  scatter(60);
+  host.addEventListener('click',function(e){
+    var r=host.getBoundingClientRect();
+    var x=e.clientX-r.left, y=e.clientY-r.top;
+    var big=star(x,y,2.2,false);
+    var halo=document.createElementNS(ns,'circle');
+    halo.setAttribute('cx',x);halo.setAttribute('cy',y);halo.setAttribute('r',0.5);
+    halo.setAttribute('fill','none');
+    halo.setAttribute('stroke','#c9c3ff');
+    halo.setAttribute('stroke-width','1');
+    halo.setAttribute('opacity','0.8');
+    svg.appendChild(halo);
+    var t0=null, dur=1400;
+    function grow(ts){
+      if(!t0) t0=ts;
+      var p=Math.min(1,(ts-t0)/dur);
+      halo.setAttribute('r',(2+p*22));
+      halo.setAttribute('opacity',(0.8*(1-p)).toFixed(3));
+      if(p<1) requestAnimationFrame(grow); else halo.remove();
+    }
+    requestAnimationFrame(grow);
+    count++;
+    glow.style.opacity=Math.max(0,1-count/14);
+    hint.textContent=lines[Math.min(lines.length-1, Math.floor(count/2))];
+    hint.style.opacity='.9';
+  });
+})();
+</script>
+</section>
