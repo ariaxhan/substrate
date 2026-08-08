@@ -1,0 +1,89 @@
+<section data-date='2026-08-08' data-type='morning'>
+<style>
+#taper-0808 * { box-sizing: border-box; }
+#taper-0808 {
+  margin: 0; overflow: hidden; height: 100vh; width: 100%;
+  background: #0a0a12; position: relative; cursor: none;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+#taper-0808 .sky {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, #0a0a12 0%, #0a0a12 60%, #120a10 100%);
+  transition: background 0.4s ease;
+}
+#taper-0808 .glow {
+  position: absolute; width: 700px; height: 700px; border-radius: 50%;
+  pointer-events: none; left: 0; top: 0; will-change: transform;
+  background: radial-gradient(circle, rgba(255,214,140,0.16) 0%, rgba(255,150,90,0.06) 35%, transparent 70%);
+  transform: translate(-350px,-350px);
+}
+#taper-0808 .field {
+  position: relative; z-index: 2; height: 100%; width: 100%;
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; align-content: center; gap: 0.4em 0.9em;
+  padding: 8vw; text-align: center;
+}
+#taper-0808 .w {
+  display: inline-block; font-size: clamp(1.1rem, 2.6vw, 2.3rem);
+  color: #14141c; letter-spacing: 0.01em;
+  transition: color 0.15s linear, text-shadow 0.15s linear;
+}
+#taper-0808 .w.hit {
+  color: #ffe3b0; text-shadow: 0 0 18px rgba(255,180,90,0.55);
+}
+#taper-0808 .mark {
+  position: absolute; bottom: 6vh; left: 50%; transform: translateX(-50%);
+  font-family: 'Courier New', monospace; font-size: 0.7rem;
+  color: #6a5a4a; letter-spacing: 0.25em; text-transform: uppercase;
+  opacity: 0.6; transition: opacity 1s ease;
+}
+#taper-0808:hover .mark { opacity: 0; }
+</style>
+<div id="taper-0808">
+  <div class="sky"></div>
+  <div class="glow" id="taper-glow"></div>
+  <div class="field" id="taper-field"></div>
+  <div class="mark">move to wake it</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('taper-0808');
+  var field = document.getElementById('taper-field');
+  var glow = document.getElementById('taper-glow');
+  var text = "before the first word there is only light finding its way across a still unwritten day nothing has happened yet everything is possible the hour has no name until you name it";
+  var words = text.split(' ');
+  var spans = words.map(function(w){
+    var s = document.createElement('span');
+    s.className = 'w';
+    s.textContent = w;
+    field.appendChild(s);
+    return s;
+  });
+  var raf = null;
+  function update(x, y){
+    glow.style.transform = 'translate(' + (x - 350) + 'px,' + (y - 350) + 'px)';
+    var r = root.getBoundingClientRect();
+    for (var i = 0; i < spans.length; i++){
+      var b = spans[i].getBoundingClientRect();
+      var cx = b.left + b.width / 2 - r.left;
+      var cy = b.top + b.height / 2 - r.top;
+      var d = Math.hypot(cx - x, cy - y);
+      if (d < 170) spans[i].classList.add('hit');
+      else spans[i].classList.remove('hit');
+    }
+  }
+  root.addEventListener('mousemove', function(e){
+    var r = root.getBoundingClientRect();
+    var x = e.clientX - r.left, y = e.clientY - r.top;
+    if (raf) cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(function(){ update(x, y); });
+  });
+  root.addEventListener('touchmove', function(e){
+    if (!e.touches[0]) return;
+    var r = root.getBoundingClientRect();
+    var x = e.touches[0].clientX - r.left, y = e.touches[0].clientY - r.top;
+    update(x, y);
+  }, {passive:true});
+})();
+</script>
+</section>
