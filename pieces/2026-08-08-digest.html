@@ -1,0 +1,64 @@
+<section data-date='2026-08-08' data-type='digest'>
+<style>
+#taper-2026-08-08{position:relative;background:#07070c;overflow:hidden;height:100vh;font-family:Georgia,serif}
+#taper-2026-08-08 canvas{position:absolute;inset:0;cursor:crosshair}
+#taper-2026-08-08 .hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#d9c9a8;opacity:.55;font-size:13px;letter-spacing:.14em;text-transform:uppercase;pointer-events:none;transition:opacity 1.6s}
+#taper-2026-08-08 .tally{position:absolute;bottom:14px;right:16px;color:#6b6350;font-size:11px;letter-spacing:.08em;font-family:monospace;opacity:.7}
+</style>
+<div id="taper-2026-08-08">
+<canvas id="tc08"></canvas>
+<div class="hint" id="th08">touch the dark to know something</div>
+<div class="tally" id="tt08">0 known &middot; 0 linked</div>
+</div>
+<script>
+(function(){
+var h=document.getElementById('taper-2026-08-08'),
+c=document.getElementById('tc08'),x=c.getContext('2d'),
+hint=document.getElementById('th08'),tally=document.getElementById('tt08');
+function rs(){c.width=h.clientWidth;c.height=h.clientHeight}
+rs();addEventListener('resize',rs);
+var nodes=[],links=0,
+words=['signal','trace','thread','memory','order','pattern','weight','seed','root','branch','cluster','echo','drift','form','shape','link','weave','bias','node','edge','origin','residue'];
+function add(px,py){
+var w=words[Math.floor(Math.random()*words.length)],n={x:px,y:py,w:w,c:0,a:0};
+nodes.forEach(function(m){
+var d=Math.hypot(m.x-px,m.y-py);
+if(d<180){n.c++;m.c++;links++}
+});
+nodes.push(n);
+tally.textContent=nodes.length+' known · '+links+' linked';
+}
+c.addEventListener('click',function(e){
+var r=c.getBoundingClientRect();
+add(e.clientX-r.left,e.clientY-r.top);
+hint.style.opacity=0;
+});
+function draw(){
+x.fillStyle='rgba(7,7,12,0.18)';
+x.fillRect(0,0,c.width,c.height);
+for(var i=0;i<nodes.length;i++){
+for(var j=i+1;j<nodes.length;j++){
+var a=nodes[i],b=nodes[j],d=Math.hypot(a.x-b.x,a.y-b.y);
+if(d<180){
+x.strokeStyle='rgba(217,201,168,'+((1-d/180)*0.5)+')';
+x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();
+}
+}
+}
+nodes.forEach(function(n){
+n.a=Math.min(1,n.a+0.03);
+var r=2.5+Math.min(n.c,9);
+x.fillStyle='rgba(217,201,168,'+n.a+')';
+x.beginPath();x.arc(n.x,n.y,r,0,7);x.fill();
+if(n.c>=2){
+x.font='12px Georgia,serif';
+x.fillStyle='rgba(217,201,168,'+(n.a*0.85)+')';
+x.fillText(n.w,n.x+9,n.y-9);
+}
+});
+requestAnimationFrame(draw);
+}
+draw();
+})();
+</script>
+</section>
