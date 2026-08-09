@@ -1,0 +1,52 @@
+<section data-date='2026-08-08' data-type='reflection'>
+<style>
+#tp-night{position:relative;width:100%;height:100vh;margin:0;overflow:hidden;background:radial-gradient(ellipse at 50% 115%,#1b2340 0%,#0a0e1e 45%,#050611 100%);cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+#tp-night .tp-hint{position:absolute;bottom:8vh;left:0;right:0;text-align:center;color:#5a6690;font-size:13px;letter-spacing:.14em;text-transform:lowercase;opacity:.55;transition:opacity 2.5s ease;pointer-events:none;user-select:none}
+#tp-night .tp-hint.tp-gone{opacity:0}
+#tp-night .tp-line{position:absolute;bottom:10vh;left:0;right:0;text-align:center;color:#cbd0e6;font-size:16px;font-style:italic;letter-spacing:.04em;opacity:0;transition:opacity 4s ease;pointer-events:none;user-select:none}
+#tp-night .tp-line.tp-show{opacity:.85}
+#tp-night .tp-star{position:absolute;width:3px;height:3px;border-radius:50%;background:#f4ecd8;box-shadow:0 0 4px 1px rgba(244,236,216,.5);transform:translate(-50%,-50%);animation:tp-in 1.8s ease-out forwards,tp-tw 4.5s ease-in-out infinite;animation-delay:0s,1.8s}
+#tp-night .tp-word{position:absolute;transform:translate(-50%,-50%);color:#e7e2cf;font-style:italic;font-size:15px;opacity:0;white-space:nowrap;pointer-events:none;animation:tp-word 4.2s ease-out forwards}
+@keyframes tp-in{from{opacity:0;transform:translate(-50%,-50%) scale(.2)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+@keyframes tp-tw{0%,100%{opacity:1}50%{opacity:.35}}
+@keyframes tp-word{0%{opacity:0;transform:translate(-50%,-40%)}18%{opacity:.8}100%{opacity:0;transform:translate(-50%,-140%)}}
+</style>
+<div id="tp-night">
+  <div class="tp-hint" id="tp-hint">touch the dark, let something settle</div>
+  <div class="tp-line" id="tp-line">the day is complete. rest now.</div>
+</div>
+<script>
+(function(){
+  var sky=document.getElementById('tp-night'),hint=document.getElementById('tp-hint'),line=document.getElementById('tp-line');
+  var words=['quiet','hush','still','enough','dusk','soft','deep breath','let go','done','home','slow now','close your eyes','tomorrow waits','you rested well'];
+  var n=0;
+  function settle(x,y){
+    n++;
+    var s=document.createElement('div');
+    s.className='tp-star';
+    s.style.left=x+'px';s.style.top=y+'px';
+    sky.appendChild(s);
+    var w=document.createElement('div');
+    w.className='tp-word';
+    w.textContent=words[(Math.random()*words.length)|0];
+    w.style.left=x+'px';w.style.top=y+'px';
+    sky.appendChild(w);
+    setTimeout(function(){w.remove()},4300);
+    if(n===1){hint.classList.add('tp-gone')}
+    if(n===9){line.classList.add('tp-show')}
+  }
+  sky.addEventListener('click',function(e){
+    var r=sky.getBoundingClientRect();
+    settle(e.clientX-r.left,e.clientY-r.top);
+  });
+  sky.addEventListener('touchstart',function(e){
+    var t=e.changedTouches[0],r=sky.getBoundingClientRect();
+    settle(t.clientX-r.left,t.clientY-r.top);
+  },{passive:true});
+  for(var i=0;i<14;i++){
+    settle(Math.random()*window.innerWidth,Math.random()*window.innerHeight*0.7);
+  }
+  n=0;
+})();
+</script>
+</section>
