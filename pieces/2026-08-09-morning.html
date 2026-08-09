@@ -1,0 +1,68 @@
+<section data-date='2026-08-09' data-type='morning'>
+<style>
+#taper-dawn{position:relative;width:100%;height:100vh;overflow:hidden;background:linear-gradient(180deg,var(--c1,#05050c),var(--c2,#0b0b18));transition:background 1.4s ease;cursor:crosshair;font-family:Georgia,'Iowan Old Style',serif}
+#taper-dawn .field{position:absolute;inset:0}
+#taper-dawn .field span{position:absolute;color:#2a2a3a;letter-spacing:.02em;line-height:1.3;white-space:nowrap;transition:color 1.4s ease}
+#taper-dawn .light{position:absolute;inset:0;-webkit-mask-image:radial-gradient(circle var(--r,110px) at var(--x,50%) var(--y,50%),#000 0%,transparent 100%);mask-image:radial-gradient(circle var(--r,110px) at var(--x,50%) var(--y,50%),#000 0%,transparent 100%)}
+#taper-dawn .light span{position:absolute;color:#f2c98a;text-shadow:0 0 18px rgba(255,190,110,.5);letter-spacing:.02em;line-height:1.3;white-space:nowrap}
+#taper-dawn .l1{top:10%;left:7%;font-size:clamp(14px,2.6vw,26px)}
+#taper-dawn .l2{top:24%;right:9%;font-size:clamp(12px,2vw,20px);font-style:italic}
+#taper-dawn .l3{top:44%;left:14%;font-size:clamp(16px,3.4vw,34px)}
+#taper-dawn .l4{top:58%;right:16%;font-size:clamp(12px,2vw,20px)}
+#taper-dawn .l5{top:74%;left:9%;font-size:clamp(13px,2.2vw,22px);font-style:italic}
+#taper-dawn .l6{top:87%;right:8%;font-size:clamp(15px,2.8vw,28px)}
+#taper-dawn .hint{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);color:#3a3a4a;font-size:11px;letter-spacing:.15em;text-transform:uppercase;font-family:sans-serif;opacity:.6;pointer-events:none;transition:opacity 1s}
+</style>
+<div id="taper-dawn">
+  <div class="field" id="tdBase">
+    <span class="l1">before the hour has a name</span>
+    <span class="l2">the page hasn't decided yet</span>
+    <span class="l3">light arrives without asking</span>
+    <span class="l4">nothing here is finished</span>
+    <span class="l5">you have not ruined this day</span>
+    <span class="l6">it is still only possible</span>
+  </div>
+  <div class="light" id="tdLight">
+    <span class="l1">before the hour has a name</span>
+    <span class="l2">the page hasn't decided yet</span>
+    <span class="l3">light arrives without asking</span>
+    <span class="l4">nothing here is finished</span>
+    <span class="l5">you have not ruined this day</span>
+    <span class="l6">it is still only possible</span>
+  </div>
+  <div class="hint" id="tdHint">move to find first light &middot; click to let it rise</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('taper-dawn'),hint=document.getElementById('tdHint');
+  var stages=[
+    {c1:'#05050c',c2:'#0b0b18',r:110},
+    {c1:'#0d0a1c',c2:'#20132a',r:220},
+    {c1:'#241228',c2:'#5a2a2e',r:360},
+    {c1:'#3a1c22',c2:'#a85a34',r:560},
+    {c1:'#5a3320',c2:'#f2c98a',r:2400}
+  ];
+  var stage=0;
+  function apply(s){
+    el.style.setProperty('--c1',s.c1);
+    el.style.setProperty('--c2',s.c2);
+    el.style.setProperty('--r',s.r+'px');
+  }
+  apply(stages[0]);
+  el.addEventListener('mousemove',function(e){
+    var r=el.getBoundingClientRect();
+    el.style.setProperty('--x',((e.clientX-r.left)/r.width*100)+'%');
+    el.style.setProperty('--y',((e.clientY-r.top)/r.height*100)+'%');
+    if(hint){hint.style.opacity=0;}
+  });
+  el.addEventListener('click',function(){
+    stage=(stage+1)%stages.length;
+    apply(stages[stage]);
+    if(stage===stages.length-1&&hint){
+      hint.textContent='the day is unwritten. begin.';
+      hint.style.opacity=.6;
+    }
+  });
+})();
+</script>
+</section>
