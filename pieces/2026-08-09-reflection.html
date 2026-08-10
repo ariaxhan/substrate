@@ -1,0 +1,70 @@
+<section data-date='2026-08-09' data-type='reflection'>
+<style>
+#tpNight{position:relative;width:100%;height:100vh;overflow:hidden;background:radial-gradient(ellipse at 50% 105%,#0c1226 0%,#050712 55%,#020204 100%);cursor:crosshair;font-family:ui-monospace,'SF Mono',Menlo,Consolas,monospace}
+#tpSky span{position:absolute;width:2px;height:2px;background:#cfd8ff;border-radius:50%;opacity:.12;animation:tpTwinkle 5s ease-in-out infinite}
+@keyframes tpTwinkle{0%,100%{opacity:.08}50%{opacity:.55}}
+.tpStar{position:absolute;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:50%;background:#fff;box-shadow:0 0 6px 2px rgba(255,255,255,.85),0 0 16px 5px rgba(170,195,255,.4);animation:tpPop .7s cubic-bezier(.2,1.4,.4,1)}
+@keyframes tpPop{0%{transform:scale(0)}65%{transform:scale(1.7)}100%{transform:scale(1)}}
+.tpWord{position:absolute;transform:translate(-50%,-160%);color:#93a6d9;font:italic 13px Georgia,serif;white-space:nowrap;opacity:0;transition:opacity 2.2s ease;pointer-events:none}
+.tpWord.show{opacity:.85}
+.tpWord.rest{opacity:.28;transition:opacity 5s ease}
+#tpHint{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);color:#3b4770;font-size:10px;letter-spacing:.22em;text-transform:uppercase;opacity:.55;transition:opacity 1.6s ease;pointer-events:none}
+#tpFinal{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80%;text-align:center;color:#dde5ff;font:italic 18px/1.6 Georgia,serif;opacity:0;transition:opacity 3.4s ease;pointer-events:none;text-shadow:0 0 22px rgba(150,170,255,.55)}
+#tpFinal.show{opacity:.92}
+</style>
+<div id="tpNight">
+  <div id="tpSky"></div>
+  <div id="tpHint">click to place a star</div>
+  <div id="tpFinal">the day is complete.<br>rest before the next beginning.</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('tpNight'),
+      sky=document.getElementById('tpSky'),
+      hint=document.getElementById('tpHint'),
+      final=document.getElementById('tpFinal'),
+      words=['hush now','unclench your hands','nothing left to decide','the list can wait','you carried enough today','stillness, earned','let the dark finish the sentence','breathe, this is the whole task now','tomorrow has not asked for anything yet','you are allowed to stop','the unfinished stays kindly unfinished','put it down'],
+      used=[],
+      n=0,
+      MAX=9;
+  for(var i=0;i<55;i++){
+    var s=document.createElement('span');
+    s.style.left=(Math.random()*100)+'%';
+    s.style.top=(Math.random()*88)+'%';
+    s.style.animationDelay=(Math.random()*5)+'s';
+    sky.appendChild(s);
+  }
+  function pick(){
+    if(used.length===words.length)used=[];
+    var w;
+    do{w=words[Math.floor(Math.random()*words.length)];}while(used.indexOf(w)>-1);
+    used.push(w);
+    return w;
+  }
+  root.addEventListener('click',function(e){
+    if(n>=MAX)return;
+    var r=root.getBoundingClientRect(),
+        x=e.clientX-r.left,
+        y=e.clientY-r.top;
+    var star=document.createElement('div');
+    star.className='tpStar';
+    star.style.left=x+'px';
+    star.style.top=y+'px';
+    root.appendChild(star);
+    var word=document.createElement('div');
+    word.className='tpWord';
+    word.style.left=x+'px';
+    word.style.top=y+'px';
+    word.textContent=pick();
+    root.appendChild(word);
+    requestAnimationFrame(function(){word.classList.add('show');});
+    setTimeout(function(){word.classList.add('rest');},2600);
+    n++;
+    if(n===1)hint.style.opacity=0;
+    if(n===MAX){
+      setTimeout(function(){final.classList.add('show');},1800);
+    }
+  });
+})();
+</script>
+</section>
