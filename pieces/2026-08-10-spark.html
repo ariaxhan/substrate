@@ -1,0 +1,108 @@
+<section data-date='2026-08-10' data-type='spark'>
+<style>
+#tp10 * { box-sizing: border-box }
+#tp10 {
+  margin: 0; padding: 0; height: 70vh; min-height: 420px;
+  background: #0a0a12; overflow: hidden; position: relative;
+  font-family: Georgia, serif; cursor: crosshair;
+}
+#tp10 .lbl {
+  position: absolute; top: 10px; left: 14px; color: #665; font: 11px monospace;
+  letter-spacing: 2px; z-index: 5; opacity: .7;
+}
+#tp10 .p {
+  position: absolute; width: 6px; height: 6px; border-radius: 50%;
+  transform: translate(-50%, -50%); pointer-events: none;
+}
+#tp10 .p.a { background: #ff6b5e; box-shadow: 0 0 10px #ff6b5e }
+#tp10 .p.b { background: #5ecbff; box-shadow: 0 0 10px #5ecbff }
+#tp10 .w {
+  position: absolute; color: #eee; font-size: 15px; white-space: nowrap;
+  opacity: 0; transform: translate(-50%, -50%) scale(.6);
+  transition: opacity .6s ease, transform .8s cubic-bezier(.2,1,.3,1);
+  pointer-events: none; text-shadow: 0 0 8px currentColor;
+}
+#tp10 .w.on { opacity: 1; transform: translate(-50%, -50%) scale(1) }
+</style>
+<div id="tp10">
+  <div class="lbl">move to bring them close &middot; click to fuse</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('tp10');
+  var A = document.createElement('div'); A.className = 'p a';
+  var B = document.createElement('div'); B.className = 'p b';
+  root.appendChild(A); root.appendChild(B);
+
+  var words = ['you', 'me', 'edge', 'seam', 'spark', 'weld', 'here', 'now', 'us', 'threshold', 'both', 'neither'];
+  var tx = 0, ty = 0, bx = 0, by = 0, mx = 0, my = 0;
+  var w = root.clientWidth, h = root.clientHeight;
+  bx = w * 0.7; by = h * 0.3; tx = w * 0.5; ty = h * 0.5; mx = tx; my = ty;
+  var fused = false, cool = 0;
+
+  function place(el, x, y){ el.style.left = x + 'px'; el.style.top = y + 'px'; }
+  place(B, bx, by);
+
+  root.addEventListener('mousemove', function(e){
+    var r = root.getBoundingClientRect();
+    mx = e.clientX - r.left; my = e.clientY - r.top;
+  });
+
+  function spawnWord(x, y, hue){
+    var s = document.createElement('span');
+    s.className = 'w';
+    s.style.color = hue;
+    s.textContent = words[Math.floor(Math.random() * words.length)];
+    s.style.left = x + 'px'; s.style.top = y + 'px';
+    root.appendChild(s);
+    requestAnimationFrame(function(){ s.classList.add('on'); });
+    setTimeout(function(){
+      s.style.opacity = 0;
+      s.style.transform = 'translate(-50%,-50%) scale(1.4)';
+      setTimeout(function(){ s.remove(); }, 700);
+    }, 1400);
+  }
+
+  root.addEventListener('click', function(){
+    var dx = tx - bx, dy = ty - by;
+    var dist = Math.sqrt(dx*dx + dy*dy);
+    if (dist < 90 && cool <= 0){
+      fused = true;
+      cool = 40;
+      for (var i = 0; i < 5; i++){
+        setTimeout(function(){
+          spawnWord((tx+bx)/2 + (Math.random()*60-30), (ty+by)/2 + (Math.random()*60-30), '#e8d9ff');
+        }, i * 90);
+      }
+    }
+  });
+
+  function tick(){
+    tx += (mx - tx) * 0.08;
+    ty += (my - ty) * 0.08;
+
+    var t = Date.now() * 0.0006;
+    bx = w * 0.5 + Math.cos(t) * w * 0.32;
+    by = h * 0.5 + Math.sin(t * 1.3) * h * 0.32;
+
+    if (cool > 0) cool--;
+
+    place(A, tx, ty);
+    place(B, bx, by);
+
+    var dx = tx - bx, dy = ty - by;
+    var dist = Math.sqrt(dx*dx + dy*dy);
+    var near = Math.max(0, 1 - dist / 140);
+    A.style.transform = 'translate(-50%,-50%) scale(' + (1 + near * 2) + ')';
+    B.style.transform = 'translate(-50%,-50%) scale(' + (1 + near * 2) + ')';
+    root.style.background = 'radial-gradient(circle at ' + ((tx+bx)/2) + 'px ' + ((ty+by)/2) + 'px, rgba(232,217,255,' + (near*0.15) + '), #0a0a12 60%)';
+
+    requestAnimationFrame(tick);
+  }
+  tick();
+
+  window.addEventListener('resize', function(){ w = root.clientWidth; h = root.clientHeight; });
+})();
+</script>
+</section>
+
