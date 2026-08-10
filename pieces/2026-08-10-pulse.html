@@ -1,0 +1,105 @@
+<section data-date='2026-08-10' data-type='pulse'>
+<style>
+[data-date='2026-08-10'][data-type='pulse'] {
+  display: block;
+  position: relative;
+  height: 100vh;
+  overflow: hidden;
+  background: #0b0b12;
+  font-family: Georgia, 'Times New Roman', serif;
+  transition: background 0.4s ease;
+}
+[data-date='2026-08-10'][data-type='pulse'] .p-wrap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -100%);
+  width: min(74vw, 640px);
+}
+[data-date='2026-08-10'][data-type='pulse'] .p-beam {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transform-origin: 50% 100%;
+  border-top: 1px solid #e8e2d0;
+  padding-top: 14px;
+  transition: transform 0.06s linear, opacity 0.4s ease;
+}
+[data-date='2026-08-10'][data-type='pulse'] .p-word {
+  font-size: clamp(0.85rem, 2.2vw, 1.4rem);
+  letter-spacing: 0.28em;
+  color: #cfc8b4;
+  user-select: none;
+}
+[data-date='2026-08-10'][data-type='pulse'] #p-l { text-align: left; }
+[data-date='2026-08-10'][data-type='pulse'] #p-r { text-align: right; }
+[data-date='2026-08-10'][data-type='pulse'] .p-pivot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-bottom: 15px solid #55506a;
+  transform: translate(-50%, 0);
+  transition: border-bottom-color 0.4s ease;
+}
+[data-date='2026-08-10'][data-type='pulse'] .p-read {
+  position: absolute;
+  left: 50%;
+  bottom: 10%;
+  transform: translateX(-50%);
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  color: #6b6680;
+  transition: color 0.4s ease;
+}
+[data-date='2026-08-10'][data-type='pulse'].p-bal { background: #16131f; }
+[data-date='2026-08-10'][data-type='pulse'].p-bal .p-pivot { border-bottom-color: #f5c563; }
+[data-date='2026-08-10'][data-type='pulse'].p-bal .p-beam { opacity: 1; }
+[data-date='2026-08-10'][data-type='pulse'].p-bal .p-word { color: #f5e6bf; }
+[data-date='2026-08-10'][data-type='pulse'].p-bal .p-read { color: #f5c563; }
+[data-date='2026-08-10'][data-type='pulse'] .p-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 5%;
+  transform: translateX(-50%);
+  font-family: 'Courier New', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  color: #3d3a4a;
+}
+</style>
+<div class="p-wrap">
+  <div class="p-beam" id="p-beam">
+    <span class="p-word" id="p-l">MORNING</span>
+    <span class="p-word" id="p-r">EVENING</span>
+  </div>
+</div>
+<div class="p-pivot"></div>
+<div class="p-read" id="p-read">50 &middot; 50</div>
+<div class="p-hint">find the level</div>
+<script>
+(function(){
+  var root = document.currentScript.closest("[data-type='pulse']");
+  var beam = root.querySelector('#p-beam');
+  var read = root.querySelector('#p-read');
+  function move(x){
+    var cx = window.innerWidth / 2;
+    var t = Math.max(-1, Math.min(1, (x - cx) / cx));
+    var angle = t * 16;
+    beam.style.transform = 'rotate(' + angle + 'deg)';
+    var lp = Math.round(50 - t * 50);
+    read.textContent = lp + ' · ' + (100 - lp);
+    root.classList.toggle('p-bal', Math.abs(angle) < 0.5);
+  }
+  window.addEventListener('mousemove', function(e){ move(e.clientX); });
+  window.addEventListener('touchmove', function(e){
+    if (e.touches && e.touches[0]) move(e.touches[0].clientX);
+  }, { passive: true });
+  move(window.innerWidth / 2);
+})();
+</script>
+</section>
