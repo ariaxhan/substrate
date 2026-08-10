@@ -1,0 +1,53 @@
+<section data-date='2026-08-10' data-type='morning'>
+<style>
+#tp-dawn{position:relative;width:100%;height:100vh;overflow:hidden;background:linear-gradient(to bottom,#0a0e27,#141a3a);cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+#tp-dawn .sun{position:absolute;left:50%;bottom:8%;width:9vmin;height:9vmin;border-radius:50%;transform:translateX(-50%);opacity:.35;transition:opacity .4s;pointer-events:none;filter:blur(.5px)}
+#tp-dawn .horizon{position:absolute;left:0;right:0;bottom:32%;height:1px;background:rgba(255,255,255,.18);pointer-events:none}
+#tp-dawn .word{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#e8e6da;font-size:clamp(1.1rem,3.4vw,2.4rem);letter-spacing:.04em;font-style:italic;opacity:.55;transition:opacity .6s;pointer-events:none;white-space:nowrap;text-align:center}
+#tp-dawn .hint{position:absolute;left:50%;bottom:6%;transform:translateX(-50%);color:#c9c6b8;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;opacity:.28;font-family:Georgia,serif;pointer-events:none}
+#tp-dawn .spark{position:absolute;color:#fff3d6;font-size:.85rem;font-style:italic;opacity:0;pointer-events:none;transition:transform 3.6s ease-out,opacity 3.6s ease-out;text-shadow:0 0 8px rgba(255,200,120,.5)}
+</style>
+<div id="tp-dawn">
+  <div class="sun" id="tp-sun"></div>
+  <div class="horizon"></div>
+  <p class="word" id="tp-word">the day has not chosen a shape yet</p>
+  <p class="hint">move to bring the light &middot; click to leave a word</p>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('tp-dawn'),
+      sun=document.getElementById('tp-sun'),
+      word=document.getElementById('tp-word'),
+      night=[10,14,39], dusk=[46,30,74], base=[20,24,58], dawn=[255,140,105], gold=[255,211,120];
+  function lerp(a,b,t){return Math.round(a+(b-a)*t)}
+  function mix(c1,c2,t){return 'rgb('+lerp(c1[0],c2[0],t)+','+lerp(c1[1],c2[1],t)+','+lerp(c1[2],c2[2],t)+')'}
+  function onMove(e){
+    var y=(e.touches?e.touches[0].clientY:e.clientY), r=el.getBoundingClientRect();
+    var t=1-Math.min(1,Math.max(0,(y-r.top)/r.height));
+    el.style.background='linear-gradient(to bottom,'+mix(night,dusk,t)+','+mix(base,dawn,t)+')';
+    sun.style.bottom=(6+t*46)+'%';
+    sun.style.opacity=.25+t*.65;
+    sun.style.background='radial-gradient(circle,'+mix(gold,gold,1)+','+mix(dawn,dawn,0)+'00)';
+    word.style.opacity=(.55-(t*.5)).toFixed(2);
+  }
+  var pool=['light','not yet','possible','unmarked','open','begin','first breath','still quiet','undecided','before names','wait','arriving'];
+  function spawn(x,y){
+    var s=document.createElement('span');
+    s.className='spark';
+    s.textContent=pool[Math.floor(Math.random()*pool.length)];
+    s.style.left=x+'px'; s.style.top=y+'px';
+    el.appendChild(s);
+    requestAnimationFrame(function(){
+      s.style.opacity=.9;
+      s.style.transform='translateY(-'+(40+Math.random()*60)+'px)';
+      setTimeout(function(){s.style.opacity=0},2600);
+    });
+    setTimeout(function(){s.remove()},4200);
+  }
+  el.addEventListener('mousemove',onMove);
+  el.addEventListener('touchmove',onMove,{passive:true});
+  el.addEventListener('click',function(e){spawn(e.clientX-el.getBoundingClientRect().left,e.clientY-el.getBoundingClientRect().top)});
+  onMove({clientY:window.innerHeight*0.65});
+})();
+</script>
+</section>
