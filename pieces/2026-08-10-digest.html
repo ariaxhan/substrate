@@ -1,0 +1,124 @@
+<section data-date='2026-08-10' data-type='digest'>
+<style>
+#tpd11 * { box-sizing: border-box }
+#tpd11 {
+  margin: 0; padding: 0; height: 70vh; min-height: 440px;
+  background: #ece6d6; overflow: hidden; position: relative;
+  font-family: Georgia, 'Times New Roman', serif; cursor: crosshair;
+}
+#tpd11 canvas { position: absolute; inset: 0; width: 100%; height: 100% }
+#tpd11 .lbl {
+  position: absolute; top: 12px; left: 16px; z-index: 5;
+  color: #7a7263; font: 11px/1.5 'Courier New', monospace;
+  letter-spacing: 1.5px; text-transform: uppercase; opacity: .75;
+  pointer-events: none;
+}
+#tpd11 .ct {
+  position: absolute; bottom: 12px; right: 16px; z-index: 5;
+  color: #a39a86; font: 11px 'Courier New', monospace; letter-spacing: 1px;
+  pointer-events: none;
+}
+#tpd11 .w {
+  position: absolute; color: #221f18; font-style: italic;
+  font-size: 14px; white-space: nowrap; opacity: 0;
+  transform: translate(-50%, -130%); pointer-events: none;
+  transition: opacity 1s ease;
+}
+#tpd11 .w.on { opacity: .85 }
+</style>
+<div id="tpd11">
+  <div class="lbl">click to record a fragment</div>
+  <div class="ct" id="tpd11ct">0 fragments</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('tpd11');
+  var cvs = document.createElement('canvas');
+  root.insertBefore(cvs, root.firstChild);
+  var ctx = cvs.getContext('2d');
+  var ct = document.getElementById('tpd11ct');
+  var words = ['trace','thread','echo','signal','shard','motif','residue','drift','kernel','glyph','axiom','warp','weave','cipher','seam','lattice','pulse','root','fold','grain'];
+  var nodes = [], bonds = 0, R = 150;
+  var w, h, dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  function size(){
+    w = root.clientWidth; h = root.clientHeight;
+    cvs.width = w * dpr; cvs.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    draw();
+  }
+
+  function draw(){
+    ctx.clearRect(0, 0, w, h);
+    for (var i = 0; i < nodes.length; i++){
+      for (var j = i + 1; j < nodes.length; j++){
+        var a = nodes[i], b = nodes[j];
+        var dx = a.x - b.x, dy = a.y - b.y;
+        var d = Math.sqrt(dx * dx + dy * dy);
+        if (d < R){
+          ctx.strokeStyle = 'rgba(60,50,30,' + ((1 - d / R) * 0.55) + ')';
+          ctx.lineWidth = 0.75;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+      }
+    }
+    for (var k = 0; k < nodes.length; k++){
+      var n = nodes[k];
+      var age = Math.min(1, (Date.now() - n.t) / 600);
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, 2.5 + age * 1.5, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(34,31,24,' + (0.5 + age * 0.4) + ')';
+      ctx.fill();
+    }
+  }
+
+  function addNode(x, y){
+    var n = { x: x, y: y, t: Date.now() };
+    var count = 0;
+    for (var i = 0; i < nodes.length; i++){
+      var dx = x - nodes[i].x, dy = y - nodes[i].y;
+      if (Math.sqrt(dx * dx + dy * dy) < R) count++;
+    }
+    bonds += count;
+    nodes.push(n);
+
+    var s = document.createElement('span');
+    s.className = 'w';
+    s.textContent = words[Math.floor(Math.random() * words.length)];
+    s.style.left = x + 'px'; s.style.top = y + 'px';
+    root.appendChild(s);
+    requestAnimationFrame(function(){ s.classList.add('on'); });
+    setTimeout(function(){
+      s.style.opacity = 0;
+      setTimeout(function(){ s.remove(); }, 1000);
+    }, 2600);
+
+    var label = nodes.length + ' fragment' + (nodes.length === 1 ? '' : 's');
+    if (bonds > 0) label += ' · ' + bonds + ' bond' + (bonds === 1 ? '' : 's');
+    if (nodes.length >= 12) label += ' · pattern';
+    ct.textContent = label;
+  }
+
+  root.addEventListener('click', function(e){
+    var r = root.getBoundingClientRect();
+    addNode(e.clientX - r.left, e.clientY - r.top);
+  });
+
+  (function seed(){
+    setTimeout(function(){
+      addNode(w * (0.3 + Math.random() * 0.4), h * (0.3 + Math.random() * 0.4));
+    }, 500);
+  })();
+
+  window.addEventListener('resize', size);
+  size();
+
+  (function loop(){
+    draw();
+    requestAnimationFrame(loop);
+  })();
+})();
+</script>
+</section>
