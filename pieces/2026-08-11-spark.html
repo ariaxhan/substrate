@@ -1,0 +1,83 @@
+<section data-date='2026-08-11' data-type='spark'>
+<style>
+.tp11{margin:0;overflow:hidden;background:#05070a;height:100vh;cursor:crosshair;position:relative;font-family:Georgia,serif}
+.tp11 span{position:absolute;white-space:nowrap;font-style:italic;pointer-events:none;will-change:transform,opacity;transition:opacity .5s}
+.tp11 .hint{position:absolute;bottom:10px;left:14px;color:#456;font:11px monospace;letter-spacing:.05em;z-index:5}
+</style>
+<div class="tp11" id="tp11">
+  <div class="hint">move · click</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('tp11');
+  var A = ["light","tide","signal","ember","root","echo","wave"];
+  var B = ["dark","stone","silence","frost","branch","void","shore"];
+  var W = innerWidth, H = innerHeight;
+  var pts = [];
+  function mk(word,kind){
+    var el = document.createElement('span');
+    el.textContent = word;
+    el.style.color = kind===0 ? '#ff8a5c' : '#5cc9ff';
+    el.style.fontSize = (14+Math.random()*10)+'px';
+    root.appendChild(el);
+    return {
+      el:el, kind:kind,
+      x: Math.random()*W, y: Math.random()*H,
+      vx:(Math.random()-.5)*0.4, vy:(Math.random()-.5)*0.4,
+      life:1
+    };
+  }
+  for(var i=0;i<7;i++){ pts.push(mk(A[i],0)); pts.push(mk(B[i],1)); }
+  var mx=W/2,my=H/2, sparks=[];
+  root.addEventListener('mousemove', function(e){ mx=e.clientX; my=e.clientY; });
+  root.addEventListener('click', function(e){
+    for(var i=0;i<pts.length;i++){
+      var p = pts[i];
+      var dx = e.clientX-p.x, dy = e.clientY-p.y;
+      var d = Math.hypot(dx,dy)+0.01;
+      p.vx += dx/d*1.2; p.vy += dy/d*1.2;
+    }
+  });
+  function synth(x,y){
+    var el = document.createElement('span');
+    el.textContent = "◈";
+    el.style.left=x+'px'; el.style.top=y+'px';
+    el.style.color='#f5e6c8';
+    el.style.fontSize='20px';
+    el.style.opacity='1';
+    root.appendChild(el);
+    setTimeout(function(){ el.style.opacity='0'; }, 30);
+    setTimeout(function(){ root.removeChild(el); }, 600);
+  }
+  function tick(){
+    for(var i=0;i<pts.length;i++){
+      var p = pts[i];
+      var dx = mx-p.x, dy = my-p.y;
+      var d = Math.hypot(dx,dy)+0.01;
+      if(d<260){ p.vx += dx/d*0.02; p.vy += dy/d*0.02; }
+      p.vx*=0.98; p.vy*=0.98;
+      p.x += p.vx; p.y += p.vy;
+      if(p.x<0||p.x>W) p.vx*=-1;
+      if(p.y<0||p.y>H) p.vy*=-1;
+      p.el.style.transform = 'translate('+p.x+'px,'+p.y+'px)';
+    }
+    for(var a=0;a<pts.length;a++){
+      for(var b=a+1;b<pts.length;b++){
+        if(pts[a].kind===pts[b].kind) continue;
+        var dx = pts[a].x-pts[b].x, dy = pts[a].y-pts[b].y;
+        var d = Math.hypot(dx,dy);
+        if(d<26){
+          synth((pts[a].x+pts[b].x)/2, (pts[a].y+pts[b].y)/2);
+          var ang = Math.random()*Math.PI*2;
+          pts[a].vx = Math.cos(ang)*1.5; pts[a].vy = Math.sin(ang)*1.5;
+          pts[b].vx = -Math.cos(ang)*1.5; pts[b].vy = -Math.sin(ang)*1.5;
+        }
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+  tick();
+  addEventListener('resize', function(){ W=innerWidth; H=innerHeight; });
+})();
+</script>
+</section>
