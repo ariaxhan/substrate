@@ -1,0 +1,65 @@
+<section data-date='2026-08-11' data-type='morning'>
+<style>
+#taper-0811-morning{margin:0;overflow:hidden;position:relative;height:100vh;min-height:520px;cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+#taper-0811-morning .sky{position:absolute;inset:0;transition:background 120ms linear}
+#taper-0811-morning .sun{position:absolute;left:50%;width:2px;height:2px;border-radius:50%;background:#fff;box-shadow:0 0 40px 18px rgba(255,220,150,.9);transition:top 120ms linear,box-shadow 120ms linear;transform:translateX(-50%)}
+#taper-0811-morning .line{position:absolute;left:0;right:0;top:70%;height:1px;background:rgba(255,255,255,.25)}
+#taper-0811-morning .hint{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.55);font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-family:Helvetica,Arial,sans-serif;pointer-events:none}
+#taper-0811-morning .w{position:absolute;bottom:70%;font-size:15px;letter-spacing:.03em;color:#fff9ec;opacity:0;white-space:nowrap;pointer-events:none;text-shadow:0 0 8px rgba(255,200,120,.6)}
+</style>
+<div id="taper-0811-morning">
+  <div class="sky"></div>
+  <div class="line"></div>
+  <div class="sun"></div>
+  <div class="hint">move to bring the light &middot; click to write the day</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('taper-0811-morning');
+  var sky=root.querySelector('.sky'), sun=root.querySelector('.sun'), hint=root.querySelector('.hint');
+  var words=["light","first","breath","begin","open","unwritten","quiet","possible","rise","yours","start","clear","early","threshold","becoming"];
+  function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+  function paint(t){
+    var night=[10,12,28], dawn=[255,150,90], day=[180,220,255];
+    var c1,c2;
+    if(t<0.5){var k=t/0.5;c1=mix(night,dawn,k);c2=mix([5,5,15],[255,210,150],k)}
+    else{var k=(t-0.5)/0.5;c1=mix(dawn,day,k);c2=mix([255,210,150],[255,250,240],k)}
+    sky.style.background='linear-gradient(to bottom, rgb('+c1.join(',')+') 0%, rgb('+c2.join(',')+') 70%, rgb('+lighten(c2)+') 100%)';
+  }
+  function mix(a,b,k){return [Math.round(a[0]+(b[0]-a[0])*k),Math.round(a[1]+(b[1]-a[1])*k),Math.round(a[2]+(b[2]-a[2])*k)]}
+  function lighten(c){return c.map(function(v){return Math.round(v+(255-v)*0.3)}).join(',')}
+  function move(e){
+    var y=(e.touches?e.touches[0].clientY:e.clientY);
+    var h=root.clientHeight;
+    var t=1-clamp(y/h,0,1);
+    sun.style.top=(clamp(y/h,.06,.94)*70)+'%';
+    sun.style.boxShadow='0 0 '+(20+t*60)+'px '+(8+t*22)+'px rgba(255,'+Math.round(180+t*70)+','+Math.round(120+t*130)+','+(0.5+t*0.5)+')';
+    paint(t);
+    hint.style.opacity=1-t*0.8;
+  }
+  function write(e){
+    var x=(e.touches?e.touches[0].clientX:e.clientX);
+    var y=(e.touches?e.touches[0].clientY:e.clientY);
+    var el=document.createElement('div');
+    el.className='w';
+    el.textContent=words[Math.floor(Math.random()*words.length)];
+    el.style.left=x+'px';
+    el.style.bottom=(root.clientHeight-y)+'px';
+    root.appendChild(el);
+    requestAnimationFrame(function(){
+      el.style.transition='transform 2400ms ease-out, opacity 2400ms ease-out';
+      el.style.transform='translateY(-120px)';
+      el.style.opacity=0.9;
+    });
+    setTimeout(function(){el.style.opacity=0},1800);
+    setTimeout(function(){el.remove()},2500);
+  }
+  root.addEventListener('mousemove',move);
+  root.addEventListener('touchmove',move,{passive:true});
+  root.addEventListener('click',write);
+  root.addEventListener('touchstart',write,{passive:true});
+  paint(0.15);
+  sun.style.top='6%';
+})();
+</script>
+</section>
