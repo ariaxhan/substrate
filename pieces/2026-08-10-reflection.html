@@ -1,0 +1,44 @@
+<section data-date='2026-08-10' data-type='reflection'>
+<style>
+#taper-0810{position:relative;width:100%;height:100vh;margin:0;overflow:hidden;background:radial-gradient(ellipse at 50% 85%,#0b1220 0%,#040611 55%,#000 100%);cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+#taper-0810 .horizon{position:absolute;left:0;right:0;bottom:14%;height:1px;background:linear-gradient(90deg,transparent,#1a2438,transparent)}
+#taper-0810 .caption{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);color:#3a4a68;font-size:13px;letter-spacing:.14em;text-transform:lowercase;opacity:0;animation:t0810-in 4s ease forwards 1s;text-align:center;width:80%;pointer-events:none}
+@keyframes t0810-in{to{opacity:.55}}
+#taper-0810 .star{position:absolute;width:2px;height:2px;border-radius:50%;background:#eef2ff;box-shadow:0 0 6px 1px rgba(238,242,255,.7);opacity:0;animation:t0810-star 2.6s ease forwards}
+@keyframes t0810-star{0%{opacity:0;transform:scale(.3)}30%{opacity:1;transform:scale(1.4)}100%{opacity:.75;transform:scale(1)}}
+#taper-0810 .word{position:absolute;color:#c9d3ea;font-style:italic;font-size:15px;opacity:0;white-space:nowrap;pointer-events:none;animation:t0810-word 3.2s ease forwards}
+@keyframes t0810-word{0%{opacity:0;transform:translateY(4px)}20%{opacity:.9;transform:translateY(0)}70%{opacity:.9}100%{opacity:0;transform:translateY(-6px)}}
+#taper-0810 .tally{position:absolute;top:18px;right:22px;color:#28324a;font-family:monospace;font-size:11px;letter-spacing:.08em}
+</style>
+<div id="taper-0810">
+  <div class="horizon"></div>
+  <div class="caption">the day is complete. rest before the next beginning. click, softly, to place a star.</div>
+  <div class="tally" id="t0810-tally">0 stars</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('taper-0810');
+  var tally=document.getElementById('t0810-tally');
+  var words=['hush','rest','dim','ember','tide','fold','drift','dusk','still','glow','quiet','home','done','deep','slow','breathe','settle','close','soft','dark'];
+  var n=0;
+  root.addEventListener('click',function(e){
+    var rect=root.getBoundingClientRect();
+    var x=e.clientX-rect.left, y=e.clientY-rect.top;
+    var star=document.createElement('div');
+    star.className='star';
+    star.style.left=x+'px';
+    star.style.top=y+'px';
+    root.appendChild(star);
+    var word=document.createElement('div');
+    word.className='word';
+    word.textContent=words[Math.floor(Math.random()*words.length)];
+    word.style.left=(x+8)+'px';
+    word.style.top=(y-10)+'px';
+    root.appendChild(word);
+    setTimeout(function(){word.remove()},3300);
+    n++;
+    tally.textContent=n+(n===1?' star':' stars');
+  });
+})();
+</script>
+</section>
