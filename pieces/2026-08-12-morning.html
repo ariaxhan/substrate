@@ -1,0 +1,65 @@
+<section data-date='2026-08-12' data-type='morning'>
+<style>
+#taper-dawn{margin:0;overflow:hidden;height:70vh;min-height:420px;position:relative;background:linear-gradient(#04060f,#0b1230 55%,#1c1430 100%);cursor:pointer;font-family:Georgia,'Times New Roman',serif;transition:background 1.6s ease}
+#taper-dawn.lit{background:linear-gradient(#dfe9ff,#ffd9a8 55%,#ff9d6c 100%)}
+#taper-dawn .sun{position:absolute;left:50%;bottom:-60px;width:90px;height:90px;border-radius:50%;background:#fff3d6;box-shadow:0 0 40px 10px rgba(255,220,150,.5);transform:translateX(-50%);opacity:0;transition:opacity 1.8s ease,bottom 2.4s cubic-bezier(.2,.7,.2,1)}
+#taper-dawn.lit .sun{opacity:1;bottom:18%}
+#taper-dawn .line{position:absolute;left:0;right:0;text-align:center;font-size:clamp(14px,2.4vw,26px);letter-spacing:.04em;color:#8892b0;opacity:0;transform:translateY(14px);transition:opacity 1.4s ease,transform 1.4s ease,color 1.6s ease}
+#taper-dawn.lit .line{color:#3a2a1e}
+#taper-dawn .hint{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#5a6288;font-family:Arial,sans-serif;transition:opacity 1.2s ease}
+#taper-dawn.lit .hint{color:#8a5a3a}
+#taper-dawn .star{position:absolute;width:2px;height:2px;background:#cfd6ff;border-radius:50%;transition:opacity 1.6s ease}
+#taper-dawn.lit .star{opacity:0}
+</style>
+<div id="taper-dawn">
+  <div class="hint">click, before it begins</div>
+</div>
+<script>
+(function(){
+  var el = document.getElementById('taper-dawn');
+  var words = ["nothing yet","no name for it","a held breath","the first word unwritten","almost","almost light","begin"];
+  var lit = false, stars = [];
+  for (var i=0;i<40;i++){
+    var s = document.createElement('div');
+    s.className='star';
+    s.style.left = (Math.random()*100)+'%';
+    s.style.top = (Math.random()*70)+'%';
+    s.style.opacity = (0.3+Math.random()*0.7).toFixed(2);
+    el.appendChild(s);
+    stars.push(s);
+  }
+  var sun = document.createElement('div');
+  sun.className = 'sun';
+  el.appendChild(sun);
+  var lines = [];
+  words.forEach(function(w, i){
+    var d = document.createElement('div');
+    d.className = 'line';
+    d.textContent = w;
+    d.style.top = (18 + i*10) + '%';
+    el.appendChild(d);
+    lines.push(d);
+  });
+  function reveal(){
+    lines.forEach(function(d, i){
+      setTimeout(function(){
+        d.style.opacity = 1;
+        d.style.transform = 'translateY(0)';
+      }, 260*i);
+    });
+  }
+  el.addEventListener('click', function(){
+    lit = !lit;
+    el.classList.toggle('lit', lit);
+    var hint = el.querySelector('.hint');
+    if (lit){
+      hint.textContent = 'click, to hold the dark a while longer';
+      reveal();
+    } else {
+      hint.textContent = 'click, before it begins';
+      lines.forEach(function(d){ d.style.opacity = 0; d.style.transform='translateY(14px)'; });
+    }
+  });
+})();
+</script>
+</section>
