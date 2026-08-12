@@ -1,0 +1,103 @@
+<section data-date='2026-08-12' data-type='digest'>
+<style>
+#tap-2026-08-12{position:relative;background:#0a0a0c;color:#d8d3c4;height:100vh;overflow:hidden;font-family:Georgia,serif;cursor:crosshair}
+#tap-2026-08-12 canvas{position:absolute;inset:0;width:100%;height:100%}
+#tap-2026-08-12 .lbl{position:absolute;top:18px;left:22px;font:11px/1.5 monospace;letter-spacing:.14em;text-transform:uppercase;color:#6b6558;pointer-events:none}
+#tap-2026-08-12 .lbl b{color:#c9a84c;font-weight:400}
+#tap-2026-08-12 .ct{position:absolute;bottom:20px;right:24px;font:italic 13px Georgia,serif;color:#8a8371;pointer-events:none}
+#tap-2026-08-12 .hint{position:absolute;bottom:20px;left:22px;font:11px monospace;color:#4a463c;pointer-events:none;opacity:.85}
+</style>
+<div id="tap-2026-08-12">
+<canvas id="tapC-0812"></canvas>
+<div class="lbl">a fact is a point &middot; <b>enough facts are a shape</b></div>
+<div class="hint">click to know something</div>
+<div class="ct" id="tapCt-0812">0 known</div>
+</div>
+<script>
+(function(){
+var host=document.getElementById('tap-2026-08-12'),cv=document.getElementById('tapC-0812'),ctx=cv.getContext('2d'),ctdiv=document.getElementById('tapCt-0812');
+var pts=[],W,H,DPR=Math.min(window.devicePixelRatio||1,2);
+function size(){W=host.clientWidth;H=host.clientHeight;cv.width=W*DPR;cv.height=H*DPR;ctx.setTransform(DPR,0,0,DPR,0,0)}
+size();window.addEventListener('resize',size);
+var words=['salt','rift','omen','glass','tide','ash','loom','vow','husk','flint','wren','thaw','moth','core','vein','husk','ore','pith','marl','husk'];
+function addPoint(x,y){
+  var w=words[pts.length%words.length];
+  var p={x:x,y:y,r:0,tr:2.2+Math.random()*1.6,age:0,w:w,links:[]};
+  for(var i=0;i<pts.length;i++){
+    var q=pts[i],d=Math.hypot(p.x-q.x,p.y-q.y);
+    if(d<170){p.links.push(i);}
+  }
+  pts.push(p);
+  ctdiv.textContent=pts.length+' known'+(pts.length>1?' — '+countClusters()+' shape'+(countClusters()!=1?'s':''):'');
+}
+function countClusters(){
+  var seen=new Array(pts.length).fill(false),n=0;
+  for(var i=0;i<pts.length;i++){
+    if(seen[i])continue;
+    var stack=[i];
+    while(stack.length){
+      var k=stack.pop();
+      if(seen[k])continue;
+      seen[k]=true;
+      pts[k].links.forEach(function(j){if(!seen[j])stack.push(j)});
+      for(var m=0;m<pts.length;m++)if(pts[m].links.indexOf(k)>-1&&!seen[m])stack.push(m);
+    }
+    n++;
+  }
+  return n;
+}
+host.addEventListener('click',function(e){
+  var r=host.getBoundingClientRect();
+  addPoint(e.clientX-r.left,e.clientY-r.top);
+});
+function seedDrift(t){
+  // faint ambient motes that never connect, background texture only
+  for(var i=0;i<3;i++){
+    ctx.globalAlpha=.05+.03*Math.sin(t/900+i);
+    ctx.fillStyle='#c9a84c';
+    var x=(Math.sin(t/4000+i*2.1)*.5+.5)*W;
+    var y=(Math.cos(t/5200+i*1.7)*.5+.5)*H;
+    ctx.beginPath();ctx.arc(x,y,1.1,0,7);ctx.fill();
+  }
+  ctx.globalAlpha=1;
+}
+function draw(t){
+  ctx.clearRect(0,0,W,H);
+  seedDrift(t);
+  // links
+  for(var i=0;i<pts.length;i++){
+    var p=pts[i];
+    p.links.forEach(function(j){
+      var q=pts[j];
+      var a=Math.min(1,(p.age)/40)*Math.min(1,(q.age)/40);
+      ctx.strokeStyle='rgba(201,168,76,'+(.22*a)+')';
+      ctx.lineWidth=.7;
+      ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();
+    });
+  }
+  // points
+  pts.forEach(function(p){
+    p.age++;
+    if(p.r<p.tr)p.r+=(p.tr-p.r)*.08;
+    var glow=p.links.length>0;
+    ctx.beginPath();
+    ctx.fillStyle=glow?'#e8d18a':'#8f8a78';
+    ctx.arc(p.x,p.y,p.r,0,7);
+    ctx.fill();
+    if(glow){
+      ctx.beginPath();
+      ctx.strokeStyle='rgba(232,209,138,.35)';
+      ctx.arc(p.x,p.y,p.r+3,0,7);
+      ctx.stroke();
+    }
+    ctx.font='11px Courier New, monospace';
+    ctx.fillStyle='rgba(216,211,196,'+Math.min(.65,p.age/60)+')';
+    ctx.fillText(p.w,p.x+8,p.y-8);
+  });
+  requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+addPoint(host.clientWidth*.5,host.clientHeight*.5);
+})();
+</script>
+</section>
