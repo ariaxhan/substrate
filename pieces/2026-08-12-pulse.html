@@ -1,0 +1,73 @@
+<section data-date='2026-08-12' data-type='pulse'>
+<style>
+#tp12{position:relative;height:70vh;min-height:420px;background:#0c0c0e;overflow:hidden;font-family:Georgia,'Times New Roman',serif;cursor:crosshair;user-select:none}
+#tp12 .beam{position:absolute;top:50%;left:8%;right:8%;height:1px;background:#555;transform-origin:center;transition:transform .12s ease-out}
+#tp12 .pin{position:absolute;top:calc(50% - 5px);left:50%;width:10px;height:10px;background:#e8b923;border-radius:50%;transform:translateX(-50%);box-shadow:0 0 12px #e8b92388}
+#tp12 .side{position:absolute;top:50%;width:46%;font-size:clamp(1rem,2.6vw,2rem);letter-spacing:.02em;transition:transform .12s ease-out,opacity .3s}
+#tp12 .l{left:8%;text-align:right;color:#f5f0e6}
+#tp12 .r{right:8%;text-align:left;color:#7d8a99;font-family:'Courier New',monospace}
+#tp12 .l span,#tp12 .r span{display:block;opacity:.85}
+#tp12 .caption{position:absolute;bottom:18px;left:0;right:0;text-align:center;font-family:'Courier New',monospace;font-size:11px;letter-spacing:.2em;color:#555;text-transform:uppercase}
+#tp12 .caption b{color:#e8b923;font-weight:normal}
+#tp12 .ring{position:absolute;top:50%;left:50%;width:4px;height:4px;border:1px solid #e8b92355;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;opacity:0}
+</style>
+<div id="tp12">
+  <div class="beam" id="tp12beam"></div>
+  <div class="pin"></div>
+  <div class="side l" id="tp12l">
+    <span>morning light</span>
+    <span>first coffee</span>
+    <span>the unopened inbox</span>
+  </div>
+  <div class="side r" id="tp12r">
+    <span>lamp glow</span>
+    <span>last word sent</span>
+    <span>the closed door</span>
+  </div>
+  <div class="ring" id="tp12ring"></div>
+  <div class="caption">tilt to find noon &mdash; hold still at <b>zero</b></div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('tp12'),
+      beam=document.getElementById('tp12beam'),
+      L=document.getElementById('tp12l'),
+      R=document.getElementById('tp12r'),
+      ring=document.getElementById('tp12ring'),
+      cap=el.querySelector('.caption b'),
+      still=0, raf=null;
+  function apply(rot){
+    var d=Math.abs(rot);
+    beam.style.transform='rotate('+rot+'deg)';
+    L.style.transform='translateY('+(-50+rot*0.9)+'%)';
+    R.style.transform='translateY('+(-50-rot*0.9)+'%)';
+    L.style.opacity=Math.max(.35,1-d/26);
+    R.style.opacity=Math.max(.35,1-d/26);
+    if(d<0.6){
+      ring.style.opacity=String(Math.min(1,still/40));
+      ring.style.width=ring.style.height=(4+still*2)+'px';
+      cap.textContent='zero';
+    } else {
+      ring.style.opacity=0;
+      ring.style.width=ring.style.height='4px';
+      cap.textContent=rot>0?'evening':'morning';
+    }
+  }
+  el.addEventListener('mousemove',function(e){
+    var b=el.getBoundingClientRect();
+    var mid=(e.clientX-b.left)/b.width-0.5;
+    var rot=Math.max(-16,Math.min(16,mid*32));
+    if(Math.abs(rot)<0.6){still++;} else {still=0;}
+    apply(rot);
+  });
+  el.addEventListener('mouseleave',function(){still=0;apply(0);});
+  var t=0;
+  (function drift(){
+    t+=0.01;
+    apply(Math.sin(t)*3);
+    raf=requestAnimationFrame(drift);
+  })();
+  el.addEventListener('mouseenter',function(){cancelAnimationFrame(raf);});
+})();
+</script>
+</section>
