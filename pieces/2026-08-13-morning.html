@@ -1,0 +1,60 @@
+<section data-date='2026-08-13' data-type='morning'>
+<style>
+#dawn-root{margin:0;overflow:hidden;height:100vh;background:#0a0a14;position:relative;cursor:none;font-family:Georgia,'Times New Roman',serif}
+#dawn-root .sky{position:absolute;inset:0;background:radial-gradient(circle at var(--x,50%) var(--y,120%),#ffdca8 0%,#ff9d6c 12%,#c96b6b 26%,#5a3a6b 44%,#1c1440 62%,#0a0a14 80%);transition:background .06s linear}
+#dawn-root .horizon{position:absolute;left:0;right:0;bottom:0;height:38%;background:linear-gradient(to top,#04040a,rgba(4,4,10,0));pointer-events:none}
+#dawn-root .field{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.6em 1.1em;padding:8vw;box-sizing:border-box;align-content:center}
+#dawn-root .w{opacity:.08;color:#fff;font-size:clamp(14px,2.4vw,26px);letter-spacing:.02em;transition:opacity .5s ease,text-shadow .5s ease;user-select:none}
+#dawn-root .w.lit{opacity:1;text-shadow:0 0 18px rgba(255,200,140,.9)}
+#dawn-root .cue{position:absolute;bottom:5%;left:50%;transform:translateX(-50%);color:#caa;font-size:11px;letter-spacing:.2em;text-transform:uppercase;opacity:.5;font-family:Arial,sans-serif;pointer-events:none;transition:opacity 1s}
+#dawn-root .cue.gone{opacity:0}
+#dawn-root .disc{position:absolute;width:4px;height:4px;border-radius:50%;background:radial-gradient(circle,#fff,transparent 70%);pointer-events:none;transform:translate(-50%,-50%);left:var(--x,50%);top:var(--y,120%);box-shadow:0 0 30px 10px rgba(255,210,150,.5)}
+</style>
+<div id="dawn-root">
+  <div class="sky"></div>
+  <div class="field" id="dawn-field"></div>
+  <div class="disc"></div>
+  <div class="horizon"></div>
+  <p class="cue" id="dawn-cue">move to bring the light up</p>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('dawn-root');
+  var field=document.getElementById('dawn-field');
+  var cue=document.getElementById('dawn-cue');
+  var words=['unwritten','still','quiet','before','possible','first','light','breath','open','not yet','soon','waking','edge','begin','pale','again','clean','waits','early','yours'];
+  words.forEach(function(t){
+    var s=document.createElement('span');
+    s.className='w';
+    s.textContent=t;
+    field.appendChild(s);
+  });
+  var letters=field.querySelectorAll('.w');
+  var moved=false;
+  function reveal(px,py){
+    if(!moved){moved=true;cue.classList.add('gone');}
+    root.style.setProperty('--x',px+'%');
+    root.style.setProperty('--y',py+'%');
+    var rect=root.getBoundingClientRect();
+    letters.forEach(function(el){
+      var r=el.getBoundingClientRect();
+      var ex=((r.left+r.right)/2-rect.left)/rect.width*100;
+      var ey=((r.top+r.bottom)/2-rect.top)/rect.height*100;
+      var d=Math.hypot(ex-px,ey-py);
+      el.classList.toggle('lit',d<26);
+    });
+  }
+  root.addEventListener('mousemove',function(e){
+    var r=root.getBoundingClientRect();
+    reveal((e.clientX-r.left)/r.width*100,(e.clientY-r.top)/r.height*100);
+  });
+  root.addEventListener('touchmove',function(e){
+    var t=e.touches[0];
+    if(!t)return;
+    var r=root.getBoundingClientRect();
+    reveal((t.clientX-r.left)/r.width*100,(t.clientY-r.top)/r.height*100);
+  },{passive:true});
+  reveal(50,115);
+})();
+</script>
+</section>
