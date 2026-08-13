@@ -1,0 +1,86 @@
+<section data-date='2026-08-13' data-type='digest'>
+<style>
+#tp13{background:#0a0a0e;color:#e8e6df;font-family:Georgia,'Times New Roman',serif;height:100vh;overflow:hidden;position:relative;cursor:crosshair}
+#tp13 h2{position:absolute;top:14px;left:18px;margin:0;font-size:11px;font-weight:400;letter-spacing:.18em;text-transform:uppercase;color:#8a8578;font-family:Arial,sans-serif;z-index:3}
+#tp13 p.sub{position:absolute;bottom:14px;left:18px;margin:0;font-size:11px;color:#5c584d;font-family:Arial,sans-serif;letter-spacing:.05em;z-index:3}
+#tp13 svg{position:absolute;inset:0;width:100%;height:100%}
+#tp13 .lbl{position:absolute;font-size:13px;font-style:italic;color:#c9c4b3;transform:translate(-50%,-50%);pointer-events:none;opacity:0;transition:opacity 1.2s ease}
+#tp13 .lbl.on{opacity:.85}
+</style>
+<div id="tp13">
+<h2>crystallize</h2>
+<svg id="tp13svg"></svg>
+<p class="sub">click to know something</p>
+</div>
+<script>
+(function(){
+var host=document.getElementById('tp13'),svg=document.getElementById('tp13svg'),ns='http://www.w3.org/2000/svg';
+var words=['a name','a date','a wound','a rumor','a debt','a promise','a face','a season','a silence','a mistake','a habit','a fear','a gift','a lie','a song','a door','a scar','a map','a language','a hunger'];
+var pts=[],used=[];
+function W(){var t=host.getBoundingClientRect();return t}
+function place(x,y){
+  var t=W();
+  var nx=x,ny=y;
+  var node={x:nx,y:ny,r:3};
+  pts.push(node);
+  var c=document.createElementNS(ns,'circle');
+  c.setAttribute('cx',nx);c.setAttribute('cy',ny);c.setAttribute('r',0);
+  c.setAttribute('fill','#e8b04a');
+  c.setAttribute('opacity','0.95');
+  svg.appendChild(c);
+  var start=null,dur=500;
+  function grow(ts){
+    if(!start)start=ts;
+    var p=Math.min(1,(ts-start)/dur);
+    c.setAttribute('r',(3*p).toFixed(2));
+    if(p<1)requestAnimationFrame(grow);
+  }
+  requestAnimationFrame(grow);
+  var near=pts.slice(0,-1).map(function(p){return {p:p,d:Math.hypot(p.x-nx,p.y-ny)}}).sort(function(a,b){return a.d-b.d}).slice(0,2);
+  near.forEach(function(o){
+    var line=document.createElementNS(ns,'line');
+    line.setAttribute('x1',nx);line.setAttribute('y1',ny);
+    line.setAttribute('x2',nx);line.setAttribute('y2',ny);
+    line.setAttribute('stroke','#5c584d');
+    line.setAttribute('stroke-width','0.6');
+    line.setAttribute('opacity','0.5');
+    svg.insertBefore(line,svg.firstChild);
+    var s2=null,d2=700;
+    function draw(ts){
+      if(!s2)s2=ts;
+      var p=Math.min(1,(ts-s2)/d2);
+      line.setAttribute('x2',(nx+(o.p.x-nx)*p).toFixed(1));
+      line.setAttribute('y2',(ny+(o.p.y-ny)*p).toFixed(1));
+      if(p<1)requestAnimationFrame(draw);
+    }
+    requestAnimationFrame(draw);
+  });
+  var pool=words.filter(function(w){return used.indexOf(w)<0});
+  if(!pool.length){pool=words;used=[]}
+  var word=pool[Math.floor(Math.random()*pool.length)];
+  used.push(word);
+  var lbl=document.createElement('div');
+  lbl.className='lbl';
+  lbl.textContent=word;
+  lbl.style.left=nx+'px';
+  lbl.style.top=(ny-16)+'px';
+  host.appendChild(lbl);
+  requestAnimationFrame(function(){lbl.classList.add('on')});
+  setTimeout(function(){lbl.style.opacity='0'},4200);
+  setTimeout(function(){lbl.remove()},6000);
+  if(pts.length>2){
+    document.querySelector('#tp13 p.sub').textContent=pts.length+' things known, '+(pts.length<20?'more forming':'a shape now');
+  }
+}
+host.addEventListener('click',function(e){
+  var t=W();
+  place(e.clientX-t.left,e.clientY-t.top);
+});
+window.addEventListener('resize',function(){});
+setTimeout(function(){
+  var t=W();
+  place(t.width*0.5,t.height*0.45);
+},400);
+})();
+</script>
+</section>
