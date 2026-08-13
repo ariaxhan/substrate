@@ -1,0 +1,82 @@
+<section data-date='2026-08-12' data-type='reflection'>
+<style>
+.rfl-wrap{margin:0;background:radial-gradient(ellipse at 50% 100%,#0d1220 0%,#040509 65%,#000 100%);height:88vh;min-height:520px;overflow:hidden;position:relative;cursor:crosshair;font-family:Georgia,'Iowan Old Style',serif}
+.rfl-wrap .rfl-sky{position:absolute;inset:0}
+.rfl-wrap .rfl-star{position:absolute;border-radius:50%;background:#fff;box-shadow:0 0 6px 1px rgba(255,255,255,.5);opacity:0;pointer-events:none;animation:rfl-bloom 3.2s ease-out forwards}
+.rfl-wrap .rfl-star.rfl-fixed{animation:rfl-twinkle 5s ease-in-out infinite}
+@keyframes rfl-bloom{0%{opacity:0;transform:scale(0)}12%{opacity:1;transform:scale(1.6)}30%{transform:scale(1)}100%{opacity:.75}}
+@keyframes rfl-twinkle{0%,100%{opacity:.25}50%{opacity:.85}}
+.rfl-wrap .rfl-word{position:absolute;pointer-events:none;color:#e7e2d4;letter-spacing:.04em;opacity:0;animation:rfl-rise 3.6s ease-out forwards}
+@keyframes rfl-rise{0%{opacity:0;transform:translateY(10px)}20%{opacity:.85}100%{opacity:0;transform:translateY(-14px)}}
+.rfl-wrap .rfl-caption{position:absolute;left:0;right:0;bottom:6%;text-align:center;color:#8f93a8;font-size:13px;letter-spacing:.14em;text-transform:lowercase;user-select:none;transition:opacity 1.4s}
+.rfl-wrap .rfl-title{position:absolute;top:7%;left:0;right:0;text-align:center;color:#cfd3e6;font-size:15px;letter-spacing:.5em;text-transform:uppercase;font-weight:400;user-select:none;opacity:.55}
+.rfl-wrap .rfl-horizon{position:absolute;left:0;right:0;bottom:0;height:22%;background:linear-gradient(to top,#000 0%,rgba(0,0,0,0) 100%)}
+</style>
+<div class="rfl-wrap" id="rflWrap">
+  <div class="rfl-title">the day is complete</div>
+  <div class="rfl-sky" id="rflSky"></div>
+  <div class="rfl-horizon"></div>
+  <div class="rfl-caption" id="rflCap">touch the dark to rest a light in it</div>
+</div>
+<script>
+(function(){
+  var wrap = document.getElementById('rflWrap');
+  var sky = document.getElementById('rflSky');
+  var cap = document.getElementById('rflCap');
+  var words = ['still','hush','soon','enough','then','sleep','again','quiet','close','ease'];
+  var count = 0;
+
+  function ambientStar(){
+    var s = document.createElement('div');
+    s.className = 'rfl-star rfl-fixed';
+    var size = 1 + Math.random()*1.6;
+    s.style.width = size+'px';
+    s.style.height = size+'px';
+    s.style.left = (Math.random()*100)+'%';
+    s.style.top = (Math.random()*72)+'%';
+    s.style.animationDelay = (Math.random()*5)+'s';
+    sky.appendChild(s);
+  }
+  for (var i=0;i<48;i++) ambientStar();
+
+  function placeStar(x,y){
+    var s = document.createElement('div');
+    s.className = 'rfl-star';
+    var size = 2 + Math.random()*3;
+    s.style.width = size+'px';
+    s.style.height = size+'px';
+    s.style.left = x+'px';
+    s.style.top = y+'px';
+    sky.appendChild(s);
+    setTimeout(function(){ s.className='rfl-star rfl-fixed'; }, 3200);
+
+    var w = document.createElement('div');
+    w.className = 'rfl-word';
+    w.textContent = words[Math.floor(Math.random()*words.length)];
+    w.style.left = (x + 10)+'px';
+    w.style.top = (y - 14)+'px';
+    w.style.fontSize = (11 + Math.random()*4)+'px';
+    sky.appendChild(w);
+    setTimeout(function(){ w.remove(); }, 3700);
+
+    count++;
+    if (count === 1) cap.textContent = 'one light, held';
+    else if (count < 8) cap.textContent = count + ' small stillnesses';
+    else cap.textContent = 'the sky remembers everything you gave it';
+    cap.style.opacity = '1';
+    clearTimeout(wrap._capFade);
+    wrap._capFade = setTimeout(function(){ cap.style.opacity = '0.35'; }, 2600);
+  }
+
+  wrap.addEventListener('click', function(e){
+    var r = wrap.getBoundingClientRect();
+    placeStar(e.clientX - r.left, e.clientY - r.top);
+  });
+  wrap.addEventListener('touchstart', function(e){
+    var t = e.changedTouches[0];
+    var r = wrap.getBoundingClientRect();
+    placeStar(t.clientX - r.left, t.clientY - r.top);
+  }, {passive:true});
+})();
+</script>
+</section>
