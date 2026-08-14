@@ -1,0 +1,70 @@
+<section data-date='2026-08-14' data-type='digest'>
+<style>
+#tp14{position:relative;width:100%;height:520px;background:#07080b;overflow:hidden;font-family:'Courier New',monospace;cursor:crosshair;border-radius:2px}
+#tp14 canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+#tp14 .hint{position:absolute;bottom:14px;left:0;right:0;text-align:center;color:#3a4250;font-size:11px;letter-spacing:.14em;text-transform:uppercase;pointer-events:none;transition:opacity 1.5s}
+#tp14 .cnt{position:absolute;top:14px;right:18px;color:#4a5568;font-size:11px;letter-spacing:.08em;pointer-events:none}
+#tp14 .word{position:absolute;top:14px;left:18px;color:#5b6b82;font-size:11px;letter-spacing:.1em;pointer-events:none;font-style:italic}
+</style>
+<div id="tp14">
+<canvas id="tp14c"></canvas>
+<div class="cnt" id="tp14n">0 fragments</div>
+<div class="word" id="tp14w"></div>
+<div class="hint" id="tp14h">click to place a fragment of knowing</div>
+</div>
+<script>
+(function(){
+var el=document.getElementById('tp14'),cv=document.getElementById('tp14c'),x=cv.getContext('2d'),
+n=document.getElementById('tp14n'),wl=document.getElementById('tp14w'),hint=document.getElementById('tp14h'),
+W,H,pts=[],
+lex=['pattern','signal','echo','trace','root','edge','thread','weight','node','drift','order','ember','shard','axis','bloom'];
+function sz(){W=el.clientWidth;H=el.clientHeight;cv.width=W;cv.height=H}
+sz();window.addEventListener('resize',sz);
+function place(px,py){
+pts.push({x:px,y:py,r:0,a:1,w:lex[pts.length%lex.length]});
+n.textContent=pts.length+' fragment'+(pts.length===1?'':'s');
+wl.textContent=pts[pts.length-1].w;
+if(pts.length===1){hint.style.opacity=0}
+if(pts.length===9){hint.textContent='structure is emerging';hint.style.opacity=1;setTimeout(function(){hint.style.opacity=0},2600)}
+}
+el.addEventListener('click',function(e){
+var b=el.getBoundingClientRect();
+place(e.clientX-b.left,e.clientY-b.top);
+});
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function draw(){
+x.fillStyle='rgba(7,8,11,0.16)';x.fillRect(0,0,W,H);
+var dense=pts.length>=6;
+for(var i=0;i<pts.length;i++){
+var p=pts[i];
+p.r=Math.min(p.r+0.4,3.2);
+for(var j=i+1;j<pts.length;j++){
+var q=pts[j],d=dist(p,q),thresh=dense?190:120;
+if(d<thresh){
+var op=(1-d/thresh)*(dense?0.55:0.22);
+x.strokeStyle='rgba('+(dense?'120,200,255':'90,110,140')+','+op+')';
+x.lineWidth=dense?1.1:0.6;
+x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke();
+}
+}
+}
+for(var k=0;k<pts.length;k++){
+var pp=pts[k];
+x.beginPath();
+x.fillStyle=dense?'rgba(180,225,255,0.95)':'rgba(150,165,190,0.85)';
+x.arc(pp.x,pp.y,pp.r,0,6.283);
+x.fill();
+if(dense){
+x.beginPath();
+x.strokeStyle='rgba(140,200,255,0.12)';
+x.arc(pp.x,pp.y,pp.r+5+2*Math.sin(Date.now()/600+k),0,6.283);
+x.stroke();
+}
+}
+requestAnimationFrame(draw);
+}
+draw();
+setTimeout(function(){if(!pts.length)place(W*0.5,H*0.5)},2200);
+})();
+</script>
+</section>
