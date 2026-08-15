@@ -1,0 +1,59 @@
+<section data-date='2026-08-14' data-type='reflection'>
+<style>
+#tp0814{position:relative;height:78vh;min-height:420px;background:radial-gradient(ellipse at 50% 100%,#0d1220 0%,#05060c 60%,#020204 100%);overflow:hidden;font-family:Georgia,'Times New Roman',serif;cursor:crosshair;border-radius:2px}
+#tp0814 .tp-hz{position:absolute;left:0;right:0;bottom:0;height:22%;background:linear-gradient(to top,#02020a,transparent)}
+#tp0814 .tp-msg{position:absolute;top:44%;left:0;right:0;text-align:center;color:#5a6280;font-size:14px;letter-spacing:.12em;font-style:italic;opacity:.75;pointer-events:none;transition:opacity 1.4s}
+#tp0814 .tp-count{position:absolute;bottom:14px;right:18px;color:#3c4258;font-size:11px;font-family:Georgia,serif;letter-spacing:.08em;pointer-events:none}
+#tp0814 .tp-star{position:absolute;border-radius:50%;background:#fff;pointer-events:none;animation:tp-in .9s ease-out forwards}
+@keyframes tp-in{0%{transform:scale(0);opacity:0}55%{opacity:1}100%{transform:scale(1);opacity:var(--o)}}
+@keyframes tp-tw{0%,100%{opacity:var(--o)}50%{opacity:calc(var(--o) * .35)}}
+</style>
+<div id="tp0814">
+  <div class="tp-hz"></div>
+  <div class="tp-msg" id="tp0814msg">the day is complete. rest here a while.</div>
+  <div class="tp-count" id="tp0814count"></div>
+</div>
+<script>
+(function(){
+  var host = document.getElementById('tp0814');
+  var msg = document.getElementById('tp0814msg');
+  var count = document.getElementById('tp0814count');
+  var n = 0;
+  var words = ['still','quiet','done','enough','soft','dark','held','over','breathe','home'];
+  function place(x, y, big){
+    var s = document.createElement('div');
+    s.className = 'tp-star';
+    var size = big ? (2 + Math.random()*2) : (0.6 + Math.random()*1.6);
+    var op = 0.35 + Math.random()*0.65;
+    s.style.width = size + 'px';
+    s.style.height = size + 'px';
+    s.style.left = x + 'px';
+    s.style.top = y + 'px';
+    s.style.setProperty('--o', op);
+    s.style.boxShadow = '0 0 ' + (size*2.5) + 'px rgba(255,255,255,' + (op*0.8) + ')';
+    s.style.animation = 'tp-in .9s ease-out forwards, tp-tw ' + (3 + Math.random()*4) + 's ease-in-out ' + (2 + Math.random()*3) + 's infinite';
+    host.appendChild(s);
+  }
+  host.addEventListener('click', function(e){
+    var r = host.getBoundingClientRect();
+    var y = e.clientY - r.top;
+    if (y > r.height * 0.8) return;
+    place(e.clientX - r.left, y, true);
+    n++;
+    count.textContent = n + (n === 1 ? ' star' : ' stars');
+    if (n === 1){ msg.textContent = 'one more light against the dark.'; }
+    else if (n % 7 === 0){ msg.textContent = words[Math.floor(Math.random()*words.length)]; }
+    msg.style.opacity = '0';
+    setTimeout(function(){ msg.style.opacity = '.75'; }, 50);
+  });
+  var seeded = 0;
+  var seed = setInterval(function(){
+    var r = host.getBoundingClientRect();
+    if (r.width === 0) return;
+    place(Math.random()*r.width, Math.random()*r.height*0.75, false);
+    seeded++;
+    if (seeded >= 40) clearInterval(seed);
+  }, 90);
+})();
+</script>
+</section>
