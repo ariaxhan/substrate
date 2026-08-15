@@ -1,0 +1,57 @@
+<section data-date='2026-08-15' data-type='pulse'>
+<style>
+#tp-fulcrum{--t:0;position:relative;overflow:hidden;height:60vh;min-height:420px;background:linear-gradient(180deg,#151022 0%,#3a2340 45%,#c96a3d 78%,#f2c078 100%);font-family:Georgia,'Iowan Old Style',serif;cursor:ns-resize;user-select:none}
+#tp-fulcrum .beam{position:absolute;top:50%;left:50%;width:82vw;max-width:900px;height:1px;background:rgba(255,240,220,.55);transform-origin:50% 50%;transform:translate(-50%,-50%) rotate(calc(var(--t) * 7deg));transition:transform .08s linear}
+#tp-fulcrum .pin{position:absolute;top:50%;left:50%;width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:16px solid rgba(255,240,220,.9);transform:translate(-50%,0)}
+#tp-fulcrum .side{position:absolute;top:50%;width:34vw;max-width:340px;font-size:clamp(13px,1.6vw,18px);letter-spacing:.04em;line-height:1.7;transition:transform .08s linear,opacity .3s ease}
+#tp-fulcrum .l{left:6vw;text-align:right;color:#e9d9c8;transform:translateY(calc(-50% + var(--t) * -34px)) translateY(-2.4em)}
+#tp-fulcrum .r{right:6vw;text-align:left;color:#1a1220;transform:translateY(calc(-50% + var(--t) * 34px)) translateY(-2.4em)}
+#tp-fulcrum .mark{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-family:'Courier New',monospace;font-size:11px;letter-spacing:.2em;color:rgba(255,240,220,.6);text-transform:uppercase}
+#tp-fulcrum .hint{position:absolute;top:14px;left:50%;transform:translateX(-50%);font-family:'Courier New',monospace;font-size:10px;letter-spacing:.15em;color:rgba(255,240,220,.35);text-transform:uppercase;opacity:1;transition:opacity 1.2s ease}
+#tp-fulcrum.touched .hint{opacity:0}
+</style>
+<div id="tp-fulcrum">
+  <div class="hint">tilt the day</div>
+  <div class="side l">what the morning<br>asked of you</div>
+  <div class="side r">what the evening<br>forgives</div>
+  <div class="beam"></div>
+  <div class="pin"></div>
+  <div class="mark" id="tp-fulcrum-mark">12:00 — level</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('tp-fulcrum');
+  var mark=document.getElementById('tp-fulcrum-mark');
+  var touched=false;
+  function set(t){
+    t=Math.max(-1,Math.min(1,t));
+    el.style.setProperty('--t',t.toFixed(3));
+    var mins=Math.round(t*180);
+    var h=12,m=mins;
+    if(m<0){h=11;m+=60;}
+    var label=(mins===0)?'12:00 — level':(mins<0?'before noon, leaning':'past noon, leaning')+' '+Math.abs(mins)+'m';
+    mark.textContent=label;
+  }
+  function fromEvent(e){
+    var r=el.getBoundingClientRect();
+    var x=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
+    set((x/r.width)*2-1);
+    if(!touched){touched=true;el.classList.add('touched');}
+  }
+  el.addEventListener('mousemove',fromEvent);
+  el.addEventListener('touchmove',fromEvent);
+  el.addEventListener('mouseleave',function(){
+    var start=parseFloat(getComputedStyle(el).getPropertyValue('--t'))||0;
+    var t0=null;
+    function step(ts){
+      if(t0===null)t0=ts;
+      var p=Math.min(1,(ts-t0)/600);
+      set(start*(1-p));
+      if(p<1)requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  });
+  set(0);
+})();
+</script>
+</section>
