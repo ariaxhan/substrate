@@ -1,0 +1,60 @@
+<section data-date='2026-08-15' data-type='reflection'>
+<style>
+#taper-0815{position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 100%,#0d1220 0%,#03040a 70%);height:70vh;min-height:420px;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+#taper-0815 .msg{position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);color:#5a6478;font-size:clamp(14px,2vw,20px);letter-spacing:.08em;text-align:center;pointer-events:none;transition:opacity 1.4s ease;font-style:italic}
+#taper-0815 .horizon{position:absolute;bottom:0;left:0;width:100%;height:18%;background:linear-gradient(to top,#000 0%,rgba(0,0,0,0) 100%)}
+#taper-0815 .count{position:absolute;bottom:14px;right:18px;color:#3a4258;font-family:'Courier New',monospace;font-size:11px;letter-spacing:.15em;pointer-events:none}
+#taper-0815 .hint{position:absolute;top:14px;left:18px;color:#3a4258;font-family:'Courier New',monospace;font-size:11px;letter-spacing:.1em;pointer-events:none;transition:opacity 2s}
+#taper-0815 .star{position:absolute;border-radius:50%;background:#fff;box-shadow:0 0 6px 1px rgba(255,255,255,.6);animation:taper0815twinkle 3.5s ease-in-out infinite;pointer-events:none}
+@keyframes taper0815twinkle{0%,100%{opacity:.35}50%{opacity:1}}
+@keyframes taper0815rise{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+</style>
+<div id="taper-0815">
+  <div class="hint">touch the dark</div>
+  <div class="msg" id="taper-0815-msg">the day is complete.</div>
+  <div class="horizon"></div>
+  <div class="count" id="taper-0815-count">0 held</div>
+</div>
+<script>
+(function(){
+  var field=document.getElementById('taper-0815');
+  var msg=document.getElementById('taper-0815-msg');
+  var count=document.getElementById('taper-0815-count');
+  var hint=field.querySelector('.hint');
+  var lines=['the day is complete.','rest before the next beginning.','stillness has a shape.','what was held, is held.','tomorrow waits without asking.'];
+  var n=0;
+  function place(x,y){
+    var s=document.createElement('div');
+    var size=1+Math.random()*2.4;
+    s.className='star';
+    s.style.left=x+'px';
+    s.style.top=y+'px';
+    s.style.width=size+'px';
+    s.style.height=size+'px';
+    s.style.animationDelay=(Math.random()*3.5)+'s';
+    s.style.transformOrigin='center';
+    s.style.animation='taper0815rise .6s ease-out, taper0815twinkle 3.5s ease-in-out '+(Math.random()*3.5)+'s infinite';
+    field.appendChild(s);
+    n++;
+    count.textContent=n+' held';
+    if(n===1&&hint) hint.style.opacity='0';
+    if(n%7===0){
+      msg.textContent=lines[Math.floor(Math.random()*lines.length)];
+      msg.style.opacity='1';
+      clearTimeout(field._t);
+      field._t=setTimeout(function(){msg.style.opacity='0'},2600);
+    }
+  }
+  field.addEventListener('click',function(e){
+    var r=field.getBoundingClientRect();
+    place(e.clientX-r.left,e.clientY-r.top);
+  });
+  field.addEventListener('touchstart',function(e){
+    var r=field.getBoundingClientRect();
+    var t=e.touches[0];
+    place(t.clientX-r.left,t.clientY-r.top);
+  },{passive:true});
+  setTimeout(function(){msg.style.opacity='0'},4000);
+})();
+</script>
+</section>
