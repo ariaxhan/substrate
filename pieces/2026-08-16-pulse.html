@@ -1,0 +1,125 @@
+<section data-date='2026-08-16' data-type='pulse'>
+<style>
+#fulcrum-piece{
+  --tilt:0deg;
+  background:#f4f1ea;
+  color:#1a1a1a;
+  font-family:'Iowan Old Style','Palatino',Georgia,serif;
+  height:70vh;
+  min-height:420px;
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  user-select:none;
+}
+#fulcrum-piece .beam{
+  position:relative;
+  width:78%;
+  max-width:720px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  transform:rotate(var(--tilt));
+  transform-origin:50% 50%;
+  transition:transform .12s ease-out;
+}
+#fulcrum-piece .beam::before{
+  content:'';
+  position:absolute;
+  left:0;right:0;top:50%;
+  height:1px;
+  background:#1a1a1a;
+  opacity:.35;
+}
+#fulcrum-piece .half{
+  font-size:clamp(1.1rem,3vw,2rem);
+  letter-spacing:.02em;
+  line-height:1.4;
+  width:44%;
+  text-align:center;
+  transition:opacity .3s, transform .3s;
+}
+#fulcrum-piece .half.am{ text-align:right; }
+#fulcrum-piece .half.pm{ text-align:left; }
+#fulcrum-piece .pivot{
+  position:absolute;
+  left:50%;top:50%;
+  width:10px;height:10px;
+  background:#1a1a1a;
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+}
+#fulcrum-piece .pivot::after{
+  content:'';
+  position:absolute;
+  left:50%;top:100%;
+  width:0;height:0;
+  border-left:8px solid transparent;
+  border-right:8px solid transparent;
+  border-top:14px solid #1a1a1a;
+  transform:translateX(-50%);
+  opacity:.5;
+}
+#fulcrum-piece .mark{
+  position:absolute;
+  bottom:8%;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:.68rem;
+  letter-spacing:.32em;
+  text-transform:uppercase;
+  opacity:.4;
+}
+#fulcrum-piece.flipped{ background:#141210; color:#e8e2d4; }
+#fulcrum-piece.flipped .beam::before,
+#fulcrum-piece.flipped .pivot{ background:#e8e2d4; }
+#fulcrum-piece.flipped .pivot::after{ border-top-color:#e8e2d4; }
+</style>
+<div id="fulcrum-piece">
+  <div class="beam">
+    <span class="half am" id="fp-am">morning still asking</span>
+    <div class="pivot"></div>
+    <span class="half pm" id="fp-pm">evening not yet answering</span>
+  </div>
+  <div class="mark" id="fp-mark">16:00 &middot; tilt to feel it</div>
+</div>
+<script>
+(function(){
+  var el = document.getElementById('fulcrum-piece');
+  var mark = document.getElementById('fp-mark');
+  var am = document.getElementById('fp-am');
+  var pm = document.getElementById('fp-pm');
+  var flipped = false;
+  var amWords = ['morning still asking','coffee going cold','the list unstarted','light still arriving'];
+  var pmWords = ['evening not yet answering','the list half true','shadows going long','light already leaving'];
+  var wi = 0;
+  function onMove(e){
+    var r = el.getBoundingClientRect();
+    var x = (e.clientX - r.left) / r.width;
+    var tilt = (x - 0.5) * 24;
+    el.style.setProperty('--tilt', tilt.toFixed(2) + 'deg');
+    var lean = Math.abs(x - 0.5);
+    am.style.opacity = 0.55 + (0.5 - x) * 0.9;
+    pm.style.opacity = 0.55 + (x - 0.5) * 0.9;
+    mark.textContent = (x < 0.5 ? 'leaning morning' : x > 0.5 ? 'leaning evening' : 'level') + ' · ' + Math.round(lean*200) + '%';
+  }
+  el.addEventListener('mousemove', onMove);
+  el.addEventListener('mouseleave', function(){
+    el.style.setProperty('--tilt','0deg');
+    am.style.opacity = 1;
+    pm.style.opacity = 1;
+    mark.textContent = '16:00 · tilt to feel it';
+  });
+  el.addEventListener('click', function(){
+    flipped = !flipped;
+    el.classList.toggle('flipped', flipped);
+    wi = (wi + 1) % amWords.length;
+    am.textContent = amWords[wi];
+    pm.textContent = pmWords[wi];
+  });
+})();
+</script>
+</section>
