@@ -1,0 +1,61 @@
+<section data-date='2026-08-16' data-type='digest'>
+<style>
+#lattice-2026-08-16{margin:0;padding:0;background:#07080b;height:100vh;overflow:hidden;position:relative;font-family:'Courier New',monospace;cursor:crosshair}
+#lattice-2026-08-16 svg{position:absolute;top:0;left:0;width:100%;height:100%}
+#lattice-2026-08-16 line{stroke:#8fb8a8;stroke-width:.6;opacity:0}
+#lattice-2026-08-16 .node{position:absolute;width:4px;height:4px;border-radius:50%;background:#e8e2d0;box-shadow:0 0 6px #e8e2d0;transform:translate(-50%,-50%);opacity:0;transition:opacity 1.2s ease}
+#lattice-2026-08-16 .word{position:absolute;color:#5f7568;font-size:11px;letter-spacing:.04em;transform:translate(-50%,-50%);opacity:0;transition:opacity 2s ease;white-space:nowrap;pointer-events:none;font-style:italic}
+#lattice-2026-08-16 .hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);color:#3a4640;font-size:10px;letter-spacing:.15em;text-transform:uppercase;font-family:sans-serif}
+#lattice-2026-08-16 .ct{position:absolute;top:14px;left:50%;transform:translateX(-50%);color:#e8e2d0;font-size:13px;letter-spacing:.3em;text-transform:uppercase;opacity:.6;font-family:sans-serif;transition:opacity 1.5s}
+</style>
+<div id="lattice-2026-08-16">
+  <svg id="lsvg"></svg>
+  <div class="ct" id="lct">nothing known yet</div>
+  <div class="hint">click to record an observation</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('lattice-2026-08-16'),
+      svg=document.getElementById('lsvg'),
+      ct=document.getElementById('lct'),
+      lex=['pattern','signal','recurrence','trace','residue','thread','echo','cluster','memory','shape','drift','link','fold','weight','trend','core'],
+      pts=[];
+  function say(t){ct.textContent=t;ct.style.opacity=.6;}
+  root.addEventListener('click',function(e){
+    if(e.target.closest('.hint'))return;
+    var r=root.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+    var n=document.createElement('div');
+    n.className='node';n.style.left=x+'px';n.style.top=y+'px';
+    root.appendChild(n);
+    requestAnimationFrame(function(){n.style.opacity=1});
+    var links=0;
+    pts.forEach(function(p){
+      var d=Math.hypot(p.x-x,p.y-y);
+      if(d<220){
+        links++;
+        var ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+        ln.setAttribute('x1',p.x);ln.setAttribute('y1',p.y);
+        ln.setAttribute('x2',x);ln.setAttribute('y2',y);
+        svg.appendChild(ln);
+        requestAnimationFrame(function(){ln.style.transition='opacity 1.8s ease';ln.style.opacity=Math.max(.08,.5-d/500)});
+      }
+    });
+    pts.push({x:x,y:y});
+    if(links>=2){
+      var w=document.createElement('div');
+      w.className='word';
+      w.textContent=lex[Math.floor(Math.random()*lex.length)];
+      w.style.left=x+'px';w.style.top=(y-16)+'px';
+      root.appendChild(w);
+      requestAnimationFrame(function(){w.style.opacity=.85});
+    }
+    var n2=pts.length;
+    if(n2===1)say('one observation');
+    else if(n2<6)say(n2+' fragments, unrelated');
+    else if(links>=3)say('a pattern is forming');
+    else if(n2<14)say(n2+' points accumulating');
+    else say('structure emerges from noise');
+  });
+})();
+</script>
+</section>
