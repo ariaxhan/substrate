@@ -1,0 +1,59 @@
+<section data-date='2026-08-16' data-type='reflection'>
+<style>
+#taper-0816{position:relative;height:70vh;min-height:420px;overflow:hidden;background:radial-gradient(ellipse at 50% 100%,#0d1b2e 0%,#050810 60%,#000 100%);cursor:crosshair;font-family:Georgia,'Iowan Old Style',serif;border-radius:6px}
+#taper-0816 .t0816-msg{position:absolute;top:38%;left:50%;transform:translate(-50%,-50%);color:#5a6a85;font-size:15px;letter-spacing:.14em;text-transform:lowercase;text-align:center;pointer-events:none;transition:opacity 1.8s ease;user-select:none}
+#taper-0816 .t0816-count{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);color:#3a4a63;font-size:11px;letter-spacing:.2em;pointer-events:none;font-family:Georgia,serif;opacity:.8}
+#taper-0816 .t0816-star{position:absolute;border-radius:50%;background:#fff;pointer-events:none;box-shadow:0 0 6px 1px rgba(255,255,255,.5)}
+#taper-0816 .t0816-word{position:absolute;color:#cfd8e8;font-style:italic;font-size:13px;pointer-events:none;white-space:nowrap;opacity:0;transition:opacity 2.5s ease,transform 6s linear}
+@keyframes t0816tw{0%,100%{opacity:.35}50%{opacity:1}}
+</style>
+<div id="taper-0816">
+  <div class="t0816-msg" id="t0816m">the day is finished. touch the dark to rest a light.</div>
+  <div class="t0816-count" id="t0816c"></div>
+</div>
+<script>
+(function(){
+  var host=document.getElementById('taper-0816');
+  var msg=document.getElementById('t0816m');
+  var cnt=document.getElementById('t0816c');
+  var words=['stillness','enough now','well done','let it close','the day held','rest here','quiet arrives','begun again, later'];
+  var n=0;
+  var faded=false;
+  host.addEventListener('click',function(e){
+    var r=host.getBoundingClientRect();
+    var x=e.clientX-r.left, y=e.clientY-r.top;
+    if(!faded){faded=true;msg.style.opacity='0';}
+    var size=1+Math.random()*2.4;
+    var s=document.createElement('div');
+    s.className='t0816-star';
+    s.style.width=size+'px';
+    s.style.height=size+'px';
+    s.style.left=x+'px';
+    s.style.top=y+'px';
+    s.style.opacity='0';
+    s.style.transition='opacity 1.2s ease';
+    s.style.animation='t0816tw '+(2+Math.random()*3)+'s ease-in-out infinite';
+    s.style.animationDelay=(Math.random()*2)+'s';
+    host.appendChild(s);
+    requestAnimationFrame(function(){s.style.opacity='1';});
+    n++;
+    cnt.textContent=n+(n===1?' star placed':' stars placed');
+    if(Math.random()<0.35){
+      var w=document.createElement('div');
+      w.className='t0816-word';
+      w.textContent=words[Math.floor(Math.random()*words.length)];
+      w.style.left=(x+8)+'px';
+      w.style.top=(y-6)+'px';
+      w.style.transform='translateY(0px)';
+      host.appendChild(w);
+      requestAnimationFrame(function(){
+        w.style.opacity='.85';
+        w.style.transform='translateY(-40px)';
+      });
+      setTimeout(function(){w.style.opacity='0';},2600);
+      setTimeout(function(){w.remove();},8600);
+    }
+  });
+})();
+</script>
+</section>
