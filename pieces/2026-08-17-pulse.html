@@ -1,0 +1,59 @@
+<section data-date='2026-08-17' data-type='pulse'>
+<style>
+#taper-halfway{margin:0;overflow:hidden;height:70vh;min-height:420px;position:relative;background:linear-gradient(180deg,#e8d9c3 0%,#c9a876 48%,#12141a 52%,#0a0b0f 100%);font-family:Georgia,'Times New Roman',serif;cursor:ns-resize;transition:background 1.2s ease}
+#taper-halfway.tip{background:linear-gradient(180deg,#0a0b0f 0%,#12141a 48%,#c9a876 52%,#e8d9c3 100%)}
+#taper-halfway .axis{position:absolute;left:50%;top:50%;width:1px;height:60%;background:rgba(0,0,0,.25);transform:translate(-50%,-50%)}
+#taper-halfway .beam{position:absolute;left:50%;top:50%;width:70%;height:2px;background:#1a1a1a;transform-origin:50% 50%;transition:transform .08s linear}
+#taper-halfway .pin{position:absolute;left:50%;top:50%;width:8px;height:8px;border-radius:50%;background:#1a1a1a;transform:translate(-50%,-50%);z-index:5}
+#taper-halfway .word{position:absolute;top:50%;font-size:clamp(1.4rem,4vw,3rem);letter-spacing:.18em;font-style:italic;user-select:none;transition:transform .08s linear,opacity .5s ease}
+#taper-halfway .w1{left:8%;color:#3a2c1a}
+#taper-halfway .w2{right:8%;color:#e9e4d8;text-align:right}
+#taper-halfway .caption{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-size:.7rem;letter-spacing:.35em;color:rgba(128,128,128,.6);font-family:Georgia,serif;font-style:italic}
+#taper-halfway .ripple{position:absolute;left:50%;top:50%;width:6px;height:6px;border-radius:50%;border:1px solid rgba(0,0,0,.4);transform:translate(-50%,-50%);pointer-events:none;animation:taperRipple 1.1s ease-out forwards}
+@keyframes taperRipple{to{width:340px;height:340px;opacity:0;border-color:rgba(255,255,255,.15)}}
+</style>
+<div id="taper-halfway">
+  <div class="axis"></div>
+  <div class="beam" id="th-beam"></div>
+  <div class="pin" id="th-pin"></div>
+  <div class="word w1" id="th-dawn">dawn</div>
+  <div class="word w2" id="th-dusk">dusk</div>
+  <div class="caption">the day balances on a point this thin</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('taper-halfway');
+  var beam=document.getElementById('th-beam');
+  var pin=document.getElementById('th-pin');
+  var dawn=document.getElementById('th-dawn');
+  var dusk=document.getElementById('th-dusk');
+  var tipped=false;
+  function setTilt(deg){
+    beam.style.transform='translate(-50%,-50%) rotate('+deg+'deg)';
+    var lift=deg*0.6;
+    dawn.style.transform='translateY(calc(-50% + '+lift+'px))';
+    dusk.style.transform='translateY(calc(-50% - '+lift+'px))';
+  }
+  el.addEventListener('mousemove',function(e){
+    var r=el.getBoundingClientRect();
+    var mid=r.top+r.height/2;
+    var ratio=(e.clientY-mid)/(r.height/2);
+    ratio=Math.max(-1,Math.min(1,ratio));
+    setTilt(ratio*16*(tipped?-1:1));
+  });
+  el.addEventListener('mouseleave',function(){setTilt(0)});
+  el.addEventListener('click',function(e){
+    tipped=!tipped;
+    el.classList.toggle('tip',tipped);
+    var r=document.createElement('div');
+    r.className='ripple';
+    var rr=el.getBoundingClientRect();
+    r.style.left=(e.clientX-rr.left)+'px';
+    r.style.top=(e.clientY-rr.top)+'px';
+    el.appendChild(r);
+    setTimeout(function(){r.remove()},1150);
+    setTilt(0);
+  });
+})();
+</script>
+</section>
