@@ -1,0 +1,117 @@
+<section data-date='2026-08-17' data-type='digest'>
+<style>
+#taper-2026-08-17 * { box-sizing: border-box; }
+#taper-2026-08-17 {
+  margin: 0; padding: 0; height: 100vh; min-height: 560px;
+  background: #0a0a0c; color: #d8d2c4; overflow: hidden;
+  font-family: Georgia, 'Times New Roman', serif; position: relative;
+  cursor: crosshair;
+}
+#taper-2026-08-17 .hint {
+  position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+  font-family: 'Courier New', monospace; font-size: 11px; letter-spacing: .12em;
+  color: #55503f; text-transform: uppercase; pointer-events: none;
+  transition: opacity 1.2s ease;
+}
+#taper-2026-08-17 svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+#taper-2026-08-17 line { stroke: #9b8a5c; stroke-width: .6; opacity: .35; }
+#taper-2026-08-17 circle.node { fill: #e8dfc4; }
+#taper-2026-08-17 text.label {
+  font-size: 10px; font-family: 'Courier New', monospace;
+  letter-spacing: .04em; opacity: 0; fill: #a89a6f;
+}
+#taper-2026-08-17 .count {
+  position: absolute; top: 16px; right: 20px; font-family: 'Courier New', monospace;
+  font-size: 11px; color: #4a4636; letter-spacing: .1em;
+}
+</style>
+<div id="taper-2026-08-17">
+  <svg id="tp-svg"></svg>
+  <div class="count" id="tp-count">0 fragments</div>
+  <div class="hint" id="tp-hint">click to remember something</div>
+  <script>
+  (function(){
+    var root = document.getElementById('taper-2026-08-17');
+    var svg = document.getElementById('tp-svg');
+    var hint = document.getElementById('tp-hint');
+    var countEl = document.getElementById('tp-count');
+    var NS = 'http://www.w3.org/2000/svg';
+    var words = ['pattern','signal','residue','thread','echo','trace','shard','grain',
+      'kernel','witness','shape','memory','edge','root','bloom','link',
+      'seed','glyph','fold','weight','vein','lattice','spark','drift'];
+    var nodes = [];
+
+    function dist(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
+
+    function addNode(x, y){
+      var n = { x: x, y: y, w: words[Math.floor(Math.random()*words.length)] };
+      nodes.push(n);
+
+      var c = document.createElementNS(NS,'circle');
+      c.setAttribute('class','node');
+      c.setAttribute('cx', x); c.setAttribute('cy', y);
+      c.setAttribute('r', 0);
+      svg.appendChild(c);
+      var r0 = 2 + Math.min(6, nodes.length*0.08);
+      var start = null;
+      function grow(ts){
+        if(!start) start = ts;
+        var p = Math.min(1, (ts-start)/420);
+        c.setAttribute('r', (r0*p).toFixed(2));
+        if(p<1) requestAnimationFrame(grow);
+      }
+      requestAnimationFrame(grow);
+
+      var t = document.createElementNS(NS,'text');
+      t.setAttribute('class','label');
+      t.setAttribute('x', x+8); t.setAttribute('y', y-8);
+      t.textContent = n.w;
+      svg.appendChild(t);
+      setTimeout(function(){ t.style.transition = 'opacity 2.4s ease'; t.style.opacity = 0.55; }, 30);
+      setTimeout(function(){ t.style.opacity = 0; }, 4200);
+
+      var near = nodes.slice(0, -1)
+        .map(function(o){ return { o: o, d: dist(o, n) }; })
+        .sort(function(a,b){ return a.d - b.d; })
+        .slice(0, 3);
+
+      near.forEach(function(item){
+        var line = document.createElementNS(NS,'line');
+        line.setAttribute('x1', n.x); line.setAttribute('y1', n.y);
+        line.setAttribute('x2', n.x); line.setAttribute('y2', n.y);
+        line.style.transition = 'x2 .6s ease, y2 .6s ease, opacity .6s ease';
+        svg.appendChild(line);
+        requestAnimationFrame(function(){
+          line.setAttribute('x2', item.o.x);
+          line.setAttribute('y2', item.o.y);
+        });
+      });
+
+      countEl.textContent = nodes.length + (nodes.length===1 ? ' fragment' : ' fragments');
+      if(nodes.length===1){
+        hint.textContent = 'each one finds its nearest kin';
+      } else if(nodes.length===6){
+        hint.textContent = 'a structure is forming';
+      } else if(nodes.length===14){
+        hint.textContent = 'this is what knowing looks like';
+        hint.style.opacity = 1;
+      }
+      if(nodes.length>1 && nodes.length!==6 && nodes.length!==14){
+        hint.style.opacity = Math.max(0, 1 - nodes.length/9);
+      }
+    }
+
+    root.addEventListener('click', function(e){
+      var rect = root.getBoundingClientRect();
+      addNode(e.clientX - rect.left, e.clientY - rect.top);
+    });
+
+    // a first, quiet fragment to seed the field
+    setTimeout(function(){
+      var rect = root.getBoundingClientRect();
+      addNode(rect.width*0.5, rect.height*0.42);
+    }, 500);
+  })();
+  </script>
+</div>
+</section>
