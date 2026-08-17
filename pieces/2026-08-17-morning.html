@@ -1,0 +1,47 @@
+<section data-date='2026-08-17' data-type='morning'>
+<style>
+#taper-0817{position:relative;height:70vh;min-height:420px;margin:0;overflow:hidden;background:#0b0e14;cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+#taper-0817 .sky{position:absolute;inset:0;background:linear-gradient(to bottom,#0b0e14 0%,#0b0e14 40%,#1a1030 60%,#3a1a2e 78%,#7a3320 90%,#c86a2a 100%);transition:filter .4s ease}
+#taper-0817 .sun{position:absolute;left:50%;bottom:-40px;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle,#ffe9b0,#ffb347 60%,transparent 72%);transform:translateX(-50%);transition:bottom 1.2s cubic-bezier(.2,.8,.3,1),width .8s,height .8s;filter:blur(.5px)}
+#taper-0817 .word{position:absolute;color:#f4e3c9;opacity:0;letter-spacing:.06em;font-style:italic;font-size:15px;transition:opacity 1.6s ease;white-space:nowrap;pointer-events:none}
+#taper-0817 .word.on{opacity:.85}
+#taper-0817 .hint{position:absolute;bottom:14px;left:16px;color:#8a7a6a;font:11px/1.4 -apple-system,sans-serif;letter-spacing:.08em;text-transform:uppercase;opacity:.6}
+#taper-0817 .stars{position:absolute;inset:0;background-image:radial-gradient(1px 1px at 10% 20%,#fff,transparent),radial-gradient(1px 1px at 80% 15%,#fff,transparent),radial-gradient(1px 1px at 35% 8%,#fff,transparent),radial-gradient(1px 1px at 60% 25%,#fff,transparent),radial-gradient(1px 1px at 90% 30%,#fff,transparent),radial-gradient(1px 1px at 22% 35%,#fff,transparent);opacity:.5;transition:opacity 1.2s ease}
+</style>
+<div id="taper-0817">
+  <div class="sky"></div>
+  <div class="stars"></div>
+  <div class="sun"></div>
+  <div class="hint">move to lift the light — click to name what rises</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('taper-0817');
+  var sky=root.querySelector('.sky'), sun=root.querySelector('.sun'), stars=root.querySelector('.stars');
+  var words=['unwritten','still','maybe','again','wide open','first light','not yet said','possible','clean page','waking'];
+  var placed=[];
+  function place(){
+    var w=document.createElement('div');
+    w.className='word';
+    w.textContent=words[placed.length % words.length];
+    w.style.left=(8+Math.random()*74)+'%';
+    w.style.top=(20+Math.random()*45)+'%';
+    root.appendChild(w);
+    placed.push(w);
+    requestAnimationFrame(function(){requestAnimationFrame(function(){w.classList.add('on')})});
+    if(placed.length>7){var old=placed.shift();old.classList.remove('on');setTimeout(function(){old.remove()},1700)}
+  }
+  root.addEventListener('mousemove',function(e){
+    var r=root.getBoundingClientRect();
+    var f=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));
+    sun.style.bottom=(-40+f*(r.height*0.62))+'px';
+    var w=70+f*40;
+    sun.style.width=w+'px';sun.style.height=w+'px';
+    sky.style.filter='saturate('+(1+f*0.6)+') brightness('+(1+f*0.35)+')';
+    stars.style.opacity=(0.5-f*0.5);
+  });
+  root.addEventListener('click',place);
+  place();
+})();
+</script>
+</section>
