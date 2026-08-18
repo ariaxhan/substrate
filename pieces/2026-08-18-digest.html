@@ -1,0 +1,78 @@
+<section data-date='2026-08-18' data-type='digest'>
+<style>
+.taper-crystal{--bg:#0a0e14;--fg:#d8e2e8;--line:#3a5a6a;--hot:#e8c468;margin:0;padding:0;background:var(--bg);color:var(--fg);height:100vh;overflow:hidden;position:relative;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+.taper-crystal .tc-hint{position:absolute;top:14px;left:18px;font:11px/1.4 -apple-system,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#5a7280;z-index:5;pointer-events:none}
+.taper-crystal svg{position:absolute;inset:0;width:100%;height:100%}
+.taper-crystal .tc-label{font:italic 13px Georgia,serif;fill:var(--fg);opacity:0;pointer-events:none}
+.taper-crystal .tc-count{position:absolute;bottom:14px;right:18px;font:11px/1.4 -apple-system,sans-serif;color:#5a7280;letter-spacing:.08em;z-index:5}
+</style>
+<div class="taper-crystal" id="tc">
+<div class="tc-hint">click to place a fact &middot; watch it find its kin</div>
+<svg id="tcsvg"></svg>
+<div class="tc-count" id="tcn">0 points, 0 bonds</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('tc'),svg=document.getElementById('tcsvg'),cnt=document.getElementById('tcn');
+var W=root.clientWidth,H=root.clientHeight;
+var pts=[],NS='http://www.w3.org/2000/svg';
+var words=['pattern','signal','echo','thread','trace','shard','glyph','seed','node','root','pulse','mark','wake','core','field','lattice','grain','edge','fold','drift'];
+function el(tag,attrs){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);return e}
+function dist(a,b){var dx=a.x-b.x,dy=a.y-b.y;return Math.sqrt(dx*dx+dy*dy)}
+function place(x,y){
+  var p={x:x,y:y,w:words[pts.length%words.length]+'-'+(pts.length+1)};
+  var c=el('circle',{cx:x,cy:y,r:0,fill:'#e8c468',opacity:0.9});
+  svg.appendChild(c);
+  var start=null;
+  function grow(ts){
+    if(!start)start=ts;
+    var t=Math.min(1,(ts-start)/420);
+    var r=3+t*3.5;
+    c.setAttribute('r',r);
+    c.setAttribute('opacity',0.95-t*0.35);
+    if(t<1)requestAnimationFrame(grow);
+  }
+  requestAnimationFrame(grow);
+  var t=el('text',{x:x+9,y:y-8,class:'tc-label'});
+  t.textContent=p.w;
+  svg.appendChild(t);
+  setTimeout(function(){t.style.transition='opacity 900ms ease';t.style.opacity=0.55},60);
+  var bonds=0;
+  pts.forEach(function(o){
+    var d=dist(p,o);
+    if(d<220){
+      bonds++;
+      var line=el('line',{x1:o.x,y1:o.y,x2:o.x,y2:o.y,stroke:'#3a5a6a',
+        'stroke-width':Math.max(0.4,1.6-d/220),'stroke-opacity':0});
+      svg.insertBefore(line,svg.firstChild);
+      var s=null;
+      function draw(ts){
+        if(!s)s=ts;
+        var tt=Math.min(1,(ts-s)/500);
+        line.setAttribute('x2',o.x+(x-o.x)*tt);
+        line.setAttribute('y2',o.y+(y-o.y)*tt);
+        line.setAttribute('stroke-opacity',(0.55-d/400)*tt);
+        if(tt<1)requestAnimationFrame(draw);
+      }
+      requestAnimationFrame(draw);
+    }
+  });
+  pts.push(p);
+  cnt.textContent=pts.length+' points, '+svg.querySelectorAll('line').length+' bonds';
+  if(pts.length>=7){
+    var densest=svg.querySelectorAll('line').length;
+    if(densest>=pts.length){
+      root.style.transition='background 1400ms ease';
+      root.style.background='radial-gradient(ellipse at '+ (x/W*100)+'% '+(y/H*100)+'%, #16202a 0%, #0a0e14 70%)';
+    }
+  }
+}
+root.addEventListener('click',function(e){
+  var r=root.getBoundingClientRect();
+  place(e.clientX-r.left,e.clientY-r.top);
+});
+window.addEventListener('resize',function(){W=root.clientWidth;H=root.clientHeight});
+[[0.3,0.4],[0.62,0.3]].forEach(function(p,i){setTimeout(function(){place(p[0]*W,p[1]*H)},300+i*500)});
+})();
+</script>
+</section>
