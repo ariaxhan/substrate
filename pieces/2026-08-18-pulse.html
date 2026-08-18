@@ -1,0 +1,73 @@
+<section data-date='2026-08-18' data-type='pulse'>
+<style>
+#eq-wrap{margin:0;padding:0;overflow:hidden;background:#f4f1ea;color:#1a1a1a;height:70vh;min-height:420px;position:relative;font-family:Georgia,'Times New Roman',serif;cursor:crosshair;user-select:none}
+#eq-wrap .eq-wordmark{position:absolute;top:24px;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#999;font-family:Arial,sans-serif}
+#eq-beam{position:absolute;top:50%;left:50%;width:70vw;max-width:640px;height:2px;background:#1a1a1a;transform-origin:center center;transition:transform .05s linear}
+#eq-pivot{position:absolute;top:50%;left:50%;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:24px solid #1a1a1a;transform:translate(-50%,0)}
+.eq-pan{position:absolute;top:50%;font-size:clamp(22px,4vw,44px);font-style:italic;transform:translate(-50%,0);transition:top .05s linear}
+#eq-am{}
+#eq-pm{}
+#eq-fulcrum-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:10px;letter-spacing:.2em;color:#bbb;font-family:Arial,sans-serif;opacity:0;transition:opacity .3s}
+#eq-wrap.eq-locked #eq-fulcrum-label{opacity:1}
+#eq-hint{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:.15em;color:#aaa;font-family:Arial,sans-serif;text-transform:uppercase}
+</style>
+<div id="eq-wrap">
+  <div class="eq-wordmark">equinox / a taper</div>
+  <div id="eq-beam">
+    <div id="eq-am" class="eq-pan">morning</div>
+    <div id="eq-pm" class="eq-pan">night</div>
+  </div>
+  <div id="eq-pivot"></div>
+  <div id="eq-fulcrum-label">held</div>
+  <div id="eq-hint">tilt with your hand. click to hold the middle.</div>
+</div>
+<script>
+(function(){
+  var wrap=document.getElementById('eq-wrap'),
+      beam=document.getElementById('eq-beam'),
+      am=document.getElementById('eq-am'),
+      pm=document.getElementById('eq-pm'),
+      locked=false, lockAngle=0;
+  function place(){
+    var r=beam.getBoundingClientRect(),
+        half=r.width/2;
+    am.style.left=(half*-1+40)+'px';
+    pm.style.left=(half-40)+'px';
+  }
+  function tilt(angle){
+    var rad=angle*Math.PI/180,
+        drop=Math.tan(rad)*(beam.getBoundingClientRect().width/2);
+    beam.style.transform='translate(-50%,-50%) rotate('+angle+'deg)';
+    am.style.top='calc(50% - '+drop+'px)';
+    pm.style.top='calc(50% + '+drop+'px)';
+  }
+  wrap.addEventListener('mousemove',function(e){
+    if(locked)return;
+    var r=wrap.getBoundingClientRect(),
+        cx=r.left+r.width/2,
+        dx=(e.clientX-cx)/(r.width/2);
+    dx=Math.max(-1,Math.min(1,dx));
+    tilt(dx*16);
+  });
+  wrap.addEventListener('mouseleave',function(){
+    if(!locked)tilt(0);
+  });
+  wrap.addEventListener('click',function(){
+    locked=!locked;
+    wrap.classList.toggle('eq-locked',locked);
+    if(locked)tilt(0);
+  });
+  wrap.addEventListener('touchmove',function(e){
+    if(locked)return;
+    var t=e.touches[0],r=wrap.getBoundingClientRect(),
+        cx=r.left+r.width/2,
+        dx=(t.clientX-cx)/(r.width/2);
+    dx=Math.max(-1,Math.min(1,dx));
+    tilt(dx*16);
+  },{passive:true});
+  place();
+  tilt(0);
+  window.addEventListener('resize',place);
+})();
+</script>
+</section>
