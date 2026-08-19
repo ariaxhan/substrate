@@ -1,0 +1,56 @@
+<section data-date='2026-08-19' data-type='morning'>
+<style>
+#tp-dawn{margin:0;overflow:hidden;height:70vh;min-height:420px;position:relative;cursor:crosshair;background:linear-gradient(#0a0e1c,#0a0e1c)}
+#tp-dawn .sky{position:absolute;inset:0;transition:background 120ms linear}
+#tp-dawn .sun{position:absolute;left:50%;width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 20px 6px rgba(255,220,150,.9);transform:translate(-50%,-50%);transition:top 120ms linear,box-shadow 200ms linear}
+#tp-dawn h1{position:absolute;bottom:8%;left:50%;transform:translateX(-50%);margin:0;font:italic 300 clamp(20px,4vw,44px)/1.2 Georgia,'Times New Roman',serif;color:#f4ede0;letter-spacing:.02em;text-align:center;text-shadow:0 0 30px rgba(0,0,0,.4);pointer-events:none;white-space:nowrap}
+#tp-dawn .hint{position:absolute;top:12px;left:16px;font:11px/1.4 Georgia,serif;color:rgba(244,237,224,.35);letter-spacing:.08em;text-transform:uppercase;pointer-events:none}
+#tp-dawn .seed{position:absolute;font:italic 14px Georgia,serif;color:rgba(255,230,190,.9);pointer-events:none;opacity:0;transform:translateY(6px);transition:opacity 1400ms ease,transform 1400ms ease;white-space:nowrap}
+#tp-dawn .seed.on{opacity:1;transform:translateY(-18px)}
+</style>
+<div id="tp-dawn">
+  <div class="sky"></div>
+  <div class="sun"></div>
+  <h1 id="tp-dawn-line">nothing has happened yet</h1>
+  <div class="hint">move to lift the light &middot; click to name what could happen</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('tp-dawn'), sky=el.querySelector('.sky'), sun=el.querySelector('.sun'), line=document.getElementById('tp-dawn-line');
+  var lines=["nothing has happened yet","the day is still unwritten","light before argument","possible, not yet decided","every hour open","the first hour owes no one anything"];
+  var seeds=["a door left ajar","unproven","the kettle not yet on","a name not yet said","the first word, undecided","light finding its edges","what you haven't ruined yet","a held breath","still just weather","the shape before the plan"];
+  function mix(a,b,t){return Math.round(a+(b-a)*t)}
+  function setSky(t){
+    t=Math.max(0,Math.min(1,t));
+    var top=[mix(10,255,t),mix(14,190,t),mix(28,140,t)];
+    var bot=[mix(20,255,t),mix(18,150,t),mix(40,90,t)];
+    sky.style.background='linear-gradient(to bottom, rgb('+top.join(',')+') 0%, rgb('+bot.join(',')+') 100%)';
+    sun.style.top=(88-t*70)+'%';
+    sun.style.boxShadow='0 0 '+(14+t*30)+'px '+(4+t*10)+'px rgba(255,'+mix(220,235,t)+','+mix(150,190,t)+',.9)';
+    line.style.color= t>0.5 ? '#3a2a18' : '#f4ede0';
+    line.textContent = lines[Math.min(lines.length-1, Math.floor(t*lines.length))];
+  }
+  setSky(0);
+  el.addEventListener('mousemove',function(e){
+    var r=el.getBoundingClientRect();
+    setSky(1-(e.clientY-r.top)/r.height);
+  });
+  el.addEventListener('click',function(e){
+    var r=el.getBoundingClientRect();
+    var s=document.createElement('div');
+    s.className='seed';
+    s.textContent=seeds[Math.floor(Math.random()*seeds.length)];
+    s.style.left=(e.clientX-r.left)+'px';
+    s.style.top=(e.clientY-r.top)+'px';
+    el.appendChild(s);
+    requestAnimationFrame(function(){s.classList.add('on')});
+    setTimeout(function(){s.style.opacity=0},2600);
+    setTimeout(function(){s.remove()},4200);
+  });
+  el.addEventListener('touchmove',function(e){
+    var t=e.touches[0], r=el.getBoundingClientRect();
+    setSky(1-(t.clientY-r.top)/r.height);
+  },{passive:true});
+})();
+</script>
+</section>
