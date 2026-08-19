@@ -1,0 +1,103 @@
+<section data-date='2026-08-19' data-type='digest'>
+<style>
+#taper-2026-08-19 * { box-sizing: border-box }
+#taper-2026-08-19 {
+  margin: 0; height: 100vh; background: #08090b; overflow: hidden;
+  font-family: 'Courier New', monospace; position: relative; cursor: crosshair
+}
+#taper-2026-08-19 canvas { position: absolute; inset: 0; width: 100%; height: 100% }
+#taper-2026-08-19 .hint {
+  position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+  color: #4a5560; font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+  pointer-events: none; opacity: .7; transition: opacity 1.2s
+}
+#taper-2026-08-19 .label {
+  position: absolute; color: #d9c9a3; font-size: 10px; letter-spacing: .05em;
+  pointer-events: none; opacity: 0; transition: opacity 1.4s ease; white-space: nowrap
+}
+</style>
+<div id="taper-2026-08-19">
+  <canvas></canvas>
+  <div class="hint">every click is a fact. facts want neighbors.</div>
+</div>
+<script>
+(() => {
+  const root = document.getElementById('taper-2026-08-19');
+  const cv = root.querySelector('canvas');
+  const ctx = cv.getContext('2d');
+  const hint = root.querySelector('.hint');
+  const words = ['datum','trace','signal','shard','glimpse','residue','echo','fragment','witness','thread'];
+  const emerge = ['pattern','structure','order','law','memory','shape'];
+  let pts = [], W, H, dpr = Math.min(window.devicePixelRatio || 1, 2);
+  function size() {
+    W = root.clientWidth; H = root.clientHeight;
+    cv.width = W * dpr; cv.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  size();
+  window.addEventListener('resize', size);
+
+  function addPoint(x, y) {
+    const p = { x, y, r: 0, w: words[Math.floor(Math.random() * words.length)] };
+    pts.push(p);
+    hint.style.opacity = 0;
+    if (pts.length % 5 === 0) spawnLabel(x, y, emerge[Math.floor(Math.random() * emerge.length)]);
+  }
+
+  function spawnLabel(x, y, text) {
+    const el = document.createElement('div');
+    el.className = 'label';
+    el.textContent = text;
+    el.style.left = x + 10 + 'px';
+    el.style.top = y - 10 + 'px';
+    root.appendChild(el);
+    requestAnimationFrame(() => el.style.opacity = .85);
+    setTimeout(() => { el.style.opacity = 0; setTimeout(() => el.remove(), 1500) }, 3200);
+  }
+
+  root.addEventListener('click', e => {
+    const rect = root.getBoundingClientRect();
+    addPoint(e.clientX - rect.left, e.clientY - rect.top);
+  });
+
+  let seeded = false;
+  function seed() {
+    if (seeded) return; seeded = true;
+    for (let i = 0; i < 3; i++) {
+      addPoint(W * (0.3 + Math.random() * 0.4), H * (0.3 + Math.random() * 0.4));
+    }
+  }
+  setTimeout(seed, 2400);
+
+  function frame(t) {
+    ctx.clearRect(0, 0, W, H);
+    for (const p of pts) if (p.r < 3) p.r += 0.15;
+    for (let i = 0; i < pts.length; i++) {
+      for (let j = i + 1; j < pts.length; j++) {
+        const a = pts[i], b = pts[j];
+        const d = Math.hypot(a.x - b.x, a.y - b.y);
+        const max = 220;
+        if (d < max) {
+          const alpha = (1 - d / max) * 0.55;
+          ctx.strokeStyle = `rgba(217,201,163,${alpha})`;
+          ctx.lineWidth = 0.6;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+      }
+    }
+    for (const p of pts) {
+      const pulse = 2.4 + Math.sin(t / 600 + p.x) * 0.6;
+      ctx.fillStyle = '#e8dcc0';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, pulse, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</section>
