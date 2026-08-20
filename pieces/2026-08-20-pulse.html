@@ -1,0 +1,62 @@
+<section data-date='2026-08-20' data-type='pulse'>
+<style>
+#tp-fulcrum{position:relative;width:100%;height:340px;background:#0b0b0e;color:#e8e4da;font-family:'Iowan Old Style','Georgia',serif;overflow:hidden;cursor:crosshair;border-radius:2px}
+#tp-fulcrum .beam{position:absolute;top:50%;left:8%;right:8%;height:1px;background:#544f45;transform-origin:center;transition:transform .12s ease-out}
+#tp-fulcrum .side{position:absolute;top:50%;width:46%;display:flex;flex-direction:column;align-items:center;transform-origin:top center;transition:transform .12s ease-out}
+#tp-fulcrum .side.l{left:8%}
+#tp-fulcrum .side.r{right:8%;align-items:center}
+#tp-fulcrum .word{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#a89f8c;margin-top:14px;opacity:.85}
+#tp-fulcrum .pivot{position:absolute;left:50%;top:50%;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:26px solid #e8e4da;transform:translate(-50%,0);opacity:.9}
+#tp-fulcrum .noon{position:absolute;left:50%;top:calc(50% + 26px);transform:translateX(-50%);font-size:11px;letter-spacing:.3em;color:#6b6558}
+#tp-fulcrum .hint{position:absolute;bottom:12px;right:16px;font-size:10px;letter-spacing:.08em;color:#4a463d;font-family:ui-monospace,monospace}
+#tp-fulcrum .flip{position:absolute;top:12px;left:16px;font-size:10px;letter-spacing:.2em;color:#6b6558;text-transform:uppercase}
+</style>
+<div id="tp-fulcrum">
+  <div class="flip" id="tp-flip">equilibrium</div>
+  <div class="beam" id="tp-beam"></div>
+  <div class="pivot"></div>
+  <div class="noon">halfway</div>
+  <div class="side l" id="tp-l">
+    <div class="word">what was</div>
+    <div class="word">spent</div>
+    <div class="word">arrived</div>
+  </div>
+  <div class="side r" id="tp-r">
+    <div class="word">what remains</div>
+    <div class="word">unspent</div>
+    <div class="word">departs</div>
+  </div>
+  <div class="hint">tilt with your cursor · click to hold the balance</div>
+</div>
+<script>
+(function(){
+  var box = document.getElementById('tp-fulcrum');
+  var beam = document.getElementById('tp-beam');
+  var l = document.getElementById('tp-l');
+  var r = document.getElementById('tp-r');
+  var flip = document.getElementById('tp-flip');
+  var held = false, holdAngle = 0;
+  function setTilt(deg){
+    beam.style.transform = 'rotate(' + deg + 'deg)';
+    l.style.transform = 'rotate(' + deg + 'deg)';
+    r.style.transform = 'rotate(' + deg + 'deg)';
+    var mag = Math.abs(deg);
+    flip.textContent = mag < 1.5 ? 'equilibrium' : (deg < 0 ? 'leaning toward what was' : 'leaning toward what remains');
+    var w = Math.max(0, 1 - mag / 26);
+    box.style.background = 'rgb(' + (11 + (1-w)*14) + ',' + (11 + (1-w)*10) + ',' + (14 + (1-w)*6) + ')';
+  }
+  box.addEventListener('mousemove', function(e){
+    if (held) return;
+    var rect = box.getBoundingClientRect();
+    var x = (e.clientX - rect.left) / rect.width;
+    var deg = (x - 0.5) * 52;
+    setTilt(deg);
+  });
+  box.addEventListener('mouseleave', function(){ if(!held) setTilt(0); });
+  box.addEventListener('click', function(){
+    held = !held;
+    box.style.cursor = held ? 'grab' : 'crosshair';
+  });
+})();
+</script>
+</section>
