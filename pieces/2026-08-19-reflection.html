@@ -1,0 +1,53 @@
+<section data-date='2026-08-19' data-type='reflection'>
+<style>
+#tp190819{position:relative;width:100%;height:70vh;min-height:420px;background:radial-gradient(ellipse at 50% 100%,#0c1224 0%,#040611 60%,#000 100%);overflow:hidden;cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+#tp190819 .tp-hz{position:absolute;left:0;right:0;bottom:0;height:22%;background:linear-gradient(to top,#000 0%,rgba(0,0,0,0) 100%)}
+#tp190819 .tp-msg{position:absolute;top:8%;left:50%;transform:translateX(-50%);color:#5a6a8a;font-size:13px;letter-spacing:.14em;text-transform:lowercase;opacity:.85;transition:opacity 1.2s ease;text-align:center;width:80%}
+#tp190819 .tp-star{position:absolute;border-radius:50%;background:#fff;pointer-events:none;animation:tp190819in 1.8s ease-out forwards}
+#tp190819 .tp-line{position:absolute;bottom:14%;left:50%;transform:translateX(-50%);color:#8a92b2;font-size:15px;font-style:italic;letter-spacing:.03em;opacity:0;transition:opacity 2s ease;text-align:center;width:70%}
+@keyframes tp190819in{0%{transform:scale(0);opacity:0}40%{opacity:1}100%{transform:scale(1);opacity:var(--tp-o,.9)}}
+@keyframes tp190819tw{0%,100%{opacity:var(--tp-o,.9)}50%{opacity:calc(var(--tp-o,.9) * 0.35)}}
+</style>
+<div id="tp190819">
+  <div class="tp-msg" id="tp190819msg">the day is complete. touch the dark to rest a light in it.</div>
+  <div class="tp-line" id="tp190819line">still. and still, the sky keeps count.</div>
+  <div class="tp-hz"></div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('tp190819');
+  var msg = document.getElementById('tp190819msg');
+  var line = document.getElementById('tp190819line');
+  var count = 0;
+  var closings = [
+    'one star. the first stillness.',
+    'a few now. the noise is letting go.',
+    'this is what rest looks like from here.',
+    'the day, complete. the night, beginning to hold it.'
+  ];
+  root.addEventListener('click', function(e){
+    var rect = root.getBoundingClientRect();
+    var x = e.clientX - rect.left, y = e.clientY - rect.top;
+    var s = document.createElement('div');
+    var size = 1 + Math.random() * 2.4;
+    var o = (0.5 + Math.random() * 0.5).toFixed(2);
+    s.className = 'tp-star';
+    s.style.width = size + 'px';
+    s.style.height = size + 'px';
+    s.style.left = x + 'px';
+    s.style.top = y + 'px';
+    s.style.setProperty('--tp-o', o);
+    s.style.boxShadow = '0 0 ' + (size * 2.2) + 'px rgba(255,255,255,' + (o*0.7) + ')';
+    root.appendChild(s);
+    setTimeout(function(){
+      s.style.animation = 'tp190819tw ' + (3 + Math.random() * 4) + 's ease-in-out infinite';
+    }, 1800);
+    count++;
+    if (count === 1) { msg.style.opacity = 0; }
+    var idx = count === 1 ? 0 : count < 4 ? 1 : count < 9 ? 2 : 3;
+    line.textContent = closings[idx];
+    line.style.opacity = 1;
+  });
+})();
+</script>
+</section>
