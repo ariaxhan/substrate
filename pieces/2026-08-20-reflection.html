@@ -1,0 +1,85 @@
+<section data-date='2026-08-20' data-type='reflection'>
+<style>
+#taper-0820{position:relative;height:70vh;min-height:420px;background:radial-gradient(ellipse at 50% 100%,#0d1522 0%,#050810 60%,#020304 100%);overflow:hidden;font-family:Georgia,'Times New Roman',serif;cursor:crosshair;border-radius:4px}
+#taper-0820 .line{position:absolute;bottom:8%;left:0;right:0;text-align:center;color:#5a6b82;font-size:13px;letter-spacing:.14em;text-transform:lowercase;opacity:.55;font-style:italic;pointer-events:none;transition:opacity 2s}
+#taper-0820 .horizon{position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#1c2636,transparent)}
+#taper-0820 .star{position:absolute;border-radius:50%;background:#fff;transform:translate(-50%,-50%);pointer-events:none}
+#taper-0820 .hint{position:absolute;top:10px;right:14px;color:#3c4c60;font-size:10px;letter-spacing:.1em;text-transform:uppercase;opacity:.5;font-family:sans-serif}
+#taper-0820 .count{position:absolute;top:10px;left:14px;color:#3c4c60;font-size:10px;letter-spacing:.1em;font-family:sans-serif;opacity:.5}
+</style>
+<div id="taper-0820">
+  <div class="horizon"></div>
+  <div class="hint">click to place a star</div>
+  <div class="count" id="tc">0 lights</div>
+  <div class="line" id="tl">the day is finished. nothing left undone that will not wait.</div>
+</div>
+<script>
+(function(){
+  var box = document.getElementById('taper-0820');
+  var line = document.getElementById('tl');
+  var count = document.getElementById('tc');
+  var msgs = [
+    'the day is finished. nothing left undone that will not wait.',
+    'a light held still is not so different from a wish.',
+    'the dark does not empty a place. it fills it slowly.',
+    'rest is not an ending. it is where tomorrow keeps its shape.',
+    'count what stayed lit. that is the whole of the ledger.',
+    'somewhere a window goes dark and a sky gets one point brighter.',
+    'stillness is a kind of arrival.',
+    'you did not finish everything. the night doesn’t mind.'
+  ];
+  var n = 0;
+  var used = [];
+  function nextMsg(){
+    if (used.length >= msgs.length) used = [];
+    var pick;
+    do { pick = Math.floor(Math.random()*msgs.length); } while (used.indexOf(pick) > -1);
+    used.push(pick);
+    return msgs[pick];
+  }
+  function placeStar(x, y){
+    var s = document.createElement('div');
+    s.className = 'star';
+    var size = 1.5 + Math.random()*2.2;
+    s.style.width = size + 'px';
+    s.style.height = size + 'px';
+    s.style.left = x + 'px';
+    s.style.top = y + 'px';
+    s.style.opacity = 0;
+    s.style.boxShadow = '0 0 ' + (size*3) + 'px rgba(255,255,255,.8)';
+    s.style.transition = 'opacity 2.4s ease-out';
+    box.appendChild(s);
+    requestAnimationFrame(function(){ s.style.opacity = 0.55 + Math.random()*0.45; });
+    n++;
+    count.textContent = n + (n === 1 ? ' light' : ' lights');
+    line.style.opacity = 0;
+    setTimeout(function(){
+      line.textContent = nextMsg();
+      line.style.opacity = .55;
+    }, 800);
+  }
+  box.addEventListener('click', function(e){
+    var r = box.getBoundingClientRect();
+    placeStar(e.clientX - r.left, e.clientY - r.top);
+  });
+  // ambient stars settling in on their own, slower than clicks
+  (function ambient(){
+    var r = box.getBoundingClientRect();
+    if (r.width > 0) {
+      var s = document.createElement('div');
+      s.className = 'star';
+      var size = 1 + Math.random()*1.4;
+      s.style.width = size + 'px';
+      s.style.height = size + 'px';
+      s.style.left = (Math.random()*r.width) + 'px';
+      s.style.top = (Math.random()*r.height*0.7) + 'px';
+      s.style.opacity = 0;
+      s.style.transition = 'opacity 4s ease-out';
+      box.appendChild(s);
+      requestAnimationFrame(function(){ s.style.opacity = 0.15 + Math.random()*0.25; });
+    }
+    setTimeout(ambient, 1400 + Math.random()*1800);
+  })();
+})();
+</script>
+</section>
