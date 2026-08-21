@@ -1,0 +1,79 @@
+<section data-date='2026-08-21' data-type='digest'>
+<style>
+#tp21{position:relative;height:82vh;min-height:480px;background:#0a0a0c;color:#c9c4b8;overflow:hidden;font-family:Georgia,'Times New Roman',serif;border-radius:2px}
+#tp21 .hd{position:absolute;top:14px;left:18px;font:11px/1.5 'Courier New',monospace;letter-spacing:.14em;text-transform:uppercase;color:#66605a;z-index:3;pointer-events:none}
+#tp21 .hd b{color:#a99}
+#tp21 svg{position:absolute;inset:0;width:100%;height:100%}
+#tp21 .n{fill:#e8dfc8}
+#tp21 .n.old{fill:#8a8478}
+#tp21 line{stroke:#4a463c;stroke-width:.6;opacity:.55}
+#tp21 .lbl{font:italic 12px Georgia,serif;fill:#847e70;pointer-events:none}
+#tp21 .count{position:absolute;bottom:14px;right:18px;font:11px 'Courier New',monospace;color:#5a5650;letter-spacing:.08em;z-index:3}
+#tp21 .hint{position:absolute;bottom:14px;left:18px;font:11px 'Courier New',monospace;color:#443f38;letter-spacing:.05em;z-index:3;transition:opacity 1.2s}
+</style>
+<div id="tp21">
+  <div class="hd">knowledge, accumulating <b>&middot;</b> click to know a thing</div>
+  <svg id="tp21s" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid meet"></svg>
+  <div class="count" id="tp21c">0 facts held</div>
+  <div class="hint" id="tp21h">click anywhere</div>
+</div>
+<script>
+(function(){
+  var words=["water","fire","salt","fever","tide","root","echo","frost","seed","spark","dust","vein","ash","glass","thread","stone","pulse","rust","moss","light","grief","wing","clay","hollow","tone","husk","bone","bloom","wire","shade"];
+  var host=document.getElementById('tp21'),svg=document.getElementById('tp21s'),cnt=document.getElementById('tp21c'),hint=document.getElementById('tp21h');
+  var NS='http://www.w3.org/2000/svg',pts=[],used=[];
+  function word(){
+    if(used.length===words.length)used=[];
+    var w;do{w=words[Math.random()*words.length|0];}while(used.indexOf(w)>-1);
+    used.push(w);return w;
+  }
+  function near(p,k){
+    return pts.slice().sort(function(a,b){
+      return Math.hypot(a.x-p.x,a.y-p.y)-Math.hypot(b.x-p.x,b.y-p.y);
+    }).slice(0,k);
+  }
+  function add(x,y){
+    var p={x:x,y:y,w:word(),age:0};
+    var links=pts.length?near(p,pts.length<4?1:2):[];
+    links.forEach(function(o){
+      var l=document.createElementNS(NS,'line');
+      l.setAttribute('x1',p.x);l.setAttribute('y1',p.y);
+      l.setAttribute('x2',o.x);l.setAttribute('y2',o.y);
+      svg.appendChild(l);
+    });
+    pts.forEach(function(o){var c=document.getElementById('c'+o.id);if(c)c.setAttribute('class','n old');});
+    p.id=pts.length;
+    var c=document.createElementNS(NS,'circle');
+    c.setAttribute('id','c'+p.id);
+    c.setAttribute('cx',p.x);c.setAttribute('cy',p.y);
+    c.setAttribute('r',3.4);c.setAttribute('class','n');
+    svg.appendChild(c);
+    var t=document.createElementNS(NS,'text');
+    t.setAttribute('x',p.x+8);t.setAttribute('y',p.y-8);
+    t.setAttribute('class','lbl');t.textContent=p.w;
+    svg.appendChild(t);
+    pts.push(p);
+    cnt.textContent=pts.length+' fact'+(pts.length===1?'':'s')+' held';
+    if(pts.length===1){hint.style.opacity=0;}
+    if(pts.length>=7&&host.getAttribute('data-crys')!=='1'){
+      host.setAttribute('data-crys','1');
+      var full=document.createElementNS(NS,'text');
+      full.setAttribute('x',400);full.setAttribute('y',480);
+      full.setAttribute('text-anchor','middle');
+      full.setAttribute('class','lbl');
+      full.setAttribute('style','font-style:normal;letter-spacing:.2em;fill:#5a544a;font-size:10px;text-transform:uppercase');
+      full.textContent='pattern';
+      svg.appendChild(full);
+    }
+  }
+  host.addEventListener('click',function(e){
+    var r=host.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width*800;
+    var y=(e.clientY-r.top)/r.height*500;
+    add(x,y);
+  });
+  var vb=[[120,90],[520,340],[300,220]];
+  vb.forEach(function(v,i){setTimeout(function(){add(v[0],v[1]);},260*(i+1));});
+})();
+</script>
+</section>
