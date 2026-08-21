@@ -1,0 +1,86 @@
+<section data-date='2026-08-21' data-type='pulse'>
+<style>
+#taper-fulcrum-2026-08-21 {
+  margin: 0; padding: 0; height: 70vh; min-height: 420px;
+  background: linear-gradient(to bottom, #f4efe6, #e8e1d3);
+  color: #2b2620; font-family: Georgia, 'Times New Roman', serif;
+  position: relative; overflow: hidden; cursor: ns-resize;
+}
+#taper-fulcrum-2026-08-21 .tf-axis {
+  position: absolute; left: 0; right: 0; top: 50%; height: 1px;
+  background: rgba(43,38,32,0.25);
+}
+#taper-fulcrum-2026-08-21 .tf-beam {
+  position: absolute; left: 50%; top: 50%; width: 70%; height: 2px;
+  background: #2b2620; transform-origin: center center;
+  transform: translate(-50%, -50%) rotate(0deg);
+  transition: transform 0.08s ease-out;
+}
+#taper-fulcrum-2026-08-21 .tf-pivot {
+  position: absolute; left: 50%; top: 50%; width: 10px; height: 10px;
+  border-radius: 50%; background: #2b2620;
+  transform: translate(-50%, -50%);
+}
+#taper-fulcrum-2026-08-21 .tf-word {
+  position: absolute; font-size: clamp(1.1rem, 2.4vw, 2rem);
+  letter-spacing: 0.04em; user-select: none; white-space: nowrap;
+  transition: top 0.08s ease-out, opacity 0.2s ease-out;
+}
+#taper-fulcrum-2026-08-21 .tf-left { right: 52%; text-align: right; }
+#taper-fulcrum-2026-08-21 .tf-right { left: 52%; text-align: left; font-style: italic; opacity: 0.75; }
+#taper-fulcrum-2026-08-21 .tf-hint {
+  position: absolute; bottom: 14px; left: 0; right: 0; text-align: center;
+  font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(43,38,32,0.4); font-family: sans-serif;
+}
+</style>
+<div id="taper-fulcrum-2026-08-21">
+  <div class="tf-axis"></div>
+  <div class="tf-pivot"></div>
+  <div class="tf-beam" id="tf-beam-0821"></div>
+  <div class="tf-word tf-left" id="tf-morning-0821" style="top:50%;">what the morning asked of you</div>
+  <div class="tf-word tf-right" id="tf-evening-0821" style="top:50%;">what remains to answer it</div>
+  <div class="tf-hint">tilt the day</div>
+</div>
+<script>
+(function(){
+  var box = document.getElementById('taper-fulcrum-2026-08-21');
+  var beam = document.getElementById('tf-beam-0821');
+  var m = document.getElementById('tf-morning-0821');
+  var e = document.getElementById('tf-evening-0821');
+  var locked = false, lockAngle = 0;
+  function clamp(v, lo, hi){ return Math.max(lo, Math.min(hi, v)); }
+  function apply(angle){
+    beam.style.transform = 'translate(-50%, -50%) rotate(' + angle + 'deg)';
+    var rad = angle * Math.PI / 180;
+    var reach = 22;
+    m.style.top = (50 - Math.sin(rad) * reach) + '%';
+    e.style.top = (50 + Math.sin(rad) * reach) + '%';
+    var bal = Math.abs(angle) / 18;
+    m.style.opacity = clamp(1 - bal * 0.6, 0.35, 1);
+    e.style.opacity = clamp(1 - bal * 0.6, 0.35, 1);
+  }
+  box.addEventListener('mousemove', function(ev){
+    if (locked) return;
+    var rect = box.getBoundingClientRect();
+    var y = (ev.clientY - rect.top) / rect.height;
+    var angle = clamp((y - 0.5) * 36, -18, 18);
+    apply(angle);
+  });
+  box.addEventListener('mouseleave', function(){
+    if (!locked) apply(0);
+  });
+  box.addEventListener('click', function(){
+    locked = !locked;
+    if (locked){
+      lockAngle = parseFloat((beam.style.transform.match(/rotate\((-?[\d.]+)deg\)/) || [0,0])[1]);
+      box.style.cursor = 'grab';
+    } else {
+      box.style.cursor = 'ns-resize';
+      apply(0);
+    }
+  });
+  apply(0);
+})();
+</script>
+</section>
