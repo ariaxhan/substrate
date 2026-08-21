@@ -1,0 +1,66 @@
+<section data-date='2026-08-21' data-type='morning'>
+<style>
+#taper-0821{position:relative;overflow:hidden;height:70vh;min-height:420px;background:#0a0e14;font-family:Georgia,'Times New Roman',serif;cursor:crosshair;user-select:none}
+#taper-0821 .sky{position:absolute;inset:0;transition:background 0.6s ease}
+#taper-0821 .word{position:absolute;color:#fff;opacity:0;font-style:italic;letter-spacing:0.04em;transition:opacity 1.4s ease,transform 1.4s ease;transform:translateY(6px)}
+#taper-0821 .word.on{opacity:0.92;transform:translateY(0)}
+#taper-0821 .sun{position:absolute;left:50%;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 0 40px 12px rgba(255,220,150,0.6);transform:translate(-50%,0);transition:box-shadow 0.6s ease,background 0.6s ease}
+#taper-0821 .hint{position:absolute;bottom:14px;left:16px;color:#556;font:11px/1.4 monospace;letter-spacing:0.08em;text-transform:uppercase;opacity:0.55}
+#taper-0821 .grain{position:absolute;inset:0;pointer-events:none;mix-blend-mode:overlay;opacity:0.05;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:3px 3px}
+</style>
+<div id="taper-0821">
+  <div class="sky"></div>
+  <div class="grain"></div>
+  <div class="sun"></div>
+  <div class="hint">move to raise it &middot; click to hold the moment</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('taper-0821');
+  var sky = root.querySelector('.sky');
+  var sun = root.querySelector('.sun');
+  var words = ["still","almost","not yet","edge of","the hour before","unwritten","first","breath","begin"];
+  var placed = [];
+  var held = false;
+
+  words.forEach(function(w, i){
+    var el = document.createElement('div');
+    el.className = 'word';
+    el.textContent = w;
+    el.style.left = (6 + (i * 97) % 88) + '%';
+    el.style.top = (10 + (i * 53) % 74) + '%';
+    el.style.fontSize = (14 + (i % 4) * 6) + 'px';
+    root.appendChild(el);
+    placed.push(el);
+  });
+
+  function paint(t){
+    t = Math.max(0, Math.min(1, t));
+    var top = lerpColor([6,9,15],[255,214,168], t);
+    var bot = lerpColor([10,14,20],[255,240,220], t*0.8);
+    sky.style.background = 'linear-gradient(to top,' + rgb(bot) + ',' + rgb(top) + ' ' + (40+t*30) + '%,#0a0e14)';
+    sun.style.bottom = (t*58) + '%';
+    sun.style.background = t < 0.5 ? '#ffe9c7' : '#fff8ec';
+    sun.style.boxShadow = '0 0 ' + (20+t*60) + 'px ' + (6+t*16) + 'px rgba(255,' + (200+Math.round(t*40)) + ',' + (140+Math.round(t*90)) + ',' + (0.35+t*0.4) + ')';
+    var n = Math.round(t * placed.length);
+    placed.forEach(function(el, i){ el.classList.toggle('on', i < n); });
+  }
+  function lerpColor(a,b,t){ return [a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t, a[2]+(b[2]-a[2])*t].map(Math.round); }
+  function rgb(c){ return 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')'; }
+
+  paint(0.06);
+
+  root.addEventListener('mousemove', function(e){
+    if (held) return;
+    var r = root.getBoundingClientRect();
+    var t = 1 - (e.clientY - r.top) / r.height;
+    paint(t);
+  });
+  root.addEventListener('mouseleave', function(){ if(!held) paint(0.06); });
+  root.addEventListener('click', function(){
+    held = !held;
+    root.style.cursor = held ? 'default' : 'crosshair';
+  });
+})();
+</script>
+</section>
