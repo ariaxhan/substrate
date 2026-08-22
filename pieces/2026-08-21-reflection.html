@@ -1,0 +1,60 @@
+<section data-date='2026-08-21' data-type='reflection'>
+<style>
+#tp2026-08-21{position:relative;min-height:70vh;background:radial-gradient(ellipse at 50% 100%,#0a1128 0%,#010208 75%);overflow:hidden;font-family:Georgia,'Times New Roman',serif;color:#dfe3f0;cursor:crosshair;user-select:none}
+#tp2026-08-21 .cap{position:absolute;top:2.4rem;left:0;right:0;text-align:center;font-size:.72rem;letter-spacing:.35em;text-transform:uppercase;color:#5a6180;opacity:.85;pointer-events:none}
+#tp2026-08-21 .cap b{color:#9aa4d4;font-weight:400}
+#tp2026-08-21 .horizon{position:absolute;left:0;right:0;bottom:0;height:22%;background:linear-gradient(to top,#000 0%,rgba(0,0,0,0) 100%);pointer-events:none}
+#tp2026-08-21 .hint{position:absolute;bottom:1.4rem;left:0;right:0;text-align:center;font-size:.68rem;letter-spacing:.12em;color:#4a5070;font-style:italic;pointer-events:none;transition:opacity 2s}
+#tp2026-08-21 .star{position:absolute;border-radius:50%;background:#fff;box-shadow:0 0 6px 1px #cfd8ff;transform:translate(-50%,-50%) scale(0);animation:tp-pop .7s cubic-bezier(.2,1.4,.4,1) forwards,tp-twinkle 4s ease-in-out infinite .7s}
+@keyframes tp-pop{to{transform:translate(-50%,-50%) scale(1)}}
+@keyframes tp-twinkle{0%,100%{opacity:1}50%{opacity:.35}}
+#tp2026-08-21 .word{position:absolute;transform:translate(-50%,-50%);font-size:.62rem;letter-spacing:.08em;color:#7d86b8;opacity:0;white-space:nowrap;pointer-events:none;animation:tp-fade 3.5s ease forwards}
+@keyframes tp-fade{0%{opacity:0}18%{opacity:1}70%{opacity:1}100%{opacity:0}}
+</style>
+<div id="tp2026-08-21">
+  <div class="cap">the day is <b>complete</b></div>
+  <div class="horizon"></div>
+  <div class="hint" id="tp-hint-2026-08-21">touch the dark</div>
+</div>
+<script>
+(function(){
+  var host=document.getElementById('tp2026-08-21');
+  var hint=document.getElementById('tp-hint-2026-08-21');
+  var words=['rest','quiet','still','soft','home','breathe','tomorrow','enough'];
+  var count=0;
+  function place(x,y,rect){
+    var s=document.createElement('div');
+    s.className='star';
+    var size=1+Math.random()*2.6;
+    s.style.width=size+'px';
+    s.style.height=size+'px';
+    s.style.left=x+'px';
+    s.style.top=y+'px';
+    host.appendChild(s);
+    count++;
+    if(count%3===0){
+      var w=document.createElement('div');
+      w.className='word';
+      w.textContent=words[Math.floor(Math.random()*words.length)];
+      w.style.left=x+'px';
+      w.style.top=(y-16)+'px';
+      host.appendChild(w);
+      setTimeout(function(){w.remove()},3600);
+    }
+    if(hint){hint.style.opacity='0';}
+    if(count>140){
+      var old=host.querySelector('.star');
+      if(old)old.remove();
+    }
+  }
+  function onEvent(e){
+    var rect=host.getBoundingClientRect();
+    var cx=(e.touches?e.touches[0].clientX:e.clientX)-rect.left;
+    var cy=(e.touches?e.touches[0].clientY:e.clientY)-rect.top;
+    place(cx,cy,rect);
+  }
+  host.addEventListener('click',onEvent);
+  host.addEventListener('touchstart',function(e){onEvent(e);},{passive:true});
+})();
+</script>
+</section>
