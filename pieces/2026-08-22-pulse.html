@@ -1,0 +1,129 @@
+<section data-date='2026-08-22' data-type='pulse'>
+<style>
+  #fulcrum-piece {
+    background: #f4f1ea;
+    color: #1a1a1a;
+    height: 70vh;
+    min-height: 420px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+    font-family: Georgia, 'Times New Roman', serif;
+    cursor: pointer;
+    user-select: none;
+  }
+  #fp-beam {
+    position: relative;
+    width: 72%;
+    max-width: 640px;
+    height: 2px;
+    background: #1a1a1a;
+    transform-origin: 50% 50%;
+    transition: transform 0.6s cubic-bezier(.22,1,.36,1);
+  }
+  #fp-beam .fp-word {
+    position: absolute;
+    top: 50%;
+    font-size: clamp(20px, 4vw, 40px);
+    letter-spacing: 0.02em;
+    transform: translateY(-50%);
+    transition: opacity 0.6s ease, font-weight 0.3s ease;
+  }
+  #fp-beam .fp-am { left: 0; }
+  #fp-beam .fp-pm { right: 0; text-align: right; }
+  #fp-pivot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 0;
+    height: 0;
+    border-left: 13px solid transparent;
+    border-right: 13px solid transparent;
+    border-bottom: 22px solid #1a1a1a;
+    transform: translate(-50%, 2px);
+  }
+  #fp-hint {
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: Georgia, serif;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #999;
+    opacity: 0.7;
+  }
+  #fp-reading {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: #999;
+    text-transform: uppercase;
+  }
+</style>
+<div id="fulcrum-piece">
+  <div id="fp-reading">equilibrium: 0&deg;</div>
+  <div id="fp-beam">
+    <span class="fp-word fp-am">morning</span>
+    <span class="fp-word fp-pm">evening</span>
+    <div id="fp-pivot"></div>
+  </div>
+  <div id="fp-hint">tilt the day</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('fulcrum-piece');
+  var beam = document.getElementById('fp-beam');
+  var reading = document.getElementById('fp-reading');
+  var hint = document.getElementById('fp-hint');
+  var am = beam.querySelector('.fp-am');
+  var pm = beam.querySelector('.fp-pm');
+  var angle = 0;
+  var settled = false;
+
+  function paint(a){
+    var clamped = Math.max(-16, Math.min(16, a));
+    beam.style.transform = 'rotate(' + clamped + 'deg)';
+    reading.textContent = 'equilibrium: ' + (clamped > 0 ? '+' : '') + Math.round(clamped) + '°';
+    var amW = 400 + Math.round(-clamped * 15);
+    var pmW = 400 + Math.round(clamped * 15);
+    am.style.fontWeight = Math.max(300, Math.min(800, amW));
+    pm.style.fontWeight = Math.max(300, Math.min(800, pmW));
+    am.style.opacity = Math.max(0.35, 1 - clamped / 40);
+    pm.style.opacity = Math.max(0.35, 1 + clamped / 40);
+  }
+
+  root.addEventListener('mousemove', function(e){
+    var rect = root.getBoundingClientRect();
+    var x = (e.clientX - rect.left) / rect.width;
+    angle = (x - 0.5) * 32;
+    paint(angle);
+    hint.style.opacity = 0;
+  });
+
+  root.addEventListener('mouseleave', function(){
+    if (!settled) paint(0);
+    hint.style.opacity = 0.7;
+  });
+
+  root.addEventListener('click', function(){
+    settled = !settled;
+    if (settled){
+      beam.style.transition = 'transform 1.4s cubic-bezier(.34,1.56,.64,1)';
+      paint(0);
+      reading.textContent = 'the fulcrum holds';
+      hint.textContent = 'click to release';
+    } else {
+      beam.style.transition = 'transform 0.6s cubic-bezier(.22,1,.36,1)';
+      hint.textContent = 'tilt the day';
+    }
+  });
+})();
+</script>
+</section>
