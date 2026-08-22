@@ -1,0 +1,60 @@
+<section data-date='2026-08-22' data-type='morning'>
+<style>
+#tp-dawn{margin:0;overflow:hidden;height:70vh;min-height:420px;position:relative;background:linear-gradient(180deg,#0a0e27 0%,#1a1a3e 35%,#3d2b56 60%,#6b3a52 78%,#a34a4a 100%);font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+#tp-dawn .tp-sky{position:absolute;inset:0;overflow:hidden}
+#tp-dawn .tp-sun{position:absolute;width:64px;height:64px;border-radius:50%;background:radial-gradient(circle,#fff7d6 0%,#ffd27a 40%,rgba(255,180,90,0) 72%);filter:blur(1px);transition:top .12s linear,left .12s linear;pointer-events:none}
+#tp-dawn .tp-word{position:absolute;color:#2a2440;letter-spacing:.06em;font-style:italic;white-space:nowrap;transition:color .5s ease,text-shadow .5s ease;user-select:none}
+#tp-dawn .tp-hz{position:absolute;left:0;right:0;bottom:22%;height:1px;background:rgba(255,220,180,.25)}
+#tp-dawn .tp-cap{position:absolute;bottom:14px;left:18px;right:18px;color:rgba(255,235,210,.55);font:12px/1.4 -apple-system,sans-serif;letter-spacing:.08em;pointer-events:none}
+</style>
+<div id="tp-dawn">
+  <div class="tp-hz"></div>
+  <div class="tp-sky" id="tp-sky"></div>
+  <div class="tp-sun" id="tp-sun"></div>
+  <p class="tp-cap">move the light. nothing here is written yet.</p>
+</div>
+<script>
+(function(){
+  var host=document.getElementById('tp-dawn'),sky=document.getElementById('tp-sky'),sun=document.getElementById('tp-sun');
+  var words=['unnamed','unmade','soon','first','maybe','begin','open','blank','waking','possible','nothing yet','today','still dark','almost','again, new'];
+  var nodes=[];
+  function place(){
+    sky.innerHTML='';nodes=[];
+    var w=host.offsetWidth,h=host.offsetHeight;
+    words.forEach(function(t){
+      var el=document.createElement('div');
+      el.className='tp-word';
+      el.textContent=t;
+      var x=8+Math.random()*82,y=8+Math.random()*80;
+      el.style.left=x+'%';el.style.top=y+'%';
+      el.style.fontSize=(0.9+Math.random()*1.6)+'rem';
+      sky.appendChild(el);
+      nodes.push({el:el,x:x,y:y});
+    });
+  }
+  function light(px,py){
+    var w=host.offsetWidth,h=host.offsetHeight;
+    sun.style.left=(px-32)+'px';sun.style.top=(py-32)+'px';
+    nodes.forEach(function(n){
+      var nx=n.x/100*w,ny=n.y/100*h;
+      var d=Math.hypot(px-nx,py-ny);
+      var t=Math.max(0,1-d/260);
+      var r=Math.round(42+t*213),g=Math.round(36+t*205),b=Math.round(64+t*140);
+      n.el.style.color='rgb('+r+','+g+','+b+')';
+      n.el.style.textShadow=t>.4?'0 0 '+(t*18)+'px rgba(255,210,140,'+(t*.8)+')':'none';
+    });
+  }
+  host.addEventListener('mousemove',function(e){
+    var r=host.getBoundingClientRect();
+    light(e.clientX-r.left,e.clientY-r.top);
+  });
+  host.addEventListener('touchmove',function(e){
+    var r=host.getBoundingClientRect(),t=e.touches[0];
+    light(t.clientX-r.left,t.clientY-r.top);
+  },{passive:true});
+  host.addEventListener('click',place);
+  place();
+  light(-999,-999);
+})();
+</script>
+</section>
