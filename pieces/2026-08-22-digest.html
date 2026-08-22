@@ -1,0 +1,67 @@
+<section data-date='2026-08-22' data-type='digest'>
+<style>
+.taper-2026-08-22-digest{margin:0;overflow:hidden;background:#0b0c10;height:100vh;position:relative;cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+.taper-2026-08-22-digest svg{position:absolute;inset:0;width:100%;height:100%}
+.taper-2026-08-22-digest .t2208-hint{position:absolute;bottom:22px;left:0;right:0;text-align:center;color:#4a5568;font-size:12px;letter-spacing:.14em;font-family:Georgia,serif;font-style:italic;pointer-events:none;transition:opacity 2s}
+.taper-2026-08-22-digest .t2208-node{position:absolute;transform:translate(-50%,-50%);color:#e8e6de;font-size:13px;letter-spacing:.04em;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 1.2s,color 3s}
+.taper-2208-count{position:absolute;top:18px;right:22px;color:#3a4048;font-size:11px;font-family:Georgia,serif;letter-spacing:.1em;pointer-events:none}
+</style>
+<div class="taper-2026-08-22-digest" id="t2208-stage">
+<svg id="t2208-svg"></svg>
+<div class="t2208-hint" id="t2208-hint">click to know a thing</div>
+<div class="taper-2208-count" id="t2208-count"></div>
+</div>
+<script>
+(function(){
+var stage=document.getElementById('t2208-stage'),
+    svg=document.getElementById('t2208-svg'),
+    hint=document.getElementById('t2208-hint'),
+    counter=document.getElementById('t2208-count'),
+    W=['a fact','a pattern','a shape','a rule','a habit','a name','a link','a cause','a shade','a form','an echo','a bias','a signal','a memory','a thread','a law','a doubt','a bridge','a grain','a whole'],
+    pts=[],
+    NS='http://www.w3.org/2000/svg';
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function color(n){
+  if(n<3)return '#5a6472';
+  if(n<8)return '#8fa3b8';
+  if(n<16)return '#c9a876';
+  return '#e8d5a8';
+}
+function place(x,y){
+  var w=W[Math.floor(Math.random()*W.length)],
+      p={x:x,y:y,w:w};
+  pts.push(p);
+  var near=pts.filter(function(o){return o!==p&&dist(o,p)<220}).sort(function(a,b){return dist(a,p)-dist(b,p)}).slice(0,3);
+  near.forEach(function(o){
+    var line=document.createElementNS(NS,'line');
+    line.setAttribute('x1',o.x);line.setAttribute('y1',o.y);
+    line.setAttribute('x2',x);line.setAttribute('y2',y);
+    line.setAttribute('stroke',color(pts.length));
+    line.setAttribute('stroke-width','.6');
+    line.setAttribute('opacity','0');
+    svg.appendChild(line);
+    requestAnimationFrame(function(){line.style.transition='opacity 1.6s';line.style.opacity=.35+Math.min(pts.length,20)/40;});
+  });
+  var el=document.createElement('div');
+  el.className='t2208-node';
+  el.style.left=x+'px';el.style.top=y+'px';
+  el.style.color=color(pts.length);
+  el.textContent=w;
+  stage.appendChild(el);
+  requestAnimationFrame(function(){el.style.opacity=.85;});
+  setTimeout(function(){el.style.opacity=.3;},2600);
+  counter.textContent=pts.length+' known';
+  if(pts.length===1){hint.style.opacity=0;}
+  if(pts.length>=40){
+    var all=svg.querySelectorAll('line');
+    all.forEach(function(l,i){l.style.opacity=.15+.5*Math.sin(i);});
+  }
+}
+stage.addEventListener('click',function(e){
+  place(e.clientX,e.clientY);
+});
+[[0.5,0.5]].forEach(function(){});
+window.addEventListener('resize',function(){});
+})();
+</script>
+</section>
