@@ -1,0 +1,100 @@
+<section data-date='2026-08-23' data-type='digest'>
+<style>
+.taper-2026-08-23 { margin:0; overflow:hidden; background:#0a0a0c; height:100vh; cursor:crosshair; position:relative; font-family:Georgia,serif }
+.taper-2026-08-23 canvas { position:absolute; inset:0; display:block }
+.taper-2026-08-23 .lbl { position:absolute; top:16px; left:20px; color:#555; font:italic 12px/1.4 Georgia,serif; letter-spacing:.04em; z-index:2; pointer-events:none }
+.taper-2026-08-23 .lbl b { color:#999; font-weight:normal; font-style:normal; letter-spacing:.2em; text-transform:uppercase; font-size:10px }
+.taper-2026-08-23 .cnt { position:absolute; bottom:16px; right:20px; color:#444; font:11px/1 monospace; z-index:2; pointer-events:none }
+</style>
+<div class="taper-2026-08-23" id="t20260823">
+  <canvas id="c20260823"></canvas>
+  <div class="lbl"><b>crystallize</b><br>each mark you leave seeks its kin</div>
+  <div class="cnt" id="n20260823">0 points · 0 bonds</div>
+</div>
+<script>
+(function(){
+  var host = document.getElementById('t20260823');
+  var cv = document.getElementById('c20260823');
+  var ctx = cv.getContext('2d');
+  var counter = document.getElementById('n20260823');
+  var W, H, pts = [], bonds = 0;
+  var words = ["fact","link","trace","echo","form","node","thread","order","shape","glint","weave","seed"];
+
+  function resize(){
+    W = cv.width = host.clientWidth;
+    H = cv.height = host.clientHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function addPoint(x, y){
+    var p = { x:x, y:y, r:0, age:0, w: words[pts.length % words.length] };
+    pts.push(p);
+    for (var i = 0; i < pts.length - 1; i++){
+      var q = pts[i];
+      var d = Math.hypot(q.x - x, q.y - y);
+      if (d < 160){ bonds++; q.bond = (q.bond||0) + 1; p.bond = (p.bond||0) + 1; }
+    }
+    counter.textContent = pts.length + ' points · ' + bonds + ' bonds';
+  }
+
+  host.addEventListener('click', function(e){
+    var r = host.getBoundingClientRect();
+    addPoint(e.clientX - r.left, e.clientY - r.top);
+  });
+
+  // seed a few so the field isn't empty on load
+  setTimeout(function(){
+    addPoint(W*0.3, H*0.4);
+    addPoint(W*0.62, H*0.55);
+    addPoint(W*0.45, H*0.7);
+  }, 400);
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = '#0a0a0c';
+    ctx.fillRect(0,0,W,H);
+
+    for (var i = 0; i < pts.length; i++){
+      for (var j = i+1; j < pts.length; j++){
+        var a = pts[i], b = pts[j];
+        var d = Math.hypot(a.x-b.x, a.y-b.y);
+        if (d < 160){
+          var alpha = (1 - d/160) * 0.5;
+          ctx.strokeStyle = 'rgba(200,180,140,' + alpha.toFixed(3) + ')';
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(a.x, a.y);
+          ctx.lineTo(b.x, b.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    for (var k = 0; k < pts.length; k++){
+      var p = pts[k];
+      p.age += 1;
+      var grow = Math.min(1, p.age / 40);
+      var rad = 2 + grow * (2 + Math.min(6, (p.bond||0)));
+      var glow = p.bond ? 'rgba(240,210,150,' : 'rgba(150,160,180,';
+      ctx.beginPath();
+      ctx.fillStyle = glow + (0.15 + grow*0.55).toFixed(3) + ')';
+      ctx.arc(p.x, p.y, rad + 6, 0, Math.PI*2);
+      ctx.fill();
+      ctx.beginPath();
+      ctx.fillStyle = glow + (0.4 + grow*0.6).toFixed(3) + ')';
+      ctx.arc(p.x, p.y, rad, 0, Math.PI*2);
+      ctx.fill();
+      if (p.bond >= 3 && p.age > 20){
+        ctx.font = '10px Georgia, serif';
+        ctx.fillStyle = 'rgba(220,200,170,0.5)';
+        ctx.fillText(p.w, p.x + rad + 6, p.y + 3);
+      }
+    }
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+</section>
