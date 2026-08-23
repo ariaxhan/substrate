@@ -1,0 +1,56 @@
+<section data-date='2026-08-23' data-type='pulse'>
+<style>
+#taper-halfway{--f:.5;position:relative;height:70vh;min-height:420px;background:#0b0c0f;overflow:hidden;font-family:Georgia,'Times New Roman',serif;cursor:ns-resize;user-select:none}
+#taper-halfway .sky{position:absolute;inset:0;background:linear-gradient(to bottom,#f4a340 0%,#e0673f calc(var(--f)*100%),#1a1830 calc(var(--f)*100%),#0b0c0f 100%);transition:background .05s linear}
+#taper-halfway .beam{position:absolute;left:6%;right:6%;top:calc(var(--f)*100%);height:1px;background:rgba(255,255,255,.35);transform:rotate(calc((var(--f) - .5) * -40deg));transform-origin:center;transition:top .05s linear,transform .05s linear}
+#taper-halfway .fulcrum{position:absolute;left:50%;top:calc(var(--f)*100%);width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:22px solid #eee;transform:translate(-50%,-4px);transition:top .05s linear;filter:drop-shadow(0 0 6px rgba(255,255,255,.25))}
+#taper-halfway .word{position:absolute;font-size:clamp(1.4rem,4vw,3.2rem);letter-spacing:.02em;color:#eee;mix-blend-mode:difference;transition:top .05s linear,opacity .3s}
+#taper-halfway .w-morn{left:8%;top:calc(var(--f)*100% - 44px)}
+#taper-halfway .w-eve{right:8%;top:calc(var(--f)*100% + 14px);text-align:right}
+#taper-halfway .num{position:absolute;left:50%;top:calc(var(--f)*100%);transform:translate(-50%,10px);font-family:'Courier New',monospace;font-size:.8rem;color:rgba(255,255,255,.55);letter-spacing:.15em;transition:top .05s linear}
+#taper-halfway .hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-family:'Courier New',monospace;font-size:.68rem;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase}
+</style>
+<div id="taper-halfway">
+  <div class="sky"></div>
+  <div class="beam"></div>
+  <div class="fulcrum"></div>
+  <div class="word w-morn">what was</div>
+  <div class="word w-eve">what remains</div>
+  <div class="num">0.500</div>
+  <div class="hint">move to tip the day &middot; click to rest</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('taper-halfway');
+  var num=el.querySelector('.num');
+  var resting=false, rest=.5;
+  function set(f){
+    f=Math.max(.06,Math.min(.94,f));
+    el.style.setProperty('--f',f);
+    num.textContent=f.toFixed(3);
+  }
+  el.addEventListener('mousemove',function(e){
+    if(resting) return;
+    var r=el.getBoundingClientRect();
+    set((e.clientY-r.top)/r.height);
+  });
+  el.addEventListener('touchmove',function(e){
+    if(resting) return;
+    var r=el.getBoundingClientRect();
+    var t=e.touches[0];
+    set((t.clientY-r.top)/r.height);
+    e.preventDefault();
+  },{passive:false});
+  el.addEventListener('click',function(){
+    resting=!resting;
+    if(resting){
+      rest=parseFloat(getComputedStyle(el).getPropertyValue('--f'));
+      el.style.cursor='default';
+    } else {
+      el.style.cursor='ns-resize';
+    }
+  });
+  set(.5);
+})();
+</script>
+</section>
