@@ -1,0 +1,59 @@
+<section data-date='2026-08-23' data-type='morning'>
+<style>
+#taper-dawn{--y:70%;margin:0;overflow:hidden;height:70vh;min-height:420px;position:relative;
+background:linear-gradient(to bottom,#0a0e1f 0%,#14203f calc(var(--y) - 40%),#3a2d4f calc(var(--y) - 10%),#c9683f calc(var(--y) - 2%),#f2a65a var(--y),#fbe3b0 calc(var(--y) + 6%),#101820 calc(var(--y) + 7%),#080b12 100%);
+cursor:crosshair;font-family:Georgia,'Times New Roman',serif;transition:background 120ms linear}
+#taper-dawn .sun{position:absolute;left:50%;top:var(--y);width:26px;height:26px;border-radius:50%;
+background:radial-gradient(circle,#fff9e6,#ffcf7a 60%,transparent 72%);
+transform:translate(-50%,-50%);filter:blur(.5px);pointer-events:none;
+box-shadow:0 0 40px 10px rgba(255,200,120,.5)}
+#taper-dawn .line{position:absolute;left:0;right:0;top:calc(var(--y) + 6.5%);height:1px;
+background:rgba(255,230,190,.25);pointer-events:none}
+#taper-dawn .hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
+color:rgba(255,255,255,.35);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+font-family:Helvetica,Arial,sans-serif;pointer-events:none;transition:opacity .6s}
+#taper-dawn span.word{position:absolute;color:#fff2d8;font-style:italic;white-space:nowrap;
+opacity:0;pointer-events:none;text-shadow:0 0 12px rgba(255,190,120,.6);
+animation:taper-rise 3.4s ease-out forwards}
+@keyframes taper-rise{
+0%{opacity:0;transform:translateY(0) scale(.9)}
+12%{opacity:.9}
+100%{opacity:0;transform:translateY(-90px) scale(1.05)}
+}
+</style>
+<div id="taper-dawn">
+  <div class="line"></div>
+  <div class="sun"></div>
+  <div class="hint">move to tilt the light — click to name it</div>
+</div>
+<script>
+(function(){
+  var el = document.getElementById('taper-dawn');
+  var hint = el.querySelector('.hint');
+  var words = ["unwritten","possible","first light","not yet","almost","open","begin","quiet","threshold","becoming","one more try","clean page","again"];
+  function setY(clientY){
+    var r = el.getBoundingClientRect();
+    var p = (clientY - r.top) / r.height;
+    p = Math.max(0.08, Math.min(0.92, p));
+    el.style.setProperty('--y', (p*100).toFixed(2) + '%');
+  }
+  el.addEventListener('mousemove', function(e){ setY(e.clientY); });
+  el.addEventListener('touchmove', function(e){
+    if(e.touches[0]) setY(e.touches[0].clientY);
+  }, {passive:true});
+  el.addEventListener('click', function(e){
+    hint.style.opacity = '0';
+    var r = el.getBoundingClientRect();
+    var w = document.createElement('span');
+    w.className = 'word';
+    w.textContent = words[Math.floor(Math.random()*words.length)];
+    w.style.left = (e.clientX - r.left) + 'px';
+    w.style.top = (e.clientY - r.top) + 'px';
+    w.style.fontSize = (14 + Math.random()*16) + 'px';
+    el.appendChild(w);
+    setTimeout(function(){ w.remove(); }, 3600);
+  });
+  setY(el.getBoundingClientRect().top + el.getBoundingClientRect().height*0.7);
+})();
+</script>
+</section>
