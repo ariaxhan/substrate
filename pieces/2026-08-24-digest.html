@@ -1,0 +1,87 @@
+<section data-date='2026-08-24' data-type='digest'>
+<style>
+#crys{background:#0a0908;color:#d8cfc0;font:15px/1.5 Georgia,'Times New Roman',serif;
+  height:100vh;margin:0;overflow:hidden;position:relative;cursor:crosshair}
+#crys h1{position:absolute;top:22px;left:28px;font-weight:400;font-size:13px;
+  letter-spacing:.3em;text-transform:uppercase;color:#6b6155;margin:0;pointer-events:none}
+#crys p.sub{position:absolute;top:44px;left:28px;font-size:11px;color:#453f37;
+  font-style:italic;margin:0;pointer-events:none}
+#crys canvas{position:absolute;inset:0;display:block}
+#crys .ct{position:absolute;bottom:20px;right:28px;font-size:11px;color:#453f37;
+  letter-spacing:.05em;pointer-events:none}
+</style>
+<div id="crys">
+  <h1>Crystallization</h1>
+  <p class="sub">every point you place remembers what came before &mdash; click to know something</p>
+  <canvas id="c"></canvas>
+  <div class="ct" id="ct">0 fragments</div>
+</div>
+<script>
+(function(){
+  var host=document.getElementById('crys');
+  var cv=document.getElementById('c'), x=cv.getContext('2d');
+  var ct=document.getElementById('ct');
+  var pts=[], W,H;
+  function size(){W=cv.width=host.clientWidth;H=cv.height=host.clientHeight}
+  size(); window.addEventListener('resize',size);
+
+  var LINK=140, t=0;
+
+  function add(px,py){
+    pts.push({x:px,y:py,a:0,born:t,r:1+Math.random()*1.5});
+    ct.textContent=pts.length+' fragment'+(pts.length===1?'':'s');
+  }
+
+  host.addEventListener('click',function(e){
+    var b=host.getBoundingClientRect();
+    add(e.clientX-b.left, e.clientY-b.top);
+  });
+
+  // seed a few so the piece isn't empty on load
+  (function seed(){
+    for(var i=0;i<5;i++){
+      add(60+Math.random()*(host.clientWidth-120)||200, 90+Math.random()*300);
+    }
+  })();
+
+  function draw(){
+    t++;
+    x.fillStyle='rgba(10,9,8,0.18)';
+    x.fillRect(0,0,W,H);
+
+    // connections: crystallize once close enough in age/distance
+    for(var i=0;i<pts.length;i++){
+      for(var j=i+1;j<pts.length;j++){
+        var p=pts[i], q=pts[j];
+        var d=Math.hypot(p.x-q.x,p.y-q.y);
+        if(d<LINK){
+          var op=(1-d/LINK)*0.5;
+          x.strokeStyle='rgba(200,160,90,'+op.toFixed(3)+')';
+          x.lineWidth=0.6;
+          x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke();
+        }
+      }
+    }
+
+    for(var k=0;k<pts.length;k++){
+      var pt=pts[k];
+      pt.a=Math.min(1,pt.a+0.03);
+      var pulse=pt.r+Math.sin((t-pt.born)*0.05)*0.6;
+      x.beginPath();
+      x.arc(pt.x,pt.y,Math.max(0.5,pulse),0,Math.PI*2);
+      x.fillStyle='rgba(230,210,170,'+pt.a+')';
+      x.fill();
+      if(k===pts.length-1 && t-pt.born<60){
+        var ringA=(1-(t-pt.born)/60)*0.4;
+        x.beginPath();
+        x.arc(pt.x,pt.y,(t-pt.born)*0.8,0,Math.PI*2);
+        x.strokeStyle='rgba(230,210,170,'+ringA+')';
+        x.lineWidth=1;x.stroke();
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+</section>
