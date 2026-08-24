@@ -1,0 +1,52 @@
+<section data-date='2026-08-23' data-type='reflection'>
+<style>
+.tp23 *{box-sizing:border-box}
+.tp23{position:relative;height:78vh;min-height:480px;overflow:hidden;background:radial-gradient(ellipse at 50% 120%,#0d1224 0%,#05060f 55%,#010103 100%);cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+.tp23 .sky{position:absolute;inset:0}
+.tp23 .horizon{position:absolute;left:0;right:0;bottom:0;height:22%;background:linear-gradient(to top,#000 0%,rgba(0,0,0,0) 100%)}
+.tp23 .word{position:absolute;left:50%;top:10%;transform:translateX(-50%);color:#6b7290;font-size:clamp(13px,1.6vw,18px);letter-spacing:.5em;text-transform:lowercase;opacity:.55;font-style:italic;pointer-events:none;transition:opacity 2s ease}
+.tp23 .count{position:absolute;right:14px;bottom:10px;color:#454b66;font-family:'Courier New',monospace;font-size:11px;letter-spacing:.15em;pointer-events:none}
+.tp23 .hint{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);color:#3d4260;font-family:'Courier New',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;pointer-events:none;transition:opacity 1.5s ease}
+.tp23 .star{position:absolute;border-radius:50%;background:#fff;transform:translate(-50%,-50%) scale(0);animation:tp23a 1.8s cubic-bezier(.2,.9,.3,1) forwards;pointer-events:none}
+.tp23 .star::after{content:'';position:absolute;inset:-6px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.5) 0%,rgba(255,255,255,0) 70%)}
+@keyframes tp23a{0%{transform:translate(-50%,-50%) scale(0);opacity:0}40%{opacity:1}60%{transform:translate(-50%,-50%) scale(1.6)}100%{transform:translate(-50%,-50%) scale(1);opacity:.95}}
+.tp23 .drift{animation:tp23d linear infinite}
+@keyframes tp23d{from{opacity:.95}50%{opacity:.4}to{opacity:.95}}
+</style>
+<div class="tp23" id="tp23sky">
+<div class="sky" id="tp23field"></div>
+<div class="horizon"></div>
+<div class="word" id="tp23word">the day is complete</div>
+<div class="hint" id="tp23hint">touch the dark to rest a light</div>
+<div class="count" id="tp23count">0 stars</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('tp23sky'),field=document.getElementById('tp23field'),word=document.getElementById('tp23word'),hint=document.getElementById('tp23hint'),count=document.getElementById('tp23count');
+var lines=['the day is complete','still, now','nothing left to hold','rest before the next beginning','the sky remembers everything softly','quiet gathers here'];
+var n=0;
+for(var i=0;i<40;i++){
+var s=document.createElement('div');s.className='star drift';
+var sz=Math.random()*1.6+.6;
+s.style.width=sz+'px';s.style.height=sz+'px';
+s.style.left=(Math.random()*100)+'%';s.style.top=(Math.random()*80)+'%';
+s.style.animationDuration=(3+Math.random()*5)+'s';s.style.animationDelay=(Math.random()*4)+'s';
+s.style.opacity=.95;
+field.appendChild(s);
+}
+root.addEventListener('click',function(e){
+var r=root.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+var s=document.createElement('div');s.className='star';
+var sz=Math.random()*2.5+2;
+s.style.width=sz+'px';s.style.height=sz+'px';s.style.left=x+'px';s.style.top=y+'px';
+field.appendChild(s);
+n++;
+count.textContent=n+(n===1?' star':' stars');
+word.textContent=lines[Math.min(n,lines.length-1)];
+word.style.opacity=.85;
+setTimeout(function(){word.style.opacity=.55},2200);
+if(n===1)hint.style.opacity='0';
+});
+})();
+</script>
+</section>

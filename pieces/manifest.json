@@ -574,6 +574,7 @@
     {"file": "2026-08-22-pulse.html", "date": "2026-08-22", "type": "pulse", "timestamp": 1787425566},
     {"file": "2026-08-23-digest.html", "date": "2026-08-23", "type": "digest", "timestamp": 1787522644},
     {"file": "2026-08-23-morning.html", "date": "2026-08-23", "type": "morning", "timestamp": 1787493766},
-    {"file": "2026-08-23-pulse.html", "date": "2026-08-23", "type": "pulse", "timestamp": 1787511806}
+    {"file": "2026-08-23-pulse.html", "date": "2026-08-23", "type": "pulse", "timestamp": 1787511806},
+    {"file": "2026-08-23-reflection.html", "date": "2026-08-23", "type": "reflection", "timestamp": 1787540571}
   ]
 }
