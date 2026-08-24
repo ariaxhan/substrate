@@ -1,0 +1,48 @@
+<section data-date='2026-08-24' data-type='morning'>
+<style>
+  .taper-dawn{margin:0;overflow:hidden;height:100vh;position:relative;background:linear-gradient(180deg,#050814 0%,#0b1130 45%,#141225 100%);font-family:Georgia,'Times New Roman',serif;cursor:pointer;transition:background 2.5s ease}
+  .taper-dawn.s1{background:linear-gradient(180deg,#0b1440 0%,#3a1f4d 50%,#5c2a3d 100%)}
+  .taper-dawn.s2{background:linear-gradient(180deg,#1a2a63 0%,#a34a3f 55%,#e69a4e 100%)}
+  .taper-dawn.s3{background:linear-gradient(180deg,#3a7bd5 0%,#f7c873 60%,#fff3d6 100%)}
+  .td-sun{position:absolute;left:50%;bottom:-60px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,#fff8e0,#ffd27a 60%,transparent 75%);transform:translate(-50%,0);opacity:.15;transition:bottom 2.5s ease,opacity 2.5s ease,box-shadow 2.5s ease;filter:blur(1px)}
+  .taper-dawn.s1 .td-sun{bottom:5%;opacity:.35}
+  .taper-dawn.s2 .td-sun{bottom:28%;opacity:.7;box-shadow:0 0 80px 30px rgba(255,180,90,.3)}
+  .taper-dawn.s3 .td-sun{bottom:48%;opacity:1;box-shadow:0 0 140px 60px rgba(255,220,150,.45)}
+  .td-word{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);color:#eee;letter-spacing:.35em;text-transform:lowercase;font-size:clamp(1.1rem,3vw,2.2rem);opacity:0;transition:opacity 2s ease,color 2.5s ease;pointer-events:none;text-align:center;width:90%}
+  .taper-dawn.s0 .td-word{opacity:.55}
+  .taper-dawn.s1 .td-word{opacity:.7;color:#f3d9d0}
+  .taper-dawn.s2 .td-word{opacity:.85;color:#3a1a10}
+  .taper-dawn.s3 .td-word{opacity:1;color:#3a2a10}
+  .td-hint{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);color:#888;font-family:Arial,sans-serif;font-size:11px;letter-spacing:.15em;opacity:.5}
+  .td-glow{position:absolute;width:340px;height:340px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(255,235,200,.10),transparent 70%);transform:translate(-50%,-50%);transition:opacity .4s}
+</style>
+<div class="taper-dawn s0" id="tdRoot">
+  <div class="td-glow" id="tdGlow"></div>
+  <div class="td-sun"></div>
+  <div class="td-word" id="tdWord">nothing yet</div>
+  <div class="td-hint">click to wake it</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('tdRoot'),
+      word=document.getElementById('tdWord'),
+      glow=document.getElementById('tdGlow'),
+      hint=root.querySelector('.td-hint'),
+      stages=['s0','s1','s2','s3'],
+      words=['nothing yet','a seam of light','something is deciding','unwritten, still'],
+      n=0;
+  root.addEventListener('click',function(){
+    n=(n+1)%stages.length;
+    root.className='taper-dawn '+stages[n];
+    word.textContent=words[n];
+    hint.style.opacity= n===0 ? .5 : 0;
+  });
+  root.addEventListener('mousemove',function(e){
+    glow.style.left=e.clientX+'px';
+    glow.style.top=e.clientY+'px';
+    glow.style.opacity=1;
+  });
+  root.addEventListener('mouseleave',function(){glow.style.opacity=0});
+})();
+</script>
+</section>
