@@ -1,0 +1,81 @@
+<section data-date='2026-08-25' data-type='digest'>
+<style>
+.tpr25{margin:0;overflow:hidden;background:#0a0908;height:100vh;position:relative;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+.tpr25 h1{position:absolute;top:14px;left:18px;margin:0;font:italic 13px/1.4 Georgia,serif;color:#5a5248;letter-spacing:.02em;z-index:2;pointer-events:none}
+.tpr25 h1 b{color:#c9a86a;font-weight:400;font-style:normal}
+.tpr25 canvas{position:absolute;inset:0}
+.tpr25 span.tpr25w{position:absolute;font:italic 12px Georgia,serif;color:#9c8a5e;opacity:0;transform:translate(-50%,-50%);pointer-events:none;transition:opacity 2.2s ease}
+.tpr25 footer{position:absolute;bottom:10px;right:16px;font:11px Georgia,serif;color:#3e392f;z-index:2;pointer-events:none}
+</style>
+<div class="tpr25" id="tpr25root">
+<h1>every mark a claim &mdash; click to <b>know</b> something</h1>
+<canvas id="tpr25c"></canvas>
+<footer>knowledge accumulates until it crystallizes</footer>
+</div>
+<script>
+(function(){
+var root=document.getElementById('tpr25root'),c=document.getElementById('tpr25c'),x=c.getContext('2d');
+var W,H,DPR=Math.min(window.devicePixelRatio||1,2);
+function rs(){W=root.clientWidth;H=root.clientHeight;c.width=W*DPR;c.height=H*DPR;x.setTransform(DPR,0,0,DPR,0,0)}
+rs();window.addEventListener('resize',rs);
+var pts=[],words=["known","held","linked","learned","found","kept","seen","true","fixed","named"],t=0;
+function seed(){
+for(var i=0;i<3;i++)pts.push({x:Math.random()*W,y:Math.random()*H,r:0,born:t,drift:(Math.random()-.5)*.15})
+}
+seed();
+root.addEventListener('click',function(e){
+var b=root.getBoundingClientRect();
+var p={x:e.clientX-b.left,y:e.clientY-b.top,r:0,born:t,drift:(Math.random()-.5)*.15};
+pts.push(p);
+var w=document.createElement('span');
+w.className='tpr25w';
+w.textContent=words[Math.floor(Math.random()*words.length)];
+w.style.left=p.x+'px';w.style.top=(p.y-16)+'px';
+root.appendChild(w);
+requestAnimationFrame(function(){w.style.opacity=.85});
+setTimeout(function(){w.style.opacity=0},1400);
+setTimeout(function(){w.remove()},3700);
+if(pts.length>60)pts.shift();
+});
+function dist(a,b){var dx=a.x-b.x,dy=a.y-b.y;return Math.sqrt(dx*dx+dy*dy)}
+function frame(){
+t++;
+x.fillStyle='rgba(10,9,8,0.12)';
+x.fillRect(0,0,W,H);
+for(var i=0;i<pts.length;i++){
+var p=pts[i];
+p.r=Math.min(2.6,p.r+0.03);
+p.y+=p.drift;
+if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+}
+var density=Math.min(1,pts.length/40);
+for(var i=0;i<pts.length;i++){
+for(var j=i+1;j<pts.length;j++){
+var d=dist(pts[i],pts[j]);
+var thresh=70+density*90;
+if(d<thresh){
+var age=Math.min(1,(t-Math.max(pts[i].born,pts[j].born))/60);
+var op=(1-d/thresh)*0.5*age;
+x.strokeStyle='rgba(201,168,106,'+op.toFixed(3)+')';
+x.lineWidth=0.6+density*0.8;
+x.beginPath();
+x.moveTo(pts[i].x,pts[i].y);
+x.lineTo(pts[j].x,pts[j].y);
+x.stroke();
+}
+}
+}
+for(var i=0;i<pts.length;i++){
+var p=pts[i];
+var glow=0.4+0.6*Math.min(1,(t-p.born)/40);
+x.fillStyle='rgba(230,210,160,'+glow.toFixed(3)+')';
+x.beginPath();
+x.arc(p.x,p.y,p.r,0,6.283);
+x.fill();
+}
+requestAnimationFrame(frame);
+}
+frame();
+})();
+</script>
+</section>
