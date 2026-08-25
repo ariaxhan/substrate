@@ -1,0 +1,83 @@
+<section data-date='2026-08-25' data-type='spark'>
+<style>
+.tp-spark{margin:0;overflow:hidden;position:relative;height:70vh;min-height:420px;background:#0a0a0f;font-family:Georgia,serif;cursor:crosshair}
+.tp-spark span{position:absolute;white-space:nowrap;transition:color .6s,text-shadow .6s;user-select:none}
+.tp-spark .hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);color:#444;font:11px/1 sans-serif;letter-spacing:.08em}
+</style>
+<div class="tp-spark" id="tps">
+  <div class="hint">move — click where they meet</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('tps');
+  var A = ["you","were","a shore","a question","the light","half a name","static","north"];
+  var B = ["i","became","a wave","an answer","the dark","the other half","signal","south"];
+  var W = root.clientWidth || 600, H = root.clientHeight || 420;
+  var left = [], right = [];
+  function mk(word, side){
+    var el = document.createElement('span');
+    el.textContent = word;
+    el.style.color = side === 0 ? '#5fb3ff' : '#ff6f5f';
+    el.style.font = (13 + Math.random()*10) + 'px Georgia, serif';
+    var y = Math.random() * (H - 60) + 10;
+    el.style.top = y + 'px';
+    el.style.left = (side === 0 ? -200 : W + 20) + 'px';
+    root.appendChild(el);
+    return {el:el, x: side===0 ? -200 : W+20, y:y, side:side, vx: side===0 ? (0.4+Math.random()*0.6) : -(0.4+Math.random()*0.6), fused:false};
+  }
+  A.forEach(function(w){ left.push(mk(w,0)); });
+  B.forEach(function(w){ right.push(mk(w,1)); });
+  var particles = left.concat(right);
+  var mx = W/2, my = H/2, down = false;
+
+  function fuse(p, q){
+    if(p.fused || q.fused) return;
+    p.fused = q.fused = true;
+    var mid = document.createElement('span');
+    mid.textContent = p.side === 0 ? p.el.textContent + ' ' + q.el.textContent : q.el.textContent + ' ' + p.el.textContent;
+    mid.style.left = ((p.x+q.x)/2) + 'px';
+    mid.style.top = ((p.y+q.y)/2) + 'px';
+    mid.style.color = '#f2e6c9';
+    mid.style.textShadow = '0 0 12px #fff8';
+    mid.style.font = '16px Georgia, serif';
+    root.appendChild(mid);
+    p.el.style.opacity = 0; q.el.style.opacity = 0;
+    setTimeout(function(){ p.el.remove(); q.el.remove(); }, 700);
+    setTimeout(function(){ mid.style.transition='opacity 1.2s'; mid.style.opacity=0; }, 2200);
+    setTimeout(function(){ mid.remove(); }, 3500);
+  }
+
+  root.addEventListener('mousemove', function(e){
+    var r = root.getBoundingClientRect();
+    mx = e.clientX - r.left; my = e.clientY - r.top;
+  });
+  root.addEventListener('click', function(){ down = true; setTimeout(function(){down=false;}, 900); });
+
+  function step(){
+    for(var i=0;i<particles.length;i++){
+      var p = particles[i];
+      if(p.fused) continue;
+      var pull = down ? 0.06 : 0.015;
+      p.x += (mx - p.x) * pull + p.vx * 0.3;
+      p.y += (my - p.y) * pull * 0.5;
+      if(p.x < -220) p.x = -220;
+      if(p.x > W + 220) p.x = W + 220;
+      p.el.style.left = p.x + 'px';
+      p.el.style.top = p.y + 'px';
+    }
+    for(var i=0;i<particles.length;i++){
+      var p = particles[i];
+      if(p.fused) continue;
+      for(var j=i+1;j<particles.length;j++){
+        var q = particles[j];
+        if(q.fused || q.side === p.side) continue;
+        var dx = p.x - q.x, dy = p.y - q.y;
+        if(Math.sqrt(dx*dx+dy*dy) < 26) fuse(p,q);
+      }
+    }
+    requestAnimationFrame(step);
+  }
+  step();
+})();
+</script>
+</section>
