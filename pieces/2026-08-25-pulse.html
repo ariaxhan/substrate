@@ -1,0 +1,52 @@
+<section data-date='2026-08-25' data-type='pulse'>
+<style>
+.tp-fulcrum{margin:0;overflow:hidden;height:60vh;min-height:420px;background:#0b0b0c;position:relative;cursor:ns-resize;font-family:Georgia,'Times New Roman',serif}
+.tp-fulcrum .tp-sky{position:absolute;inset:0;background:linear-gradient(to bottom,#e8d8bf 0%,#0b0b0c 50%,#12141a 100%);opacity:.9;transition:opacity .6s}
+.tp-fulcrum .tp-beam{position:absolute;top:50%;left:50%;width:70vw;max-width:720px;height:2px;background:#d8cdb8;transform-origin:center center;transform:translate(-50%,-50%) rotate(0deg);transition:transform .08s linear}
+.tp-fulcrum .tp-pan{position:absolute;top:0;font-size:clamp(13px,2.4vw,22px);letter-spacing:.08em;white-space:nowrap;color:#e9e2d2;text-transform:lowercase}
+.tp-fulcrum .tp-am{left:6%}
+.tp-fulcrum .tp-pm{right:6%;text-align:right}
+.tp-fulcrum .tp-pivot{position:absolute;top:50%;left:50%;width:8px;height:8px;border-radius:50%;background:#c9a06a;transform:translate(-50%,-50%);box-shadow:0 0 0 0 rgba(201,160,106,.5);transition:box-shadow .3s}
+.tp-fulcrum .tp-pivot.tp-active{box-shadow:0 0 0 14px rgba(201,160,106,0)}
+.tp-fulcrum .tp-noon{position:absolute;bottom:8%;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:.35em;text-transform:uppercase;color:#8a8272;pointer-events:none}
+</style>
+<div class="tp-fulcrum" id="tp-fulcrum-2026-08-25">
+  <div class="tp-sky" id="tp-sky"></div>
+  <div class="tp-beam" id="tp-beam">
+    <span class="tp-pan tp-am" id="tp-am">waking &nbsp;·&nbsp; coffee &nbsp;·&nbsp; the long light in</span>
+    <span class="tp-pan tp-pm" id="tp-pm">dinner &nbsp;·&nbsp; the long light out &nbsp;·&nbsp; sleep</span>
+  </div>
+  <div class="tp-pivot" id="tp-pivot"></div>
+  <div class="tp-noon" id="tp-noon">12:00 — the hinge holds</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('tp-fulcrum-2026-08-25');
+  var beam = document.getElementById('tp-beam');
+  var sky  = document.getElementById('tp-sky');
+  var pivot= document.getElementById('tp-pivot');
+  var noon = document.getElementById('tp-noon');
+  var flipped = false;
+  function setTilt(t){
+    var deg = t * 14;
+    beam.style.transform = 'translate(-50%,-50%) rotate(' + deg + 'deg)';
+    sky.style.opacity = 0.55 + Math.abs(t) * 0.4;
+    var near = Math.abs(t) < 0.06;
+    pivot.classList.toggle('tp-active', near);
+    noon.style.opacity = near ? 1 : 0.25 + Math.abs(t) * 0.1;
+  }
+  root.addEventListener('mousemove', function(e){
+    var r = root.getBoundingClientRect();
+    var t = ((e.clientX - r.left) / r.width) * 2 - 1;
+    setTilt(flipped ? -t : t);
+  });
+  root.addEventListener('mouseleave', function(){ setTilt(0); });
+  root.addEventListener('click', function(){
+    flipped = !flipped;
+    root.style.transition = 'filter .5s';
+    root.style.filter = flipped ? 'invert(1) hue-rotate(180deg)' : 'none';
+  });
+  setTilt(0);
+})();
+</script>
+</section>
