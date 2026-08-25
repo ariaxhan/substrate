@@ -1,0 +1,64 @@
+<section data-date='2026-08-24' data-type='reflection'>
+<style>
+.taper-night-2026-08-24{position:relative;height:70vh;min-height:420px;background:radial-gradient(ellipse at 50% 100%,#0d1224 0%,#040611 60%,#010208 100%);overflow:hidden;font-family:Georgia,'Iowan Old Style',serif;cursor:crosshair;border-radius:4px}
+.taper-night-2026-08-24 .tn-sky{position:absolute;inset:0}
+.taper-night-2026-08-24 .tn-word{position:absolute;bottom:6%;left:50%;transform:translateX(-50%);color:#3a4368;font-size:clamp(14px,3vw,26px);letter-spacing:.5em;text-transform:uppercase;transition:color 3s ease}
+.taper-night-2026-08-24 .tn-word.lit{color:#c9d4f2}
+.taper-night-2026-08-24 .tn-hint{position:absolute;top:14px;left:18px;color:#2a3050;font-size:11px;letter-spacing:.15em;text-transform:uppercase;font-family:sans-serif}
+.taper-night-2026-08-24 .tn-star{position:absolute;border-radius:50%;background:#fff;opacity:0;pointer-events:none;box-shadow:0 0 6px 1px rgba(255,255,255,.6)}
+</style>
+<div class="taper-night-2026-08-24" id="tn-2026-08-24">
+  <div class="tn-hint">rest here</div>
+  <div class="tn-sky" id="tn-sky-2026-08-24"></div>
+  <div class="tn-word" id="tn-word-2026-08-24">the day is complete</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('tn-2026-08-24');
+  var sky = document.getElementById('tn-sky-2026-08-24');
+  var word = document.getElementById('tn-word-2026-08-24');
+  var count = 0, max = 60;
+  function place(x, y){
+    if (count >= max) return;
+    count++;
+    var s = document.createElement('div');
+    var size = 1 + Math.random() * 2.4;
+    s.className = 'tn-star';
+    s.style.left = x + 'px';
+    s.style.top = y + 'px';
+    s.style.width = size + 'px';
+    s.style.height = size + 'px';
+    sky.appendChild(s);
+    requestAnimationFrame(function(){
+      s.style.transition = 'opacity ' + (1.2 + Math.random()) + 's ease';
+      s.style.opacity = 0.2 + Math.random() * 0.8;
+    });
+    var life = 6000 + Math.random() * 9000;
+    setTimeout(function(){
+      s.style.transition = 'opacity 4s ease';
+      s.style.opacity = 0;
+      setTimeout(function(){ s.remove(); count--; }, 4100);
+    }, life);
+    if (count === 1 || count === 12 || count === 30){
+      word.classList.add('lit');
+      setTimeout(function(){ word.classList.remove('lit'); }, 3000);
+    }
+  }
+  root.addEventListener('click', function(e){
+    var r = root.getBoundingClientRect();
+    place(e.clientX - r.left, e.clientY - r.top);
+  });
+  root.addEventListener('mousemove', function(e){
+    if (Math.random() > 0.94){
+      var r = root.getBoundingClientRect();
+      place(e.clientX - r.left, e.clientY - r.top);
+    }
+  });
+  var seed = setInterval(function(){
+    var r = root.getBoundingClientRect();
+    place(Math.random() * r.width, Math.random() * r.height * 0.7);
+  }, 2200);
+  setTimeout(function(){ clearInterval(seed); }, 15000);
+})();
+</script>
+</section>
