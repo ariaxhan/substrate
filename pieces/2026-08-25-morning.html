@@ -1,0 +1,72 @@
+<section data-date='2026-08-25' data-type='morning'>
+<style>
+.taper-dawn{margin:0;overflow:hidden;height:70vh;min-height:420px;position:relative;background:linear-gradient(#0a0e1a,#0a0e1a);cursor:none;font-family:Georgia,'Times New Roman',serif}
+.taper-dawn .sky{position:absolute;inset:0;transition:background .15s linear}
+.taper-dawn .sun{position:absolute;width:14px;height:14px;border-radius:50%;background:#fff8e0;box-shadow:0 0 40px 10px #ffdca0;transform:translate(-50%,-50%);pointer-events:none;transition:box-shadow .15s linear,background .15s linear}
+.taper-dawn .horizon{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,.15);pointer-events:none}
+.taper-dawn .word{position:absolute;color:#e8e2d0;opacity:0;letter-spacing:.04em;font-style:italic;white-space:nowrap;transition:opacity 1.4s ease;pointer-events:none;text-shadow:0 0 12px rgba(255,220,160,.25)}
+.taper-dawn .word.on{opacity:.85}
+.taper-dawn .hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);color:#8a91a8;font:11px/1.4 -apple-system,sans-serif;letter-spacing:.12em;text-transform:uppercase;opacity:.6}
+.taper-dawn .title{position:absolute;top:14px;left:16px;color:#8a91a8;font:11px/1.4 -apple-system,sans-serif;letter-spacing:.12em;text-transform:uppercase;opacity:.5}
+</style>
+<div class="taper-dawn" id="dawnRoot">
+  <div class="title">Unwritten</div>
+  <div class="sky" id="dawnSky"></div>
+  <div class="horizon" id="dawnLine"></div>
+  <div class="sun" id="dawnSun"></div>
+  <div class="hint">move toward the light</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('dawnRoot'),
+      sky=document.getElementById('dawnSky'),
+      sun=document.getElementById('dawnSun'),
+      line=document.getElementById('dawnLine'),
+      words=['still','quiet','possible','unmade','open','waiting','first','before','blank','breath','begin','soon'],
+      placed=[],
+      W=root.clientWidth,H=root.clientHeight;
+  line.style.top=(H*0.62)+'px';
+  function lerp(a,b,t){return a+(b-a)*t}
+  function paint(x,y){
+    W=root.clientWidth;H=root.clientHeight;
+    var t=Math.max(0,Math.min(1,1-(y/H)));
+    var top=[10,12,26],mid=[255,150,90],bot=[255,222,150];
+    var c1=t<0.5? [lerp(top[0],mid[0],t*2),lerp(top[1],mid[1],t*2),lerp(top[2],mid[2],t*2)]
+               : [lerp(mid[0],bot[0],(t-0.5)*2),lerp(mid[1],bot[1],(t-0.5)*2),lerp(mid[2],bot[2],(t-0.5)*2)];
+    sky.style.background='linear-gradient(180deg, rgb(10,14,26) 0%, rgb('+c1.map(Math.round).join(',')+') '+(100-t*70)+'%, rgb('+[255,235,190].join(',')+') 100%)';
+    sun.style.left=x+'px';
+    sun.style.top=y+'px';
+    var glow=8+t*34;
+    sun.style.boxShadow='0 0 '+(glow*3)+'px '+glow+'px rgba(255,'+Math.round(lerp(140,230,t))+','+Math.round(lerp(80,180,t))+',.9)';
+    root.style.cursor=t>0.15?'default':'none';
+    if(t>0.2 && placed.length<words.length && Math.random()<0.06){
+      spawn(x,y,t);
+    }
+  }
+  function spawn(x,y,t){
+    var w=words[placed.length];
+    var el=document.createElement('div');
+    el.className='word';
+    el.textContent=w;
+    el.style.fontSize=(13+t*10)+'px';
+    el.style.left=Math.max(4,Math.min(W-80,x+ (Math.random()*80-40)))+'px';
+    el.style.top=Math.max(4,Math.min(H-20,y - 26 - Math.random()*20))+'px';
+    root.appendChild(el);
+    placed.push(el);
+    requestAnimationFrame(function(){el.classList.add('on')});
+  }
+  root.addEventListener('mousemove',function(e){
+    var r=root.getBoundingClientRect();
+    paint(e.clientX-r.left, e.clientY-r.top);
+  });
+  root.addEventListener('mouseleave',function(){
+    paint(W/2,H*0.85);
+  });
+  root.addEventListener('click',function(){
+    placed.forEach(function(el){el.remove()});
+    placed=[];
+  });
+  paint(W/2,H*0.9);
+})();
+</script>
+</section>
