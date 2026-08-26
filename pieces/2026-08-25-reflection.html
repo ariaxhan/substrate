@@ -1,0 +1,131 @@
+<section data-date='2026-08-25' data-type='reflection'>
+<style>
+  .taper-2026-08-25 {
+    background: #05070d;
+    color: #cfd6e6;
+    font-family: Georgia, 'Times New Roman', serif;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    position: relative;
+    cursor: crosshair;
+  }
+  .taper-2026-08-25 .sky {
+    position: absolute;
+    inset: 0;
+  }
+  .taper-2026-08-25 .star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: #eee;
+    border-radius: 50%;
+    opacity: 0;
+    transform: scale(0.3);
+    transition: opacity 1.8s ease, transform 1.8s ease, box-shadow 1.8s ease;
+  }
+  .taper-2026-08-25 .star.lit {
+    opacity: 1;
+    transform: scale(1);
+    box-shadow: 0 0 6px 2px rgba(255,255,255,0.55);
+  }
+  .taper-2026-08-25 .word {
+    position: absolute;
+    left: 50%;
+    top: 46%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(14px, 2.6vw, 26px);
+    letter-spacing: 0.06em;
+    color: #6c7690;
+    opacity: 0;
+    transition: opacity 2.4s ease, color 2.4s ease;
+    pointer-events: none;
+    text-align: center;
+    width: 80vw;
+  }
+  .taper-2026-08-25 .word.on {
+    opacity: 1;
+    color: #dfe4f0;
+  }
+  .taper-2026-08-25 .hint {
+    position: absolute;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: #3a4258;
+    text-transform: uppercase;
+  }
+</style>
+<div class="taper-2026-08-25" id="t20260825">
+  <div class="sky" id="sky20260825"></div>
+  <div class="word" id="w20260825">the day is complete</div>
+  <div class="hint">touch the dark</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('t20260825');
+  var sky = document.getElementById('sky20260825');
+  var wordEl = document.getElementById('w20260825');
+  var phrases = [
+    'the day is complete',
+    'rest before the next beginning',
+    'stillness, uncounted',
+    'nothing left to finish',
+    'the dark keeps what the light was',
+    'quiet now'
+  ];
+  var count = 0, max = 60, phraseIdx = 0;
+
+  function cycleWord(){
+    wordEl.classList.remove('on');
+    setTimeout(function(){
+      phraseIdx = (phraseIdx + 1) % phrases.length;
+      wordEl.textContent = phrases[phraseIdx];
+      wordEl.classList.add('on');
+    }, 900);
+  }
+  setTimeout(function(){ wordEl.classList.add('on'); }, 400);
+
+  function place(x, y){
+    if (count >= max) return;
+    var s = document.createElement('div');
+    s.className = 'star';
+    var jx = x + (Math.random() * 10 - 5);
+    var jy = y + (Math.random() * 10 - 5);
+    s.style.left = jx + 'px';
+    s.style.top = jy + 'px';
+    sky.appendChild(s);
+    requestAnimationFrame(function(){ s.classList.add('lit'); });
+    count++;
+    if (count % 9 === 0) cycleWord();
+    if (count === max) {
+      wordEl.classList.remove('on');
+      setTimeout(function(){
+        wordEl.textContent = 'the sky is full';
+        wordEl.classList.add('on');
+      }, 900);
+    }
+  }
+
+  root.addEventListener('click', function(e){
+    place(e.clientX, e.clientY);
+  });
+  root.addEventListener('touchstart', function(e){
+    var t = e.touches[0];
+    if (t) place(t.clientX, t.clientY);
+  }, { passive: true });
+
+  // a few stars are already there, waiting, before anyone touches anything
+  for (var i = 0; i < 5; i++) {
+    (function(i){
+      setTimeout(function(){
+        place(Math.random() * window.innerWidth, Math.random() * window.innerHeight * 0.7);
+      }, 600 + i * 700);
+    })(i);
+  }
+})();
+</script>
+</section>
