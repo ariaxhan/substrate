@@ -1,0 +1,65 @@
+<section data-date='2026-08-26' data-type='digest'>
+<style>
+.tpr{background:#08090c;color:#cfd6d2;height:100vh;overflow:hidden;position:relative;cursor:crosshair;font-family:Georgia,serif}
+.tpr h1{position:absolute;top:18px;left:22px;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:#5c6a63;margin:0;font-family:Arial,sans-serif;font-weight:400;z-index:2}
+.tpr .hint{position:absolute;bottom:16px;left:22px;font-size:11px;color:#3d4a44;font-family:Arial,sans-serif;z-index:2}
+.tpr .n{position:absolute;font-size:10px;color:#e8e2d0;pointer-events:none;transform:translate(-50%,-50%);white-space:nowrap;opacity:0;transition:opacity 1.2s}
+.tpr .c{position:absolute;top:18px;right:22px;font-size:34px;color:#3a453f;font-style:italic;z-index:2;transition:color .6s}
+.tpr svg{position:absolute;top:0;left:0;width:100%;height:100%}
+.tpr .m{position:absolute;bottom:16px;right:22px;font-size:11px;color:#4a574f;font-family:Arial,sans-serif;font-style:italic;z-index:2}
+</style>
+<div class="tpr" id="tpr">
+<h1>knowledge accumulates until it becomes shape</h1>
+<div class="c" id="tC">0</div>
+<svg id="tS"></svg>
+<div class="m" id="tM"></div>
+<div class="hint">click to know something &nbsp;·&nbsp; watch it find its kin</div>
+</div>
+<script>
+(function(){
+var R=document.getElementById('tpr'),S=document.getElementById('tS'),C=document.getElementById('tC'),M=document.getElementById('tM');
+var W=['light','root','signal','echo','thread','bone','salt','current','ash','field','pulse','stone','vein','ember','tide','name','breath','grain','wire','hollow','seed','frost'];
+var pts=[],used=[],w,h;
+function sz(){w=R.clientWidth;h=R.clientHeight}
+sz();addEventListener('resize',sz);
+function pick(){if(used.length===W.length)used=[];var x;do{x=W[Math.random()*W.length|0]}while(used.indexOf(x)>-1);used.push(x);return x}
+function add(x,y){
+  var p={x:x,y:y};
+  var e=document.createElement('div');
+  e.className='n';e.textContent=pick();e.style.left=x+'px';e.style.top=y+'px';
+  R.appendChild(e);requestAnimationFrame(function(){e.style.opacity=.85});
+  var prior=pts.slice();pts.push(p);
+  C.textContent=pts.length;
+  C.style.color=pts.length>18?'#e8c07d':pts.length>8?'#7fa88a':'#3a453f';
+  var cand=prior.map(function(o){return{o:o,d:Math.hypot(o.x-x,o.y-y)}}).sort(function(a,b){return a.d-b.d});
+  var n=0,max=pts.length>14?2:1;
+  for(var i=0;i<cand.length&&n<max;i++){if(cand[i].d<Math.max(w,h)*.42){line(cand[i].o,p);n++}}
+  if(pts.length===1)msg('a point. alone. not yet a pattern.');
+  else if(pts.length===6)msg('clusters are forming.');
+  else if(pts.length===13)msg('this is starting to look like memory.');
+  else if(pts.length===22)msg('it has become structure.');
+}
+function line(a,b){
+  var l=document.createElementNS('http://www.w3.org/2000/svg','line');
+  l.setAttribute('x1',a.x);l.setAttribute('y1',a.y);l.setAttribute('x2',a.x);l.setAttribute('y2',a.y);
+  var hue=90+Math.min(pts.length*4,140);
+  l.setAttribute('stroke','hsla('+hue+',30%,55%,.35)');l.setAttribute('stroke-width','.6');
+  S.appendChild(l);
+  var t0=null;
+  (function step(ts){
+    if(!t0)t0=ts;var p=Math.min(1,(ts-t0)/700);
+    l.setAttribute('x2',a.x+(b.x-a.x)*p);l.setAttribute('y2',a.y+(b.y-a.y)*p);
+    if(p<1)requestAnimationFrame(step)
+  })();
+}
+var mt;
+function msg(t){clearTimeout(mt);M.textContent=t;mt=setTimeout(function(){M.textContent=''},4200)}
+R.addEventListener('click',function(e){
+  if(pts.length>=30)return;
+  var r=R.getBoundingClientRect();
+  add(e.clientX-r.left,e.clientY-r.top);
+});
+setTimeout(function(){add(w*.5,h*.45)},500);
+})();
+</script>
+</section>
