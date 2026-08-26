@@ -1,0 +1,86 @@
+<section data-date='2026-08-26' data-type='spark'>
+<style>
+.tpr26{position:relative;width:100%;height:340px;background:#0a0a0c;overflow:hidden;font:14px/1.3 Georgia,serif;cursor:crosshair;border-radius:4px}
+.tpr26 .w{position:absolute;color:#8ab;opacity:.85;white-space:nowrap;transition:color .4s,text-shadow .4s;will-change:transform}
+.tpr26 .w.hit{color:#fff;text-shadow:0 0 12px #fff,0 0 24px #fca}
+.tpr26 .hint{position:absolute;bottom:8px;left:10px;color:#556;font:11px sans-serif;letter-spacing:.05em}
+</style>
+<div class="tpr26" id="tpr26">
+  <div class="hint">move to collide two vocabularies</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('tpr26');
+  var A=['spark','ember','flint','strike','ignite','flare','friction','heat','burst'];
+  var B=['stone','dust','still','cold','silence','weight','hollow','dark','settle'];
+  var n=16,words=[];
+  function mk(list,side){
+    for(var i=0;i<n/2;i++){
+      var s=list[Math.floor(Math.random()*list.length)];
+      var el=document.createElement('span');
+      el.className='w';
+      el.textContent=s;
+      el.style.fontSize=(12+Math.random()*14)+'px';
+      var x=side===0? Math.random()*30 : 70+Math.random()*30;
+      var y=Math.random()*90;
+      el.dataset.x=x; el.dataset.y=y;
+      el.dataset.vx=(Math.random()-.5)*0.06;
+      el.dataset.vy=(Math.random()-.5)*0.06;
+      el.dataset.side=side;
+      root.appendChild(el);
+      words.push(el);
+    }
+  }
+  mk(A,0); mk(B,1);
+  var mx=50,my=50,active=false;
+  root.addEventListener('mousemove',function(e){
+    var r=root.getBoundingClientRect();
+    mx=(e.clientX-r.left)/r.width*100;
+    my=(e.clientY-r.top)/r.height*100;
+    active=true;
+  });
+  root.addEventListener('mouseleave',function(){active=false});
+  function dist(a,b,c,d){var dx=a-c,dy=b-d;return Math.sqrt(dx*dx+dy*dy)}
+  function tick(){
+    for(var i=0;i<words.length;i++){
+      var w=words[i];
+      var x=parseFloat(w.dataset.x),y=parseFloat(w.dataset.y);
+      var vx=parseFloat(w.dataset.vx),vy=parseFloat(w.dataset.vy);
+      if(active){
+        var d=dist(x,y,mx,my);
+        if(d<28){
+          var pull=(28-d)/28*0.03;
+          vx+=(mx-x)*pull*0.02;
+          vy+=(my-y)*pull*0.02;
+        }
+      }
+      vx*=0.98; vy*=0.98;
+      x+=vx; y+=vy;
+      if(x<0||x>96){vx*=-1;x=Math.max(0,Math.min(96,x))}
+      if(y<0||y>92){vy*=-1;y=Math.max(0,Math.min(92,y))}
+      w.dataset.x=x; w.dataset.y=y; w.dataset.vx=vx; w.dataset.vy=vy;
+      w.style.left=x+'%'; w.style.top=y+'%';
+    }
+    for(var i=0;i<words.length;i++){
+      for(var j=i+1;j<words.length;j++){
+        var a=words[i],b=words[j];
+        if(a.dataset.side===b.dataset.side)continue;
+        var d=dist(parseFloat(a.dataset.x),parseFloat(a.dataset.y),parseFloat(b.dataset.x),parseFloat(b.dataset.y));
+        if(d<6){
+          a.classList.add('hit'); b.classList.add('hit');
+          setTimeout((function(x,y){return function(){x.classList.remove('hit');y.classList.remove('hit')}})(a,b),500);
+          var pushx=(parseFloat(a.dataset.x)-parseFloat(b.dataset.x))*0.02;
+          var pushy=(parseFloat(a.dataset.y)-parseFloat(b.dataset.y))*0.02;
+          a.dataset.vx=parseFloat(a.dataset.vx)+pushx;
+          a.dataset.vy=parseFloat(a.dataset.vy)+pushy;
+          b.dataset.vx=parseFloat(b.dataset.vx)-pushx;
+          b.dataset.vy=parseFloat(b.dataset.vy)-pushy;
+        }
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+</script>
+</section>
