@@ -1,0 +1,71 @@
+<section data-date='2026-08-26' data-type='pulse'>
+<style>
+#fh{margin:0;overflow:hidden;background:#0b0c10;height:60vh;min-height:420px;position:relative;font-family:'Iowan Old Style','Palatino Linotype',Georgia,serif;cursor:crosshair;user-select:none}
+#fh .sky{position:absolute;inset:0;background:linear-gradient(180deg,#0b0c10 0%,#141620 60%,#0b0c10 100%);transition:background 1.2s ease}
+#fh .beam{position:absolute;top:50%;left:50%;width:70vw;max-width:640px;height:2px;background:#8a8f9c;transform-origin:center center;transform:translate(-50%,-50%) rotate(0deg);transition:transform .35s cubic-bezier(.22,.61,.36,1)}
+#fh .pivot{position:absolute;top:50%;left:50%;width:10px;height:10px;border-radius:50%;background:#e8b23d;transform:translate(-50%,-50%);box-shadow:0 0 18px 2px rgba(232,178,61,.5)}
+#fh .end{position:absolute;top:50%;font-size:clamp(1.1rem,2.4vw,2rem);letter-spacing:.14em;color:#cfd3dc;transition:opacity .35s ease,transform .35s ease}
+#fh .end.l{left:6%}
+#fh .end.r{right:6%;text-transform:lowercase}
+#fh .cap{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-family:ui-monospace,Menlo,monospace;font-size:.68rem;letter-spacing:.24em;color:#5b6070;text-transform:uppercase}
+#fh .val{position:absolute;top:18px;left:50%;transform:translateX(-50%);font-family:ui-monospace,Menlo,monospace;font-size:.68rem;color:#e8b23d;opacity:.85}
+</style>
+<div id="fh">
+  <div class="sky"></div>
+  <div class="val" id="fh-val">12:00</div>
+  <div class="beam" id="fh-beam">
+    <span class="end l" id="fh-l">morning</span>
+    <span class="end r" id="fh-r">NIGHT</span>
+  </div>
+  <div class="pivot"></div>
+  <div class="cap">equilibrium is a place you pass through</div>
+</div>
+<script>
+(function(){
+  var box=document.getElementById('fh'),
+      beam=document.getElementById('fh-beam'),
+      L=document.getElementById('fh-l'),
+      R=document.getElementById('fh-r'),
+      val=document.getElementById('fh-val'),
+      sky=box.querySelector('.sky'),
+      flipped=false,
+      last=0;
+
+  function clock(t){
+    var h=Math.floor(t*24), m=Math.floor((t*24-h)*60);
+    return (h<10?'0':'')+h+':'+(m<10?'0':'')+m;
+  }
+
+  function apply(t){
+    t=Math.max(0,Math.min(1,t));
+    last=t;
+    var deg=(t-0.5)*32;
+    beam.style.transform='translate(-50%,-50%) rotate('+deg+'deg)';
+    var dawn=1-Math.abs(t-0.5)*2;
+    L.style.opacity=0.35+0.65*(1-t);
+    R.style.opacity=0.35+0.65*t;
+    L.style.transform='translateY('+((t-0.5)*-18)+'px)';
+    R.style.transform='translateY('+((t-0.5)*18)+'px)';
+    var dark=Math.round(11+ (1-dawn)*3);
+    sky.style.background='linear-gradient(180deg,#0b0c10 0%, rgb('+(20+dawn*18)+','+(22+dawn*16)+','+(32+dawn*10)+') 60%,#0b0c10 100%)';
+    val.textContent=clock(t);
+    val.style.left=(50+(t-0.5)*40)+'%';
+  }
+
+  box.addEventListener('mousemove',function(e){
+    var r=box.getBoundingClientRect();
+    apply((e.clientX-r.left)/r.width);
+  });
+
+  box.addEventListener('click',function(){
+    flipped=!flipped;
+    var tmp=L.textContent;
+    L.textContent=R.textContent;
+    R.textContent=tmp;
+    apply(1-last);
+  });
+
+  apply(0.5);
+})();
+</script>
+</section>
