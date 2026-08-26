@@ -1,0 +1,103 @@
+<section data-date='2026-08-26' data-type='morning'>
+<style>
+#taper-0826 {
+  --x: 50vw; --y: 50vh;
+  margin: 0; height: 70vh; min-height: 480px; overflow: hidden;
+  background: #05070d;
+  font-family: Georgia, 'Iowan Old Style', serif;
+  position: relative;
+  cursor: crosshair;
+}
+#taper-0826 .sky {
+  position: absolute; inset: 0;
+  background: radial-gradient(600px circle at var(--x) var(--y),
+    #fff7e0 0%, #ffd8a8 12%, #ff9d6c 28%, #6b3d6b 46%, #241733 65%, #05070d 100%);
+  transition: background 60ms linear;
+}
+#taper-0826 .grain {
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(transparent 0 2px, rgba(0,0,0,.05) 2px 3px);
+  mix-blend-mode: overlay; pointer-events: none;
+}
+#taper-0826 .field {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; align-content: center;
+  gap: .35em .6em;
+  padding: 8vw;
+  box-sizing: border-box;
+}
+#taper-0826 .w {
+  font-size: clamp(14px, 2.6vw, 34px);
+  color: #0a0812;
+  letter-spacing: .02em;
+  opacity: .18;
+  transition: opacity .15s ease, color .15s ease, transform .3s ease;
+  user-select: none;
+}
+#taper-0826 .lit { color: #fff3d8; opacity: 1; transform: translateY(-2px); text-shadow: 0 0 18px rgba(255,200,120,.6); }
+#taper-0826 .near { color: #ffcf9a; opacity: .7; }
+#taper-0826 footer {
+  position: absolute; bottom: 10px; left: 14px; right: 14px;
+  font: 11px/1.4 -apple-system, sans-serif; color: rgba(255,255,255,.28);
+  display: flex; justify-content: space-between; pointer-events: none;
+}
+#taper-0826.dawned .sky { background: radial-gradient(900px circle at var(--x) var(--y), #fff9ea 0%, #ffe2b0 30%, #f6b378 55%, #2c1f3f 80%, #05070d 100%); }
+</style>
+<div id="taper-0826">
+  <div class="sky"></div>
+  <div class="grain"></div>
+  <div class="field" id="taper-0826-field"></div>
+  <footer><span>first light</span><span id="taper-0826-count">0 words found</span></footer>
+</div>
+<script>
+(() => {
+  const root = document.getElementById('taper-0826');
+  const field = document.getElementById('taper-0826-field');
+  const counter = document.getElementById('taper-0826-count');
+  const words = ("nothing yet unwritten possible today maybe begin quiet still waking "
+    + "open blank first breath light edge threshold soon not-yet almost here now "
+    + "unmade unread untold before dawn hush pause become could would might will "
+    + "wake rise start again clean page dark thins horizon nearly").split(' ');
+  const seen = new Set();
+  words.forEach((w, i) => {
+    const s = document.createElement('span');
+    s.className = 'w';
+    s.textContent = w;
+    s.dataset.i = i;
+    field.appendChild(s);
+  });
+  const spans = [...field.children];
+
+  function update(clientX, clientY) {
+    const r = root.getBoundingClientRect();
+    const x = clientX - r.left, y = clientY - r.top;
+    root.style.setProperty('--x', x + 'px');
+    root.style.setProperty('--y', y + 'px');
+    spans.forEach(s => {
+      const b = s.getBoundingClientRect();
+      const dx = (b.left + b.width / 2) - r.left - x;
+      const dy = (b.top + b.height / 2) - r.top - y;
+      const d = Math.hypot(dx, dy);
+      s.classList.remove('lit', 'near');
+      if (d < 90) { s.classList.add('lit'); seen.add(s.dataset.i); }
+      else if (d < 220) s.classList.add('near');
+    });
+    counter.textContent = seen.size + ' of ' + words.length + ' found';
+    if (seen.size === words.length) root.classList.add('dawned');
+  }
+
+  root.addEventListener('mousemove', e => update(e.clientX, e.clientY));
+  root.addEventListener('touchmove', e => {
+    if (e.touches[0]) update(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: true });
+  root.addEventListener('click', () => {
+    const r = root.getBoundingClientRect();
+    update(r.left + r.width * Math.random(), r.top + r.height * Math.random());
+  });
+
+  const r0 = root.getBoundingClientRect();
+  update(r0.left + r0.width / 2, r0.top + r0.height / 2);
+})();
+</script>
+</section>
