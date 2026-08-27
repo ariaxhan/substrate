@@ -1,0 +1,82 @@
+<section data-date='2026-08-27' data-type='morning'>
+<style>
+#taper-0827 { margin:0; overflow:hidden; height:100vh; position:relative;
+  background:linear-gradient(180deg,#0b1026,#1b2a4a 55%,#3a3f6b 78%,#7a5a6e 92%,#c98a5b 100%);
+  font-family:'Iowan Old Style','Palatino Linotype',Georgia,serif; cursor:crosshair; }
+#taper-0827 .sun { position:absolute; width:22vmin; height:22vmin; border-radius:50%;
+  background:radial-gradient(circle at 40% 35%,#fff7e0,#ffd58a 45%,#e8935a 75%,rgba(232,147,90,0) 78%);
+  filter:blur(1px); transform:translate(-50%,-50%); pointer-events:none;
+  transition:box-shadow .4s ease; }
+#taper-0827 .horizon { position:absolute; left:0; right:0; top:74%; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,230,190,.5),transparent); }
+#taper-0827 .label { position:absolute; bottom:6vh; left:6vw; right:6vw;
+  color:#f4e6d3; font-style:italic; font-size:clamp(14px,2.4vw,26px); letter-spacing:.02em;
+  opacity:.85; text-shadow:0 0 12px rgba(0,0,0,.4); }
+#taper-0827 .hint { position:absolute; top:5vh; left:6vw; color:#cdd3ea; font-size:12px;
+  font-family:'Courier New',monospace; letter-spacing:.08em; opacity:.55; }
+#taper-0827 .w { position:absolute; color:#fff3dd; font-size:clamp(13px,1.6vw,20px);
+  opacity:0; transform:translateY(6px) scale(.9); text-shadow:0 0 8px rgba(255,200,140,.5);
+  transition:opacity 1.6s ease, transform 1.6s ease; pointer-events:none; }
+#taper-0827 .w.on { opacity:.92; transform:translateY(0) scale(1); }
+#taper-0827 .w.gone { opacity:0; transform:translateY(-14px) scale(1.05); transition:opacity 2.4s ease, transform 2.4s ease; }
+</style>
+<div id="taper-0827">
+  <div class="hint">the day has not chosen its words yet &mdash; click to give it one</div>
+  <div class="horizon"></div>
+  <div class="sun" id="t0827-sun"></div>
+  <div class="label" id="t0827-label">everything here is still possible.</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('taper-0827'),
+      sun = document.getElementById('t0827-sun'),
+      label = document.getElementById('t0827-label'),
+      words = ['light','maybe','first','begin','unwritten','open','still','soon','breath','again','clear','wide','early','quiet','ahead','new','wake','possible','unmade','dawn'],
+      phrases = ['everything here is still possible.','nothing has happened yet, and that is everything.','the light has not decided what to touch.','a day, before it is a day.','say the first word.'],
+      n = 0;
+
+  function moveSun(x,y){
+    sun.style.left = x + 'px';
+    sun.style.top = y + 'px';
+    var pct = Math.max(0, Math.min(1, y / window.innerHeight));
+    sun.style.boxShadow = '0 0 ' + (40 + (1-pct)*80) + 'px ' + (10 + (1-pct)*20) + 'px rgba(255,214,150,' + (0.15 + (1-pct)*0.35) + ')';
+    var hue = 210 - pct*40;
+    root.style.background = 'linear-gradient(180deg, hsl(' + hue + ',55%,' + (10+pct*4) + '%), hsl(' + (hue-30) + ',45%,' + (22+pct*10) + '%) 55%, hsl(' + (20+pct*20) + ',55%,' + (35+pct*15) + '%) 92%, hsl(28,70%,' + (55+pct*15) + '%) 100%)';
+  }
+
+  root.addEventListener('mousemove', function(e){
+    moveSun(e.clientX, e.clientY);
+  });
+  root.addEventListener('touchmove', function(e){
+    var t = e.touches[0];
+    if (t) moveSun(t.clientX, t.clientY);
+  }, {passive:true});
+
+  moveSun(window.innerWidth*0.5, window.innerHeight*0.62);
+
+  root.addEventListener('click', function(e){
+    var w = document.createElement('div');
+    w.className = 'w';
+    w.textContent = words[Math.floor(Math.random()*words.length)];
+    w.style.left = (e.clientX - 20) + 'px';
+    w.style.top = (e.clientY - 10) + 'px';
+    root.appendChild(w);
+    requestAnimationFrame(function(){ w.classList.add('on'); });
+    setTimeout(function(){
+      w.classList.remove('on');
+      w.classList.add('gone');
+      setTimeout(function(){ w.remove(); }, 2500);
+    }, 3200);
+
+    n++;
+    if (n % 3 === 0){
+      label.style.opacity = 0;
+      setTimeout(function(){
+        label.textContent = phrases[Math.floor(Math.random()*phrases.length)];
+        label.style.opacity = .85;
+      }, 500);
+    }
+  });
+})();
+</script>
+</section>
