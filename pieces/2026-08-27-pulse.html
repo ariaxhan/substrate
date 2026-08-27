@@ -1,0 +1,73 @@
+<section data-date='2026-08-27' data-type='pulse'>
+<style>
+#tp27{position:relative;height:70vh;min-height:420px;background:#0b0c0e;color:#e8e4da;font-family:Georgia,'Times New Roman',serif;overflow:hidden;cursor:default}
+#tp27 .rod{position:absolute;top:38%;left:50%;width:64%;height:1px;background:#5a564c;transform-origin:center center;transition:transform .06s linear}
+#tp27 .post{position:absolute;top:38%;left:50%;width:1px;height:22%;background:#5a564c;transform:translate(-50%,0)}
+#tp27 .pan{position:absolute;top:38%;width:1px;background:#5a564c;transition:height .06s linear,left .06s linear,top .06s linear}
+#tp27 .cup{position:absolute;width:120px;text-align:center;transform:translate(-50%,0);transition:left .06s linear,top .06s linear}
+#tp27 .cup span{display:block;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:#a49d8c;opacity:.85}
+#tp27 .cup em{display:block;font-style:normal;font-size:1rem;color:#e8e4da;margin-top:2px}
+#tp27 .fulcrum{position:absolute;top:38%;left:50%;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:22px solid #3a372f;transform:translate(-50%,0)}
+#tp27 .noon{position:absolute;bottom:8%;left:50%;transform:translateX(-50%);font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:#6b6656;text-align:center}
+#tp27 .noon b{display:block;font-size:1.4rem;letter-spacing:.02em;color:#c9c2ab;font-weight:400;margin-top:6px}
+#tp27 .hint{position:absolute;top:14px;left:50%;transform:translateX(-50%);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:#57534a}
+</style>
+<div id="tp27">
+  <div class="hint">tilt it</div>
+  <div class="post"></div>
+  <div class="fulcrum"></div>
+  <div class="rod" id="tp27rod"></div>
+  <div class="pan" id="tp27pl"></div>
+  <div class="pan" id="tp27pr"></div>
+  <div class="cup" id="tp27cl"><span>what's spent</span><em id="tp27ml">—</em></div>
+  <div class="cup" id="tp27cr"><span>what remains</span><em id="tp27mr">—</em></div>
+  <div class="noon">equilibrium<b id="tp27time">12:00</b></div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('tp27');
+  var rod=document.getElementById('tp27rod'),
+      pl=document.getElementById('tp27pl'), pr=document.getElementById('tp27pr'),
+      cl=document.getElementById('tp27cl'), cr=document.getElementById('tp27cr'),
+      ml=document.getElementById('tp27ml'), mr=document.getElementById('tp27mr'),
+      tm=document.getElementById('tp27time');
+  var W=32; // rod half-length in %
+  function fmt(h,m){var ap=h>=12?'pm':'am';var hh=h%12;if(hh===0)hh=12;return hh+':'+(m<10?'0':'')+m+' '+ap}
+  function paint(tilt){
+    var rect=el.getBoundingClientRect();
+    var rad=tilt*Math.PI/180;
+    rod.style.transform='translate(-50%,-50%) rotate('+tilt+'deg)';
+    var dx=Math.cos(rad)*W, dy=Math.sin(rad)*W*(rect.height/rect.width)*0.55;
+    var lx=50-dx, ly=38+dy, rx=50+dx, ry=38-dy;
+    var drop=18;
+    pl.style.left=lx+'%'; pl.style.top=ly+'%'; pl.style.height=drop+'%';
+    pr.style.left=rx+'%'; pr.style.top=ry+'%'; pr.style.height=drop+'%';
+    cl.style.left=lx+'%'; cl.style.top=(ly+drop)+'%';
+    cr.style.left=rx+'%'; cr.style.top=(ry+drop)+'%';
+    var frac=(tilt+18)/36; frac=Math.max(0,Math.min(1,frac));
+    var hoursGone=frac*24, h=Math.floor(hoursGone), m=Math.floor((hoursGone-h)*60);
+    tm.textContent=fmt(h,m);
+    ml.textContent=Math.round(frac*100)+'%';
+    mr.textContent=Math.round((1-frac)*100)+'%';
+  }
+  var locked=false, lockTilt=0;
+  el.addEventListener('mousemove',function(e){
+    if(locked)return;
+    var rect=el.getBoundingClientRect();
+    var cx=(e.clientX-rect.left)/rect.width; // 0..1
+    var tilt=(cx-0.5)*36;
+    paint(tilt);
+  });
+  el.addEventListener('mouseleave',function(){ if(!locked) paint(0); });
+  el.addEventListener('click',function(e){
+    var rect=el.getBoundingClientRect();
+    var cx=(e.clientX-rect.left)/rect.width;
+    lockTilt=(cx-0.5)*36;
+    locked=!locked;
+    el.querySelector('.hint').textContent = locked ? 'held' : 'tilt it';
+    if(locked) paint(lockTilt);
+  });
+  paint(0);
+})();
+</script>
+</section>
