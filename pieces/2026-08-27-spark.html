@@ -1,0 +1,83 @@
+<section data-date='2026-08-27' data-type='spark'>
+<style>
+.spk-wrap{position:relative;height:70vh;min-height:340px;background:#0a0a0c;overflow:hidden;cursor:crosshair;font-family:Georgia,serif}
+.spk-wrap span.spk-w{position:absolute;white-space:nowrap;transition:color .4s,text-shadow .4s;user-select:none}
+.spk-a{color:#4fd1ff}
+.spk-b{color:#ff6f4f}
+.spk-fused{color:#fff;text-shadow:0 0 12px #fff,0 0 22px #ffd54f}
+.spk-hint{position:absolute;bottom:8px;left:12px;color:#555;font:11px monospace;letter-spacing:.05em}
+</style>
+<div class="spk-wrap" id="spkWrap">
+<div class="spk-hint">move to draw them together — click to fuse</div>
+</div>
+<script>
+(function(){
+var wrap=document.getElementById('spkWrap');
+var wa=["you","were","never","quite","here","reaching","almost","edge","waiting","still"];
+var wb=["i","was","always","just","there","touching","nearly","edge","waiting","still"];
+var n=wa.length;
+var els=[];
+var W=0,H=0;
+function size(){W=wrap.clientWidth;H=wrap.clientHeight}
+size();
+window.addEventListener('resize',size);
+for(var i=0;i<n;i++){
+  var y=(i+0.5)/n*H;
+  var ea=document.createElement('span');
+  ea.className='spk-w spk-a';
+  ea.textContent=wa[i];
+  ea.style.top=y+'px';
+  wrap.appendChild(ea);
+  var eb=document.createElement('span');
+  eb.className='spk-w spk-b';
+  eb.textContent=wb[i];
+  eb.style.top=y+'px';
+  wrap.appendChild(eb);
+  els.push({a:ea,b:eb,y:y,fused:false});
+}
+var mx=0.5;
+function draw(){
+  size();
+  for(var i=0;i<els.length;i++){
+    var row=els[i];
+    if(row.fused)continue;
+    var pull=mx;
+    var gap=W*0.5*(1-pull*0.96);
+    var ax=W*0.5-gap-row.a.offsetWidth;
+    var bx=W*0.5+gap;
+    row.a.style.left=ax+'px';
+    row.b.style.left=bx+'px';
+    if(bx-(ax+row.a.offsetWidth)<6 && !row.fused){
+      row.a.style.color='#e8e8ff';
+      row.b.style.color='#e8e8ff';
+    }
+  }
+}
+wrap.addEventListener('mousemove',function(e){
+  var r=wrap.getBoundingClientRect();
+  mx=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));
+  mx=Math.abs(mx-0.5)*2;
+  mx=1-mx;
+  draw();
+});
+wrap.addEventListener('click',function(){
+  els.forEach(function(row,i){
+    if(row.fused)return;
+    var gapClose = Math.abs(parseFloat(row.b.style.left)-(parseFloat(row.a.style.left)+row.a.offsetWidth));
+    if(gapClose<40){
+      row.fused=true;
+      var mid=(parseFloat(row.a.style.left)+parseFloat(row.b.style.left))/2;
+      row.a.classList.add('spk-fused');
+      row.b.classList.add('spk-fused');
+      row.a.style.left=mid+'px';
+      row.b.style.left=mid+'px';
+      row.b.style.opacity='0';
+      row.a.textContent=wa[i]+' '+wb[i];
+    }
+  });
+});
+draw();
+setInterval(draw,100);
+})();
+</script>
+</section>
