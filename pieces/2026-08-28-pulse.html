@@ -1,0 +1,61 @@
+<section data-date='2026-08-28' data-type='pulse'>
+<style>
+#tp-root{--f:0;margin:0;height:60vh;min-height:420px;background:linear-gradient(180deg,#0b1020,#1a1f2e 50%,#f4ede1);display:flex;align-items:center;justify-content:center;overflow:hidden;font-family:Georgia,'Times New Roman',serif;position:relative;cursor:pointer;user-select:none}
+#tp-root .beam{position:absolute;top:50%;left:10%;right:10%;height:1px;background:rgba(255,255,255,.35);transform-origin:center;transform:rotate(calc(var(--f) * 1deg))}
+#tp-root .fulcrum{position:absolute;top:50%;left:50%;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:24px solid #d8a54a;transform:translate(-50%,-100%)}
+#tp-root .pan{position:absolute;top:50%;width:120px;height:120px;transform-origin:top center;transition:transform .05s linear}
+#tp-root .pan.l{left:10%}
+#tp-root .pan.r{right:10%;margin-right:-120px}
+#tp-root .pan .disc{width:100%;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+#tp-root .pan.l .disc{background:#0b1020;color:#f4ede1;box-shadow:0 0 0 1px rgba(255,255,255,.2)}
+#tp-root .pan.r .disc{background:#f4ede1;color:#0b1020;box-shadow:0 0 0 1px rgba(0,0,0,.2)}
+#tp-root .word{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:.15em;opacity:.6;white-space:nowrap}
+#tp-root .l .word{color:#c8c8d8}
+#tp-root .r .word{color:#3a3428}
+#tp-root .hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.4);font-family:sans-serif}
+#tp-root .center{position:absolute;top:calc(50% - 60px);left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:.3em;color:rgba(255,255,255,.5);font-family:sans-serif;text-align:center}
+</style>
+<div id="tp-root">
+  <div class="beam" id="tp-beam"></div>
+  <div class="fulcrum"></div>
+  <div class="center" id="tp-center">HALFWAY</div>
+  <div class="pan l" id="tp-l"><div class="word">night</div><div class="disc">was</div></div>
+  <div class="pan r" id="tp-r"><div class="word">noon</div><div class="disc">is</div></div>
+  <div class="hint">tilt with your cursor · click to hold the balance</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('tp-root');
+  var beam=document.getElementById('tp-beam');
+  var l=document.getElementById('tp-l'), r=document.getElementById('tp-r');
+  var center=document.getElementById('tp-center');
+  var held=null, held_deg=0;
+  function apply(deg){
+    beam.style.setProperty('--f',deg);
+    l.style.transform='rotate('+deg+'deg)';
+    r.style.transform='rotate('+deg+'deg)';
+    var t=Math.abs(deg);
+    center.style.opacity = 1 - Math.min(t/14,.85);
+    center.textContent = deg>3 ? 'TIPPING TOWARD NOON' : deg<-3 ? 'TIPPING TOWARD NIGHT' : 'HALFWAY';
+  }
+  root.addEventListener('mousemove',function(e){
+    if(held!==null) return;
+    var rect=root.getBoundingClientRect();
+    var x=(e.clientX-rect.left)/rect.width;
+    var deg=(x-0.5)*24;
+    apply(deg);
+  });
+  root.addEventListener('mouseleave',function(){ if(held===null) apply(0); });
+  root.addEventListener('click',function(){
+    if(held===null){
+      held_deg = parseFloat(beam.style.getPropertyValue('--f'))||0;
+      held = true;
+      root.style.filter='saturate(1.3)';
+    } else {
+      held = null;
+      root.style.filter='';
+    }
+  });
+})();
+</script>
+</section>
