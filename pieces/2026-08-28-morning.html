@@ -1,0 +1,53 @@
+<section data-date='2026-08-28' data-type='morning'>
+<style>
+#tp-dawn{position:relative;height:70vh;min-height:420px;overflow:hidden;background:linear-gradient(#0b1026,#1a1f3a 40%,#3a2f4f 70%,#000 100%);font-family:Georgia,'Times New Roman',serif;cursor:pointer}
+#tp-dawn .tp-sky{position:absolute;inset:0;transition:background 1.2s ease}
+#tp-dawn .tp-sun{position:absolute;left:50%;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 50% 50%,#fff6d8,#ffcf7a 55%,#ff8a4c 90%);box-shadow:0 0 60px 20px rgba(255,180,110,.35);transform:translate(-50%,50%);transition:bottom 1.4s cubic-bezier(.2,.8,.2,1),opacity .8s}
+#tp-dawn .tp-word{position:absolute;color:rgba(255,240,220,.9);font-style:italic;letter-spacing:.03em;opacity:0;pointer-events:none;text-shadow:0 0 12px rgba(255,180,90,.5);transition:opacity 1.6s ease,transform 1.6s ease}
+#tp-dawn .tp-word.tp-show{opacity:1;transform:translateY(-10px)}
+#tp-dawn .tp-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.35);font:12px/1.4 sans-serif;letter-spacing:.15em;text-transform:uppercase;pointer-events:none;transition:opacity .6s}
+#tp-dawn .tp-hz{position:absolute;left:0;right:0;bottom:0;height:35%;background:linear-gradient(#000,transparent);opacity:.4}
+</style>
+<div id="tp-dawn">
+  <div class="tp-sky"></div>
+  <div class="tp-hz"></div>
+  <div class="tp-sun" id="tp-sun" style="bottom:-40%"></div>
+  <div class="tp-hint" id="tp-hint">move to breathe · click to begin</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('tp-dawn');
+  var sun=document.getElementById('tp-sun');
+  var sky=root.querySelector('.tp-sky');
+  var hint=document.getElementById('tp-hint');
+  var words=['unwritten','still','maybe','first light','not yet','almost','begin','possible','quiet','open','soon','again','blank page','wide awake'];
+  var used=0,rise=0;
+  function paint(p){
+    var b=-40+p*90;
+    sun.style.bottom=b+'%';
+    var day=Math.min(1,p*1.3);
+    sky.style.background='linear-gradient(#0b1026,rgba(60,50,90,'+(1-day*.3)+') '+(30+day*10)+'%, rgba(255,170,110,'+ (day*.55) +') '+(55+day*15)+'%, rgba(255,220,180,'+(day*.6)+') 100%)';
+  }
+  root.addEventListener('mousemove',function(e){
+    var r=root.getBoundingClientRect();
+    rise=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));
+    paint(rise);
+  });
+  root.addEventListener('click',function(e){
+    hint.style.opacity=0;
+    if(used>=words.length)return;
+    var r=root.getBoundingClientRect();
+    var w=document.createElement('span');
+    w.className='tp-word';
+    w.textContent=words[used++];
+    w.style.left=Math.max(4,Math.min(88,((e.clientX-r.left)/r.width*100)))+'%';
+    w.style.top=Math.max(6,Math.min(80,((e.clientY-r.top)/r.height*100)))+'%';
+    w.style.fontSize=(14+Math.random()*20)+'px';
+    root.appendChild(w);
+    requestAnimationFrame(function(){w.classList.add('tp-show')});
+    setTimeout(function(){w.style.opacity=0},7000+Math.random()*4000);
+  });
+  paint(0.15);
+})();
+</script>
+</section>
