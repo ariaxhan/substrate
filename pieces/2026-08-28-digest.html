@@ -1,0 +1,104 @@
+<section data-date='2026-08-28' data-type='digest'>
+<style>
+#crystal-wrap{margin:0;background:#07080b;color:#cdd2da;font:14px/1.5 Georgia,serif;overflow:hidden}
+#crystal-wrap .stage{position:relative;height:70vh;min-height:420px;cursor:crosshair}
+#crystal-wrap canvas{position:absolute;inset:0;width:100%;height:100%}
+#crystal-wrap .cap{position:relative;z-index:2;padding:14px 18px;font:italic 12px/1.4 Georgia,serif;color:#6d7484;pointer-events:none}
+#crystal-wrap .cap b{color:#a9b3c9;font-style:normal;letter-spacing:.04em}
+#crystal-wrap .count{position:absolute;right:16px;bottom:12px;font:11px/1 monospace;color:#4a5062;letter-spacing:.08em}
+</style>
+<div id="crystal-wrap">
+  <div class="stage" id="cstage">
+    <canvas id="ccanvas"></canvas>
+    <div class="count" id="ccount">0 points &middot; 0 bonds</div>
+  </div>
+  <div class="cap"><b>each mark is a fact.</b> alone, it means nothing. click to add one &mdash; watch what forms when enough of them agree.</div>
+</div>
+<script>
+(function(){
+  var wrap = document.getElementById('crystal-wrap');
+  var stage = document.getElementById('cstage');
+  var cv = document.getElementById('ccanvas');
+  var ctx = cv.getContext('2d');
+  var countEl = document.getElementById('ccount');
+  var pts = [], bonds = 0, t = 0, dpr = Math.min(window.devicePixelRatio||1, 2);
+
+  function size(){
+    var r = stage.getBoundingClientRect();
+    cv.width = r.width*dpr; cv.height = r.height*dpr;
+    cv.style.width = r.width+'px'; cv.style.height = r.height+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  size();
+  window.addEventListener('resize', size);
+
+  function seed(x, y){
+    pts.push({x:x, y:y, born:t, jx:(Math.random()-.5)*.3, jy:(Math.random()-.5)*.3});
+  }
+
+  // seed a faint origin so the field isn't empty
+  var r0 = stage.getBoundingClientRect();
+  seed(r0.width*0.5, r0.height*0.45);
+
+  stage.addEventListener('click', function(e){
+    var r = stage.getBoundingClientRect();
+    seed(e.clientX - r.left, e.clientY - r.top);
+  });
+
+  function draw(){
+    t += 1;
+    var r = stage.getBoundingClientRect();
+    ctx.clearRect(0,0,r.width,r.height);
+
+    // drift
+    for (var i=0;i<pts.length;i++){
+      pts[i].x += pts[i].jx * 0.15;
+      pts[i].y += pts[i].jy * 0.15;
+    }
+
+    // bonds: connect points within radius, radius grows with total accumulation
+    bonds = 0;
+    var reach = Math.min(60 + pts.length*4, 220);
+    ctx.lineWidth = 1;
+    for (var a=0; a<pts.length; a++){
+      for (var b=a+1; b<pts.length; b++){
+        var dx = pts[a].x-pts[b].x, dy = pts[a].y-pts[b].y;
+        var d = Math.sqrt(dx*dx+dy*dy);
+        if (d < reach){
+          bonds++;
+          var alpha = (1 - d/reach) * 0.5;
+          var age = Math.min(1, (t - Math.max(pts[a].born, pts[b].born)) / 40);
+          ctx.strokeStyle = 'rgba(140,170,220,' + (alpha*age).toFixed(3) + ')';
+          ctx.beginPath();
+          ctx.moveTo(pts[a].x, pts[a].y);
+          ctx.lineTo(pts[b].x, pts[b].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // points
+    for (var i=0;i<pts.length;i++){
+      var p = pts[i];
+      var age = Math.min(1, (t-p.born)/30);
+      var deg = 0;
+      for (var j=0;j<pts.length;j++){
+        if (j===i) continue;
+        var dx=p.x-pts[j].x, dy=p.y-pts[j].y;
+        if (Math.sqrt(dx*dx+dy*dy) < reach) deg++;
+      }
+      var rad = 1.6 + Math.min(deg*0.5, 4);
+      var glow = deg > 2 ? '255,214,140' : '190,205,230';
+      ctx.fillStyle = 'rgba(' + glow + ',' + (0.5+age*0.5).toFixed(2) + ')';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, rad, 0, Math.PI*2);
+      ctx.fill();
+    }
+
+    countEl.textContent = pts.length + ' point' + (pts.length===1?'':'s') + ' · ' + bonds + ' bond' + (bonds===1?'':'s');
+    requestAnimationFrame(draw);
+  }
+  requestAnimationFrame(draw);
+})();
+</script>
+</section>
