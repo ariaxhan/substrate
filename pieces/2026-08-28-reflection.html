@@ -1,0 +1,110 @@
+<section data-date='2026-08-28' data-type='reflection'>
+<style>
+.tp28 * { box-sizing: border-box }
+.tp28 {
+  margin: 0; background: #05060b; color: #cfd4e6;
+  font-family: Georgia, 'Times New Roman', serif;
+  height: 100vh; overflow: hidden; position: relative;
+  cursor: crosshair;
+}
+.tp28 .msg {
+  position: absolute; top: 40px; left: 0; right: 0; text-align: center;
+  font-size: 13px; letter-spacing: .12em; color: #6b7290;
+  font-family: Georgia, serif; font-style: italic;
+  transition: opacity 2s;
+}
+.tp28 .sky { position: absolute; inset: 0 }
+.tp28 .star {
+  position: absolute; border-radius: 50%;
+  background: #fff; opacity: 0;
+  transition: opacity 1.6s ease-out, transform 1.6s ease-out;
+  box-shadow: 0 0 6px 1px rgba(255,255,255,.6);
+}
+.tp28 .word {
+  position: absolute; font-size: 11px; color: #8b91b3;
+  opacity: 0; transition: opacity 3s ease, transform 3s ease;
+  pointer-events: none; letter-spacing: .04em;
+}
+</style>
+<div class="tp28" id="tp28root">
+  <div class="msg" id="tp28msg">the day is complete — touch the dark</div>
+  <div class="sky" id="tp28sky"></div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('tp28root');
+  var sky = document.getElementById('tp28sky');
+  var msg = document.getElementById('tp28msg');
+  var words = ['rest','stillness','quiet','done','tomorrow','breathe','enough','dark','soft','hush'];
+  var count = 0;
+  var seen = false;
+
+  function place(el, x, y){
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+  }
+
+  function star(x, y){
+    var s = document.createElement('div');
+    s.className = 'star';
+    var size = 1 + Math.random() * 2.5;
+    s.style.width = size + 'px';
+    s.style.height = size + 'px';
+    place(s, x - size/2, y - size/2);
+    sky.appendChild(s);
+    requestAnimationFrame(function(){
+      s.style.opacity = 0.15 + Math.random() * 0.85;
+    });
+    count++;
+    if (count > 400) {
+      var old = sky.querySelector('.star');
+      if (old) old.remove();
+    }
+  }
+
+  function word(x, y){
+    var w = document.createElement('div');
+    w.className = 'word';
+    w.textContent = words[Math.floor(Math.random() * words.length)];
+    place(w, x + 6, y - 4);
+    sky.appendChild(w);
+    requestAnimationFrame(function(){
+      w.style.opacity = 0.7;
+      w.style.transform = 'translateY(-14px)';
+    });
+    setTimeout(function(){
+      w.style.opacity = 0;
+    }, 1400);
+    setTimeout(function(){ w.remove(); }, 4400);
+  }
+
+  root.addEventListener('click', function(e){
+    if (!seen){
+      seen = true;
+      msg.style.opacity = 0;
+    }
+    var rect = root.getBoundingClientRect();
+    var x = e.clientX - rect.left, y = e.clientY - rect.top;
+    star(x, y);
+    if (Math.random() < 0.6) word(x, y);
+  });
+
+  var last = 0;
+  root.addEventListener('mousemove', function(e){
+    var now = Date.now ? Date.now() : +new Date();
+    if (now - last < 90) return;
+    last = now;
+    if (Math.random() < 0.35){
+      var rect = root.getBoundingClientRect();
+      star(e.clientX - rect.left, e.clientY - rect.top);
+    }
+  });
+
+  var ambient = setInterval(function(){
+    star(Math.random() * root.clientWidth, Math.random() * root.clientHeight * 0.75);
+  }, 900);
+
+  window.addEventListener('beforeunload', function(){ clearInterval(ambient); });
+})();
+</script>
+</section>
