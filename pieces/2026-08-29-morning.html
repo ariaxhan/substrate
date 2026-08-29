@@ -1,0 +1,69 @@
+<section data-date='2026-08-29' data-type='morning'>
+<style>
+#dawn29{margin:0;height:70vh;min-height:420px;position:relative;overflow:hidden;background:linear-gradient(180deg,#0a0e1a 0%,#1a2035 40%,#3a2a3a 70%,#5a3a35 100%);font-family:Georgia,'Times New Roman',serif;cursor:crosshair;transition:background 2.4s ease}
+#dawn29.lit{background:linear-gradient(180deg,#7ec8e3 0%,#ffd9a0 45%,#ffb877 75%,#ff9e6d 100%)}
+#dawn29 .sun{position:absolute;left:50%;bottom:-60px;width:120px;height:120px;border-radius:50%;background:#fff3d6;box-shadow:0 0 60px 20px rgba(255,220,150,.4);transform:translateX(-50%) scale(.3);opacity:0;transition:transform 2.6s cubic-bezier(.2,.8,.2,1),opacity 2s ease,bottom 2.6s ease}
+#dawn29.lit .sun{opacity:1;transform:translateX(-50%) scale(1);bottom:20%}
+#dawn29 .line{position:absolute;left:0;right:0;text-align:center;color:rgba(230,230,240,.55);font-size:15px;letter-spacing:.12em;font-style:italic;transition:color 2s ease,transform .6s ease}
+#dawn29.lit .line{color:rgba(70,40,20,.65)}
+#dawn29 .l1{top:14%}
+#dawn29 .l2{top:24%}
+#dawn29 .l3{top:34%}
+#dawn29 .hint{position:absolute;bottom:14px;left:0;right:0;text-align:center;color:rgba(255,255,255,.35);font-size:11px;font-family:sans-serif;letter-spacing:.2em;text-transform:uppercase;transition:opacity 1.5s ease}
+#dawn29.lit .hint{opacity:0}
+#dawn29 .star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;transition:opacity 2s ease}
+#dawn29.lit .star{opacity:0}
+#dawn29 .bird{position:absolute;font-size:14px;opacity:0;transition:opacity 1.5s ease 1s,transform 6s linear;color:#3a2418}
+#dawn29.lit .bird{opacity:.6}
+</style>
+<div id="dawn29">
+<div class="line l1">before the word, the waiting</div>
+<div class="line l2">before the light, the line</div>
+<div class="line l3">nothing has been written yet</div>
+<div class="sun"></div>
+<span class="hint">touch the dark</span>
+</div>
+<script>
+(function(){
+var d=document.getElementById('dawn29');
+for(var i=0;i<40;i++){
+  var s=document.createElement('div');
+  s.className='star';
+  s.style.left=(Math.random()*100)+'%';
+  s.style.top=(Math.random()*55)+'%';
+  s.style.opacity=Math.random()*.8+.2;
+  d.appendChild(s);
+}
+var texts=['the day has not decided','a bird tests the air','light owes nothing yet','the first hour is unclaimed'];
+var lines=d.querySelectorAll('.line');
+d.addEventListener('click',function(e){
+  var already=d.classList.contains('lit');
+  d.classList.toggle('lit');
+  if(!already){
+    lines[0].textContent='the word has begun';
+    lines[1].textContent='the light has a shape now';
+    lines[2].textContent=texts[Math.floor(Math.random()*texts.length)];
+    for(var b=0;b<3;b++){
+      var bird=document.createElement('span');
+      bird.className='bird';
+      bird.textContent='ᨈ';
+      bird.style.left=(10+b*30)+'%';
+      bird.style.top=(20+b*8)+'%';
+      d.appendChild(bird);
+      (function(el,idx){setTimeout(function(){el.style.transform='translate('+(80+idx*20)+'vw,-40px)';},50);})(bird,b);
+    }
+  } else {
+    lines[0].textContent='before the word, the waiting';
+    lines[1].textContent='before the light, the line';
+    lines[2].textContent='nothing has been written yet';
+    d.querySelectorAll('.bird').forEach(function(b){b.remove();});
+  }
+});
+d.addEventListener('mousemove',function(e){
+  var r=d.getBoundingClientRect();
+  var x=(e.clientX-r.left)/r.width;
+  d.querySelector('.sun').style.left=(40+x*20)+'%';
+});
+})();
+</script>
+</section>
