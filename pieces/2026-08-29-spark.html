@@ -1,0 +1,87 @@
+<section data-date='2026-08-29' data-type='spark'>
+<style>
+#sp29{margin:0;overflow:hidden;height:70vh;min-height:420px;background:#0b0b0f;position:relative;font-family:Georgia,serif;cursor:crosshair}
+#sp29 span.w{position:absolute;padding:2px 6px;font-size:15px;color:#dcd7c9;transition:opacity .6s,transform .4s;white-space:nowrap;user-select:none}
+#sp29 span.w.a{color:#e2725b}
+#sp29 span.w.b{color:#7ba8c9}
+#sp29 span.fused{color:#f2e8c9;font-style:italic;text-shadow:0 0 8px rgba(242,232,201,.5)}
+#sp29 .hint{position:absolute;bottom:8px;left:10px;font:11px sans-serif;color:#555}
+</style>
+<div id="sp29">
+<div class="hint">move the cursor — let two meet</div>
+</div>
+<script>
+(function(){
+const host=document.getElementById('sp29');
+const A=["salt","hand","light","root","wire","glass","bone","tide"];
+const B=["stone","print","house","word","song","rust","field","echo"];
+let items=[];
+function rnd(a,b){return a+Math.random()*(b-a)}
+function spawn(list,cls){
+  const el=document.createElement('span');
+  el.className='w '+cls;
+  el.textContent=list[Math.floor(Math.random()*list.length)];
+  el.style.left=rnd(0,90)+'%';
+  el.style.top=rnd(5,90)+'%';
+  el.style.opacity=0.85;
+  host.appendChild(el);
+  const it={el,vx:rnd(-0.15,0.15),vy:rnd(-0.15,0.15),x:parseFloat(el.style.left),y:parseFloat(el.style.top),cls};
+  items.push(it);
+  return it;
+}
+for(let i=0;i<6;i++)spawn(A,'a');
+for(let i=0;i<6;i++)spawn(B,'b');
+
+let mx=50,my=50;
+host.addEventListener('mousemove',e=>{
+  const r=host.getBoundingClientRect();
+  mx=(e.clientX-r.left)/r.width*100;
+  my=(e.clientY-r.top)/r.height*100;
+});
+
+function fuse(i,j){
+  const w1=i.el.textContent,w2=j.el.textContent;
+  const merged=document.createElement('span');
+  merged.className='w fused';
+  merged.textContent=w1+w2;
+  merged.style.left=((i.x+j.x)/2)+'%';
+  merged.style.top=((i.y+j.y)/2)+'%';
+  merged.style.opacity=1;
+  merged.style.transform='scale(1.3)';
+  host.appendChild(merged);
+  setTimeout(()=>{merged.style.opacity=0;},1400);
+  setTimeout(()=>{merged.remove();},2000);
+  i.el.remove();j.el.remove();
+  items=items.filter(k=>k!==i&&k!==j);
+  setTimeout(()=>{
+    const list=Math.random()<0.5?A:B;
+    spawn(list,list===A?'a':'b');
+  },1600);
+}
+
+function tick(){
+  items.forEach(it=>{
+    const dx=mx-it.x,dy=my-it.y,d=Math.hypot(dx,dy)||1;
+    it.x+=it.vx+dx/d*0.05;
+    it.y+=it.vy+dy/d*0.05;
+    if(it.x<0||it.x>92)it.vx*=-1;
+    if(it.y<0||it.y>92)it.vy*=-1;
+    it.x=Math.max(0,Math.min(92,it.x));
+    it.y=Math.max(0,Math.min(92,it.y));
+    it.el.style.left=it.x+'%';
+    it.el.style.top=it.y+'%';
+  });
+  outer: for(let a=0;a<items.length;a++){
+    for(let b=a+1;b<items.length;b++){
+      const i=items[a],j=items[b];
+      if(i.cls===j.cls)continue;
+      const dx=i.x-j.x,dy=i.y-j.y;
+      if(Math.hypot(dx,dy)<4.5){fuse(i,j);break outer;}
+    }
+  }
+  requestAnimationFrame(tick);
+}
+tick();
+})();
+</script>
+</section>
