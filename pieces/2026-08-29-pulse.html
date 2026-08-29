@@ -1,0 +1,75 @@
+<section data-date='2026-08-29' data-type='pulse'>
+<style>
+#tp-fulcrum{margin:0;overflow:hidden;height:60vh;min-height:340px;position:relative;background:#0b0c10;font-family:Georgia,'Times New Roman',serif;color:#e8e2d5;cursor:crosshair;border-radius:4px}
+#tp-fulcrum .tp-sky{position:absolute;inset:0;background:linear-gradient(180deg,#1a1408 0%,#0b0c10 50%,#08121a 100%);transition:background .4s linear}
+#tp-fulcrum .tp-beam{position:absolute;top:50%;left:50%;width:78%;height:1px;background:#8a8370;transform-origin:50% 50%;transform:translate(-50%,-50%) rotate(0deg);transition:transform .12s ease-out}
+#tp-fulcrum .tp-tri{position:absolute;top:50%;left:50%;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:26px solid #4a4436;transform:translate(-50%,-1px)}
+#tp-fulcrum .tp-side{position:absolute;top:50%;font-size:clamp(13px,2.4vw,22px);letter-spacing:.06em;white-space:nowrap;transform-origin:50% 50%;transition:transform .12s ease-out,opacity .3s}
+#tp-fulcrum .tp-side.l{left:8%}
+#tp-fulcrum .tp-side.r{right:8%;text-align:right}
+#tp-fulcrum .tp-hair{position:absolute;top:calc(50% - 60px);left:50%;width:1px;height:60px;background:linear-gradient(#e8e2d5,transparent);transform:translateX(-50%);opacity:.5}
+#tp-fulcrum .tp-word{display:inline-block;transform-origin:50% 100%;transition:transform .12s ease-out}
+#tp-fulcrum .tp-hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);font-family:monospace;font-size:11px;letter-spacing:.15em;opacity:.35;text-transform:uppercase}
+#tp-fulcrum .tp-num{position:absolute;top:8px;left:50%;transform:translateX(-50%);font-family:monospace;font-size:11px;opacity:.5;letter-spacing:.1em}
+</style>
+<div id="tp-fulcrum">
+  <div class="tp-sky"></div>
+  <div class="tp-num" id="tpNum">12:00 &nbsp;·&nbsp; 0.00</div>
+  <div class="tp-hair"></div>
+  <div class="tp-tri"></div>
+  <div class="tp-beam" id="tpBeam">
+    <span class="tp-side l" id="tpL"><span class="tp-word">waking</span></span>
+    <span class="tp-side r" id="tpR"><span class="tp-word">sleeping</span></span>
+  </div>
+  <div class="tp-hint">move to tip the day &nbsp;·&nbsp; click to hold the balance</div>
+</div>
+<script>
+(function(){
+  var box=document.getElementById('tp-fulcrum');
+  var beam=document.getElementById('tpBeam');
+  var sky=box.querySelector('.tp-sky');
+  var num=document.getElementById('tpNum');
+  var L=document.getElementById('tpL'), R=document.getElementById('tpR');
+  var morning=['waking','coffee','light','beginning','rising','doing'];
+  var evening=['sleeping','dusk','stillness','ending','settling','undoing'];
+  var held=false, lastT=0;
+  function setWords(t){
+    var mi=Math.min(morning.length-1,Math.floor((1-t)*morning.length));
+    var ei=Math.min(evening.length-1,Math.floor(t*evening.length));
+    L.textContent=morning[mi<0?0:mi];
+    R.textContent=evening[ei<0?0:ei];
+  }
+  function apply(t){
+    lastT=t;
+    var deg=(t-0.5)*36;
+    beam.style.transform='translate(-50%,-50%) rotate('+deg.toFixed(2)+'deg)';
+    var warm=[26,20,8], cool=[8,18,26];
+    var mix=warm.map(function(c,i){return Math.round(c+(cool[i]-c)*t)});
+    sky.style.background='linear-gradient(180deg, rgb('+mix.join(',')+') 0%, #0b0c10 50%, rgb('+cool.join(',')+') 100%)';
+    L.style.opacity=0.4+ (1-t)*0.6;
+    R.style.opacity=0.4+ t*0.6;
+    var hh=Math.floor(t*24), mm=Math.floor((t*24-hh)*60);
+    num.textContent=(hh<10?'0':'')+hh+':'+(mm<10?'0':'')+mm+' · '+(t-0.5).toFixed(2);
+    setWords(t);
+  }
+  function fromEvent(e){
+    var r=box.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width;
+    return Math.max(0,Math.min(1,x));
+  }
+  box.addEventListener('mousemove',function(e){
+    if(held)return;
+    apply(fromEvent(e));
+  });
+  box.addEventListener('click',function(e){
+    held=!held;
+    box.style.cursor=held?'pointer':'crosshair';
+    if(!held) apply(lastT);
+  });
+  box.addEventListener('mouseleave',function(){
+    if(!held) apply(0.5);
+  });
+  apply(0.5);
+})();
+</script>
+</section>
