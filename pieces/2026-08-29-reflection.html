@@ -1,0 +1,66 @@
+<section data-date='2026-08-29' data-type='reflection'>
+<style>
+#tp0829{position:relative;height:70vh;min-height:420px;background:radial-gradient(ellipse at 50% 100%,#0d1224 0%,#040611 70%,#000 100%);overflow:hidden;cursor:crosshair;font-family:Georgia,'Times New Roman',serif;border-radius:4px}
+#tp0829 .horizon{position:absolute;left:0;right:0;bottom:0;height:22%;background:linear-gradient(to top,#000 0%,rgba(0,0,0,0) 100%)}
+#tp0829 .msg{position:absolute;top:16px;left:0;right:0;text-align:center;color:#5a6488;font-size:12px;letter-spacing:.18em;text-transform:uppercase;opacity:.65;pointer-events:none;transition:opacity 2s}
+#tp0829 .msg.done{opacity:0}
+#tp0829 .count{position:absolute;bottom:12px;right:16px;color:#39406b;font-size:10px;letter-spacing:.1em;font-family:monospace;pointer-events:none}
+#tp0829 .star{position:absolute;border-radius:50%;background:#fff;pointer-events:none;transform:translate(-50%,-50%);animation:tp0829rise 1.4s cubic-bezier(.2,.8,.2,1) forwards}
+#tp0829 .ambient{position:absolute;border-radius:50%;background:#cdd6ff;pointer-events:none}
+@keyframes tp0829rise{0%{opacity:0;transform:translate(-50%,-50%) scale(0)}30%{opacity:1;transform:translate(-50%,-50%) scale(1.6)}100%{opacity:.9;transform:translate(-50%,-50%) scale(1)}}
+#tp0829 .flicker{animation:tp0829flicker 4s ease-in-out infinite}
+@keyframes tp0829flicker{0%,100%{opacity:.9}50%{opacity:.45}}
+#tp0829 .word{position:absolute;color:#8891b8;font-style:italic;font-size:13px;opacity:0;white-space:nowrap;pointer-events:none;animation:tp0829word 3.5s ease-out forwards}
+@keyframes tp0829word{0%{opacity:0;transform:translateY(6px)}20%{opacity:.8;transform:translateY(0)}80%{opacity:.8}100%{opacity:0;transform:translateY(-10px)}}
+</style>
+<div id="tp0829">
+  <div class="msg" id="tp0829msg">the day is complete&mdash;touch the dark to rest a light</div>
+  <div class="count" id="tp0829count">0 stars</div>
+  <div class="horizon"></div>
+</div>
+<script>
+(function(){
+  var box=document.getElementById('tp0829'),msg=document.getElementById('tp0829msg'),cnt=document.getElementById('tp0829count');
+  var words=['still','hush','done','rest','dusk','soon','quiet','enough'];
+  var n=0,seeded=false;
+
+  function ambient(){
+    for(var i=0;i<40;i++){
+      var d=document.createElement('div'),s=Math.random()*1.6+.4;
+      d.className='ambient'+(Math.random()<.3?' flicker':'');
+      d.style.width=s+'px';d.style.height=s+'px';
+      d.style.left=(Math.random()*100)+'%';
+      d.style.top=(Math.random()*78)+'%';
+      d.style.opacity=(Math.random()*.5+.15).toFixed(2);
+      box.appendChild(d);
+    }
+    seeded=true;
+  }
+
+  box.addEventListener('click',function(e){
+    if(!seeded)ambient();
+    var r=box.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+    if(y>r.height*0.85)return;
+    var s=document.createElement('div'),size=Math.random()*3+2;
+    s.className='star';
+    s.style.width=size+'px';s.style.height=size+'px';
+    s.style.left=x+'px';s.style.top=y+'px';
+    s.style.boxShadow='0 0 '+(size*4)+'px '+(size*1.5)+'px rgba(255,255,255,.55)';
+    box.appendChild(s);
+
+    n++;
+    cnt.textContent=n+(n===1?' star':' stars');
+    msg.classList.add('done');
+
+    var w=document.createElement('div'),word=words[Math.floor(Math.random()*words.length)];
+    w.className='word';w.textContent=word;
+    w.style.left=Math.min(Math.max(x-20,0),r.width-60)+'px';
+    w.style.top=(y-22)+'px';
+    box.appendChild(w);
+    setTimeout(function(){w.remove()},3600);
+
+    if(n>=250){var old=box.querySelector('.star');if(old)old.remove();}
+  });
+})();
+</script>
+</section>
