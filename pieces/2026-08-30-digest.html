@@ -1,0 +1,66 @@
+<section data-date='2026-08-30' data-type='digest'>
+<style>
+.tp-2026-08-30{margin:0;overflow:hidden;height:70vh;min-height:480px;background:#07080b;position:relative;cursor:crosshair;font-family:'Courier New',monospace}
+.tp-2026-08-30 svg{width:100%;height:100%;display:block}
+.tp-2026-08-30 .tp-hint{position:absolute;top:14px;left:18px;color:#3a4250;font-size:11px;letter-spacing:.14em;text-transform:uppercase;pointer-events:none}
+.tp-2026-08-30 .tp-count{position:absolute;bottom:14px;right:18px;color:#4a5568;font-size:11px;letter-spacing:.08em;pointer-events:none}
+.tp-2026-08-30 line{stroke:#4a6fa5;stroke-width:.6;opacity:0}
+.tp-2026-08-30 circle.n{fill:#e8ecf1}
+.tp-2026-08-30 text.w{fill:#5a6a82;font-size:10px;font-family:'Courier New',monospace}
+</style>
+<div class="tp-2026-08-30" id="tp0830">
+  <div class="tp-hint">click to place a fact — watch it find its kin</div>
+  <svg id="tp0830svg" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div class="tp-count" id="tp0830c">0 nodes · 0 bonds</div>
+</div>
+<script>
+(function(){
+  var words=["pattern","signal","echo","trace","index","fold","shard","seed","drift","kernel","axiom","residue","cipher","lattice","thread","node","weight","bias","gradient","prior"];
+  var root=document.getElementById('tp0830');
+  var svg=document.getElementById('tp0830svg');
+  var cEl=document.getElementById('tp0830c');
+  var pts=[]; var bonds=0; var wi=0;
+  function place(x,y){
+    var r=root.getBoundingClientRect();
+    var px=x-r.left, py=y-r.top;
+    var p={x:px,y:py,id:pts.length};
+    var near=[];
+    pts.forEach(function(o){
+      var d=Math.hypot(o.x-px,o.y-py);
+      if(d<140) near.push({o:o,d:d});
+    });
+    pts.push(p);
+    near.sort(function(a,b){return a.d-b.d}).slice(0,3).forEach(function(n){
+      var ln=document.createElementNS('http://www.w3.org/2000/svg','line');
+      ln.setAttribute('x1',n.o.x); ln.setAttribute('y1',n.o.y);
+      ln.setAttribute('x2',px); ln.setAttribute('y2',py);
+      svg.appendChild(ln);
+      requestAnimationFrame(function(){ ln.style.transition='opacity 900ms'; ln.style.opacity=Math.max(.08,1-n.d/140); });
+      bonds++;
+    });
+    var c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',px); c.setAttribute('cy',py); c.setAttribute('r',0);
+    c.setAttribute('class','n');
+    svg.appendChild(c);
+    var grow=0; var iv=setInterval(function(){
+      grow+=.6; c.setAttribute('r', Math.min(3.4,grow));
+      if(grow>=3.4) clearInterval(iv);
+    },16);
+    var t=document.createElementNS('http://www.w3.org/2000/svg','text');
+    t.setAttribute('x',px+6); t.setAttribute('y',py-6);
+    t.setAttribute('class','w');
+    t.textContent=words[wi%words.length]; wi++;
+    t.style.opacity=0;
+    svg.appendChild(t);
+    requestAnimationFrame(function(){ t.style.transition='opacity 1200ms'; t.style.opacity=.85; });
+    cEl.textContent=pts.length+' nodes · '+bonds+' bonds';
+  }
+  root.addEventListener('click',function(e){ place(e.clientX,e.clientY); });
+  var boot=[[.2,.3],[.5,.2],[.75,.45],[.35,.6],[.6,.7]];
+  setTimeout(function(){
+    var r=root.getBoundingClientRect();
+    boot.forEach(function(b,i){ setTimeout(function(){ place(r.left+b[0]*r.width, r.top+b[1]*r.height); }, i*260); });
+  },300);
+})();
+</script>
+</section>
