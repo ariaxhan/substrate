@@ -1,0 +1,50 @@
+<section data-date='2026-08-30' data-type='spark'>
+<style>
+#sp30{background:#0b0b0d;height:100vh;overflow:hidden;position:relative;font-family:Georgia,serif;cursor:crosshair}
+#sp30 span.w{position:absolute;color:#9a9aa2;font-size:15px;white-space:nowrap;transition:color .3s,text-shadow .3s}
+#sp30 span.w.left{color:#7fb3ff}
+#sp30 span.w.right{color:#ffb37f}
+#sp30 span.w.hit{color:#fff;text-shadow:0 0 12px #fff,0 0 24px #ffd27f;transition:color .05s,text-shadow .05s}
+#sp30 .mid{position:absolute;left:50%;top:0;bottom:0;width:1px;background:linear-gradient(#0000,#333,#0000);pointer-events:none}
+#sp30 small{position:absolute;bottom:8px;left:8px;color:#444;font-family:monospace;font-size:10px}
+</style>
+<div id="sp30"><div class="mid"></div><small>move to close the distance</small></div>
+<script>
+(function(){
+var host=document.getElementById('sp30');
+var L=["we","were","never","supposed","to","meet","here","like","this","two","sentences","running","toward"];
+var R=["and","yet","the","page","folded","and","here","we","are","colliding","mid","word"];
+var words=[],n=Math.max(L.length,R.length);
+for(var i=0;i<n;i++){
+  var y=40+i*(Math.max(20,(window.innerHeight-80)/n));
+  if(L[i]){var el=document.createElement('span');el.className='w left';el.textContent=L[i];el.style.top=y+'px';el.dataset.base=48-i*3;el.style.left=el.dataset.base+'%';host.appendChild(el);words.push({el:el,side:-1,base:48-i*3,y:y});}
+  if(R[i]){var er=document.createElement('span');er.className='w right';er.textContent=R[i];er.style.top=y+'px';er.dataset.base=52+i*3;er.style.left=er.dataset.base+'%';host.appendChild(er);words.push({el:er,side:1,base:52+i*3,y:y});}
+}
+var mx=0.5,my=0.5,pull=0;
+host.addEventListener('mousemove',function(e){
+  var r=host.getBoundingClientRect();
+  mx=(e.clientX-r.left)/r.width;
+  my=(e.clientY-r.top)/r.height;
+  pull=Math.min(1,Math.abs(mx-0.5)*2.4);
+});
+host.addEventListener('mouseleave',function(){pull=0;});
+function tick(){
+  var dist=(0.5-pull*0.46);
+  words.forEach(function(w){
+    var closeness=1-Math.min(1,Math.abs(w.y/host.clientHeight-my)*3);
+    var force=pull*Math.max(0,closeness);
+    var target=w.base+(w.side*-1)*force*(w.base-50)*-0.9;
+    var cur=parseFloat(w.el.style.left);
+    var next=cur+(target-cur)*0.15;
+    w.el.style.left=next+'%';
+    var hit=force>0.55;
+    w.el.classList.toggle('hit',hit);
+    if(hit){w.el.style.transform='translateX(-50%) scale(1.15)';}
+    else{w.el.style.transform='translateX(-50%) scale(1)';}
+  });
+  requestAnimationFrame(tick);
+}
+tick();
+})();
+</script>
+</section>

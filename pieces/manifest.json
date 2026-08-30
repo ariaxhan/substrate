@@ -603,6 +603,7 @@
     {"file": "2026-08-29-morning.html", "date": "2026-08-29", "type": "morning", "timestamp": 1788012204},
     {"file": "2026-08-29-pulse.html", "date": "2026-08-29", "type": "pulse", "timestamp": 1788030267},
     {"file": "2026-08-29-reflection.html", "date": "2026-08-29", "type": "reflection", "timestamp": 1788058949},
-    {"file": "2026-08-30-morning.html", "date": "2026-08-30", "type": "morning", "timestamp": 1788098758}
+    {"file": "2026-08-30-morning.html", "date": "2026-08-30", "type": "morning", "timestamp": 1788098758},
+    {"file": "2026-08-30-spark.html", "date": "2026-08-30", "type": "spark", "timestamp": 1788105696}
   ]
 }
