@@ -1,0 +1,47 @@
+<section data-date='2026-08-30' data-type='morning'>
+<style>
+#taper-0830m{position:relative;height:70vh;min-height:420px;overflow:hidden;background:#0b0e17;font-family:Georgia,serif;cursor:none}
+#taper-0830m .sky{position:absolute;inset:0;transition:background 1.4s ease}
+#taper-0830m .sun{position:absolute;width:120px;height:120px;border-radius:50%;left:50%;top:100%;transform:translate(-50%,-50%);background:radial-gradient(circle at 35% 35%,#fff7e0,#ffcf6b 55%,#ff8a3d 100%);box-shadow:0 0 60px 20px rgba(255,180,90,.35);transition:top 1.4s cubic-bezier(.2,.8,.2,1),box-shadow 1.4s ease}
+#taper-0830m .words{position:absolute;inset:0;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:.4em .6em;padding:2em;box-sizing:border-box}
+#taper-0830m .w{font-size:clamp(14px,3vw,26px);color:rgba(255,255,255,.06);letter-spacing:.02em;transition:color .25s ease,text-shadow .25s ease;user-select:none}
+#taper-0830m .w.lit{color:#fff3d6;text-shadow:0 0 14px rgba(255,200,120,.8)}
+#taper-0830m .hint{position:absolute;bottom:14px;left:18px;font:11px/1.4 -apple-system,sans-serif;color:rgba(255,255,255,.28);letter-spacing:.08em;text-transform:uppercase}
+#taper-0830m.risen .sky{background:linear-gradient(#1a2440,#3a3f6b 40%,#c96a4a 75%,#ffdca0)}
+#taper-0830m.risen .sun{top:38%;box-shadow:0 0 120px 60px rgba(255,200,120,.55)}
+</style>
+<div id="taper-0830m">
+  <div class="sky"></div>
+  <div class="sun"></div>
+  <div class="words" id="tp0830words"></div>
+  <div class="hint">move toward the light — click to rise</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('taper-0830m');
+  var box=root.querySelector('.words');
+  var text="before the first word there was only the shape of wanting one nothing has happened yet everything still might";
+  var words=text.split(' ');
+  words.forEach(function(t){
+    var s=document.createElement('span');
+    s.className='w';
+    s.textContent=t;
+    box.appendChild(s);
+  });
+  var spans=box.querySelectorAll('.w');
+  root.addEventListener('mousemove',function(e){
+    var r=root.getBoundingClientRect();
+    var mx=e.clientX-r.left, my=e.clientY-r.top;
+    spans.forEach(function(s){
+      var b=s.getBoundingClientRect();
+      var cx=b.left-r.left+b.width/2, cy=b.top-r.top+b.height/2;
+      var d=Math.hypot(mx-cx,my-cy);
+      s.classList.toggle('lit', d<140);
+    });
+  });
+  root.addEventListener('click',function(){
+    root.classList.toggle('risen');
+  });
+})();
+</script>
+</section>
