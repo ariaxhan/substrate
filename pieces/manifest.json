@@ -607,6 +607,7 @@
     {"file": "2026-08-30-morning.html", "date": "2026-08-30", "type": "morning", "timestamp": 1788098758},
     {"file": "2026-08-30-pulse.html", "date": "2026-08-30", "type": "pulse", "timestamp": 1788116876},
     {"file": "2026-08-30-spark.html", "date": "2026-08-30", "type": "spark", "timestamp": 1788105696},
+    {"file": "2026-08-31-digest.html", "date": "2026-08-31", "type": "digest", "timestamp": 1788213883},
     {"file": "2026-08-31-pulse.html", "date": "2026-08-31", "type": "pulse", "timestamp": 1788203220}
   ]
 }

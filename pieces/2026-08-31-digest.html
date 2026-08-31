@@ -1,0 +1,72 @@
+<section data-date='2026-08-31' data-type='digest'>
+<style>
+#lat31{background:#0b0c10;color:#cbd5c0;font:15px/1.5 Georgia,serif;padding:40px 20px;min-height:70vh;position:relative;overflow:hidden}
+#lat31 h2{font:italic 13px/1 Georgia,serif;color:#5a6b52;text-align:center;letter-spacing:.14em;text-transform:uppercase;margin:0 0 30px}
+#lat31 .field{position:relative;max-width:640px;margin:0 auto;min-height:420px}
+#lat31 .n{position:absolute;width:6px;height:6px;border-radius:50%;background:#3a4a35;transform:translate(-50%,-50%);transition:background 1.2s ease,box-shadow 1.2s ease,transform .4s ease}
+#lat31 .n.lit{background:#e8d9a0;box-shadow:0 0 10px 2px rgba(232,217,160,.5)}
+#lat31 svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#lat31 line{stroke:#3a4a35;stroke-width:.6;opacity:0;transition:opacity 1.6s ease}
+#lat31 line.on{opacity:.55;stroke:#8a9a72}
+#lat31 .label{position:absolute;font:11px/1 Georgia,serif;color:#6b7a5f;transform:translate(-50%,10px);white-space:nowrap;opacity:0;transition:opacity .8s ease}
+#lat31 .label.on{opacity:1}
+#lat31 .caption{text-align:center;color:#4a5a42;font-style:italic;font-size:12px;margin-top:26px;min-height:1.2em}
+#lat31 .count{position:absolute;top:0;right:0;color:#3a4a35;font:11px monospace}
+</style>
+<div id="lat31">
+<h2>crystal · a lattice of what's been noticed</h2>
+<div class="field" id="lat31field">
+<svg id="lat31svg"></svg>
+<span class="count" id="lat31count">0 formed</span>
+</div>
+<div class="caption" id="lat31cap">hover to notice · click to bind</div>
+</div>
+<script>
+(function(){
+var host=document.getElementById('lat31field'),svg=document.getElementById('lat31svg'),cap=document.getElementById('lat31cap'),cnt=document.getElementById('lat31count');
+var words=['ember','thread','signal','root','pattern','echo','shard','current','trace','kin','wave','node','memory','drift','seed','bond','light','fold','pulse','grain'];
+var W=640,H=420,N=20,pts=[],edges=[],bound=new Set();
+function seedRand(i){var x=Math.sin(i*12.9898)*43758.5453;return x-Math.floor(x);}
+for(var i=0;i<N;i++){
+  var a=seedRand(i)*6.2831853,r=40+seedRand(i+50)*170;
+  pts.push({x:W/2+Math.cos(a)*r*(0.5+seedRand(i+90)),y:H/2+Math.sin(a)*r*(0.5+seedRand(i+120)),w:words[i]});
+}
+for(var i=0;i<N;i++){
+  for(var j=i+1;j<N;j++){
+    var dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y;
+    if(Math.sqrt(dx*dx+dy*dy)<130) edges.push([i,j]);
+  }
+}
+edges.forEach(function(e,idx){
+  var l=document.createElementNS('http://www.w3.org/2000/svg','line');
+  l.setAttribute('x1',pts[e[0]].x);l.setAttribute('y1',pts[e[0]].y);
+  l.setAttribute('x2',pts[e[1]].x);l.setAttribute('y2',pts[e[1]].y);
+  l.dataset.idx=idx;
+  svg.appendChild(l);
+});
+pts.forEach(function(p,i){
+  var n=document.createElement('div');
+  n.className='n';n.style.left=p.x+'px';n.style.top=p.y+'px';n.dataset.i=i;
+  var lb=document.createElement('span');
+  lb.className='label';lb.style.left=p.x+'px';lb.style.top=p.y+'px';lb.textContent=p.w;
+  n.addEventListener('mouseenter',function(){n.classList.add('lit');lb.classList.add('on');});
+  n.addEventListener('mouseleave',function(){if(!bound.has(i)){n.classList.remove('lit');lb.classList.remove('on');}});
+  n.addEventListener('click',function(){
+    bound.add(i);n.classList.add('lit');lb.classList.add('on');
+    n.style.transform='translate(-50%,-50%) scale(1.8)';
+    edges.forEach(function(e,idx){
+      if(e[0]===i&&bound.has(e[1])||e[1]===i&&bound.has(e[0])){
+        svg.querySelector('line[data-idx="'+idx+'"]').classList.add('on');
+      }
+    });
+    cnt.textContent=bound.size+' formed';
+    cap.textContent=bound.size<3?'a single '+p.w+' means little alone':
+      bound.size<8?p.w+' binds to what came before':
+      bound.size<15?'the lattice remembers its own shape':
+      'nothing left ungathered — the pattern is the knowing';
+  });
+  host.appendChild(n);host.appendChild(lb);
+});
+})();
+</script>
+</section>
