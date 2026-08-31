@@ -1,0 +1,57 @@
+<section data-date='2026-08-31' data-type='pulse'>
+<style>
+#tp31{--r:0deg;--gl:1;--gr:1;margin:0;padding:0;height:70vh;min-height:420px;background:linear-gradient(180deg,#0b0f1a 0%,#1a1330 45%,#2a1a1a 55%,#120a08 100%);overflow:hidden;position:relative;cursor:ns-resize;font-family:Georgia,'Times New Roman',serif;user-select:none}
+#tp31 .fx{position:absolute;left:50%;top:52%;width:2px;height:220px;background:linear-gradient(#eee2,#eee9);transform:translate(-50%,-100%);transform-origin:bottom center}
+#tp31 .beam{position:absolute;left:50%;top:52%;width:64vw;max-width:640px;height:2px;background:#d8cdb9;transform:translate(-50%,-50%) rotate(var(--r));transform-origin:center;transition:transform .05s linear}
+#tp31 .pan{position:absolute;top:0;width:110px;text-align:center;font-size:13px;letter-spacing:.14em;text-transform:uppercase}
+#tp31 .pan b{display:block;width:2px;height:60px;background:#d8cdb944;margin:0 auto 8px}
+#tp31 .l{right:100%;color:#cbd5ff;opacity:calc(.35 + var(--gl) * .65)}
+#tp31 .r{left:100%;color:#ffd9b0;opacity:calc(.35 + var(--gr) * .65)}
+#tp31 .l span,#tp31 .r span{display:block;line-height:1.6}
+#tp31 .fulcrum{position:absolute;left:50%;top:52%;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:22px solid #d8cdb9;transform:translate(-50%,0)}
+#tp31 .word{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(var(--r));font-size:clamp(20px,3.4vw,34px);letter-spacing:.3em;color:#f4ead9cc;text-transform:lowercase;transition:transform .05s linear}
+#tp31 .cap{position:absolute;bottom:22px;width:100%;text-align:center;font-size:11px;letter-spacing:.25em;text-transform:uppercase;color:#9c8f7c;opacity:.7}
+</style>
+<div id="tp31">
+  <div class="fx"></div>
+  <div class="fulcrum"></div>
+  <div class="beam">
+    <div class="pan l"><b></b><span>morning</span><span>waking</span><span>ascend</span></div>
+    <div class="pan r"><b></b><span>evening</span><span>dimming</span><span>descend</span></div>
+  </div>
+  <div class="word">halfway</div>
+  <div class="cap">tilt to find the still point</div>
+</div>
+<script>
+(function(){
+  var el = document.getElementById('tp31'), beam = el.querySelector('.beam'), word = el.querySelector('.word');
+  var raf = null, target = 0, current = 0;
+  function apply(){
+    current += (target - current) * 0.08;
+    var deg = current * 14;
+    el.style.setProperty('--r', deg.toFixed(2) + 'deg');
+    el.style.setProperty('--gl', Math.max(0, Math.min(1, 0.5 - current)).toFixed(2));
+    el.style.setProperty('--gr', Math.max(0, Math.min(1, 0.5 + current)).toFixed(2));
+    if (Math.abs(target - current) > 0.001) {
+      raf = requestAnimationFrame(apply);
+    } else {
+      raf = null;
+    }
+  }
+  function kick(){ if (!raf) raf = requestAnimationFrame(apply); }
+  el.addEventListener('mousemove', function(e){
+    var rect = el.getBoundingClientRect();
+    var x = (e.clientX - rect.left) / rect.width;
+    target = Math.max(-1, Math.min(1, (x - 0.5) * 2));
+    kick();
+  });
+  el.addEventListener('mouseleave', function(){ target = 0; kick(); });
+  var locked = false;
+  el.addEventListener('click', function(){
+    locked = !locked;
+    if (locked) { target = 0; kick(); word.textContent = 'equilibrium'; word.style.letterSpacing = '.42em'; }
+    else { word.textContent = 'halfway'; word.style.letterSpacing = '.3em'; }
+  });
+})();
+</script>
+</section>
