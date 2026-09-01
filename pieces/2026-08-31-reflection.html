@@ -1,0 +1,61 @@
+<section data-date='2026-08-31' data-type='reflection'>
+<style>
+.taper-0831{margin:0;overflow:hidden;background:#05070d;height:100vh;position:relative;cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+.taper-0831 canvas{position:absolute;inset:0}
+.taper-0831 .msg{position:absolute;bottom:6%;width:100%;text-align:center;color:#5a6a8a;font-size:13px;letter-spacing:.14em;font-style:italic;opacity:.75;pointer-events:none;transition:opacity 2s}
+.taper-0831 .done{opacity:0}
+</style>
+<div class="taper-0831" id="t0831">
+<canvas id="c0831"></canvas>
+<div class="msg" id="m0831">the day is finished — touch the dark to rest a light in it</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('t0831'),cv=document.getElementById('c0831'),ctx=cv.getContext('2d'),msg=document.getElementById('m0831');
+function size(){cv.width=root.clientWidth;cv.height=root.clientHeight}
+size();window.addEventListener('resize',size);
+var stars=[],t=0,drawn=0;
+function fw(){for(var i=0;i<80;i++)stars.push({x:Math.random()*cv.width,y:Math.random()*cv.height*.8,r:Math.random()*.9+.2,ph:Math.random()*6.28,faint:true})}
+fw();
+root.addEventListener('click',function(e){
+var r=root.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+var near=null,nd=1e9;
+stars.forEach(function(s){if(s.faint)return;var d=Math.hypot(s.x-x,s.y-y);if(d<nd){nd=d;near=s}});
+var born={x:x,y:y,r:2.4,ph:Math.random()*6.28,faint:false,age:0,link:(near&&nd<220)?near:null};
+stars.push(born);
+drawn++;
+if(drawn===1)setTimeout(function(){msg.classList.add('done')},1600);
+});
+function draw(){
+t+=0.02;
+ctx.fillStyle='rgba(5,7,13,0.35)';
+ctx.fillRect(0,0,cv.width,cv.height);
+var grad=ctx.createLinearGradient(0,0,0,cv.height);
+grad.addColorStop(0,'rgba(10,14,28,0.15)');grad.addColorStop(1,'rgba(2,3,8,0.15)');
+ctx.fillStyle=grad;ctx.fillRect(0,0,cv.width,cv.height);
+stars.forEach(function(s){
+if(!s.faint)s.age=(s.age||0)+0.02;
+var tw=0.5+0.5*Math.sin(t*1.3+s.ph);
+var alpha=s.faint?0.15+0.25*tw:Math.min(1,s.age)*(0.6+0.4*tw);
+var rad=s.faint?s.r:s.r+Math.min(1,s.age)*1.1;
+ctx.beginPath();
+ctx.arc(s.x,s.y,rad,0,6.283);
+ctx.fillStyle='rgba(230,235,255,'+alpha+')';
+ctx.shadowBlur=s.faint?0:8;
+ctx.shadowColor='rgba(200,210,255,0.8)';
+ctx.fill();
+ctx.shadowBlur=0;
+if(s.link){
+ctx.beginPath();
+ctx.moveTo(s.x,s.y);ctx.lineTo(s.link.x,s.link.y);
+ctx.strokeStyle='rgba(150,170,220,'+(0.12*Math.min(1,s.age))+')';
+ctx.lineWidth=1;
+ctx.stroke();
+}
+});
+requestAnimationFrame(draw);
+}
+draw();
+})();
+</script>
+</section>
