@@ -1,0 +1,82 @@
+<section data-date='2026-09-01' data-type='pulse'>
+<style>
+#fulcrum-2026-09-01{margin:0;overflow:hidden;height:70vh;min-height:420px;background:#0b0b0d;position:relative;font-family:Georgia,'Times New Roman',serif;color:#e8e2d6;cursor:crosshair}
+#fulcrum-2026-09-01 .fc-stage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;perspective:800px}
+#fulcrum-2026-09-01 .fc-beam{position:relative;width:min(80vw,640px);height:2px;background:linear-gradient(to right,#e0a458,#5a7d9a);transform-origin:50% 50%;transition:transform .08s linear}
+#fulcrum-2026-09-01 .fc-side{position:absolute;top:0;width:44%;transform:translateY(-50%);font-size:clamp(.85rem,1.6vw,1.15rem);letter-spacing:.04em;line-height:1.5;transition:opacity .3s ease}
+#fulcrum-2026-09-01 .fc-left{left:0;text-align:right;color:#e0a458}
+#fulcrum-2026-09-01 .fc-right{right:0;text-align:left;color:#5a7d9a}
+#fulcrum-2026-09-01 .fc-pin{position:absolute;left:50%;top:50%;width:6px;height:6px;border-radius:50%;background:#e8e2d6;transform:translate(-50%,-50%);box-shadow:0 0 12px 3px rgba(232,226,214,.5)}
+#fulcrum-2026-09-01 .fc-tick{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:.7rem;letter-spacing:.3em;opacity:.4;text-transform:uppercase}
+#fulcrum-2026-09-01 .fc-hint{position:absolute;top:14px;left:50%;transform:translateX(-50%);font-size:.65rem;letter-spacing:.15em;opacity:.35;text-transform:uppercase}
+</style>
+<div id="fulcrum-2026-09-01">
+  <div class="fc-hint">move to tilt · click to hold</div>
+  <div class="fc-stage">
+    <div class="fc-beam" id="fc-beam-0901">
+      <div class="fc-side fc-left" id="fc-left-0901">what the morning asked of you</div>
+      <div class="fc-side fc-right" id="fc-right-0901">what is still owed to the dark</div>
+      <div class="fc-pin"></div>
+    </div>
+  </div>
+  <div class="fc-tick" id="fc-tick-0901">12:00 — neither yet</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('fulcrum-2026-09-01');
+  var beam=document.getElementById('fc-beam-0901');
+  var left=document.getElementById('fc-left-0901');
+  var right=document.getElementById('fc-right-0901');
+  var tick=document.getElementById('fc-tick-0901');
+  var held=false, lastAngle=0;
+  var pairs=[
+    ['what the morning asked of you','what is still owed to the dark'],
+    ['the hours already spent','the hours not yet spent'],
+    ['who you were by noon','who you become by night'],
+    ['light leaning west','light leaning nowhere yet'],
+    ['everything before this second','everything after it']
+  ];
+  var idx=0;
+  function angleFor(clientX){
+    var r=root.getBoundingClientRect();
+    var mid=r.left+r.width/2;
+    var norm=(clientX-mid)/(r.width/2);
+    norm=Math.max(-1,Math.min(1,norm));
+    return norm*16;
+  }
+  function label(a){
+    var m=Math.round(12*60+a*7.5);
+    var h=Math.floor(m/60)%24, mn=m%60;
+    var hh=(h%12===0?12:h%12);
+    var ampm=h<12?'am':'pm';
+    return (hh<10?'0'+hh:hh)+':'+(mn<10?'0'+mn:mn)+' '+ampm;
+  }
+  root.addEventListener('mousemove',function(e){
+    if(held)return;
+    lastAngle=angleFor(e.clientX);
+    beam.style.transform='rotate('+lastAngle+'deg)';
+    left.style.opacity=String(0.55+Math.max(0,-lastAngle)/22);
+    right.style.opacity=String(0.55+Math.max(0,lastAngle)/22);
+    tick.textContent=label(lastAngle)+(Math.abs(lastAngle)<1?' — perfectly level':'');
+  });
+  root.addEventListener('click',function(){
+    held=!held;
+    if(held){
+      idx=(idx+1)%pairs.length;
+      left.textContent=pairs[idx][0];
+      right.textContent=pairs[idx][1];
+      beam.style.transform='rotate(0deg)';
+      left.style.opacity='1';
+      right.style.opacity='1';
+      tick.textContent='12:00 — held level';
+    }
+  });
+  root.addEventListener('touchmove',function(e){
+    if(held||!e.touches[0])return;
+    lastAngle=angleFor(e.touches[0].clientX);
+    beam.style.transform='rotate('+lastAngle+'deg)';
+    tick.textContent=label(lastAngle);
+  },{passive:true});
+})();
+</script>
+</section>
