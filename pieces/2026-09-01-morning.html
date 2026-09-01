@@ -1,0 +1,74 @@
+<section data-date='2026-09-01' data-type='morning'>
+<style>
+#taper-0901{position:relative;height:70vh;min-height:420px;background:linear-gradient(180deg,#0a0e17 0%,#1b2333 45%,#3a2f2a 78%,#5b3d28 100%);overflow:hidden;font-family:Georgia,'Iowan Old Style',serif;cursor:none}
+#taper-0901 .sky{position:absolute;inset:0}
+#taper-0901 .sun{position:absolute;left:50%;bottom:-60px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,#fff6dd,#ffcf7d 55%,transparent 75%);transform:translateX(-50%);filter:blur(1px);transition:bottom 1.2s cubic-bezier(.2,.8,.2,1),opacity .8s}
+#taper-0901 .word{position:absolute;color:#e9dcc4;opacity:0;letter-spacing:.04em;font-size:14px;transition:opacity 1.4s ease, transform 1.4s ease;transform:translateY(6px);white-space:nowrap;pointer-events:none}
+#taper-0901 .word.lit{opacity:.85;transform:translateY(0)}
+#taper-0901 .glow{position:absolute;width:340px;height:340px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(255,220,150,.14),transparent 70%);transform:translate(-50%,-50%);transition:opacity .3s}
+#taper-0901 h1{position:absolute;top:32px;left:32px;margin:0;font-weight:400;font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:#c9b98f;opacity:.55}
+#taper-0901 .hint{position:absolute;bottom:24px;left:0;right:0;text-align:center;font-size:11px;letter-spacing:.2em;color:#c9b98f;opacity:.4;text-transform:uppercase;transition:opacity .8s}
+#taper-0901.written .hint{opacity:0}
+#taper-0901 .verdict{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.9);font-size:22px;color:#fff6dd;opacity:0;text-align:center;letter-spacing:.02em;transition:opacity 1.6s ease, transform 1.6s ease;pointer-events:none}
+#taper-0901.written .verdict{opacity:.95;transform:translate(-50%,-50%) scale(1)}
+#taper-0901.written .word{opacity:.15}
+</style>
+<div id="taper-0901">
+<h1>before the first word</h1>
+<div class="sky"></div>
+<div class="sun" id="t0901-sun"></div>
+<div class="glow" id="t0901-glow"></div>
+<div class="verdict" id="t0901-verdict">and still<br>nothing is written<br>yet</div>
+<div class="hint" id="t0901-hint">move to find what's here — click to write it down</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('taper-0901');
+  var sun=document.getElementById('t0901-sun');
+  var glow=document.getElementById('t0901-glow');
+  var hint=document.getElementById('t0901-hint');
+  var phrases=['not yet ruined','still possible','unclaimed hours','no mistakes made here','the light owes nothing','quiet before the asking','a shape not chosen','room to be wrong later'];
+  var words=[];
+  phrases.forEach(function(p,i){
+    var el=document.createElement('div');
+    el.className='word';
+    el.textContent=p;
+    var x=8+Math.random()*80, y=10+Math.random()*70;
+    el.style.left=x+'%';
+    el.style.top=y+'%';
+    root.insertBefore(el, hint);
+    words.push({el:el,x:x,y:y});
+  });
+  var rect=root.getBoundingClientRect();
+  function resize(){rect=root.getBoundingClientRect();}
+  window.addEventListener('resize',resize);
+  var t=0, raf;
+  function rise(){
+    t=Math.min(t+0.006,1);
+    sun.style.bottom=(-60+t*(rect.height*0.62))+'px';
+    if(t<1) raf=requestAnimationFrame(rise);
+  }
+  raf=requestAnimationFrame(rise);
+  root.addEventListener('mousemove',function(e){
+    var r=root.getBoundingClientRect();
+    var px=((e.clientX-r.left)/r.width)*100;
+    var py=((e.clientY-r.top)/r.height)*100;
+    glow.style.left=px+'%';
+    glow.style.top=py+'%';
+    glow.style.opacity=1;
+    words.forEach(function(w){
+      var d=Math.hypot(w.x-px,w.y-py);
+      if(d<16){ w.el.classList.add('lit'); } else { w.el.classList.remove('lit'); }
+    });
+  });
+  root.addEventListener('mouseleave',function(){
+    glow.style.opacity=0;
+    words.forEach(function(w){w.el.classList.remove('lit');});
+  });
+  root.addEventListener('click',function(){
+    root.classList.add('written');
+    hint.textContent='written.';
+  });
+})();
+</script>
+</section>
