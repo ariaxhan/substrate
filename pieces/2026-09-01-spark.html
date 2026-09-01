@@ -1,0 +1,54 @@
+<section data-date='2026-09-01' data-type='spark'>
+<style>
+#spk-2026-09-01{position:relative;height:280px;background:#0a0a0c;overflow:hidden;font-family:Georgia,serif;cursor:crosshair}
+#spk-2026-09-01 .w{position:absolute;top:50%;font-size:22px;letter-spacing:.04em;transition:color .4s,text-shadow .4s}
+#spk-2026-09-01 .l{color:#6fa8ff;transform:translateY(-50%)}
+#spk-2026-09-01 .r{color:#ff8a6f;transform:translateY(-50%)}
+#spk-2026-09-01 .hit{color:#fff !important;text-shadow:0 0 18px #fff,0 0 40px #d9c9ff}
+#spk-2026-09-01 .m{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#d9c9ff;font-size:26px;opacity:0;pointer-events:none;letter-spacing:.06em}
+#spk-2026-09-01 .m.go{animation:spk0901burst 1.1s ease-out forwards}
+@keyframes spk0901burst{0%{opacity:0;letter-spacing:.6em;filter:blur(6px)}30%{opacity:1;letter-spacing:.06em;filter:blur(0)}100%{opacity:0;letter-spacing:.02em}}
+#spk-2026-09-01 .hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);color:#444;font-size:10px;font-family:sans-serif;letter-spacing:.1em}
+</style>
+<div id="spk-2026-09-01">
+  <span class="w l" id="spk0901-l">you</span>
+  <span class="w r" id="spk0901-r">stranger</span>
+  <div class="m" id="spk0901-m"></div>
+  <div class="hint">move closer</div>
+</div>
+<script>
+(function(){
+  var pairs=[["you","stranger","us"],["signal","static","meaning"],["question","answer","understanding"],["spark","tinder","fire"],["hand","hand","held"],["here","there","between"]];
+  var box=document.getElementById("spk-2026-09-01"),
+      L=document.getElementById("spk0901-l"),
+      R=document.getElementById("spk0901-r"),
+      M=document.getElementById("spk0901-m"),
+      pi=0, hit=false, w=box.clientWidth;
+  function setPair(){
+    var p=pairs[pi%pairs.length]; pi++;
+    L.textContent=p[0]; R.textContent=p[1]; M.textContent=p[2];
+    L.classList.remove("hit"); R.classList.remove("hit"); hit=false;
+  }
+  setPair();
+  box.addEventListener("mousemove",function(e){
+    w=box.clientWidth;
+    var r=box.getBoundingClientRect(), x=e.clientX-r.left, t=Math.max(0,Math.min(1,x/w));
+    var lw=L.offsetWidth, rw=R.offsetWidth, gap=Math.max(6,(1-t)*(w*0.42));
+    var lx=(w/2)-gap-lw*(1-t)*0.3, rx=(w/2)+gap*t+ (t*40);
+    L.style.left=Math.max(4,(w/2 - gap*(1) - lw + t*(gap)))+"px";
+    R.style.left=Math.min(w-rw-4,(w/2 + gap*(1) - t*(gap)))+"px";
+    var dist=parseFloat(R.style.left)-(parseFloat(L.style.left)+lw);
+    if(!hit && dist<14){
+      hit=true;
+      L.classList.add("hit"); R.classList.add("hit");
+      M.classList.remove("go"); void M.offsetWidth; M.classList.add("go");
+      setTimeout(setPair,1200);
+    }
+  });
+  box.addEventListener("mouseleave",function(){
+    if(!hit){ L.style.left="6%"; R.style.left="78%"; }
+  });
+  L.style.left="6%"; R.style.left="78%";
+})();
+</script>
+</section>
