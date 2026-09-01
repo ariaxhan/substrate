@@ -1,0 +1,81 @@
+<section data-date='2026-09-01' data-type='digest'>
+<style>
+.tpr{margin:0;height:70vh;min-height:420px;background:radial-gradient(ellipse at 50% 30%,#0d1220,#040509 70%);position:relative;overflow:hidden;font-family:Georgia,serif;cursor:crosshair;border-radius:6px}
+.tpr svg{position:absolute;inset:0;width:100%;height:100%}
+.tpr .lbl{position:absolute;bottom:14px;left:0;right:0;text-align:center;color:#5a6b8c;font-size:11px;letter-spacing:.14em;font-family:Georgia,serif;font-style:italic;opacity:.8;pointer-events:none;transition:opacity .6s}
+.tpr .cnt{position:absolute;top:12px;right:16px;color:#3d4c6b;font-size:10px;font-family:Consolas,monospace;letter-spacing:.08em;pointer-events:none}
+</style>
+<div class="tpr" id="taperKnow">
+<svg id="tsvg"></svg>
+<div class="lbl" id="tlbl">click into the dark — a thought lands, patterns wait</div>
+<div class="cnt" id="tcnt">0 THOUGHTS</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('taperKnow'),svg=document.getElementById('tsvg'),lbl=document.getElementById('tlbl'),cnt=document.getElementById('tcnt');
+var NS='http://www.w3.org/2000/svg';
+var words=['signal','residue','pattern','memory','thread','echo','shard','trace','node','root','light','weight','form','edge','link','field','pulse','grain','frame','depth'];
+var pts=[],lines=[];
+function mk(tag,attrs){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);return e}
+function near(x,y,r){
+var out=[];
+for(var i=0;i<pts.length;i++){var d=Math.hypot(pts[i].x-x,pts[i].y-y);if(d<r)out.push([pts[i],d])}
+return out.sort(function(a,b){return a[1]-b[1]})
+}
+function addPoint(x,y){
+var w=root.clientWidth,h=root.clientHeight;
+var age=pts.length;
+var p={x:x,y:y,r:2.4+Math.random()*1.6,word:words[Math.floor(Math.random()*words.length)]};
+pts.push(p);
+var links=near(x,y,Math.min(w,h)*0.28).slice(0,3);
+links.forEach(function(pair){
+var q=pair[0];
+if(q===p)return;
+var ln=mk('line',{x1:p.x,y1:p.y,x2:q.x,y2:q.y,stroke:'rgba(140,170,255,'+(0.05+0.1*(1-pair[1]/(w*0.3)))+')','stroke-width':1});
+svg.insertBefore(ln,svg.firstChild);
+});
+var c=mk('circle',{cx:p.x,cy:p.y,r:0.5,fill:'#dfe7ff',opacity:'0'});
+svg.appendChild(c);
+var t0=null;
+function grow(ts){
+if(!t0)t0=ts;
+var k=Math.min(1,(ts-t0)/500);
+c.setAttribute('r',(0.5+k*p.r).toFixed(2));
+c.setAttribute('opacity',(k*0.95).toFixed(2));
+if(k<1)requestAnimationFrame(grow);
+}
+requestAnimationFrame(grow);
+if(links.length>=3){
+var halo=mk('circle',{cx:p.x,cy:p.y,r:p.r,fill:'none',stroke:'#ffd88a',"stroke-width":1,opacity:'0.9'});
+svg.appendChild(halo);
+var t1=null;
+function pulse(ts){
+if(!t1)t1=ts;
+var k=(ts-t1)/900;
+halo.setAttribute('r',(p.r+k*40).toFixed(1));
+halo.setAttribute('opacity',Math.max(0,0.9-k).toFixed(2));
+if(k<1)requestAnimationFrame(pulse);else halo.remove();
+}
+requestAnimationFrame(pulse);
+lbl.textContent=p.word+' — a cluster crystallizes';
+}else if(links.length>0){
+lbl.textContent=p.word+' finds its neighbors';
+}else{
+lbl.textContent=p.word+' — alone, for now';
+}
+cnt.textContent=pts.length+' THOUGHT'+(pts.length===1?'':'S');
+}
+root.addEventListener('click',function(e){
+var r=root.getBoundingClientRect();
+addPoint(e.clientX-r.left,e.clientY-r.top);
+});
+var seedTimes=[300,900,1700];
+seedTimes.forEach(function(t,i){
+setTimeout(function(){
+var w=root.clientWidth,h=root.clientHeight;
+addPoint(w*(0.3+0.2*i),h*(0.4+0.1*Math.sin(i)));
+},t);
+});
+})();
+</script>
+</section>
