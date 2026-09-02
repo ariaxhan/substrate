@@ -1,0 +1,59 @@
+<section data-date='2026-09-02' data-type='morning'>
+<style>
+#tp-dawn{position:relative;width:100%;min-height:100vh;background:linear-gradient(180deg,#0a0e1a 0%,#1a1530 40%,#3a2440 65%,#7a3a3a 85%,#c9683e 100%);overflow:hidden;font-family:'Georgia',serif;color:#f4e8d8;display:flex;align-items:center;justify-content:center}
+#tp-dawn .glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(255,214,150,.35),transparent 70%);pointer-events:none;transition:transform .12s ease-out;transform:translate(-50%,-50%)}
+#tp-dawn .horizon{position:absolute;bottom:0;left:0;width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,200,140,.5),transparent)}
+#tp-dawn .field{position:absolute;inset:0}
+#tp-dawn .word{position:absolute;font-size:14px;letter-spacing:.08em;color:rgba(244,232,216,.15);cursor:pointer;user-select:none;transition:color .6s ease,transform .6s ease,letter-spacing .6s ease}
+#tp-dawn .word.lit{color:#ffe6bd;transform:scale(1.15);letter-spacing:.2em;text-shadow:0 0 12px rgba(255,214,150,.7)}
+#tp-dawn .core{position:relative;text-align:center;z-index:2;padding:2rem}
+#tp-dawn h1{font-weight:400;font-size:clamp(2rem,6vw,3.4rem);margin:0;letter-spacing:.02em;opacity:.92}
+#tp-dawn .sun{display:inline-block;width:10px;height:10px;border-radius:50%;background:#ffd696;box-shadow:0 0 20px 6px rgba(255,214,150,.6);vertical-align:middle;margin:0 .4em;transition:box-shadow .4s,width .4s,height .4s}
+#tp-dawn.risen .sun{width:22px;height:22px;box-shadow:0 0 60px 20px rgba(255,214,150,.9)}
+#tp-dawn p.sub{font-size:.85rem;letter-spacing:.15em;text-transform:uppercase;opacity:.4;margin-top:1rem}
+#tp-dawn.risen p.sub{opacity:.85}
+</style>
+<div id="tp-dawn">
+  <div class="glow" id="tp-glow"></div>
+  <div class="field" id="tp-field"></div>
+  <div class="horizon"></div>
+  <div class="core">
+    <h1>the day has not been written<span class="sun" id="tp-sun"></span>yet</h1>
+    <p class="sub" id="tp-sub">move to warm it &mdash; click the words waiting in the dark</p>
+  </div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('tp-dawn');
+  var glow=document.getElementById('tp-glow');
+  var field=document.getElementById('tp-field');
+  var sub=document.getElementById('tp-sub');
+  var words=['possible','unwritten','quiet','first','open','waiting','becoming','unnamed','still','soon'];
+  var lit=0;
+  words.forEach(function(w,i){
+    var el=document.createElement('span');
+    el.className='word';
+    el.textContent=w;
+    el.style.left=(8+((i*37)%84))+'%';
+    el.style.top=(10+((i*53)%78))+'%';
+    el.addEventListener('click',function(){
+      if(!el.classList.contains('lit')){
+        el.classList.add('lit');
+        lit++;
+        if(lit>=words.length){
+          root.classList.add('risen');
+          sub.textContent='the day begins where you touched it';
+        }else{
+          sub.textContent=lit+' of '+words.length+' lit';
+        }
+      }
+    });
+    field.appendChild(el);
+  });
+  root.addEventListener('mousemove',function(e){
+    var r=root.getBoundingClientRect();
+    glow.style.transform='translate('+(e.clientX-r.left)+'px,'+(e.clientY-r.top)+'px)';
+  });
+})();
+</script>
+</section>
