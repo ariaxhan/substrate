@@ -1,0 +1,82 @@
+<section data-date='2026-09-02' data-type='pulse'>
+<style>
+#tp-2026-09-02 {
+  margin: 0; height: 70vh; min-height: 420px;
+  background: #0b0c0e;
+  color: #cfae7a;
+  font-family: Georgia, 'Times New Roman', serif;
+  position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  cursor: crosshair;
+  user-select: none;
+}
+#tp-2026-09-02 .beam {
+  position: relative; width: 70vw; max-width: 640px; height: 2px;
+  background: #cfae7a;
+  transform-origin: 50% 50%;
+  transition: transform 0.08s linear;
+}
+#tp-2026-09-02 .pivot {
+  position: absolute; left: 50%; top: 0;
+  width: 10px; height: 10px; margin-left: -5px; margin-top: -4px;
+  background: #cfae7a; border-radius: 50%;
+}
+#tp-2026-09-02 .pan {
+  position: absolute; top: 1px;
+  width: 30vw; max-width: 260px; text-align: center;
+  font-size: clamp(13px, 1.6vw, 20px);
+  letter-spacing: 0.08em;
+  transform: translateX(-50%);
+  transition: opacity 0.4s ease, transform 0.08s linear;
+}
+#tp-2026-09-02 .pan.l { left: 6%; }
+#tp-2026-09-02 .pan.r { right: 6%; left: auto; transform: translateX(50%); }
+#tp-2026-09-02 .pan span { display: block; opacity: 0.55; }
+#tp-2026-09-02 .center {
+  position: absolute; left: 50%; top: -34px; transform: translateX(-50%);
+  font-size: 11px; letter-spacing: 0.3em; opacity: 0.35; text-transform: uppercase;
+}
+#tp-2026-09-02 .note {
+  position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+  font-size: 11px; letter-spacing: 0.15em; opacity: 0.25;
+}
+</style>
+<div id="tp-2026-09-02">
+  <div class="center">still point</div>
+  <div class="beam" id="tp0902-beam">
+    <div class="pivot"></div>
+    <div class="pan l" id="tp0902-l"><span>morning</span><span>begun</span></div>
+    <div class="pan r" id="tp0902-r"><span>evening</span><span>owed</span></div>
+  </div>
+  <div class="note" id="tp0902-note">tilt the day</div>
+</div>
+<script>
+(function(){
+  var wrap = document.getElementById('tp-2026-09-02');
+  var beam = document.getElementById('tp0902-beam');
+  var l = document.getElementById('tp0902-l');
+  var r = document.getElementById('tp0902-r');
+  var note = document.getElementById('tp0902-note');
+  var flipped = false;
+  function setTilt(deg){
+    beam.style.transform = 'rotate(' + deg + 'deg)';
+    var lean = Math.abs(deg) / 18;
+    l.style.opacity = flipped ? 0.55 + lean*0.4 : 0.55 - lean*0.3;
+    r.style.opacity = flipped ? 0.55 - lean*0.3 : 0.55 + lean*0.4;
+    note.textContent = Math.abs(deg) < 1.5 ? 'balance found' : (deg > 0 ? 'evening leans heavy' : 'morning leans heavy');
+  }
+  wrap.addEventListener('mousemove', function(e){
+    var rect = wrap.getBoundingClientRect();
+    var x = (e.clientX - rect.left) / rect.width - 0.5;
+    var deg = x * 18 * (flipped ? -1 : 1);
+    setTilt(deg);
+  });
+  wrap.addEventListener('mouseleave', function(){ setTilt(0); });
+  wrap.addEventListener('click', function(){
+    flipped = !flipped;
+    var tmp = l.innerHTML; l.innerHTML = r.innerHTML; r.innerHTML = tmp;
+    setTilt(0);
+  });
+})();
+</script>
+</section>
