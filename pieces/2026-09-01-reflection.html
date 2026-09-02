@@ -1,0 +1,69 @@
+<section data-date='2026-09-01' data-type='reflection'>
+<style>
+#tp1{position:relative;width:100%;height:70vh;min-height:420px;background:#05070d;overflow:hidden;font-family:Georgia,'Times New Roman',serif;cursor:crosshair;border-radius:2px}
+#tp1 .sky{position:absolute;inset:0}
+#tp1 .star{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;opacity:0;transform:scale(0);transition:opacity 1.8s ease,transform 1.8s cubic-bezier(.2,1,.3,1);box-shadow:0 0 6px 1px rgba(255,255,255,.6)}
+#tp1 .star.on{opacity:.9;transform:scale(1)}
+#tp1 .word{position:absolute;bottom:8%;left:0;right:0;text-align:center;color:#cfd6e6;letter-spacing:.12em;font-size:clamp(13px,2vw,18px);opacity:.55;transition:opacity 1s ease}
+#tp1 .hint{position:absolute;top:6%;left:0;right:0;text-align:center;color:#5a6379;font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.08em;opacity:.5;pointer-events:none}
+#tp1 .hint.gone{opacity:0}
+#tp1 .moon{position:absolute;top:12%;right:10%;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f4f1e8,#c9c4b0);opacity:.85;box-shadow:0 0 20px 4px rgba(244,241,232,.15)}
+</style>
+<div id="tp1">
+  <div class="moon"></div>
+  <div class="sky" id="tp1sky"></div>
+  <div class="hint" id="tp1hint">touch the dark</div>
+  <div class="word" id="tp1word">the day is complete</div>
+</div>
+<script>
+(function(){
+  var box=document.getElementById('tp1');
+  var sky=document.getElementById('tp1sky');
+  var hint=document.getElementById('tp1hint');
+  var word=document.getElementById('tp1word');
+  var phrases=[
+    "the day is complete",
+    "rest gathers where light was",
+    "nothing more is asked of you",
+    "the sky remembers for you now",
+    "stillness, unhurried",
+    "tomorrow is not yet awake"
+  ];
+  var count=0;
+  function place(x,y){
+    var s=document.createElement('div');
+    s.className='star';
+    var r=box.getBoundingClientRect();
+    s.style.left=x+'px';
+    s.style.top=y+'px';
+    var size=1+Math.random()*2.2;
+    s.style.width=size+'px';
+    s.style.height=size+'px';
+    sky.appendChild(s);
+    requestAnimationFrame(function(){ s.classList.add('on'); });
+    count++;
+    if(hint && !hint.classList.contains('gone')) hint.classList.add('gone');
+    if(count%3===0){
+      word.style.opacity=0;
+      setTimeout(function(){
+        word.textContent=phrases[Math.min(phrases.length-1, Math.floor(count/3))];
+        word.style.opacity=.55;
+      },500);
+    }
+    if(count>140){
+      var old=sky.querySelector('.star');
+      if(old) old.remove();
+    }
+  }
+  box.addEventListener('click',function(e){
+    var r=box.getBoundingClientRect();
+    place(e.clientX-r.left,e.clientY-r.top);
+  });
+  box.addEventListener('touchstart',function(e){
+    var t=e.touches[0];
+    var r=box.getBoundingClientRect();
+    place(t.clientX-r.left,t.clientY-r.top);
+  },{passive:true});
+})();
+</script>
+</section>
