@@ -1,45 +1,72 @@
 <section data-date='2026-09-03' data-type='digest'>
 <style>
-#lattice{margin:0;overflow:hidden;background:#0a0c10;height:520px;position:relative;font:14px/1.3 Georgia,serif;cursor:crosshair;border-radius:2px}
-#lattice svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-#lattice svg line{stroke:#4a6b5a;stroke-width:.6;opacity:0}
-#lattice .pt{position:absolute;width:6px;height:6px;margin:-3px;border-radius:50%;background:#e8e2d0;box-shadow:0 0 8px 2px rgba(232,226,208,.4)}
-#lattice .lbl{position:absolute;color:#9fb3a6;letter-spacing:.03em;white-space:nowrap;transform:translate(-50%,-140%);opacity:0;transition:opacity 1.2s ease}
-#lattice .lbl.show{opacity:.85}
-#lattice .hint{position:absolute;bottom:10px;left:12px;color:#5c6a63;font:11px/1 monospace;letter-spacing:.08em;text-transform:uppercase}
-#lattice .n{position:absolute;top:10px;right:14px;color:#5c6a63;font:11px/1 monospace}
+.taper-2026-09-03{background:#0b0d12;color:#cfd8e3;font:15px/1.5 Georgia,serif;padding:0;margin:0;overflow:hidden;position:relative;height:520px;cursor:crosshair}
+.taper-2026-09-03 .hint{position:absolute;top:16px;left:20px;font:11px/1.4 -apple-system,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#5a6577;z-index:3;pointer-events:none}
+.taper-2026-09-03 .hint b{color:#8fa3c0}
+.taper-2026-09-03 svg{position:absolute;inset:0;width:100%;height:100%}
+.taper-2026-09-03 .n{fill:#e8ecf3;font:italic 13px Georgia,serif;text-anchor:middle;dominant-baseline:middle;opacity:0;transition:opacity 1.2s ease}
+.taper-2026-09-03 .n.on{opacity:.92}
+.taper-2026-09-03 .l{stroke:#3d4a63;stroke-width:1;opacity:0;transition:opacity 1.4s ease}
+.taper-2026-09-03 .l.on{opacity:.55}
+.taper-2026-09-03 .p{fill:#7d8ea8;opacity:0;transition:opacity .6s ease}
+.taper-2026-09-03 .p.on{opacity:.85}
+.taper-2026-09-03 .ct{position:absolute;bottom:14px;right:18px;font:11px -apple-system,sans-serif;color:#4a5569;letter-spacing:.08em;z-index:3}
 </style>
-<div id="lattice">
-<svg id="ls"></svg>
-<div class="hint">click to place a knowing — proximity crystallizes it</div>
-<div class="n" id="lc">0 nodes</div>
+<div class="taper-2026-09-03" id="tpr-2026-09-03">
+  <div class="hint">tap the dark — <b>let it remember</b></div>
+  <svg id="tpr-svg-2026-09-03" viewBox="0 0 800 520" preserveAspectRatio="xMidYMid slice"></svg>
+  <div class="ct" id="tpr-ct-2026-09-03">0 nodes</div>
 </div>
 <script>
 (function(){
-var W=["trace","echo","pattern","thread","axiom","residue","kernel","glint","shard","node","seed","drift","form","index","memory","weave","spark","strand","grain","field"];
-var box=document.getElementById('lattice'),svg=document.getElementById('ls'),ns='http://www.w3.org/2000/svg',cnt=document.getElementById('lc');
-var pts=[],R=150;
-box.addEventListener('click',function(e){
-  var r=box.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
-  var w=W[Math.floor(Math.random()*W.length)];
-  var p={x:x,y:y,w:w,deg:0};
-  var d=document.createElement('div');d.className='pt';d.style.left=x+'px';d.style.top=y+'px';box.appendChild(d);
-  var l=document.createElement('div');l.className='lbl';l.style.left=x+'px';l.style.top=y+'px';l.textContent=w;box.appendChild(l);
-  pts.forEach(function(q){
-    var dx=q.x-x,dy=q.y-y,dist=Math.sqrt(dx*dx+dy*dy);
-    if(dist<R){
-      var ln=document.createElementNS(ns,'line');
-      ln.setAttribute('x1',x);ln.setAttribute('y1',y);ln.setAttribute('x2',q.x);ln.setAttribute('y2',q.y);
-      svg.appendChild(ln);
-      requestAnimationFrame(function(){ln.style.transition='opacity 1s';ln.style.opacity=Math.max(.08,1-dist/R)*.7;});
-      q.deg++;p.deg++;
-      if(q.deg>=3&&!q.crystal){q.crystal=true;q.dom.style.background='#f4b860';q.dom.style.boxShadow='0 0 14px 4px rgba(244,184,96,.55)';q.lbl.classList.add('show');}
+  var words=["scrap","echo","trace","hunch","thread","signal","residue","pattern","recall","drift","kernel","ember","shape","weight","fold","axis","seed","grain","lattice","memory","gravity","order","name","form"];
+  var root=document.getElementById('tpr-2026-09-03');
+  var svg=document.getElementById('tpr-svg-2026-09-03');
+  var ctr=document.getElementById('tpr-ct-2026-09-03');
+  var NS='http://www.w3.org/2000/svg';
+  var nodes=[];
+  var W=800,H=520;
+  function place(x,y){
+    var w=words[nodes.length%words.length];
+    var jx=x+(Math.random()*40-20), jy=y+(Math.random()*40-20);
+    var node={x:jx,y:jy,w:w};
+    nodes.push(node);
+    var links=[];
+    nodes.slice(0,-1).forEach(function(o){
+      var d=Math.hypot(o.x-jx,o.y-jy);
+      if(d<220){links.push(o);}
+    });
+    if(!links.length && nodes.length>1){
+      links.push(nodes[nodes.length-2]);
     }
+    links.forEach(function(o){
+      var line=document.createElementNS(NS,'line');
+      line.setAttribute('class','l');
+      line.setAttribute('x1',o.x); line.setAttribute('y1',o.y);
+      line.setAttribute('x2',jx); line.setAttribute('y2',jy);
+      svg.appendChild(line);
+      requestAnimationFrame(function(){line.classList.add('on');});
+    });
+    var dot=document.createElementNS(NS,'circle');
+    dot.setAttribute('class','p'); dot.setAttribute('r','2.4');
+    dot.setAttribute('cx',jx); dot.setAttribute('cy',jy);
+    svg.appendChild(dot);
+    var txt=document.createElementNS(NS,'text');
+    txt.setAttribute('class','n');
+    txt.setAttribute('x',jx); txt.setAttribute('y',jy-12);
+    txt.textContent=w;
+    svg.appendChild(txt);
+    requestAnimationFrame(function(){dot.classList.add('on'); txt.classList.add('on');});
+    ctr.textContent=nodes.length+(nodes.length===1?' node':' nodes')+(nodes.length>6?' — a shape emerges':'');
+  }
+  root.addEventListener('click',function(e){
+    var r=root.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width*W;
+    var y=(e.clientY-r.top)/r.height*H;
+    place(x,y);
   });
-  if(p.deg>=3){d.style.background='#f4b860';d.style.boxShadow='0 0 14px 4px rgba(244,184,96,.55)';l.classList.add('show');}
-  p.dom=d;p.lbl=l;pts.push(p);
-  cnt.textContent=pts.length+' nodes';
-});
+  // seed one node so the piece isn't inert on load
+  setTimeout(function(){place(400,260);},400);
 })();
 </script>
 </section>
