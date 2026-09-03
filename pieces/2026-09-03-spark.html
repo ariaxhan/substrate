@@ -1,0 +1,74 @@
+<section data-date='2026-09-03' data-type='spark'>
+<style>
+.tp-spark{position:relative;height:70vh;min-height:400px;background:#0a0a0f;overflow:hidden;font-family:Georgia,serif;cursor:crosshair;border-radius:4px}
+.tp-spark .p{position:absolute;color:#ddd;font-size:1.1em;white-space:nowrap;transform:translate(-50%,-50%);transition:color .3s,text-shadow .3s}
+.tp-spark .p.hot{color:#ffb347;text-shadow:0 0 12px #ff8c00,0 0 24px #ff450088}
+.tp-spark .flash{position:absolute;color:#fff;font-weight:bold;font-size:1.3em;transform:translate(-50%,-50%);pointer-events:none;animation:tpf 1.1s ease-out forwards}
+@keyframes tpf{0%{opacity:0;letter-spacing:.4em;filter:blur(4px)}20%{opacity:1;letter-spacing:0;filter:blur(0)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.6);text-shadow:0 0 30px #fff}}
+.tp-spark .hint{position:absolute;bottom:8px;right:12px;color:#555;font-size:.7em;font-family:sans-serif}
+</style>
+<div class="tp-spark" id="tps">
+  <div class="hint">move through them</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('tps');
+  var A=["light","salt","glass","root","ash","echo","tide","wire","bone","spark","dust","hollow"];
+  var B=["fall","field","house","song","break","ground","light","stone","water","edge","mouth","spell"];
+  var pairs={"lightfall":"dawn","saltfield":"drought","glasshouse":"grown","rootsong":"lineage","ashbreak":"cremation","echoground":"memory","tidewire":"signal","bonestone":"fossil","sparkwater":"electric","dustedge":"erosion","hollowmouth":"grief","lightsong":"hymn"};
+  var W=el.clientWidth,H=el.clientHeight;
+  var parts=[];
+  function mk(word,side){
+    var d=document.createElement('div');
+    d.className='p';d.textContent=word;
+    el.insertBefore(d,el.firstChild);
+    return {el:d,word:word,x:side==='l'?Math.random()*W*0.3:W*0.7+Math.random()*W*0.3,
+      y:Math.random()*H,vx:(Math.random()-0.5)*0.4,vy:(Math.random()-0.5)*0.4,side:side,cool:0};
+  }
+  A.forEach(function(w){parts.push(mk(w,'l'))});
+  B.forEach(function(w){parts.push(mk(w,'r'))});
+  var mx=-999,my=-999;
+  el.addEventListener('mousemove',function(e){
+    var r=el.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;
+  });
+  el.addEventListener('mouseleave',function(){mx=-999;my=-999});
+  function fuse(p1,p2){
+    var key=p1.word+p2.word;
+    var res=pairs[key]||pairs[p2.word+p1.word];
+    if(!res)return;
+    var f=document.createElement('div');
+    f.className='flash';f.textContent=res;
+    f.style.left=((p1.x+p2.x)/2)+'px';f.style.top=((p1.y+p2.y)/2)+'px';
+    el.appendChild(f);
+    setTimeout(function(){f.remove()},1100);
+    p1.cool=p2.cool=60;
+    p1.vx=-p1.vx;p1.vy=-p1.vy;p2.vx=-p2.vx;p2.vy=-p2.vy;
+  }
+  function tick(){
+    for(var i=0;i<parts.length;i++){
+      var p=parts[i];
+      var dx=mx-p.x,dy=my-p.y,d=Math.sqrt(dx*dx+dy*dy);
+      if(d<80){p.vx+=dx/d*0.06;p.vy+=dy/d*0.06;p.el.classList.add('hot')}
+      else p.el.classList.remove('hot');
+      p.x+=p.vx;p.y+=p.vy;
+      p.vx*=0.98;p.vy*=0.98;
+      if(p.x<10||p.x>W-10)p.vx*=-1;
+      if(p.y<10||p.y>H-10)p.vy*=-1;
+      p.x=Math.max(10,Math.min(W-10,p.x));
+      p.y=Math.max(10,Math.min(H-10,p.y));
+      p.el.style.left=p.x+'px';p.el.style.top=p.y+'px';
+      if(p.cool>0)p.cool--;
+    }
+    for(var i=0;i<parts.length;i++)for(var j=i+1;j<parts.length;j++){
+      var p1=parts[i],p2=parts[j];
+      if(p1.side===p2.side||p1.cool||p2.cool)continue;
+      var dx=p1.x-p2.x,dy=p1.y-p2.y;
+      if(Math.sqrt(dx*dx+dy*dy)<28)fuse(p1,p2);
+    }
+    requestAnimationFrame(tick);
+  }
+  tick();
+  window.addEventListener('resize',function(){W=el.clientWidth;H=el.clientHeight});
+})();
+</script>
+</section>
