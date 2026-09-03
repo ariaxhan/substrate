@@ -1,0 +1,69 @@
+<section data-date='2026-09-03' data-type='morning'>
+<style>
+#taper-2026-09-03-morning{margin:0;overflow:hidden;position:relative;height:70vh;min-height:420px;background:#05070c;font-family:Georgia,"Times New Roman",serif;cursor:crosshair}
+#taper-2026-09-03-morning .sky{position:absolute;inset:0;transition:background .08s linear}
+#taper-2026-09-03-morning .sun{position:absolute;left:50%;width:5vw;height:5vw;min-width:40px;min-height:40px;border-radius:50%;background:#fff8e6;box-shadow:0 0 60px 20px rgba(255,214,140,.5);transform:translate(-50%,-50%);transition:top .08s linear,opacity .08s linear}
+#taper-2026-09-03-morning .line{position:absolute;left:0;right:0;bottom:0;height:1px;background:#1a1f2b}
+#taper-2026-09-03-morning .word{position:absolute;bottom:8%;left:50%;transform:translateX(-50%);letter-spacing:.4em;font-size:clamp(14px,2.4vw,26px);color:#e8e3d6;opacity:0;text-transform:lowercase;pointer-events:none;transition:opacity .6s ease}
+#taper-2026-09-03-morning .hint{position:absolute;top:14px;left:18px;font-size:11px;color:#5a6270;letter-spacing:.15em;font-family:monospace;text-transform:uppercase}
+</style>
+<div id="taper-2026-09-03-morning">
+  <div class="sky"></div>
+  <div class="sun"></div>
+  <div class="line"></div>
+  <div class="word"></div>
+  <div class="hint">nothing has happened yet</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('taper-2026-09-03-morning');
+  var sky=root.querySelector('.sky'), sun=root.querySelector('.sun'), word=root.querySelector('.word'), hint=root.querySelector('.hint');
+  var words=['unwritten','unopened','unspoken','possible','arriving','only light','not yet','still becoming'];
+  var wi=0, revealed=0, h=420, lerp=function(a,b,t){return a+(b-a)*t};
+  function palette(t){
+    var stops=[
+      [5,7,12],
+      [18,15,40],
+      [70,35,70],
+      [200,90,80],
+      [255,175,110],
+      [255,236,190]
+    ];
+    var n=stops.length-1, seg=Math.min(n-1,Math.floor(t*n)), f=t*n-seg;
+    var a=stops[seg], b=stops[seg+1];
+    var top=[lerp(a[0],b[0],f),lerp(a[1],b[1],f),lerp(a[2],b[2],f)];
+    var bot=[lerp(top[0],255,.15),lerp(top[1],245,.15),lerp(top[2],225,.1)];
+    return 'linear-gradient(to bottom, rgb('+top.map(Math.round)+') 0%, rgb('+bot.map(Math.round)+') 100%)';
+  }
+  function update(t){
+    t=Math.max(0,Math.min(1,t));
+    sky.style.background=palette(t);
+    sun.style.top=(112-t*90)+'%';
+    sun.style.opacity=Math.max(0,t*1.3-.15);
+    hint.style.opacity=1-t*3;
+    var target=Math.floor(t*(words.length-1));
+    if(t>0.02 && target>=0){
+      word.textContent=words[Math.min(target,words.length-1)];
+      word.style.opacity=.15+t*.85;
+    } else {
+      word.style.opacity=0;
+    }
+  }
+  function fromEvent(e){
+    h=root.clientHeight;
+    var y=(e.touches?e.touches[0].clientY:e.clientY)-root.getBoundingClientRect().top;
+    update(1-(y/h));
+  }
+  root.addEventListener('mousemove',fromEvent);
+  root.addEventListener('touchmove',function(e){fromEvent(e);e.preventDefault()},{passive:false});
+  root.addEventListener('click',function(){
+    wi=(wi+1)%words.length;
+    word.textContent='the day is '+words[wi];
+    word.style.transition='opacity .2s ease';
+    word.style.opacity=1;
+    setTimeout(function(){word.style.transition='opacity .6s ease'},250);
+  });
+  update(0.02);
+})();
+</script>
+</section>

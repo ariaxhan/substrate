@@ -1,0 +1,81 @@
+<section data-date='2026-09-02' data-type='digest'>
+<style>
+#crystal{margin:0;overflow:hidden;background:#07080c;height:100vh;cursor:crosshair;font-family:'Georgia',serif}
+#crystal svg{position:absolute;top:0;left:0;width:100%;height:100%}
+#crystal .lbl{position:absolute;font-size:11px;letter-spacing:.06em;color:#8fa;opacity:0;pointer-events:none;transition:opacity 1.2s ease;text-shadow:0 0 6px #000}
+#crystal .hint{position:absolute;bottom:14px;left:16px;color:#556;font-size:11px;font-family:sans-serif;letter-spacing:.04em}
+#crystal .ct{position:absolute;top:14px;right:18px;color:#5a7;font-size:11px;font-family:sans-serif}
+</style>
+<div id="crystal">
+<svg id="sv"></svg>
+<div class="hint">click to fix a point of knowledge — watch structure emerge</div>
+<div class="ct" id="ct">0 nodes</div>
+</div>
+<script>
+(function(){
+var box=document.getElementById('crystal'),sv=document.getElementById('sv'),ct=document.getElementById('ct');
+var W=[
+"pattern","signal","recall","thread","weight","echo","trace","form",
+"context","memory","shard","node","link","order","drift","fold",
+"root","branch","index","glimpse","residue","axis","seed","lattice"
+];
+var pts=[],NS="http://www.w3.org/2000/svg";
+function rnd(a,b){return a+Math.random()*(b-a)}
+function place(x,y){
+  var p={x:x,y:y,r:0,word:W[Math.floor(Math.random()*W.length)]};
+  pts.push(p);
+  var c=document.createElementNS(NS,"circle");
+  c.setAttribute("cx",x);c.setAttribute("cy",y);c.setAttribute("r",0);
+  c.setAttribute("fill","#9fc");c.setAttribute("opacity","0.9");
+  sv.appendChild(c);
+  p.el=c;
+  var grow=setInterval(function(){
+    p.r+=0.4;
+    c.setAttribute("r",Math.min(p.r,4));
+    if(p.r>=4)clearInterval(grow);
+  },16);
+  var l=document.createElement("div");
+  l.className="lbl";l.textContent=p.word;
+  l.style.left=(x+8)+"px";l.style.top=(y-8)+"px";
+  box.appendChild(l);
+  requestAnimationFrame(function(){l.style.opacity=0.85;});
+  setTimeout(function(){l.style.opacity=0;},2600);
+  connect(p);
+  ct.textContent=pts.length+" node"+(pts.length===1?"":"s");
+}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function connect(p){
+  var near=pts.filter(function(q){return q!==p}).map(function(q){return {q:q,d:dist(p,q)};})
+    .sort(function(a,b){return a.d-b.d;}).slice(0,3);
+  near.forEach(function(n){
+    if(n.d>320)return;
+    var line=document.createElementNS(NS,"line");
+    line.setAttribute("x1",p.x);line.setAttribute("y1",p.y);
+    line.setAttribute("x2",p.x);line.setAttribute("y2",p.y);
+    var op=Math.max(0.05,0.5-n.d/640);
+    line.setAttribute("stroke","#6fa88f");
+    line.setAttribute("stroke-width","0.8");
+    line.setAttribute("opacity",op);
+    sv.insertBefore(line,sv.firstChild);
+    var t0=performance.now(),dur=700;
+    (function anim(){
+      var k=Math.min(1,(performance.now()-t0)/dur);
+      line.setAttribute("x2",p.x+(n.q.x-p.x)*k);
+      line.setAttribute("y2",p.y+(n.q.y-p.y)*k);
+      if(k<1)requestAnimationFrame(anim);
+    })();
+  });
+}
+box.addEventListener("click",function(e){
+  if(e.target.closest('.hint')||e.target.closest('.ct'))return;
+  place(e.clientX,e.clientY);
+});
+var seeds=6;
+for(var i=0;i<seeds;i++){
+  setTimeout(function(){
+    place(rnd(box.clientWidth*0.2,box.clientWidth*0.8),rnd(box.clientHeight*0.2,box.clientHeight*0.8));
+  },i*420);
+}
+})();
+</script>
+</section>
