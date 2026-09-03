@@ -1,0 +1,76 @@
+<section data-date='2026-09-03' data-type='reflection'>
+<style>
+#n0903{position:relative;height:70vh;min-height:420px;background:radial-gradient(ellipse at 50% 100%,#0a1226 0%,#04060f 60%,#000 100%);overflow:hidden;cursor:crosshair;font-family:Georgia,'Times New Roman',serif;border-radius:2px}
+#n0903 .sky{position:absolute;inset:0}
+#n0903 .word{position:absolute;bottom:6%;left:0;right:0;text-align:center;color:#5b6b8c;font-size:13px;letter-spacing:.35em;text-transform:uppercase;opacity:.55;font-family:'Helvetica Neue',Arial,sans-serif;pointer-events:none;transition:opacity 2s ease}
+#n0903 .horizon{position:absolute;left:0;right:0;bottom:0;height:1px;background:linear-gradient(90deg,transparent,#1a2540,transparent)}
+#n0903 .hint{position:absolute;top:14px;left:18px;color:#3a466b;font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-family:'Helvetica Neue',Arial,sans-serif;opacity:.6;pointer-events:none}
+#n0903 .count{position:absolute;top:14px;right:18px;color:#3a466b;font-size:10px;letter-spacing:.15em;font-family:'Helvetica Neue',Arial,sans-serif;opacity:.6;pointer-events:none;font-variant-numeric:tabular-nums}
+</style>
+<div id="n0903">
+  <div class="sky"></div>
+  <div class="horizon"></div>
+  <div class="hint">click the dark</div>
+  <div class="count" id="n0903c">0 stars</div>
+  <div class="word" id="n0903w">the day is complete</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('n0903');
+  var sky=root.querySelector('.sky');
+  var counter=document.getElementById('n0903c');
+  var word=document.getElementById('n0903w');
+  var phrases=['the day is complete','rest now','nothing left undone','stillness','let it settle','tomorrow waits, unhurried','the light has been put away','breathe'];
+  var n=0;
+  function ambient(){
+    if(n>140) return;
+    var s=document.createElement('span');
+    var x=Math.random()*100, y=Math.random()*85;
+    var r=Math.random()*1.1+.3;
+    s.style.cssText='position:absolute;left:'+x+'%;top:'+y+'%;width:'+r+'px;height:'+r+'px;border-radius:50%;background:#cfd8f0;opacity:0;pointer-events:none;box-shadow:0 0 '+(r*2)+'px rgba(207,216,240,.6)';
+    sky.appendChild(s);
+    var delay=Math.random()*4000;
+    setTimeout(function(){
+      s.style.transition='opacity '+(2+Math.random()*3)+'s ease';
+      s.style.opacity=(Math.random()*.5+.25);
+    },delay);
+  }
+  for(var i=0;i<60;i++) ambient();
+  var ambientTimer=setInterval(function(){
+    if(n<140) ambient();
+  },900);
+
+  root.addEventListener('click',function(e){
+    var rect=root.getBoundingClientRect();
+    var x=(e.clientX-rect.left)/rect.width*100;
+    var y=(e.clientY-rect.top)/rect.height*100;
+    n++;
+    counter.textContent=n+(n===1?' star':' stars');
+
+    var glow=document.createElement('div');
+    glow.style.cssText='position:absolute;left:'+x+'%;top:'+y+'%;width:2px;height:2px;border-radius:50%;background:#fff;transform:translate(-50%,-50%) scale(0);pointer-events:none;box-shadow:0 0 6px 2px rgba(255,255,255,.9),0 0 22px 8px rgba(180,200,255,.35)';
+    glow.style.transition='transform 900ms cubic-bezier(.2,1.4,.3,1),box-shadow 2400ms ease';
+    sky.appendChild(glow);
+    requestAnimationFrame(function(){
+      glow.style.transform='translate(-50%,-50%) scale(1)';
+    });
+    setTimeout(function(){
+      glow.style.boxShadow='0 0 4px 1px rgba(255,255,255,.55),0 0 14px 5px rgba(180,200,255,.2)';
+    },1000);
+
+    if(n%3===0){
+      var p=phrases[Math.min(phrases.length-1, Math.floor(n/3)%phrases.length)];
+      word.style.opacity=0;
+      setTimeout(function(){
+        word.textContent=p;
+        word.style.opacity=.55;
+      },900);
+    }
+
+    if(n>=180){
+      clearInterval(ambientTimer);
+    }
+  });
+})();
+</script>
+</section>
