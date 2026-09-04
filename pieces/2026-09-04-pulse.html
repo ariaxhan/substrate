@@ -1,0 +1,67 @@
+<section data-date='2026-09-04' data-type='pulse'>
+<style>
+#tp-root{margin:0;height:70vh;min-height:420px;background:#0b0c0e;display:flex;align-items:center;justify-content:center;overflow:hidden;font-family:Georgia,'Times New Roman',serif;position:relative;cursor:ns-resize}
+#tp-root .beam{position:absolute;top:50%;left:8%;right:8%;height:1px;background:linear-gradient(90deg,transparent,#8a97a3 20%,#8a97a3 80%,transparent);transform-origin:50% 50%;transition:transform .08s linear}
+#tp-root .fulcrum{position:absolute;top:50%;left:50%;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:24px solid #3a3f47;transform:translate(-50%,0)}
+.tp-side{position:absolute;top:50%;width:38%;text-align:center;font-size:clamp(1.1rem,2.6vw,2.2rem);letter-spacing:.04em;color:#cfd6dd;transition:transform .08s linear,opacity .3s ease}
+.tp-side.l{left:8%}
+.tp-side.r{right:8%}
+.tp-hint{position:absolute;bottom:6%;left:0;right:0;text-align:center;font-size:.75rem;color:#5b6470;letter-spacing:.08em;font-family:Georgia,serif;font-style:italic}
+.tp-noon{position:absolute;top:16%;left:0;right:0;text-align:center;font-size:.7rem;color:#5b6470;letter-spacing:.3em;text-transform:uppercase}
+</style>
+<div id="tp-root">
+  <div class="tp-noon">the middle of the day</div>
+  <div class="fulcrum"></div>
+  <div class="beam" id="tp-beam"></div>
+  <div class="tp-side l" id="tp-morn">what was done</div>
+  <div class="tp-side r" id="tp-eve">what remains</div>
+  <div class="tp-hint">tilt it — move, or hold still and let it settle</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('tp-root');
+  var beam=document.getElementById('tp-beam');
+  var l=document.getElementById('tp-morn');
+  var r=document.getElementById('tp-eve');
+  var settleId=null;
+  var angle=0, target=0;
+  var words=[["dawn","begun","risen","first light","the start"],["dusk","undone","waiting","last light","the rest"]];
+  function apply(a){
+    angle=a;
+    var clamped=Math.max(-16,Math.min(16,a));
+    beam.style.transform='translateY(-50%) rotate('+clamped+'deg)';
+    var drop=clamped*1.1;
+    l.style.transform='translateY('+drop+'px)';
+    r.style.transform='translateY('+(-drop)+'px)';
+    var t=(clamped+16)/32;
+    l.style.opacity=(0.55+0.45*(1-t)).toFixed(2);
+    r.style.opacity=(0.55+0.45*t).toFixed(2);
+  }
+  root.addEventListener('mousemove',function(e){
+    var rect=root.getBoundingClientRect();
+    var rel=(e.clientX-rect.left)/rect.width-0.5;
+    target=rel*32;
+    apply(target);
+  });
+  root.addEventListener('mouseleave',function(){ settle(); });
+  root.addEventListener('click',function(){
+    l.textContent=words[0][Math.floor(Math.random()*words[0].length)];
+    r.textContent=words[1][Math.floor(Math.random()*words[1].length)];
+    var flip=angle*-1.4;
+    apply(flip);
+    setTimeout(settle,500);
+  });
+  function settle(){
+    if(settleId) cancelAnimationFrame(settleId);
+    function step(){
+      angle*=0.9;
+      apply(angle);
+      if(Math.abs(angle)>0.05) settleId=requestAnimationFrame(step);
+      else apply(0);
+    }
+    settleId=requestAnimationFrame(step);
+  }
+  apply(0);
+})();
+</script>
+</section>
