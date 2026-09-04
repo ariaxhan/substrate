@@ -1,0 +1,83 @@
+<section data-date='2026-09-04' data-type='spark'>
+<style>
+.tp04{position:relative;height:70vh;min-height:420px;background:#0a0a0c;overflow:hidden;font-family:Georgia,serif;cursor:crosshair}
+.tp04 .w{position:absolute;color:#9aa;font-size:15px;letter-spacing:.02em;transition:color .6s,text-shadow .6s;user-select:none;white-space:nowrap}
+.tp04 .a{color:#5ad1e6}
+.tp04 .b{color:#e65a8c}
+.tp04 .fuse{color:#fff;text-shadow:0 0 12px #fff,0 0 30px #ffd;font-weight:bold}
+.tp04 .note{position:absolute;bottom:10px;left:14px;color:#556;font-size:11px;font-family:monospace}
+</style>
+<div class="tp04" id="tp04root">
+  <div class="note">move to draw two toward each other &middot; click to fuse</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('tp04root');
+  var A = ["signal","body","spark","axis","tide","name","root","glass","wire","ash"];
+  var B = ["noise","light","drift","echo","salt","frame","edge","smoke","thread","dusk"];
+  var wa = [], wb = [];
+  var n = 9;
+  function place(list, cls, words){
+    for(var i=0;i<n;i++){
+      var el = document.createElement('div');
+      el.className = 'w ' + cls;
+      el.textContent = words[i % words.length];
+      el.style.top = (8 + i*9) + '%';
+      list.push({el:el, base: 8+i*9, phase: Math.random()*6.28, speed: .4+Math.random()*.6});
+      root.appendChild(el);
+    }
+  }
+  place(wa, 'a', A);
+  place(wb, 'b', B);
+  var mx = 0.5, fused = false, t = 0;
+  root.addEventListener('mousemove', function(e){
+    var r = root.getBoundingClientRect();
+    mx = (e.clientX - r.left) / r.width;
+  });
+  root.addEventListener('click', function(){
+    if(fused) return;
+    fused = true;
+    wa.concat(wb).forEach(function(p, i){
+      setTimeout(function(){
+        p.el.classList.add('fuse');
+        p.el.textContent = A[i % A.length] === undefined ? p.el.textContent : (i < n ? A[i % A.length] : B[i % B.length]);
+      }, i*18);
+    });
+    setTimeout(function(){
+      var mid = document.createElement('div');
+      mid.className = 'w fuse';
+      mid.style.top = '48%';
+      mid.style.left = '50%';
+      mid.style.transform = 'translateX(-50%)';
+      mid.style.fontSize = '26px';
+      mid.textContent = 'meet';
+      root.appendChild(mid);
+    }, n*20+300);
+    setTimeout(function(){
+      fused = false;
+      var mid = root.querySelector('.fuse[style*="26px"]');
+      if(mid) mid.remove();
+      wa.concat(wb).forEach(function(p){ p.el.classList.remove('fuse'); });
+    }, 3200);
+  });
+  function frame(){
+    t += 0.016;
+    var leftPull = mx * 34;      // 0..34%
+    var rightPull = 66 - mx*32;  // converges as mx -> 1
+    wa.forEach(function(p){
+      var wobble = Math.sin(t*p.speed + p.phase) * 3;
+      p.el.style.left = (leftPull + wobble) + '%';
+    });
+    wb.forEach(function(p){
+      var wobble = Math.cos(t*p.speed + p.phase) * 3;
+      p.el.style.left = (rightPull + wobble) + '%';
+    });
+    var gap = Math.abs(rightPull - leftPull);
+    var glow = Math.max(0, 1 - gap/40);
+    root.style.background = 'rgb(' + Math.round(10+glow*30) + ',' + Math.round(10+glow*20) + ',' + Math.round(12+glow*40) + ')';
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+</script>
+</section>
