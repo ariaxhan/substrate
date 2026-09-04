@@ -1,0 +1,118 @@
+<section data-date='2026-09-04' data-type='morning'>
+<style>
+#dawn-piece {
+  margin: 0;
+  height: 70vh;
+  min-height: 420px;
+  background: #0a0a12;
+  position: relative;
+  overflow: hidden;
+  font-family: Georgia, 'Times New Roman', serif;
+  cursor: none;
+}
+#dawn-piece .sky {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at var(--x, 50%) var(--y, 100%),
+    #ffe9c7 0%,
+    #ffb37a 8%,
+    #d97a5a 18%,
+    #5a3a5e 32%,
+    #1a1a3a 55%,
+    #0a0a12 80%
+  );
+  transition: background 0.05s linear;
+}
+#dawn-piece .words {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+#dawn-piece .line {
+  font-size: clamp(1.1rem, 3vw, 2rem);
+  letter-spacing: 0.04em;
+  color: #0a0a12;
+  mix-blend-mode: overlay;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+  margin: 0.15em 0;
+}
+#dawn-piece .line.lit {
+  opacity: 1;
+  transform: translateY(0);
+  color: #fffdf5;
+  mix-blend-mode: normal;
+  text-shadow: 0 0 18px rgba(255, 200, 130, 0.35);
+}
+#dawn-piece .hint {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: -apple-system, sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #6a5a6a;
+  transition: opacity 0.8s ease;
+}
+#dawn-piece.risen .hint { opacity: 0; }
+#dawn-piece .sun {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff6e0;
+  box-shadow: 0 0 30px 10px rgba(255, 220, 160, 0.6);
+  left: var(--x, 50%);
+  top: var(--y, 100%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+</style>
+<div id="dawn-piece">
+  <div class="sky"></div>
+  <div class="sun"></div>
+  <div class="words">
+    <p class="line" data-t="0">before the word, the light</p>
+    <p class="line" data-t="1">before the light, only waiting</p>
+    <p class="line" data-t="2">nothing is written yet</p>
+    <p class="line" data-t="3">everything is still possible</p>
+  </div>
+  <div class="hint">move to raise the sun</div>
+</div>
+<script>
+(function () {
+  var el = document.getElementById('dawn-piece');
+  var lines = el.querySelectorAll('.line');
+  var raised = 0;
+  function place(clientX, clientY) {
+    var r = el.getBoundingClientRect();
+    var x = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
+    var y = Math.max(0, Math.min(1, (clientY - r.top) / r.height));
+    el.style.setProperty('--x', (x * 100) + '%');
+    el.style.setProperty('--y', (y * 100) + '%');
+    var height = 1 - y;
+    var target = Math.floor(height * (lines.length + 1));
+    if (target > raised) {
+      raised = Math.min(target, lines.length);
+      for (var i = 0; i < raised; i++) lines[i].classList.add('lit');
+      if (raised === lines.length) el.classList.add('risen');
+    }
+  }
+  el.addEventListener('mousemove', function (e) { place(e.clientX, e.clientY); });
+  el.addEventListener('touchmove', function (e) {
+    if (e.touches[0]) place(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: true });
+  place(el.clientWidth / 2, el.clientHeight);
+})();
+</script>
+</section>
