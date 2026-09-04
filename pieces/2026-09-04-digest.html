@@ -1,0 +1,102 @@
+<section data-date='2026-09-04' data-type='digest'>
+<style>
+#tp-2026-09-04{position:relative;background:#0b0c0f;color:#cfd8dc;overflow:hidden;height:70vh;min-height:420px;font-family:Georgia,'Times New Roman',serif}
+#tp-2026-09-04 canvas{position:absolute;inset:0;width:100%;height:100%;cursor:crosshair}
+#tp-2026-09-04 .tp-cap{position:absolute;left:0;right:0;bottom:14px;text-align:center;font-family:'Courier New',monospace;font-size:11px;letter-spacing:.14em;color:#5a6670;pointer-events:none;text-transform:uppercase}
+#tp-2026-09-04 .tp-title{position:absolute;top:16px;left:20px;font-size:13px;letter-spacing:.2em;color:#8a97a1;text-transform:uppercase;pointer-events:none;font-family:'Courier New',monospace}
+#tp-2026-09-04 .tp-count{position:absolute;top:16px;right:20px;font-size:34px;color:#e8b34a;pointer-events:none;font-variant-numeric:tabular-nums}
+</style>
+<div id="tp-2026-09-04">
+  <div class="tp-title">crystallize</div>
+  <div class="tp-count" id="tp-c-2026-09-04">0</div>
+  <canvas id="tp-cv-2026-09-04"></canvas>
+  <div class="tp-cap">click to place a fact — watch it find its structure</div>
+</div>
+<script>
+(function(){
+  var host=document.getElementById('tp-2026-09-04');
+  var cv=document.getElementById('tp-cv-2026-09-04');
+  var ctx=cv.getContext('2d');
+  var cnt=document.getElementById('tp-c-2026-09-04');
+  var W,H,dpr=Math.min(window.devicePixelRatio||1,2);
+  function size(){
+    W=host.clientWidth;H=host.clientHeight;
+    cv.width=W*dpr;cv.height=H*dpr;
+    cv.style.width=W+'px';cv.style.height=H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  size();
+  window.addEventListener('resize',size);
+  var pts=[];
+  var THRESH=140;
+  function seed(x,y){
+    pts.push({x:x,y:y,age:0,vx:(Math.random()-.5)*.15,vy:(Math.random()-.5)*.15});
+    cnt.textContent=pts.length;
+  }
+  // a handful of ambient seeds so the field isn't empty
+  for(var i=0;i<5;i++) seed(Math.random()*W, Math.random()*H);
+
+  cv.addEventListener('click',function(e){
+    var r=cv.getBoundingClientRect();
+    seed(e.clientX-r.left,e.clientY-r.top);
+  });
+
+  var t=0;
+  function tick(){
+    t+=1;
+    ctx.fillStyle='rgba(11,12,15,0.14)';
+    ctx.fillRect(0,0,W,H);
+
+    for(var i=0;i<pts.length;i++){
+      var p=pts[i];
+      p.age+=1;
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.x<0||p.x>W)p.vx*=-1;
+      if(p.y<0||p.y>H)p.vy*=-1;
+    }
+
+    // bonds: crystallize when close, glow brighter with age of bond
+    var bonds=0;
+    for(var i=0;i<pts.length;i++){
+      for(var j=i+1;j<pts.length;j++){
+        var a=pts[i],b=pts[j];
+        var dx=a.x-b.x, dy=a.y-b.y;
+        var d=Math.sqrt(dx*dx+dy*dy);
+        if(d<THRESH){
+          bonds++;
+          var strength=1-(d/THRESH);
+          var pulse=0.35+0.25*Math.sin(t*0.03+i*0.7+j*1.3);
+          ctx.strokeStyle='rgba(232,179,74,'+(strength*pulse*0.9).toFixed(3)+')';
+          ctx.lineWidth=strength*1.6;
+          ctx.beginPath();
+          ctx.moveTo(a.x,a.y);
+          ctx.lineTo(b.x,b.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    for(var i=0;i<pts.length;i++){
+      var p=pts[i];
+      var settled=Math.min(1,p.age/240);
+      var rad=2+settled*1.6;
+      var glow=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,rad*5);
+      glow.addColorStop(0,'rgba(240,224,180,'+(0.55+settled*0.35)+')');
+      glow.addColorStop(1,'rgba(240,224,180,0)');
+      ctx.fillStyle=glow;
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,rad*5,0,Math.PI*2);
+      ctx.fill();
+      ctx.fillStyle='rgba(207,216,220,0.9)';
+      ctx.beginPath();
+      ctx.arc(p.x,p.y,rad*0.5,0,Math.PI*2);
+      ctx.fill();
+    }
+
+    if(pts.length>120) pts.splice(0, pts.length-120);
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+</script>
+</section>
