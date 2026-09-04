@@ -1,0 +1,60 @@
+<section data-date='2026-09-04' data-type='reflection'>
+<style>
+#tp-2026-09-04{position:relative;overflow:hidden;height:100vh;background:radial-gradient(ellipse at 50% 100%,#0b1224 0%,#050810 60%,#000 100%);font-family:Georgia,'Times New Roman',serif;cursor:crosshair;color:#dce3f0}
+#tp-2026-09-04 .tp-msg{position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);text-align:center;letter-spacing:.06em;font-style:italic;font-size:clamp(14px,2.4vw,26px);color:#9fb0d4;opacity:.85;pointer-events:none;transition:opacity 1.4s ease}
+#tp-2026-09-04 .tp-sub{position:absolute;bottom:6%;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#5a6a90;opacity:.6;pointer-events:none}
+#tp-2026-09-04 .tp-hor{position:absolute;left:0;right:0;bottom:0;height:18%;background:linear-gradient(to top,#000,transparent)}
+#tp-2026-09-04 .tp-star{position:absolute;border-radius:50%;background:#fff;box-shadow:0 0 6px 1px #cfe0ff;transform:translate(-50%,-50%) scale(0);animation:tp-bloom 2.4s ease-out forwards}
+#tp-2026-09-04 .tp-word{position:absolute;transform:translate(-50%,-50%);font-size:11px;letter-spacing:.08em;color:#9fb0d4;opacity:0;white-space:nowrap;animation:tp-fade 3.2s ease-out forwards}
+@keyframes tp-bloom{0%{transform:translate(-50%,-50%) scale(0);opacity:0}12%{transform:translate(-50%,-50%) scale(1.6);opacity:1}30%{transform:translate(-50%,-50%) scale(1);opacity:1}100%{opacity:.75}}
+@keyframes tp-fade{0%{opacity:0;transform:translate(-50%,-40%)}20%{opacity:.9}100%{opacity:0;transform:translate(-50%,-70%)}}
+</style>
+<div id="tp-2026-09-04">
+  <div class="tp-msg" id="tp-msg-0904">the day is finished. touch the dark.</div>
+  <div class="tp-hor"></div>
+  <div class="tp-sub">rest, before the next beginning</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('tp-2026-09-04');
+  var msg=document.getElementById('tp-msg-0904');
+  var words=['quiet','done','still','soft','dim','held','enough','later','breathe','close your eyes','not yet','almost','soon','hush'];
+  var n=0;
+  function star(x,y){
+    var s=document.createElement('div');
+    var size=1+Math.random()*2.4;
+    s.className='tp-star';
+    s.style.width=size+'px';
+    s.style.height=size+'px';
+    s.style.left=x+'px';
+    s.style.top=y+'px';
+    root.appendChild(s);
+    if(Math.random()<0.55){
+      var w=document.createElement('div');
+      w.className='tp-word';
+      w.textContent=words[Math.floor(Math.random()*words.length)];
+      w.style.left=x+'px';
+      w.style.top=(y-14)+'px';
+      root.appendChild(w);
+      setTimeout(function(){w.remove()},3300);
+    }
+    n++;
+    if(n===1){
+      msg.style.opacity='0';
+    }
+    if(root.querySelectorAll('.tp-star').length>240){
+      root.querySelector('.tp-star').remove();
+    }
+  }
+  root.addEventListener('click',function(e){
+    var r=root.getBoundingClientRect();
+    star(e.clientX-r.left,e.clientY-r.top);
+  });
+  root.addEventListener('touchstart',function(e){
+    var r=root.getBoundingClientRect();
+    var t=e.touches[0];
+    star(t.clientX-r.left,t.clientY-r.top);
+  },{passive:true});
+})();
+</script>
+</section>
