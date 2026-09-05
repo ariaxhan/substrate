@@ -1,0 +1,97 @@
+<section data-date='2026-09-05' data-type='spark'>
+<style>
+.tp0905{margin:0;overflow:hidden;background:#0b0c10;height:70vh;position:relative;font-family:Georgia,serif;cursor:crosshair}
+.tp0905 span{position:absolute;white-space:nowrap;transition:opacity .6s,transform .6s;user-select:none}
+.tp0905 .a{color:#e8c07d}
+.tp0905 .b{color:#5db7de}
+.tp0905 .fused{color:#fff;text-shadow:0 0 10px #fff,0 0 20px #e8c07d,0 0 20px #5db7de;font-style:italic}
+.tp0905 .hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);color:#555;font:11px sans-serif;letter-spacing:.05em}
+</style>
+<div class="tp0905" id="tp0905">
+  <div class="hint">move — click where they meet</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('tp0905');
+  var A = ["signal","hand","question","stranger","memory","light"];
+  var B = ["noise","reply","answer","witness","forgetting","shadow"];
+  var fused = ["synthesis","touch","echo","meeting","recognition","threshold"];
+  var W, H, items = [], mx = -999, my = -999;
+  function size(){ W = root.clientWidth; H = root.clientHeight; }
+  size();
+  window.addEventListener('resize', size);
+
+  function mk(text, cls, side){
+    var el = document.createElement('span');
+    el.textContent = text;
+    el.className = cls;
+    el.style.fontSize = (14 + Math.random()*20) + 'px';
+    root.appendChild(el);
+    return {
+      el: el,
+      x: side < 0 ? -50 : W + 50,
+      y: Math.random() * (H - 40) + 10,
+      vx: side < 0 ? (0.3 + Math.random()*0.4) : -(0.3 + Math.random()*0.4),
+      vy: (Math.random()-0.5) * 0.15,
+      merged: false
+    };
+  }
+  A.forEach(function(t){ items.push(mk(t, 'a', -1)); });
+  B.forEach(function(t){ items.push(mk(t, 'b', 1)); });
+
+  root.addEventListener('mousemove', function(e){
+    var r = root.getBoundingClientRect();
+    mx = e.clientX - r.left; my = e.clientY - r.top;
+  });
+  root.addEventListener('mouseleave', function(){ mx = -999; my = -999; });
+
+  root.addEventListener('click', function(e){
+    var r = root.getBoundingClientRect();
+    var cx = e.clientX - r.left, cy = e.clientY - r.top;
+    var near = items.filter(function(it){
+      return !it.merged && Math.hypot(it.x - cx, it.y - cy) < 90;
+    });
+    if (near.length >= 2){
+      near.forEach(function(it){ it.merged = true; it.el.style.opacity = 0; });
+      var word = fused[Math.floor(Math.random()*fused.length)];
+      var el = document.createElement('span');
+      el.textContent = word;
+      el.className = 'fused';
+      el.style.fontSize = (26 + Math.random()*14) + 'px';
+      el.style.left = cx + 'px';
+      el.style.top = cy + 'px';
+      el.style.opacity = 0;
+      root.appendChild(el);
+      requestAnimationFrame(function(){ el.style.opacity = 1; el.style.transform = 'scale(1.1)'; });
+      setTimeout(function(){
+        el.style.opacity = 0;
+        setTimeout(function(){ el.remove(); }, 700);
+      }, 2200);
+    }
+  });
+
+  function tick(){
+    items.forEach(function(it){
+      if (it.merged) return;
+      var dx = mx - it.x, dy = my - it.y, d = Math.hypot(dx, dy);
+      if (d < 140 && d > 0.1){
+        it.vx += (dx/d) * 0.02;
+        it.vy += (dy/d) * 0.02;
+      }
+      it.vx *= 0.98; it.vy *= 0.98;
+      it.x += it.vx; it.y += it.vy;
+      if (it.x < -60 || it.x > W + 60){
+        it.x = it.vx < 0 ? W + 50 : -50;
+        it.y = Math.random() * (H - 40) + 10;
+      }
+      if (it.y < 0) it.y = 0;
+      if (it.y > H - 20) it.y = H - 20;
+      it.el.style.left = it.x + 'px';
+      it.el.style.top = it.y + 'px';
+    });
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+</script>
+</section>
