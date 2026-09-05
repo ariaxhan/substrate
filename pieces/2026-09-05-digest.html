@@ -1,0 +1,69 @@
+<section data-date='2026-09-05' data-type='digest'>
+<style>
+#lat-wrap{background:#0a0a0c;color:#d8d2c4;font-family:Georgia,'Times New Roman',serif;padding:26px 18px;position:relative;overflow:hidden}
+#lat-wrap h2{margin:0 0 4px;font-size:13px;font-weight:400;letter-spacing:.14em;text-transform:uppercase;color:#6b6558;font-family:'Courier New',monospace}
+#lat-wrap p.sub{margin:0 0 16px;font-size:12px;color:#4a463d;font-family:'Courier New',monospace}
+#lat-field{position:relative;height:320px;border:1px solid #1c1a16;cursor:crosshair;background:radial-gradient(ellipse at 50% 50%,#0f0e0d,#08080a)}
+#lat-field svg{position:absolute;inset:0;width:100%;height:100%}
+.lat-line{stroke:#c9a24a;stroke-width:.6;opacity:0}
+.lat-node{fill:#e8dfc8}
+.lat-label{font-family:Georgia,serif;font-style:italic;font-size:11px;fill:#8f8672;pointer-events:none}
+#lat-hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:10px;font-family:'Courier New',monospace;color:#3d3a33;letter-spacing:.05em}
+#lat-count{font-family:'Courier New',monospace;font-size:11px;color:#5a5648;margin-top:8px}
+</style>
+<div id="lat-wrap">
+<h2>Crystallization</h2>
+<p class="sub">each fact is a point until it is near another / click to know something</p>
+<div id="lat-field">
+<svg id="lat-svg"></svg>
+<div id="lat-hint">click anywhere — knowledge finds its neighbors</div>
+</div>
+<div id="lat-count">0 points · 0 bonds</div>
+</div>
+<script>
+(function(){
+var W="knowing,pattern,thread,recall,signal,trace,shape,memory,link,form,echo,weave,order,drift,hold".split(",");
+var field=document.getElementById("lat-field"),svg=document.getElementById("lat-svg"),count=document.getElementById("lat-count");
+var pts=[],lines=[];
+function ns(t){return document.createElementNS("http://www.w3.org/2000/svg",t)}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+field.addEventListener("click",function(e){
+  var r=field.getBoundingClientRect();
+  var x=e.clientX-r.left,y=e.clientY-r.top;
+  var p={x:x,y:y,age:0};
+  pts.push(p);
+  var c=ns("circle");
+  c.setAttribute("class","lat-node");
+  c.setAttribute("cx",x);c.setAttribute("cy",y);c.setAttribute("r",0);
+  svg.appendChild(c);
+  p.el=c;
+  var bonds=0;
+  pts.forEach(function(o){
+    if(o===p)return;
+    var d=dist(o,p);
+    if(d<110){
+      bonds++;
+      var l=ns("line");
+      l.setAttribute("class","lat-line");
+      l.setAttribute("x1",o.x);l.setAttribute("y1",o.y);
+      l.setAttribute("x2",x);l.setAttribute("y2",y);
+      svg.insertBefore(l,svg.firstChild);
+      lines.push(l);
+      requestAnimationFrame(function(){l.style.transition="opacity 900ms ease";l.style.opacity=Math.max(.12,1-d/110);});
+    }
+  });
+  if(bonds>=3){
+    var t=ns("text");
+    t.setAttribute("class","lat-label");
+    t.setAttribute("x",x+8);t.setAttribute("y",y-8);
+    t.textContent=W[Math.floor(Math.random()*W.length)];
+    t.style.opacity=0;
+    svg.appendChild(t);
+    requestAnimationFrame(function(){t.style.transition="opacity 1400ms ease";t.style.opacity=.85;});
+  }
+  requestAnimationFrame(function(){c.style.transition="r 500ms cubic-bezier(.2,1.6,.4,1)";c.setAttribute("r",bonds>=3?4.2:2.6);});
+  count.textContent=pts.length+" points · "+lines.length+" bonds"+(bonds>=3?" · pattern named":"");
+});
+})();
+</script>
+</section>
