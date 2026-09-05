@@ -1,0 +1,56 @@
+<section data-date='2026-09-05' data-type='morning'>
+<style>
+#taper-0905{position:relative;height:70vh;min-height:420px;overflow:hidden;background:#0a0e1a;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+#taper-0905 .sky{position:absolute;inset:0;background:linear-gradient(180deg,#0a0e1a 0%,#0a0e1a 60%,#1a1030 100%);transition:background 0.4s linear}
+#taper-0905 .glow{position:absolute;width:600px;height:600px;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);background:radial-gradient(circle,rgba(255,220,150,0.18) 0%,rgba(255,160,90,0.08) 35%,transparent 70%);transition:left 0.15s ease-out,top 0.15s ease-out}
+#taper-0905 .word{position:absolute;color:#e8dcc8;letter-spacing:0.04em;opacity:0.05;transition:opacity 0.6s ease;user-select:none}
+#taper-0905 .horizon{position:absolute;left:0;right:0;bottom:28%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,200,140,0.4),transparent)}
+#taper-0905 .caption{position:absolute;bottom:14px;left:20px;right:20px;color:#7a6a55;font-size:12px;font-style:italic;letter-spacing:0.03em}
+#taper-0905 .sun{position:absolute;left:50%;bottom:28%;width:10px;height:10px;border-radius:50%;background:#ffdca0;box-shadow:0 0 20px 6px rgba(255,200,120,0.5);transform:translate(-50%,50%);transition:height 1.8s ease,width 1.8s ease,box-shadow 1.8s ease}
+#taper-0905.risen .sun{height:140px;width:140px;box-shadow:0 0 120px 60px rgba(255,190,90,0.35)}
+#taper-0905.risen .sky{background:linear-gradient(180deg,#1a2440 0%,#3a3050 55%,#6a4030 85%,#c07840 100%)}
+</style>
+<div id="taper-0905">
+  <div class="sky"></div>
+  <div class="horizon"></div>
+  <div class="sun"></div>
+  <div class="glow"></div>
+  <div class="caption">move to find what's still unlit &middot; click to let it rise</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('taper-0905');
+  var glow=root.querySelector('.glow');
+  var words=['unwritten','possible','quiet','waiting','first','breath','edge','blank','soon','open','still','before','threshold','not yet','almost','again','begin'];
+  var placed=[];
+  var n=17;
+  for(var i=0;i<n;i++){
+    var w=document.createElement('span');
+    w.className='word';
+    w.textContent=words[i%words.length];
+    var x=8+Math.random()*84, y=6+Math.random()*80;
+    w.style.left=x+'%';
+    w.style.top=y+'%';
+    w.style.fontSize=(14+Math.random()*22)+'px';
+    root.appendChild(w);
+    placed.push({el:w,x:x,y:y});
+  }
+  function dist(ax,ay,bx,by){var dx=ax-bx,dy=ay-by;return Math.sqrt(dx*dx+dy*dy);}
+  root.addEventListener('mousemove',function(e){
+    var r=root.getBoundingClientRect();
+    var mx=(e.clientX-r.left)/r.width*100;
+    var my=(e.clientY-r.top)/r.height*100;
+    glow.style.left=(e.clientX-r.left)+'px';
+    glow.style.top=(e.clientY-r.top)+'px';
+    placed.forEach(function(p){
+      var d=dist(mx,my,p.x,p.y);
+      var o=Math.max(0.05,1-d/22);
+      p.el.style.opacity=o;
+    });
+  });
+  root.addEventListener('click',function(){
+    root.classList.toggle('risen');
+  });
+})();
+</script>
+</section>
