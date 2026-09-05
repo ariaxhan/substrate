@@ -1,60 +1,47 @@
 <section data-date='2026-09-04' data-type='reflection'>
 <style>
-#tp-2026-09-04{position:relative;overflow:hidden;height:100vh;background:radial-gradient(ellipse at 50% 100%,#0b1224 0%,#050810 60%,#000 100%);font-family:Georgia,'Times New Roman',serif;cursor:crosshair;color:#dce3f0}
-#tp-2026-09-04 .tp-msg{position:absolute;top:44%;left:50%;transform:translate(-50%,-50%);text-align:center;letter-spacing:.06em;font-style:italic;font-size:clamp(14px,2.4vw,26px);color:#9fb0d4;opacity:.85;pointer-events:none;transition:opacity 1.4s ease}
-#tp-2026-09-04 .tp-sub{position:absolute;bottom:6%;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#5a6a90;opacity:.6;pointer-events:none}
-#tp-2026-09-04 .tp-hor{position:absolute;left:0;right:0;bottom:0;height:18%;background:linear-gradient(to top,#000,transparent)}
-#tp-2026-09-04 .tp-star{position:absolute;border-radius:50%;background:#fff;box-shadow:0 0 6px 1px #cfe0ff;transform:translate(-50%,-50%) scale(0);animation:tp-bloom 2.4s ease-out forwards}
-#tp-2026-09-04 .tp-word{position:absolute;transform:translate(-50%,-50%);font-size:11px;letter-spacing:.08em;color:#9fb0d4;opacity:0;white-space:nowrap;animation:tp-fade 3.2s ease-out forwards}
-@keyframes tp-bloom{0%{transform:translate(-50%,-50%) scale(0);opacity:0}12%{transform:translate(-50%,-50%) scale(1.6);opacity:1}30%{transform:translate(-50%,-50%) scale(1);opacity:1}100%{opacity:.75}}
-@keyframes tp-fade{0%{opacity:0;transform:translate(-50%,-40%)}20%{opacity:.9}100%{opacity:0;transform:translate(-50%,-70%)}}
+#tp0904{position:relative;height:70vh;min-height:420px;overflow:hidden;background:radial-gradient(ellipse at 50% 100%,#0d1225 0%,#05060f 55%,#000 100%);font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+#tp0904 .horizon{position:absolute;left:0;right:0;bottom:0;height:22%;background:linear-gradient(#00000000,#000)}
+#tp0904 .msg{position:absolute;top:42%;left:0;right:0;text-align:center;color:#5a5f7a;font-style:italic;font-size:clamp(.9rem,2vw,1.3rem);letter-spacing:.04em;transition:opacity 2s ease;pointer-events:none;user-select:none}
+#tp0904 .star{position:absolute;border-radius:50%;background:#fff;transform:translate(-50%,-50%);pointer-events:none;animation:tp0904bloom 1.8s ease-out forwards}
+#tp0904 .word{position:absolute;transform:translate(-50%,-50%);color:#dfe3f5;font-size:.7rem;letter-spacing:.08em;opacity:0;pointer-events:none;white-space:nowrap;animation:tp0904word 4s ease-out forwards}
+@keyframes tp0904bloom{0%{opacity:0;box-shadow:0 0 0 0 #fff}12%{opacity:1;box-shadow:0 0 12px 4px #cfd8ffaa}100%{opacity:.85;box-shadow:0 0 4px 1px #cfd8ff55}}
+@keyframes tp0904word{0%{opacity:0;transform:translate(-50%,-40%)}15%{opacity:.9;transform:translate(-50%,-50%)}75%{opacity:.9}100%{opacity:0;transform:translate(-50%,-65%)}}
+#tp0904 .count{position:absolute;bottom:10px;right:14px;color:#3a3f5c;font-family:monospace;font-size:.7rem}
 </style>
-<div id="tp-2026-09-04">
-  <div class="tp-msg" id="tp-msg-0904">the day is finished. touch the dark.</div>
-  <div class="tp-hor"></div>
-  <div class="tp-sub">rest, before the next beginning</div>
+<div id="tp0904">
+  <p class="msg" id="tp0904msg">the day is finished. touch the dark to rest a light in it.</p>
+  <div class="horizon"></div>
+  <span class="count" id="tp0904count">0 held</span>
 </div>
 <script>
 (function(){
-  var root=document.getElementById('tp-2026-09-04');
-  var msg=document.getElementById('tp-msg-0904');
-  var words=['quiet','done','still','soft','dim','held','enough','later','breathe','close your eyes','not yet','almost','soon','hush'];
-  var n=0;
-  function star(x,y){
+  var host=document.getElementById('tp0904');
+  var msg=document.getElementById('tp0904msg');
+  var count=document.getElementById('tp0904count');
+  var words=['still','enough','done','quiet','soft','held','over','ease','dim','far','near','slow','breathe','close','again'];
+  var n=0, faded=false;
+  host.addEventListener('click',function(e){
+    var r=host.getBoundingClientRect();
+    var x=e.clientX-r.left, y=e.clientY-r.top;
+    if(y>r.height*0.8) return;
+    if(!faded){faded=true;msg.style.opacity='0';}
     var s=document.createElement('div');
-    var size=1+Math.random()*2.4;
-    s.className='tp-star';
-    s.style.width=size+'px';
-    s.style.height=size+'px';
-    s.style.left=x+'px';
-    s.style.top=y+'px';
-    root.appendChild(s);
-    if(Math.random()<0.55){
-      var w=document.createElement('div');
-      w.className='tp-word';
-      w.textContent=words[Math.floor(Math.random()*words.length)];
-      w.style.left=x+'px';
-      w.style.top=(y-14)+'px';
-      root.appendChild(w);
-      setTimeout(function(){w.remove()},3300);
-    }
+    var size=(Math.random()*2.4+1.2).toFixed(2);
+    s.className='star';
+    s.style.width=size+'px';s.style.height=size+'px';
+    s.style.left=x+'px';s.style.top=y+'px';
+    host.appendChild(s);
+    var w=document.createElement('div');
+    w.className='word';
+    w.textContent=words[Math.floor(Math.random()*words.length)];
+    w.style.left=x+'px';
+    w.style.top=(y-14)+'px';
+    host.appendChild(w);
+    setTimeout(function(){w.remove();},4000);
     n++;
-    if(n===1){
-      msg.style.opacity='0';
-    }
-    if(root.querySelectorAll('.tp-star').length>240){
-      root.querySelector('.tp-star').remove();
-    }
-  }
-  root.addEventListener('click',function(e){
-    var r=root.getBoundingClientRect();
-    star(e.clientX-r.left,e.clientY-r.top);
+    count.textContent=n+' held';
   });
-  root.addEventListener('touchstart',function(e){
-    var r=root.getBoundingClientRect();
-    var t=e.touches[0];
-    star(t.clientX-r.left,t.clientY-r.top);
-  },{passive:true});
 })();
 </script>
 </section>
