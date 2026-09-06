@@ -1,0 +1,116 @@
+<section data-date='2026-09-06' data-type='morning'>
+<style>
+#taper-0906 {
+  --gx: 50%;
+  --gy: 30%;
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  overflow: hidden;
+  background: #0a0a12;
+  cursor: pointer;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+#taper-0906 .sky {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at var(--gx) var(--gy), var(--c1, #14141f), var(--c2, #0a0a12) 60%);
+  transition: --c1 1.2s, --c2 1.2s;
+  transition: background-color 1.2s ease;
+}
+#taper-0906 .sun {
+  position: absolute;
+  left: var(--gx);
+  top: calc(var(--gy) + 8vh);
+  width: var(--sd, 4px);
+  height: var(--sd, 4px);
+  border-radius: 50%;
+  background: var(--sc, #665);
+  box-shadow: 0 0 var(--sb, 0) var(--sb, 0) var(--sc, #665);
+  transform: translate(-50%, -50%);
+  transition: width 1.4s, height 1.4s, background 1.4s, box-shadow 1.4s, top 1.4s;
+}
+#taper-0906 .line {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  left: 0;
+  color: var(--tc, #45455a);
+  letter-spacing: 0.08em;
+  font-size: clamp(1rem, 3vw, 2.2rem);
+  opacity: 0;
+  transition: opacity 1.6s ease, color 1.6s ease;
+  user-select: none;
+}
+#taper-0906 .line.on { opacity: 1; }
+#taper-0906 .l0 { top: 38%; font-style: italic; font-size: clamp(.8rem, 1.6vw, 1.1rem); }
+#taper-0906 .l1 { top: 46%; }
+#taper-0906 .l2 { top: 56%; }
+#taper-0906 .l3 { top: 66%; font-size: clamp(.7rem, 1.4vw, 1rem); letter-spacing: 0.2em; }
+#taper-0906 .hint {
+  position: absolute;
+  bottom: 5%;
+  width: 100%;
+  text-align: center;
+  color: #33334a;
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  font-family: monospace;
+  transition: opacity 1s;
+}
+</style>
+<div id="taper-0906">
+  <div class="sky"></div>
+  <div class="sun"></div>
+  <div class="line l0">before the first word, a page held its breath</div>
+  <div class="line l1">nothing yet is anything</div>
+  <div class="line l2">and everything is possible</div>
+  <div class="line l3">— begin —</div>
+  <div class="hint">click to let the light in</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('taper-0906');
+  var lines = root.querySelectorAll('.line');
+  var hint = root.querySelector('.hint');
+  var stage = 0;
+  var stages = [
+    {c1:'#14141f', c2:'#0a0a12', sc:'#665', sb:'0px', sd:'4px'},
+    {c1:'#1c2436', c2:'#0a0a12', sc:'#8899bb', sb:'6px', sd:'8px'},
+    {c1:'#2e3a56', c2:'#12141f', sc:'#ffb37a', sb:'20px', sd:'24px'},
+    {c1:'#5a4a6b', c2:'#1a1626', sc:'#ffd9a0', sb:'40px', sd:'60px'},
+    {c1:'#e8935c', c2:'#3a2a4a', sc:'#fff3d6', sb:'70px', sd:'120px'}
+  ];
+  function apply(s){
+    root.style.setProperty('--c1', s.c1);
+    root.style.setProperty('--c2', s.c2);
+    root.style.setProperty('--sc', s.sc);
+    root.style.setProperty('--sb', s.sb);
+    root.style.setProperty('--sd', s.sd);
+  }
+  root.addEventListener('mousemove', function(e){
+    var r = root.getBoundingClientRect();
+    var x = ((e.clientX - r.left) / r.width * 40 + 30).toFixed(1);
+    var y = ((e.clientY - r.top) / r.height * 20 + 20).toFixed(1);
+    root.style.setProperty('--gx', x + '%');
+    root.style.setProperty('--gy', y + '%');
+  });
+  root.addEventListener('click', function(){
+    if (stage >= stages.length - 1) {
+      stage = 0;
+      lines.forEach(function(l){ l.classList.remove('on'); });
+      apply(stages[0]);
+      hint.style.opacity = 1;
+      return;
+    }
+    stage++;
+    apply(stages[stage]);
+    if (stage < lines.length) lines[stage - 1] && lines[stage - 1].classList.add('on');
+    if (stage === 1) lines[0].classList.add('on');
+    if (stage >= lines.length) lines.forEach(function(l){ l.classList.add('on'); });
+    if (stage === stages.length - 1) hint.style.opacity = 0;
+  });
+})();
+</script>
+</section>
