@@ -1,0 +1,64 @@
+<section data-date='2026-09-05' data-type='reflection'>
+<style>
+#tp0905{margin:0;overflow:hidden;position:relative;height:70vh;min-height:420px;background:radial-gradient(ellipse at 50% 100%,#0d1220 0%,#04050a 70%);cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+#tp0905 .tp-msg{position:absolute;top:14px;left:0;right:0;text-align:center;color:#4a5578;font-size:13px;letter-spacing:.14em;text-transform:uppercase;pointer-events:none;transition:opacity 2s}
+#tp0905 .tp-dot{position:absolute;width:3px;height:3px;border-radius:50%;background:#dfe6ff;box-shadow:0 0 6px 1px rgba(200,215,255,.8);opacity:0;transform:scale(.3);transition:opacity 1.6s ease-out,transform 1.6s ease-out}
+#tp0905 .tp-dot.on{opacity:1;transform:scale(1)}
+#tp0905 .tp-dot.big{width:5px;height:5px;box-shadow:0 0 10px 2px rgba(220,230,255,.9)}
+#tp0905 .tp-line{position:absolute;top:0;left:0;height:1px;background:linear-gradient(90deg,transparent,rgba(160,180,255,.35),transparent);transform-origin:0 0;opacity:0;transition:opacity 2s}
+#tp0905 .tp-line.on{opacity:1}
+#tp0905 .tp-word{position:absolute;color:#8a94b8;font-style:italic;font-size:15px;opacity:0;transition:opacity 3s;pointer-events:none;white-space:nowrap}
+#tp0905 .tp-word.on{opacity:.85}
+#tp0905 .tp-horizon{position:absolute;left:0;right:0;bottom:0;height:1px;background:rgba(90,100,140,.25)}
+</style>
+<div id="tp0905">
+  <div class="tp-msg" id="tp0905m">the day is complete&nbsp;&mdash;&nbsp;click to rest a star</div>
+  <div class="tp-horizon"></div>
+</div>
+<script>
+(function(){
+  var host=document.getElementById('tp0905');
+  var msg=document.getElementById('tp0905m');
+  var stars=[];
+  var words=['still','done','enough','rest','tomorrow','quiet','held','breathe','arrived'];
+  var wi=0;
+  function fade(){ if(msg) msg.style.opacity=0; }
+  setTimeout(fade,4500);
+  host.addEventListener('click',function(e){
+    if(e.target.closest('.tp-word')) return;
+    var r=host.getBoundingClientRect();
+    var x=e.clientX-r.left, y=e.clientY-r.top;
+    var dot=document.createElement('div');
+    dot.className='tp-dot'+(Math.random()<.28?' big':'');
+    dot.style.left=x+'px'; dot.style.top=y+'px';
+    host.appendChild(dot);
+    requestAnimationFrame(function(){ dot.classList.add('on'); });
+    stars.push({x:x,y:y});
+    if(stars.length>1 && Math.random()<0.55){
+      var a=stars[stars.length-2], b=stars[stars.length-1];
+      var dx=b.x-a.x, dy=b.y-a.y;
+      var len=Math.sqrt(dx*dx+dy*dy);
+      var ang=Math.atan2(dy,dx)*180/Math.PI;
+      var line=document.createElement('div');
+      line.className='tp-line';
+      line.style.left=a.x+'px'; line.style.top=a.y+'px';
+      line.style.width=len+'px';
+      line.style.transform='rotate('+ang+'deg)';
+      host.appendChild(line);
+      requestAnimationFrame(function(){ line.classList.add('on'); });
+    }
+    if(stars.length%3===0){
+      var w=document.createElement('div');
+      w.className='tp-word';
+      w.textContent=words[wi%words.length]; wi++;
+      w.style.left=Math.max(4,Math.min(90,(x/r.width*100)))+'%';
+      w.style.top=Math.max(4,Math.min(92,((y/r.height*100)+6)))+'%';
+      host.appendChild(w);
+      requestAnimationFrame(function(){ w.classList.add('on'); });
+      setTimeout(function(){ w.style.opacity=0; },5000);
+    }
+    if(stars.length>=60){ stars.shift(); var old=host.querySelector('.tp-dot'); if(old) old.remove(); }
+  });
+})();
+</script>
+</section>
