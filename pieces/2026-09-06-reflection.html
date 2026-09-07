@@ -1,0 +1,67 @@
+<section data-date='2026-09-06' data-type='reflection'>
+<style>
+.tp0906{margin:0;overflow:hidden;position:relative;height:70vh;min-height:420px;background:radial-gradient(ellipse at 50% 100%,#0b1224 0%,#04060f 70%);font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+.tp0906 .sky{position:absolute;inset:0}
+.tp0906 .star{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;opacity:0;transform:scale(0);animation:tp0906rise 2.6s ease-out forwards}
+.tp0906 .word{position:absolute;color:#cbd5f0;opacity:0;font-style:italic;font-size:14px;letter-spacing:.04em;white-space:nowrap;animation:tp0906word 4s ease-out forwards;pointer-events:none;text-shadow:0 0 8px rgba(140,160,255,.5)}
+@keyframes tp0906rise{0%{opacity:0;transform:scale(0)}12%{opacity:1;transform:scale(1.6)}30%{transform:scale(1)}80%{opacity:1}100%{opacity:.55}}
+@keyframes tp0906word{0%{opacity:0;transform:translateY(6px)}20%{opacity:1;transform:translateY(0)}75%{opacity:1}100%{opacity:0}}
+.tp0906 .horizon{position:absolute;left:0;right:0;bottom:0;height:26%;background:linear-gradient(to top,#000 0%,rgba(0,0,0,0) 100%)}
+.tp0906 .hint{position:absolute;bottom:14px;left:0;right:0;text-align:center;color:#5a6690;font-size:11px;letter-spacing:.15em;text-transform:uppercase;font-family:Georgia,serif;opacity:.8;transition:opacity 1.2s}
+.tp0906 .hint.gone{opacity:0}
+.tp0906 .count{position:absolute;top:14px;right:18px;color:#3d4770;font-size:11px;font-family:monospace;letter-spacing:.1em}
+</style>
+<div class="tp0906" id="tp0906box">
+  <div class="sky" id="tp0906sky"></div>
+  <div class="horizon"></div>
+  <div class="count" id="tp0906count">0 lit</div>
+  <div class="hint" id="tp0906hint">the day is done — touch the dark to seed a star</div>
+</div>
+<script>
+(function(){
+  var box=document.getElementById('tp0906box');
+  var sky=document.getElementById('tp0906sky');
+  var hint=document.getElementById('tp0906hint');
+  var count=document.getElementById('tp0906count');
+  var words=['rest','hush','still','done','soon','breathe','quiet','tomorrow','enough','dusk','settle','drift'];
+  var n=0;
+  function place(x,y){
+    var s=document.createElement('div');
+    s.className='star';
+    var size=1+Math.random()*2.2;
+    s.style.width=s.style.height=size+'px';
+    s.style.left=x+'px';
+    s.style.top=y+'px';
+    s.style.animationDuration=(2+Math.random()*2)+'s';
+    sky.appendChild(s);
+    if(Math.random()<0.4){
+      var w=document.createElement('div');
+      w.className='word';
+      w.textContent=words[Math.floor(Math.random()*words.length)];
+      w.style.left=(x+8)+'px';
+      w.style.top=(y-6)+'px';
+      sky.appendChild(w);
+      setTimeout(function(){w.remove()},4200);
+    }
+    n++;
+    count.textContent=n+(n===1?' lit':' lit');
+    if(n===1){hint.classList.add('gone')}
+    if(sky.children.length>240){sky.removeChild(sky.firstElementChild)}
+  }
+  box.addEventListener('click',function(e){
+    var r=box.getBoundingClientRect();
+    place(e.clientX-r.left,e.clientY-r.top);
+  });
+  box.addEventListener('touchstart',function(e){
+    var r=box.getBoundingClientRect();
+    var t=e.touches[0];
+    place(t.clientX-r.left,t.clientY-r.top);
+  },{passive:true});
+  var r0=box.getBoundingClientRect();
+  for(var i=0;i<3;i++){
+    place(Math.random()*r0.width,Math.random()*r0.height*0.6);
+  }
+  n=0; count.textContent='0 lit';
+})();
+</script>
+</section>
