@@ -1,0 +1,50 @@
+<section data-date='2026-09-07' data-type='morning'>
+<style>
+#taper-0907m{margin:0;overflow:hidden;height:70vh;min-height:420px;background:#0a0e14;position:relative;font-family:Georgia,'Times New Roman',serif;cursor:pointer}
+#taper-0907m .sky{position:absolute;inset:0;background:linear-gradient(180deg,#0a0e14 0%,#0a0e14 60%,#1a1410 100%);transition:background 2.4s ease}
+#taper-0907m.lit .sky{background:linear-gradient(180deg,#1b3a5c 0%,#e8a663 55%,#fce8c8 100%)}
+#taper-0907m .sun{position:absolute;left:50%;bottom:-60px;width:120px;height:120px;border-radius:50%;background:#fff3d6;transform:translateX(-50%);opacity:0;filter:blur(2px);transition:opacity 2.6s ease,bottom 2.6s cubic-bezier(.2,.7,.3,1)}
+#taper-0907m.lit .sun{opacity:.9;bottom:8%}
+#taper-0907m .word{position:absolute;color:#3a4658;font-size:14px;letter-spacing:.04em;opacity:.55;transition:color 1.8s ease,opacity 1.8s ease,transform 1.8s ease}
+#taper-0907m.lit .word{color:#2a1c10;opacity:.9;transform:translateY(-4px)}
+#taper-0907m .prompt{position:absolute;left:50%;top:14px;transform:translateX(-50%);color:#5a6478;font-size:11px;letter-spacing:.14em;text-transform:uppercase;transition:opacity 1.2s ease}
+#taper-0907m.lit .prompt{opacity:0}
+#taper-0907m .title{position:absolute;left:24px;bottom:16px;font-size:12px;letter-spacing:.08em;color:#4a5568;font-style:italic;transition:color 2s ease}
+#taper-0907m.lit .title{color:#5a3d1e}
+</style>
+<div id="taper-0907m">
+  <div class="prompt">touch the dark</div>
+  <div class="sky"></div>
+  <div class="sun"></div>
+  <div class="title">the potential of an unwritten day</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('taper-0907m');
+  var words=["not yet","almost","waiting","soon","unwritten","first light","before","becoming","still","open","possible","begin"];
+  var n=words.length,i;
+  for(i=0;i<n;i++){
+    var w=document.createElement('span');
+    w.className='word';
+    w.textContent=words[i];
+    var ang=(i/n)*Math.PI-Math.PI/2;
+    var r=38;
+    w.style.left=(50+Math.cos(ang)*r)+'%';
+    w.style.top=(58+Math.sin(ang)*r*0.9)+'%';
+    w.style.transitionDelay=(i*70)+'ms';
+    root.appendChild(w);
+  }
+  root.addEventListener('click',function(){
+    root.classList.toggle('lit');
+  });
+  root.addEventListener('mousemove',function(e){
+    var rect=root.getBoundingClientRect();
+    var x=(e.clientX-rect.left)/rect.width;
+    root.querySelectorAll('.word').forEach(function(w,idx){
+      var drift=(x-0.5)*(idx%3-1)*6;
+      w.style.marginLeft=drift+'px';
+    });
+  });
+})();
+</script>
+</section>
