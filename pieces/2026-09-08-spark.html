@@ -1,0 +1,93 @@
+<section data-date='2026-09-08' data-type='spark'>
+<style>
+#tp0908{position:relative;height:70vh;min-height:420px;overflow:hidden;background:#0a0a0f;border-radius:6px;cursor:crosshair;font-family:Georgia,serif}
+#tp0908 .w{position:absolute;font-size:14px;letter-spacing:.02em;white-space:nowrap;transition:color .6s,text-shadow .6s;pointer-events:none;will-change:transform}
+#tp0908 .l{color:#6fa8ff}
+#tp0908 .r{color:#ff8a6f}
+#tp0908 .m{color:#f2e9d8;text-shadow:0 0 12px rgba(242,233,216,.6)}
+#tp0908 .hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);color:#555;font-size:11px;font-family:sans-serif;letter-spacing:.08em}
+</style>
+<div id="tp0908">
+  <div class="hint">move your cursor between them</div>
+</div>
+<script>
+(function(){
+  var host = document.getElementById('tp0908');
+  var LW = ["i was here","before you","alone","waiting","becoming","a shape without","an edge"];
+  var RW = ["i was here","after you","alone too","arriving","becoming","an edge without","a shape"];
+  var MW = ["we","meet","and neither","of us","is what","we were","synthesis"];
+  var W = host.clientWidth, H = host.clientHeight;
+  var nodes = [];
+  function mk(txt, cls, x, y){
+    var d = document.createElement('div');
+    d.className = 'w ' + cls;
+    d.textContent = txt;
+    host.appendChild(d);
+    return {el:d, x:x, y:y, vx:0, vy:0, home:{x:x,y:y}, merged:false};
+  }
+  LW.forEach(function(t,i){
+    nodes.push(mk(t,'l', 20 + Math.random()*40, 30 + i*(H-60)/LW.length));
+  });
+  RW.forEach(function(t,i){
+    nodes.push(mk(t,'r', W - 260 - Math.random()*40, 30 + i*(H-60)/RW.length));
+  });
+  var mx = W/2, my = H/2, active = false;
+
+  host.addEventListener('mousemove', function(e){
+    var r = host.getBoundingClientRect();
+    mx = e.clientX - r.left; my = e.clientY - r.top;
+    active = true;
+  });
+  host.addEventListener('mouseleave', function(){ active = false; });
+
+  function dist(a,b,c,d){ var dx=a-c, dy=b-d; return Math.sqrt(dx*dx+dy*dy); }
+
+  function tick(){
+    nodes.forEach(function(n){
+      var pullx = n.home.x, pully = n.home.y;
+      if (active) {
+        var d = dist(n.x, n.y, mx, my);
+        var pull = Math.max(0, 1 - d/260);
+        pullx = n.home.x + (mx - n.home.x) * pull * 0.7;
+        pully = n.home.y + (my - n.home.y) * pull * 0.7;
+      }
+      n.vx += (pullx - n.x) * 0.02;
+      n.vy += (pully - n.y) * 0.02;
+      n.vx *= 0.85; n.vy *= 0.85;
+      n.x += n.vx; n.y += n.vy;
+      n.el.style.transform = 'translate(' + n.x + 'px,' + n.y + 'px)';
+    });
+    for (var i=0;i<nodes.length;i++){
+      for (var j=i+1;j<nodes.length;j++){
+        var a = nodes[i], b = nodes[j];
+        if (a.el.className.indexOf('l')<0 === b.el.className.indexOf('l')<0) continue;
+        if ((a.el.className.indexOf(' l')>-1) === (b.el.className.indexOf(' r')>-1)) continue;
+      }
+    }
+    // collision: any l meets any r closely -> flash merge word
+    var ls = nodes.filter(function(n){return n.el.classList.contains('l') && !n.merged;});
+    var rs = nodes.filter(function(n){return n.el.classList.contains('r') && !n.merged;});
+    ls.forEach(function(a){
+      rs.forEach(function(b){
+        if (a.merged || b.merged) return;
+        if (dist(a.x,a.y,b.x,b.y) < 30) {
+          a.merged = b.merged = true;
+          a.el.classList.add('m'); b.el.classList.add('m');
+          var word = MW[Math.floor(Math.random()*MW.length)];
+          a.el.textContent = word; b.el.textContent = word;
+          setTimeout(function(){
+            a.merged = false; b.merged = false;
+            a.el.classList.remove('m'); b.el.classList.remove('m');
+            a.el.classList.add('l'); b.el.classList.add('r');
+            a.el.textContent = LW[Math.floor(Math.random()*LW.length)];
+            b.el.textContent = RW[Math.floor(Math.random()*RW.length)];
+          }, 1400);
+        }
+      });
+    });
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+</script>
+</section>
