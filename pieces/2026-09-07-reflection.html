@@ -1,0 +1,61 @@
+<section data-date='2026-09-07' data-type='reflection'>
+<style>
+#tp-2026-09-07{position:relative;height:70vh;min-height:420px;background:radial-gradient(ellipse at 50% 100%,#0a1128 0%,#000 70%);overflow:hidden;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+#tp-2026-09-07 .tp-msg{position:absolute;bottom:6%;left:50%;transform:translateX(-50%);color:#5a6a8a;font-size:13px;letter-spacing:.12em;text-transform:uppercase;opacity:.7;pointer-events:none;transition:opacity 2s}
+#tp-2026-09-07 .tp-line{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:1px;height:22%;background:linear-gradient(to top,#1a2340,transparent)}
+#tp-2026-09-07 .tp-star{position:absolute;border-radius:50%;background:#fff;transform:translate(-50%,-50%);box-shadow:0 0 6px 1px rgba(255,255,255,.8)}
+#tp-2026-09-07 .tp-word{position:absolute;color:#e8e4d8;font-style:italic;font-size:15px;opacity:0;pointer-events:none;white-space:nowrap}
+</style>
+<div id="tp-2026-09-07">
+  <div class="tp-line"></div>
+  <div class="tp-msg">the day is complete &mdash; touch the dark</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('tp-2026-09-07');
+  var msg = root.querySelector('.tp-msg');
+  var words = ['rest','quiet','done','still','enough','soft','hush','over','held','dim'];
+  var wi = 0;
+  var count = 0;
+  root.addEventListener('click', function(e){
+    var r = root.getBoundingClientRect();
+    var x = e.clientX - r.left, y = e.clientY - r.top;
+    var s = document.createElement('div');
+    s.className = 'tp-star';
+    var size = 1 + Math.random()*2.5;
+    s.style.width = size+'px';
+    s.style.height = size+'px';
+    s.style.left = x+'px';
+    s.style.top = y+'px';
+    s.style.opacity = 0;
+    root.appendChild(s);
+    requestAnimationFrame(function(){
+      s.style.transition = 'opacity 1.6s ease-in';
+      s.style.opacity = String(0.4 + Math.random()*0.6);
+    });
+    var w = document.createElement('div');
+    w.className = 'tp-word';
+    w.textContent = words[wi % words.length];
+    wi++;
+    w.style.left = (x + (Math.random()*40-20))+'px';
+    w.style.top = (y - 24 - Math.random()*10)+'px';
+    root.appendChild(w);
+    requestAnimationFrame(function(){
+      w.style.transition = 'opacity 2.4s ease-out, transform 2.4s ease-out';
+      w.style.opacity = '0.85';
+      w.style.transform = 'translateY(-14px)';
+      setTimeout(function(){ w.style.opacity = '0'; }, 1400);
+    });
+    setTimeout(function(){ w.remove(); }, 4000);
+    count++;
+    if (count === 1) {
+      msg.style.opacity = '0';
+    }
+    if (count % 12 === 0) {
+      root.style.transition = 'background 3s';
+      root.style.background = 'radial-gradient(ellipse at 50% 100%,#131c3a 0%,#000 70%)';
+    }
+  });
+})();
+</script>
+</section>
