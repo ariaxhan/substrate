@@ -1,0 +1,64 @@
+<section data-date='2026-09-08' data-type='morning'>
+<style>
+#tp0908{margin:0;height:70vh;min-height:420px;position:relative;overflow:hidden;
+background:linear-gradient(180deg,#0b0e1a 0%,#1a1030 30%,#3a1f3d 55%,#6b3040 72%,#c96a3f 88%,#f2b25c 100%);
+font-family:Georgia,'Times New Roman',serif;cursor:pointer;transition:background 1.8s ease}
+#tp0908.lit{background:linear-gradient(180deg,#7fb3d5 0%,#a9d1e0 30%,#f4e2c0 55%,#fbd9a0 72%,#ffb672 88%,#fff4d6 100%)}
+#tp0908 .sun{position:absolute;left:50%;bottom:-60px;width:120px;height:120px;border-radius:50%;
+background:radial-gradient(circle,#ffe9b0,#f2b25c 70%,transparent 100%);
+transform:translateX(-50%);opacity:.25;transition:bottom 1.8s cubic-bezier(.2,.8,.2,1),opacity 1.8s ease,width 1.8s ease,height 1.8s ease}
+#tp0908.lit .sun{bottom:38%;opacity:1;width:220px;height:220px}
+#tp0908 .word{position:absolute;left:50%;top:40%;transform:translate(-50%,-50%);
+color:#eee7d8;letter-spacing:.12em;font-size:clamp(22px,4.6vw,46px);text-align:center;
+opacity:.85;text-shadow:0 0 24px rgba(0,0,0,.5);transition:opacity 1.4s ease,color 1.8s ease}
+#tp0908.lit .word{color:#2c1b12;opacity:1;text-shadow:none}
+#tp0908 .sub{position:absolute;left:50%;top:56%;transform:translateX(-50%);
+font-size:13px;letter-spacing:.3em;color:#c9b9a8;opacity:.55;text-transform:uppercase;
+transition:opacity 1.4s ease,color 1.8s ease}
+#tp0908.lit .sub{color:#7a4a2c;opacity:.8}
+#tp0908 .grain{position:absolute;inset:0;pointer-events:none;
+background-image:radial-gradient(rgba(255,255,255,.04) 1px,transparent 1px);
+background-size:3px 3px;mix-blend-mode:overlay}
+#tp0908 .hint{position:absolute;right:16px;bottom:12px;font-size:11px;letter-spacing:.15em;
+color:#8a7a6a;opacity:.5;font-family:sans-serif;text-transform:uppercase}
+#tp0908.lit .hint{opacity:0}
+#tp0908 .birds span{position:absolute;font-size:14px;opacity:0;color:#5a3a2a;transition:opacity 2.2s ease 1s,transform 2.2s ease 1s}
+#tp0908.lit .birds span{opacity:.6;transform:translateY(-10px)}
+</style>
+<div id="tp0908">
+  <div class="sun"></div>
+  <div class="grain"></div>
+  <div class="birds">
+    <span style="left:30%;top:22%">﹀</span>
+    <span style="left:38%;top:26%">﹀</span>
+    <span style="left:62%;top:20%">﹀</span>
+  </div>
+  <div class="word">nothing has been written yet</div>
+  <div class="sub">touch the dark to begin</div>
+  <div class="hint">click</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('tp0908');
+  var word=el.querySelector('.word');
+  var texts=["nothing has been written yet","the day is still blank","every hour, unclaimed","light, before it means anything"];
+  var i=0;
+  el.addEventListener('click',function(){
+    el.classList.toggle('lit');
+    if(el.classList.contains('lit')){
+      i=(i+1)%texts.length;
+      word.textContent=texts[i];
+      el.querySelector('.sub').textContent='the day has not decided what it is';
+    } else {
+      word.textContent="nothing has been written yet";
+      el.querySelector('.sub').textContent='touch the dark to begin';
+    }
+  });
+  el.addEventListener('mousemove',function(e){
+    var r=el.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width;
+    el.querySelector('.sun').style.left=(30+x*40)+'%';
+  });
+})();
+</script>
+</section>
