@@ -1,0 +1,66 @@
+<section data-date='2026-09-08' data-type='pulse'>
+<style>
+#tp-halfway{margin:0;overflow:hidden;height:70vh;min-height:420px;background:#111008;color:#e8dcc4;font-family:Georgia,'Iowan Old Style',serif;position:relative;cursor:ns-resize}
+#tp-halfway .sky{position:absolute;inset:0;background:linear-gradient(to bottom,#1a1c2b 0%,#2a2320 46%,#3a2a1c 50%,#2a2320 54%,#1a1c2b 100%);transition:filter .3s}
+#tp-halfway .line{position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(232,220,196,.35)}
+#tp-halfway .beam{position:absolute;left:50%;top:50%;width:70%;height:2px;background:#e8dcc4;transform-origin:50% 50%;transform:translate(-50%,-50%) rotate(0deg);transition:transform .05s linear}
+#tp-halfway .fulcrum{position:absolute;left:50%;top:50%;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:24px solid #e8dcc4;transform:translate(-50%,-2px)}
+#tp-halfway .weight{position:absolute;top:50%;width:10px;height:10px;border-radius:50%;background:#e8dcc4;box-shadow:0 0 12px 2px rgba(232,220,196,.5)}
+#tp-halfway .w1{left:15%}
+#tp-halfway .w2{right:15%}
+#tp-halfway .word{position:absolute;left:50%;top:12%;transform:translateX(-50%);font-size:15px;letter-spacing:.35em;text-transform:uppercase;color:rgba(232,220,196,.55);pointer-events:none;transition:opacity .4s}
+#tp-halfway .num{position:absolute;left:50%;bottom:10%;transform:translateX(-50%);font-size:11px;letter-spacing:.2em;color:rgba(232,220,196,.4);font-family:'Courier New',monospace}
+#tp-halfway .hint{position:absolute;right:16px;bottom:10px;font-size:10px;letter-spacing:.15em;color:rgba(232,220,196,.25);text-transform:uppercase}
+</style>
+<div id="tp-halfway">
+  <div class="sky"></div>
+  <div class="line"></div>
+  <div class="fulcrum"></div>
+  <div class="beam" id="tp-beam">
+    <div class="weight w1"></div>
+    <div class="weight w2"></div>
+  </div>
+  <div class="word" id="tp-word">equilibrium</div>
+  <div class="num" id="tp-num">12:00 · 0.0°</div>
+  <div class="hint">tilt with your cursor</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('tp-halfway'),
+      beam=document.getElementById('tp-beam'),
+      sky=el.querySelector('.sky'),
+      word=document.getElementById('tp-word'),
+      num=document.getElementById('tp-num'),
+      words=['equilibrium','fulcrum','neither day','nor night','the pause','held breath','tipping','almost','still point','again'],
+      lastAngle=0,tid;
+  function set(angle){
+    beam.style.transform='translate(-50%,-50%) rotate('+angle+'deg)';
+    sky.style.filter='brightness('+(1+Math.abs(angle)/120)+') hue-rotate('+(angle*0.6)+'deg)';
+    var hrs=(12+angle/15).toFixed(1);
+    num.textContent=hrs+':00 · '+(angle>=0?'+':'')+angle.toFixed(1)+'°';
+    if(Math.abs(angle-lastAngle)>6){
+      lastAngle=angle;
+      word.style.opacity=0;
+      clearTimeout(tid);
+      tid=setTimeout(function(){
+        word.textContent=words[Math.floor(Math.random()*words.length)];
+        word.style.opacity=1;
+      },220);
+    }
+  }
+  el.addEventListener('mousemove',function(e){
+    var r=el.getBoundingClientRect();
+    var mid=r.top+r.height/2;
+    var d=(e.clientY-mid)/(r.height/2);
+    d=Math.max(-1,Math.min(1,d));
+    set(-d*28);
+  });
+  el.addEventListener('mouseleave',function(){set(0)});
+  el.addEventListener('click',function(){
+    var flip=lastAngle>=0?-28:28;
+    set(flip);
+  });
+  set(0);
+})();
+</script>
+</section>
