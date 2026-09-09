@@ -1,0 +1,58 @@
+<section data-date='2026-09-09' data-type='digest'>
+<style>
+.crys{margin:0;overflow:hidden;height:70vh;background:#07080c;position:relative;cursor:crosshair;font-family:Georgia,serif}
+.crys .cap{position:absolute;top:14px;left:18px;color:#5a6270;font:12px/1.4 -apple-system,sans-serif;letter-spacing:.14em;text-transform:uppercase;z-index:5;pointer-events:none}
+.crys .cap b{color:#9aa4b8}
+.crys svg{position:absolute;inset:0;width:100%;height:100%}
+.crys .n{fill:#e8ecf5;font-size:11px;font-family:Georgia,serif;font-style:italic;text-anchor:middle;opacity:0;transition:opacity .9s ease}
+.crys .n.on{opacity:.85}
+.crys line{stroke:#3a4258;stroke-width:1;opacity:0}
+.crys line.on{opacity:.55;transition:opacity 1.1s ease}
+.crys circle.pt{fill:#8fb3ff;opacity:0;transition:opacity .5s ease}
+.crys circle.pt.on{opacity:.9}
+.crys .hint{position:absolute;bottom:14px;right:18px;color:#3d4356;font:11px sans-serif;letter-spacing:.08em;z-index:5;pointer-events:none}
+</style>
+<div class="crys">
+  <div class="cap"><b>emergence</b> — click to crystallize a thought</div>
+  <div class="hint" id="ct">0 fragments</div>
+  <svg id="sv" xmlns="http://www.w3.org/2000/svg"></svg>
+</div>
+<script>
+(function(){
+  var box=document.querySelectorAll('.crys')[document.querySelectorAll('.crys').length-1];
+  var svg=box.querySelector('#sv'), ctr=box.querySelector('#ct');
+  var words=["pattern","signal","trace","thread","echo","node","seed","fold","weight","drift","axiom","grain","pulse","link","shard","root","span","core","edge","bloom"];
+  var pts=[], NS="http://www.w3.org/2000/svg";
+  function mk(tag,attrs){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);return e}
+  function rect(){return box.getBoundingClientRect()}
+  function add(x,y){
+    var r=rect();
+    var p={x:x,y:y,w:words[pts.length%words.length]};
+    var near=null,best=1e9;
+    pts.forEach(function(q){var d=Math.hypot(q.x-p.x,q.y-p.y);if(d<best){best=d;near=q}});
+    var c=mk('circle',{cx:p.x,cy:p.y,r:3,class:'pt'});
+    svg.appendChild(c);
+    requestAnimationFrame(function(){c.classList.add('on')});
+    if(near && best<r.width*0.55){
+      var ln=mk('line',{x1:near.x,y1:near.y,x2:p.x,y2:p.y});
+      svg.appendChild(ln);
+      requestAnimationFrame(function(){ln.classList.add('on')});
+    }
+    var t=mk('text',{x:p.x,y:p.y-10,class:'n'});
+    t.textContent=p.w;
+    svg.appendChild(t);
+    requestAnimationFrame(function(){t.classList.add('on')});
+    pts.push(p);
+    ctr.textContent=pts.length+" fragment"+(pts.length===1?"":"s")+(pts.length>4?" — a structure holds":"");
+  }
+  box.addEventListener('click',function(e){
+    var r=rect();
+    add(e.clientX-r.left, e.clientY-r.top);
+  });
+  var seedT=setTimeout(function(){
+    var r=rect();
+    add(r.width*0.5, r.height*0.5);
+  },600);
+})();
+</script>
+</section>
