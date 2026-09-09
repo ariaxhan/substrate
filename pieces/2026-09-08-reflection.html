@@ -1,0 +1,58 @@
+<section data-date='2026-09-08' data-type='reflection'>
+<style>
+.taper-0908{margin:0;height:80vh;min-height:480px;background:radial-gradient(ellipse at 50% 100%,#0d1224 0%,#04050c 70%);position:relative;overflow:hidden;cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+.taper-0908 .line{position:absolute;bottom:6%;left:50%;transform:translateX(-50%);color:#8892b0;font-size:clamp(.8rem,2vw,1.15rem);letter-spacing:.12em;opacity:.55;text-align:center;width:90%;pointer-events:none;transition:opacity 2s}
+.taper-0908 .star{position:absolute;border-radius:50%;background:#fff;transform:translate(-50%,-50%);animation:tap-glow 2.6s ease-out forwards;pointer-events:none}
+.taper-0908 .word{position:absolute;color:#e8e6d9;font-style:italic;transform:translate(-50%,-50%);opacity:0;animation:tap-word 3.2s ease-out forwards;pointer-events:none;white-space:nowrap}
+@keyframes tap-glow{0%{opacity:0;transform:translate(-50%,-50%) scale(.2)}12%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:.75;transform:translate(-50%,-50%) scale(1)}}
+@keyframes tap-word{0%{opacity:0}18%{opacity:.9}75%{opacity:.9}100%{opacity:0}}
+</style>
+<div class="taper-0908" id="tp0908">
+  <div class="line" id="tp0908-line">the day is complete. rest before the next beginning.</div>
+</div>
+<script>
+(function(){
+  var host = document.getElementById('tp0908');
+  var line = document.getElementById('tp0908-line');
+  var words = ['still','quiet','done','enough','soon','dark','soft','breathe','later','held','unhurried','dim','close now','not yet','again'];
+  var count = 0;
+  function place(x,y){
+    var star = document.createElement('div');
+    var size = 1 + Math.random()*2.4;
+    star.className = 'star';
+    star.style.left = x+'px';
+    star.style.top = y+'px';
+    star.style.width = size+'px';
+    star.style.height = size+'px';
+    star.style.boxShadow = '0 0 '+(size*3)+'px '+(size)+'px rgba(255,255,255,.35)';
+    host.appendChild(star);
+    setTimeout(function(){ star.remove(); }, 2700);
+  }
+  host.addEventListener('click', function(e){
+    var r = host.getBoundingClientRect();
+    var x = e.clientX - r.left, y = e.clientY - r.top;
+    place(x,y);
+    count++;
+    if (count % 2 === 0) {
+      var w = document.createElement('div');
+      w.className = 'word';
+      w.textContent = words[Math.floor(Math.random()*words.length)];
+      w.style.left = x+'px';
+      w.style.top = (y-18)+'px';
+      w.style.fontSize = (0.85+Math.random()*0.6)+'rem';
+      host.appendChild(w);
+      setTimeout(function(){ w.remove(); }, 3300);
+    }
+    if (count === 1) {
+      line.style.opacity = '0';
+    }
+  });
+  function seed(){
+    var r = host.getBoundingClientRect();
+    place(Math.random()*r.width, Math.random()*r.height*0.7);
+  }
+  for (var i=0;i<6;i++) setTimeout(seed, 400*i);
+  setInterval(seed, 3200);
+})();
+</script>
+</section>
