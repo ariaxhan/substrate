@@ -1,0 +1,64 @@
+<section data-date='2026-09-09' data-type='morning'>
+<style>
+#tpr-dawn{margin:0;overflow:hidden;height:70vh;min-height:420px;position:relative;
+background:linear-gradient(180deg,#0b0f2a 0%,#1c1440 30%,#5a2a52 55%,#c9573f 78%,#f2a24f 100%);
+font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+#tpr-dawn .tpr-sun{position:absolute;left:50%;bottom:-18%;width:38vh;height:38vh;border-radius:50%;
+background:radial-gradient(circle at 50% 50%,#fff6d8,#ffd27a 55%,#ff9d4d 100%);
+transform:translateX(-50%);opacity:.18;transition:bottom 1.4s cubic-bezier(.2,.8,.2,1),opacity 1.4s,box-shadow 1.4s;
+filter:blur(1px)}
+#tpr-dawn.tpr-risen .tpr-sun{bottom:8%;opacity:1;box-shadow:0 0 90px 30px rgba(255,190,110,.55)}
+#tpr-dawn .tpr-word{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);
+color:#f4e9ff;letter-spacing:.12em;font-size:clamp(1.6rem,4.4vw,3.2rem);text-align:center;
+text-shadow:0 0 24px rgba(0,0,0,.4);user-select:none;transition:color 1.4s,opacity .8s}
+#tpr-dawn.tpr-risen .tpr-word{color:#2a1508;text-shadow:none}
+#tpr-dawn .tpr-sub{position:absolute;left:50%;top:60%;transform:translateX(-50%);
+font-style:italic;font-size:.85rem;letter-spacing:.08em;color:rgba(244,233,255,.55);
+opacity:0;transition:opacity 1.6s 1s}
+#tpr-dawn.tpr-risen .tpr-sub{opacity:1;color:rgba(42,21,8,.6)}
+#tpr-dawn .tpr-stars{position:absolute;inset:0;transition:opacity 1.4s}
+#tpr-dawn.tpr-risen .tpr-stars{opacity:0}
+#tpr-dawn .tpr-hint{position:absolute;right:14px;bottom:10px;font-family:sans-serif;
+font-size:.65rem;letter-spacing:.1em;color:rgba(244,233,255,.35);text-transform:uppercase}
+#tpr-dawn.tpr-risen .tpr-hint{opacity:0}
+</style>
+<div id="tpr-dawn">
+  <div class="tpr-stars" id="tpr-stars"></div>
+  <div class="tpr-sun"></div>
+  <div class="tpr-word" id="tpr-word">everything unwritten</div>
+  <div class="tpr-sub" id="tpr-sub"></div>
+  <div class="tpr-hint">move · click</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('tpr-dawn'),
+      stars=document.getElementById('tpr-stars'),
+      word=document.getElementById('tpr-word'),
+      sub=document.getElementById('tpr-sub'),
+      lines=['still becoming','not yet spent','only light, waiting','a day with no lines drawn in it','begin anywhere'],
+      risen=false,li=0;
+  for(var i=0;i<60;i++){
+    var s=document.createElement('div'),x=Math.random()*100,y=Math.random()*70,sz=Math.random()*2+1;
+    s.style.cssText='position:absolute;left:'+x+'%;top:'+y+'%;width:'+sz+'px;height:'+sz+'px;border-radius:50%;background:#fff;opacity:'+(Math.random()*.8+.2);
+    stars.appendChild(s);
+  }
+  el.addEventListener('mousemove',function(e){
+    var r=el.getBoundingClientRect(),px=(e.clientX-r.left)/r.width,py=(e.clientY-r.top)/r.height;
+    word.style.transform='translate(calc(-50% + '+((px-.5)*24)+'px), calc(-50% + '+((py-.5)*14)+'px))';
+    el.style.backgroundPosition=(px*20)+'% '+(py*10)+'%';
+  });
+  el.addEventListener('click',function(){
+    risen=!risen;
+    el.classList.toggle('tpr-risen',risen);
+    if(risen){
+      word.textContent=lines[li%lines.length];
+      li++;
+      sub.textContent='the day has not decided what it is yet';
+    } else {
+      word.textContent='everything unwritten';
+      sub.textContent='';
+    }
+  });
+})();
+</script>
+</section>
