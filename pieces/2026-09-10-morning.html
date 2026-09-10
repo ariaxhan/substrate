@@ -1,0 +1,71 @@
+<section data-date='2026-09-10' data-type='morning'>
+<style>
+#tpr{position:relative;height:70vh;min-height:420px;overflow:hidden;background:linear-gradient(#0b1026,#1c2a4a 55%,#3a3560 78%,#7a4a52 92%,#c98a5c);cursor:pointer;font-family:Georgia,'Times New Roman',serif}
+#tpr .sky{position:absolute;inset:0;transition:filter 1.2s ease}
+#tpr .sun{position:absolute;left:50%;bottom:-60px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff6d8,#ffd27a 60%,#e08a3c);transform:translateX(-50%);transition:bottom 2.4s cubic-bezier(.2,.7,.3,1),box-shadow 2.4s ease;box-shadow:0 0 0 rgba(255,200,120,0)}
+#tpr.risen .sun{bottom:38%;box-shadow:0 0 140px 60px rgba(255,190,110,.35)}
+#tpr .hor{position:absolute;left:0;right:0;bottom:0;height:34%;background:#0a0a12}
+#tpr .word{position:absolute;left:50%;top:14%;transform:translateX(-50%);color:#eae4d8;letter-spacing:.35em;font-size:13px;text-transform:uppercase;opacity:.75}
+#tpr .line{position:absolute;left:50%;bottom:34%;transform:translateX(-50%);color:#f4ede0;font-size:clamp(20px,4vw,34px);white-space:nowrap;opacity:0;transition:opacity 1.6s ease 1s,letter-spacing 2s ease 1s;letter-spacing:.5em}
+#tpr.risen .line{opacity:.9;letter-spacing:.08em}
+#tpr .hint{position:absolute;right:16px;bottom:12px;color:#8fa;color:#c9c2b4;font-size:11px;opacity:.55;font-family:monospace}
+#tpr.risen .hint{opacity:0}
+#tpr .bird{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;opacity:0}
+#tpr.risen .bird{animation:tprfly 3.4s ease-out forwards}
+@keyframes tprfly{0%{opacity:0;transform:translate(0,0)}10%{opacity:.9}100%{opacity:0;transform:translate(var(--dx),var(--dy))}}
+</style>
+<div id="tpr">
+  <div class="sky"></div>
+  <div class="hor"></div>
+  <div class="sun"></div>
+  <div class="word">nothing has happened yet</div>
+  <div class="line" id="tprline">the day has not decided what it is</div>
+  <span class="hint">touch the dark</span>
+</div>
+<script>
+(function(){
+  var el = document.getElementById('tpr');
+  var lines = [
+    "the day has not decided what it is",
+    "every hour still unspent",
+    "light owes the world nothing, and gives it anyway",
+    "you are early enough to matter"
+  ];
+  var n = 0;
+  var done = false;
+  el.addEventListener('click', function(e){
+    if(!done){
+      done = true;
+      el.classList.add('risen');
+      for(var i=0;i<14;i++){
+        var b = document.createElement('div');
+        b.className = 'bird';
+        var x = 20 + Math.random()*60, y = 10 + Math.random()*40;
+        b.style.left = x+'%';
+        b.style.top = y+'%';
+        b.style.animationDelay = (Math.random()*1.5)+'s';
+        b.style.setProperty('--dx', (40+Math.random()*120)+'px');
+        b.style.setProperty('--dy', (-30-Math.random()*60)+'px');
+        el.appendChild(b);
+      }
+      return;
+    }
+    n = (n+1) % lines.length;
+    var lineEl = document.getElementById('tprline');
+    lineEl.style.opacity = 0;
+    setTimeout(function(){
+      lineEl.textContent = lines[n];
+      lineEl.style.opacity = .9;
+    }, 350);
+  });
+  el.addEventListener('mousemove', function(e){
+    var r = el.getBoundingClientRect();
+    var px = (e.clientX - r.left) / r.width;
+    var py = (e.clientY - r.top) / r.height;
+    el.style.setProperty('--mx', px);
+    el.querySelector('.sun').style.transform = 'translate(-50%,'+((py-0.5)*-10)+'px)';
+  });
+})();
+</script>
+</section>
+
