@@ -1,0 +1,75 @@
+<section data-date='2026-09-10' data-type='pulse'>
+<style>
+#tp-halfway{margin:0;overflow:hidden;height:70vh;min-height:420px;position:relative;
+background:linear-gradient(180deg,#0d0f1a 0%,#1a1030 45%,#3a1d2e 62%,#c9622e 78%,#f2b545 100%);
+font-family:'Iowan Old Style','Palatino Linotype',Palatino,Georgia,serif;cursor:crosshair;user-select:none}
+#tp-halfway .tp-sky{position:absolute;inset:0}
+#tp-halfway .tp-pivot{position:absolute;left:50%;top:50%;width:1px;height:120px;background:rgba(255,240,210,.5);
+transform:translate(-50%,-50%)}
+#tp-halfway .tp-beam{position:absolute;left:50%;top:50%;width:64vw;max-width:640px;height:1px;
+background:rgba(255,240,210,.75);transform-origin:center center;transition:transform .12s linear}
+#tp-halfway .tp-word{position:absolute;top:0;font-size:clamp(1.1rem,2.6vw,2.1rem);letter-spacing:.06em;
+color:#f4e9d8;text-transform:lowercase;white-space:nowrap;transform:translate(-50%,-135%)}
+#tp-halfway .tp-word.tp-r{left:100%}
+#tp-halfway .tp-word.tp-l{left:0%}
+#tp-halfway .tp-fulcrum{position:absolute;left:50%;bottom:18%;width:0;height:0;
+border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:26px solid rgba(255,240,210,.85);
+transform:translateX(-50%)}
+#tp-halfway .tp-caption{position:absolute;left:50%;bottom:6%;transform:translateX(-50%);
+font-size:.72rem;letter-spacing:.35em;text-transform:uppercase;color:rgba(255,240,210,.55)}
+#tp-halfway .tp-hint{position:absolute;right:16px;top:12px;font-size:.65rem;letter-spacing:.15em;
+color:rgba(255,240,210,.35);text-transform:uppercase}
+</style>
+<div id="tp-halfway">
+  <div class="tp-sky"></div>
+  <div class="tp-pivot"></div>
+  <div class="tp-beam" id="tp-beam">
+    <span class="tp-word tp-l" id="tp-wl">morning</span>
+    <span class="tp-word tp-r" id="tp-wr">evening</span>
+  </div>
+  <div class="tp-fulcrum"></div>
+  <div class="tp-caption" id="tp-cap">equal, for a moment</div>
+  <div class="tp-hint">move · click</div>
+</div>
+<script>
+(function(){
+  var box=document.getElementById('tp-halfway'),
+      beam=document.getElementById('tp-beam'),
+      wl=document.getElementById('tp-wl'),
+      wr=document.getElementById('tp-wr'),
+      cap=document.getElementById('tp-cap'),
+      pairs=[['morning','evening'],['waking','sleeping'],['becoming','having been'],['rising','settling'],['still light','already dark']],
+      pi=0, flipped=false;
+  function label(){
+    var p=pairs[pi];
+    wl.textContent=flipped?p[1]:p[0];
+    wr.textContent=flipped?p[0]:p[1];
+  }
+  label();
+  box.addEventListener('mousemove',function(e){
+    var r=box.getBoundingClientRect(),
+        x=(e.clientX-r.left)/r.width,
+        d=Math.max(-1,Math.min(1,(x-0.5)*2)),
+        deg=d*14;
+    beam.style.transform='translate(-50%,-50%) rotate('+deg.toFixed(2)+'deg)';
+    var dist=Math.abs(d);
+    cap.textContent=dist<0.05?'equal, for a moment':(d<0?'tipping toward '+wl.textContent:'tipping toward '+wr.textContent);
+  });
+  box.addEventListener('mouseleave',function(){
+    beam.style.transform='translate(-50%,-50%) rotate(0deg)';
+    cap.textContent='equal, for a moment';
+  });
+  box.addEventListener('click',function(){
+    flipped=!flipped;
+    pi=(pi+1)%pairs.length;
+    label();
+    beam.style.transition='transform .5s cubic-bezier(.2,1.4,.4,1)';
+    beam.style.transform='translate(-50%,-50%) rotate(360deg)';
+    setTimeout(function(){
+      beam.style.transition='transform .12s linear';
+      beam.style.transform='translate(-50%,-50%) rotate(0deg)';
+    },520);
+  });
+})();
+</script>
+</section>
