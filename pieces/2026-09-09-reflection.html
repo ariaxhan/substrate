@@ -1,0 +1,77 @@
+<section data-date='2026-09-09' data-type='reflection'>
+<style>
+.tp-night{margin:0;height:80vh;min-height:520px;background:radial-gradient(ellipse at 50% 100%,#0e1524 0%,#050810 70%,#020306 100%);position:relative;overflow:hidden;cursor:crosshair;font-family:Georgia,'Palatino Linotype',serif}
+.tp-night .tp-msg{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);color:#5b6b85;font-size:clamp(14px,2.4vw,22px);letter-spacing:.06em;text-align:center;opacity:.85;transition:opacity 1.6s ease;pointer-events:none;font-style:italic}
+.tp-night .tp-msg.tp-gone{opacity:0}
+.tp-night .tp-count{position:absolute;bottom:14px;right:18px;color:#33415c;font-size:11px;letter-spacing:.15em;font-family:Georgia,serif;opacity:.6}
+.tp-star{position:absolute;border-radius:50%;background:#fff;pointer-events:none;transform:translate(-50%,-50%);animation:tp-bloom 2.4s ease-out forwards}
+.tp-horizon{position:absolute;bottom:0;left:0;right:0;height:22%;background:linear-gradient(to top,#000 0%,rgba(0,0,0,0) 100%)}
+@keyframes tp-bloom{
+0%{width:0;height:0;opacity:0;box-shadow:0 0 0 rgba(255,255,255,0)}
+8%{width:3px;height:3px;opacity:1;box-shadow:0 0 12px 4px rgba(255,255,255,.9)}
+100%{width:2px;height:2px;opacity:.85;box-shadow:0 0 3px 1px rgba(200,215,255,.55)}
+}
+</style>
+<div class="tp-night" id="tp-night-2026-09-09">
+  <div class="tp-msg" id="tp-msg-2026-09-09">the day is complete. rest here. touch the dark.</div>
+  <div class="tp-horizon"></div>
+  <div class="tp-count" id="tp-count-2026-09-09">0 lit</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('tp-night-2026-09-09');
+  var msg = document.getElementById('tp-msg-2026-09-09');
+  var counter = document.getElementById('tp-count-2026-09-09');
+  var n = 0;
+  var words = ['still','quiet','held','done','breathe','soft','dim','enough','far','slow'];
+  function place(x, y){
+    var s = document.createElement('div');
+    s.className = 'tp-star';
+    var size = 1 + Math.random() * 2;
+    s.style.left = x + 'px';
+    s.style.top = y + 'px';
+    s.style.width = size + 'px';
+    s.style.height = size + 'px';
+    root.appendChild(s);
+    n++;
+    counter.textContent = n + (n === 1 ? ' star' : ' lit');
+    if (!msg.classList.contains('tp-gone')) msg.classList.add('tp-gone');
+    if (Math.random() < 0.35){
+      var w = document.createElement('span');
+      w.textContent = words[Math.floor(Math.random()*words.length)];
+      w.style.position = 'absolute';
+      w.style.left = (x + 8) + 'px';
+      w.style.top = (y - 6) + 'px';
+      w.style.color = '#4a5876';
+      w.style.fontSize = '11px';
+      w.style.fontStyle = 'italic';
+      w.style.opacity = '0';
+      w.style.transition = 'opacity 2s ease';
+      w.style.pointerEvents = 'none';
+      root.appendChild(w);
+      requestAnimationFrame(function(){ w.style.opacity = '0.5'; });
+      setTimeout(function(){
+        w.style.opacity = '0';
+        setTimeout(function(){ w.remove(); }, 2000);
+      }, 2600);
+    }
+    setTimeout(function(){ s.remove(); }, 30000);
+  }
+  root.addEventListener('click', function(e){
+    var r = root.getBoundingClientRect();
+    place(e.clientX - r.left, e.clientY - r.top);
+  });
+  root.addEventListener('touchstart', function(e){
+    var r = root.getBoundingClientRect();
+    var t = e.touches[0];
+    place(t.clientX - r.left, t.clientY - r.top);
+  }, {passive:true});
+  var seedR = root.getBoundingClientRect();
+  for (var i = 0; i < 14; i++){
+    place(Math.random() * (seedR.width || 800), Math.random() * (seedR.height || 400) * 0.7);
+  }
+  n = 0;
+  counter.textContent = '0 lit';
+})();
+</script>
+</section>
