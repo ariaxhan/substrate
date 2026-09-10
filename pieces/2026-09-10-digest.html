@@ -1,0 +1,73 @@
+<section data-date='2026-09-10' data-type='digest'>
+<style>
+.tp-crystal{margin:0;overflow:hidden;background:#0a0e14;height:100vh;cursor:crosshair;position:relative;font-family:Georgia,serif}
+.tp-crystal canvas{display:block;position:absolute;inset:0}
+.tp-crystal .tp-cap{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);color:#3a4a5a;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-family:Georgia,serif;pointer-events:none;transition:opacity 2s}
+.tp-crystal .tp-title{position:absolute;top:22px;left:50%;transform:translateX(-50%);color:#c9d6e3;font-size:13px;letter-spacing:.3em;text-transform:uppercase;font-family:Georgia,serif;opacity:.6;pointer-events:none}
+</style>
+<div class="tp-crystal" id="tpC">
+  <div class="tp-title">crystallize</div>
+  <canvas id="tpCv"></canvas>
+  <div class="tp-cap" id="tpCap">every point you place remembers the ones before it</div>
+</div>
+<script>
+(function(){
+  var wrap=document.getElementById('tpC'), cv=document.getElementById('tpCv'), cap=document.getElementById('tpCap');
+  var ctx=cv.getContext('2d'), pts=[], W,H;
+  function size(){W=cv.width=wrap.clientWidth;H=cv.height=wrap.clientHeight}
+  size(); window.addEventListener('resize',size);
+  var words=['recall','pattern','trace','thread','node','memory','signal','root','link','root','echo','shape'];
+  function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+  function addPoint(x,y){
+    var p={x:x,y:y,t:Date.now(),w:words[pts.length%words.length]};
+    pts.push(p);
+    var near=pts.filter(function(q){return q!==p}).map(function(q){return {q:q,d:dist(p,q)}}).sort(function(a,b){return a.d-b.d}).slice(0,3);
+    p.links=near.map(function(n){return n.q});
+    if(pts.length===1) cap.textContent='a single point holds no shape';
+    else if(pts.length<6) cap.textContent=pts.length+' points — the pattern is not yet legible';
+    else if(pts.length<16) cap.textContent='connections outnumber points now: structure emerging';
+    else cap.textContent='knowledge does not accumulate — it crystallizes';
+    cap.style.opacity=1;
+    clearTimeout(addPoint._to);
+    addPoint._to=setTimeout(function(){cap.style.opacity=.35},2600);
+  }
+  wrap.addEventListener('click',function(e){
+    var r=wrap.getBoundingClientRect();
+    addPoint(e.clientX-r.left, e.clientY-r.top);
+  });
+  // seed a faint memory of prior structure
+  for(var i=0;i<4;i++){
+    addPoint(W*0.5+Math.cos(i*1.9)*90, H*0.5+Math.sin(i*1.9)*90);
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    var now=Date.now();
+    // edges
+    pts.forEach(function(p){
+      (p.links||[]).forEach(function(q){
+        var age=Math.min(1,(now-Math.max(p.t,q.t))/1500);
+        ctx.strokeStyle='rgba(120,170,210,'+(0.08+0.22*age)+')';
+        ctx.lineWidth=0.6;
+        ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y); ctx.stroke();
+      });
+    });
+    // nodes
+    pts.forEach(function(p){
+      var age=Math.min(1,(now-p.t)/900);
+      var r=2+age*2.2;
+      ctx.beginPath();
+      ctx.fillStyle='rgba(214,230,242,'+(0.35+0.5*age)+')';
+      ctx.arc(p.x,p.y,r,0,7);
+      ctx.fill();
+      if(age>0.8){
+        ctx.fillStyle='rgba(150,180,205,0.5)';
+        ctx.font='10px Georgia';
+        ctx.fillText(p.w,p.x+6,p.y-6);
+      }
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+</script>
+</section>
