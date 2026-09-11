@@ -1,0 +1,64 @@
+<section data-date='2026-09-11' data-type='pulse'>
+<style>
+#tp-halfway{--t:0.5;position:relative;height:280px;background:#0b0c10;color:#eae7dc;
+font-family:Georgia,'Times New Roman',serif;overflow:hidden;cursor:pointer;
+display:flex;align-items:center;justify-content:center}
+#tp-halfway .sky{position:absolute;inset:0;
+background:linear-gradient(180deg,#141821 0%,#1c2230 45%,#241c1c 55%,#0b0c10 100%)}
+#tp-halfway .bar{position:absolute;left:0;right:0;top:calc(var(--t)*100%);height:1px;
+background:rgba(234,231,220,.25);transition:top .6s cubic-bezier(.22,1,.36,1)}
+#tp-halfway .fulcrum{position:relative;font-size:15px;letter-spacing:.14em;
+text-transform:uppercase;z-index:2;transition:transform .6s cubic-bezier(.22,1,.36,1),
+opacity .6s}
+#tp-halfway .fulcrum b{font-weight:400;font-style:italic;
+opacity:calc(1 - (var(--t) - 0.5) * (var(--t) - 0.5) * 4)}
+#tp-halfway .left,#tp-halfway .right{position:absolute;top:50%;
+font-size:12px;letter-spacing:.08em;color:#9a9488;transition:transform .6s
+cubic-bezier(.22,1,.36,1),opacity .6s}
+#tp-halfway .left{left:8%;transform:translateY(calc((var(--t) - 0.5) * -160px))}
+#tp-halfway .right{right:8%;transform:translateY(calc((0.5 - var(--t)) * -160px))}
+#tp-halfway .grain{position:absolute;top:12px;right:16px;font-size:10px;
+color:#57534a;letter-spacing:.08em;z-index:2}
+#tp-halfway .hint{position:absolute;bottom:12px;left:16px;font-size:9px;
+color:#4a473f;letter-spacing:.1em;z-index:2}
+</style>
+<div id="tp-halfway">
+  <div class="sky"></div>
+  <div class="bar"></div>
+  <span class="left">what was</span>
+  <span class="fulcrum"><b>halfway</b></span>
+  <span class="right">what remains</span>
+  <div class="grain" id="tp-clock">12:00</div>
+  <div class="hint">tilt the day — click to hold</div>
+</div>
+<script>
+(function(){
+  var el = document.getElementById('tp-halfway');
+  var clock = document.getElementById('tp-clock');
+  var held = false;
+  function setT(t){
+    t = Math.max(0, Math.min(1, t));
+    el.style.setProperty('--t', t.toFixed(3));
+    var mins = Math.round(t * 1440);
+    var h = Math.floor(mins/60), m = mins%60;
+    clock.textContent = (h%24).toString().padStart(2,'0') + ':' + m.toString().padStart(2,'0');
+  }
+  el.addEventListener('mousemove', function(e){
+    if (held) return;
+    var r = el.getBoundingClientRect();
+    setT((e.clientX - r.left) / r.width);
+  });
+  el.addEventListener('mouseleave', function(){ if(!held) setT(0.5); });
+  el.addEventListener('click', function(){
+    held = !held;
+    el.style.opacity = held ? '1' : '';
+  });
+  el.addEventListener('touchmove', function(e){
+    var r = el.getBoundingClientRect();
+    var x = e.touches[0].clientX - r.left;
+    setT(x / r.width);
+    e.preventDefault();
+  }, {passive:false});
+})();
+</script>
+</section>
