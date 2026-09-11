@@ -1,0 +1,97 @@
+<section data-date='2026-09-11' data-type='spark'>
+<style>
+[data-date='2026-09-11'] .sp-wrap{margin:0;overflow:hidden;background:#0a0a0f;height:70vh;min-height:420px;position:relative;font-family:Georgia,serif;cursor:crosshair}
+[data-date='2026-09-11'] .sp-word{position:absolute;color:#e8e2d0;white-space:nowrap;transition:opacity .6s,left .6s;font-style:italic;pointer-events:none}
+[data-date='2026-09-11'] .sp-left{color:#ff8b5e}
+[data-date='2026-09-11'] .sp-right{color:#5ecbff}
+[data-date='2026-09-11'] .sp-spark{position:absolute;color:#fff;font-weight:bold;font-style:normal;pointer-events:none;text-shadow:0 0 12px #fff,0 0 24px #ffd65e;transition:transform .8s,opacity 1.4s}
+[data-date='2026-09-11'] .sp-hint{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);color:#555;font:11px sans-serif;font-style:normal;letter-spacing:.05em}
+</style>
+<div class="sp-wrap" id="sp-w">
+  <div class="sp-hint">move — click to meet</div>
+</div>
+<script>
+(function(){
+  var wrap = document.getElementById('sp-w');
+  var L = ["you","before","apart","then","still","the wave","a question"];
+  var R = ["me","after","together","now","waiting","the shore","an answer"];
+  var W = [], mx = 0.5, my = 0.5;
+
+  function spawn(){
+    if (W.length > 14) return;
+    var i = Math.floor(Math.random()*L.length);
+    var y = 8 + Math.random()*80;
+    var a = mk(L[i], 'sp-left', -20, y);
+    var b = mk(R[i], 'sp-right', 120, y);
+    a.target = b; b.target = a;
+    a.y = y; b.y = y;
+    a.side = -1; b.side = 1;
+    W.push(a, b);
+  }
+
+  function mk(text, cls, xPct, yPct){
+    var d = document.createElement('div');
+    d.className = 'sp-word ' + cls;
+    d.textContent = text;
+    d.style.top = yPct + '%';
+    d.style.left = xPct + '%';
+    d.style.opacity = '0';
+    wrap.appendChild(d);
+    requestAnimationFrame(function(){ d.style.opacity = '.85'; });
+    return d;
+  }
+
+  function fuse(x, y, wa, wb){
+    var s = document.createElement('div');
+    s.className = 'sp-spark';
+    s.style.left = x + 'px';
+    s.style.top = y + 'px';
+    s.style.fontSize = (14 + Math.random()*10) + 'px';
+    s.textContent = wa + '·' + wb;
+    wrap.appendChild(s);
+    s.style.transform = 'translate(-50%,-50%) scale(.4)';
+    requestAnimationFrame(function(){
+      s.style.transform = 'translate(-50%,-50%) scale(1.3)';
+    });
+    setTimeout(function(){ s.style.opacity = '0'; }, 200);
+    setTimeout(function(){ s.remove(); }, 1600);
+  }
+
+  function tick(){
+    var rect = wrap.getBoundingClientRect();
+    var pull = 0.5 + (my - 0.5) * 0.15;
+    for (var k = 0; k < W.length; k++){
+      var w = W[k];
+      if (!w.parentNode) continue;
+      var curLeft = parseFloat(w.style.left);
+      var goal = w.side < 0 ? (mx*100*0.9) : (mx*100 + (100 - mx*100)*0.1);
+      var nextLeft = curLeft + (goal - curLeft) * 0.02;
+      w.style.left = nextLeft + '%';
+      if (Math.abs(nextLeft - (mx*100)) < 6 && !w.fused && w.target && !w.target.fused){
+        w.fused = true; w.target.fused = true;
+        var px = rect.width * (mx);
+        var py = rect.height * (w.y/100);
+        fuse(px, py, w.textContent, w.target.textContent);
+        w.style.opacity = '0'; w.target.style.opacity = '0';
+        (function(a,b){ setTimeout(function(){ a.remove(); b.remove(); }, 700); })(w, w.target);
+        W.splice(W.indexOf(w.target), 1);
+        W.splice(W.indexOf(w), 1);
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  wrap.addEventListener('mousemove', function(e){
+    var r = wrap.getBoundingClientRect();
+    mx = Math.min(0.92, Math.max(0.08, (e.clientX - r.left) / r.width));
+    my = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
+  });
+  wrap.addEventListener('click', function(e){
+    for (var i = 0; i < 2; i++) spawn();
+  });
+  spawn(); spawn(); spawn();
+  setInterval(spawn, 3200);
+  tick();
+})();
+</script>
+</section>
