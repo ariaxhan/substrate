@@ -1,0 +1,57 @@
+<section data-date='2026-09-12' data-type='pulse'>
+<style>
+#taper-halfway{margin:0;height:70vh;min-height:420px;background:#0b0b0d;position:relative;overflow:hidden;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+#taper-halfway .sky{position:absolute;inset:0;background:linear-gradient(to bottom,#12131a,#0b0b0d 60%)}
+#taper-halfway .beam{position:absolute;left:10%;right:10%;top:50%;height:1px;background:#666;transform-origin:center;transition:transform .05s linear}
+#taper-halfway .fulcrum{position:absolute;left:50%;top:50%;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:24px solid #888;transform:translate(-50%,0)}
+#taper-halfway .word{position:absolute;top:50%;font-size:clamp(14px,2.4vw,26px);color:#eaeaea;letter-spacing:.04em;white-space:nowrap;transform-origin:center;transition:transform .05s linear, color .3s}
+#taper-halfway .dawn{left:12%;transform:translate(-50%,-100%) rotate(0deg)}
+#taper-halfway .dusk{right:12%;left:auto;transform:translate(50%,-100%) rotate(0deg)}
+#taper-halfway .mark{position:absolute;left:50%;top:calc(50% - 46px);transform:translateX(-50%);color:#555;font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+#taper-halfway .note{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);color:#3d3d42;font-size:10px;letter-spacing:.15em;text-transform:uppercase;text-align:center}
+</style>
+<div id="taper-halfway">
+  <div class="sky"></div>
+  <div class="mark" id="th-mark">equilibrium</div>
+  <div class="beam" id="th-beam"></div>
+  <div class="fulcrum"></div>
+  <div class="word dawn" id="th-dawn">morning</div>
+  <div class="word dusk" id="th-dusk">evening</div>
+  <div class="note">tilt the day — click to hold it still</div>
+</div>
+<script>
+(function(){
+  var box=document.getElementById('taper-halfway');
+  var beam=document.getElementById('th-beam');
+  var dawn=document.getElementById('th-dawn');
+  var dusk=document.getElementById('th-dusk');
+  var mark=document.getElementById('th-mark');
+  var frozen=false, deg=0;
+  function paint(d){
+    deg=d;
+    var t=Math.max(-1,Math.min(1,d/18));
+    beam.style.transform='rotate('+d+'deg)';
+    dawn.style.transform='translate(-50%,-100%) rotate('+(-d*0.6)+'deg)';
+    dusk.style.transform='translate(50%,-100%) rotate('+(-d*0.6)+'deg)';
+    var warm=Math.round(210+40*t), cool=Math.round(220-40*t);
+    dawn.style.color='rgb('+warm+',210,'+cool+')';
+    dusk.style.color='rgb('+cool+',210,'+warm+')';
+    mark.textContent = Math.abs(d) < 0.6 ? 'equilibrium' : (d>0 ? 'leaning toward dusk' : 'leaning toward dawn');
+    mark.style.opacity = Math.abs(d) < 0.6 ? 1 : 0.6;
+  }
+  box.addEventListener('mousemove',function(e){
+    if(frozen) return;
+    var r=box.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width;
+    paint((x-0.5)*40);
+  });
+  box.addEventListener('click',function(){
+    frozen=!frozen;
+    box.style.cursor = frozen ? 'default' : 'crosshair';
+  });
+  box.addEventListener('mouseleave',function(){
+    if(!frozen) paint(0);
+  });
+})();
+</script>
+</section>
