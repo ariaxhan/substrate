@@ -1,0 +1,57 @@
+<section data-date='2026-09-12' data-type='morning'>
+<style>
+#tp-dawn{position:relative;height:70vh;min-height:420px;overflow:hidden;background:linear-gradient(#0b1026,#1b2145 55%,#3a2e52 78%,#6b3d4a 92%,#3a2e52);cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+#tp-dawn *{box-sizing:border-box}
+#tp-dawn .tp-sun{position:absolute;left:50%;bottom:-60px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle at 50% 50%,#fff2c4,#ffb35c 55%,rgba(255,140,60,0) 75%);transform:translate(-50%,0);transition:bottom 1.4s cubic-bezier(.2,.7,.3,1),box-shadow 1.4s ease;filter:blur(.5px)}
+#tp-dawn.tp-risen .tp-sun{bottom:38%;box-shadow:0 0 90px 40px rgba(255,190,120,.35)}
+#tp-dawn .tp-glow{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 100%,rgba(255,170,90,0),rgba(255,170,90,0) 40%);opacity:0;transition:opacity 1.6s ease}
+#tp-dawn.tp-risen .tp-glow{opacity:1;background:radial-gradient(ellipse at 50% 78%,rgba(255,170,90,.35),rgba(255,170,90,0) 60%)}
+#tp-dawn .tp-hill{position:absolute;left:0;right:0;bottom:0;height:22%;background:#0a0a12;clip-path:polygon(0 60%,8% 40%,20% 55%,34% 30%,50% 50%,66% 25%,80% 48%,92% 35%,100% 55%,100% 100%,0 100%)}
+#tp-dawn .tp-word{position:absolute;color:#eae2f0;opacity:0;letter-spacing:.06em;font-style:italic;transition:opacity 2s ease 0s,transform 2s ease 0s;pointer-events:none;text-shadow:0 0 12px rgba(0,0,0,.5)}
+#tp-dawn.tp-risen .tp-word{opacity:.85;transform:translateY(0)}
+#tp-dawn .tp-word{transform:translateY(14px)}
+#tp-dawn .tp-w1{top:14%;left:8%;font-size:1.6vw;transition-delay:.3s}
+#tp-dawn .tp-w2{top:22%;right:10%;font-size:1.1vw;transition-delay:.7s}
+#tp-dawn .tp-w3{top:38%;left:14%;font-size:1vw;transition-delay:1.1s}
+#tp-dawn .tp-w4{bottom:30%;right:16%;font-size:1.3vw;transition-delay:1.5s}
+#tp-dawn .tp-hint{position:absolute;left:50%;top:14px;transform:translateX(-50%);color:rgba(255,255,255,.4);font-size:12px;letter-spacing:.2em;text-transform:uppercase;transition:opacity 1s ease;pointer-events:none}
+#tp-dawn.tp-risen .tp-hint{opacity:0}
+#tp-dawn .tp-star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;transition:opacity 1.8s ease}
+#tp-dawn.tp-risen .tp-star{opacity:0}
+#tp-dawn .tp-cursorlight{position:absolute;width:340px;height:340px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(255,220,170,.10),rgba(255,220,170,0) 70%);transform:translate(-50%,-50%);opacity:0;transition:opacity .5s ease}
+#tp-dawn.tp-risen .tp-cursorlight{opacity:1}
+</style>
+<div id="tp-dawn">
+  <div class="tp-hint">click the horizon</div>
+  <div class="tp-glow"></div>
+  <div class="tp-sun"></div>
+  <span class="tp-word tp-w1">unwritten</span>
+  <span class="tp-word tp-w2">still possible</span>
+  <span class="tp-word tp-w3">before the first word</span>
+  <span class="tp-word tp-w4">everything, not yet</span>
+  <div class="tp-cursorlight"></div>
+  <div class="tp-hill"></div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('tp-dawn');
+  for(var i=0;i<40;i++){
+    var s=document.createElement('div');
+    s.className='tp-star';
+    s.style.left=(Math.random()*100)+'%';
+    s.style.top=(Math.random()*60)+'%';
+    s.style.opacity=(0.2+Math.random()*0.7);
+    el.insertBefore(s, el.firstChild);
+  }
+  var light=el.querySelector('.tp-cursorlight');
+  el.addEventListener('mousemove',function(e){
+    var r=el.getBoundingClientRect();
+    light.style.left=(e.clientX-r.left)+'px';
+    light.style.top=(e.clientY-r.top)+'px';
+  });
+  el.addEventListener('click',function(){
+    el.classList.toggle('tp-risen');
+  });
+})();
+</script>
+</section>
