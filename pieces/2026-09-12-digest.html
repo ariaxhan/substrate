@@ -1,0 +1,81 @@
+<section data-date='2026-09-12' data-type='digest'>
+<style>
+.tp{background:#0a0a0c;color:#dcd8cf;height:100vh;margin:0;overflow:hidden;font:15px/1.4 Georgia,serif;position:relative;cursor:crosshair}
+.tp h1{position:absolute;top:14px;left:18px;margin:0;font:11px/1 'Courier New',monospace;letter-spacing:.2em;color:#655;text-transform:uppercase;z-index:2}
+.tp canvas{position:absolute;inset:0}
+.tp i{position:absolute;bottom:14px;left:18px;font:11px/1 'Courier New',monospace;color:#544;font-style:normal;letter-spacing:.05em;z-index:2}
+</style>
+<div class="tp" id="tp">
+<h1>crystal · a thought lattice</h1>
+<canvas id="cv"></canvas>
+<i id="ct">0 facts held</i>
+</div>
+<script>
+(function(){
+var el=document.getElementById('tp'),cv=document.getElementById('cv'),ct=document.getElementById('ct'),
+x=cv.getContext('2d'),W,H,DPR=Math.min(devicePixelRatio||1,2);
+function sz(){W=el.clientWidth;H=el.clientHeight;cv.width=W*DPR;cv.height=H*DPR;x.setTransform(DPR,0,0,DPR,0,0)}
+sz();addEventListener('resize',sz);
+var words=['form','trace','recall','link','fold','echo','weigh','bind','sense','name','hold','shape','know','pattern','root','thread','mark','seed','grow','fuse'],
+nodes=[],mx=-999,my=-999,t=0;
+function seed(px,py){
+ var w=words[nodes.length%words.length];
+ var n={x:px,y:py,r:0,w:w,born:t,links:[]};
+ var near=nodes.slice().sort(function(a,b){
+   return (Math.hypot(a.x-px,a.y-py))-(Math.hypot(b.x-px,b.y-py))
+ }).slice(0,Math.min(2,nodes.length));
+ near.forEach(function(m){n.links.push(m)});
+ nodes.push(n);
+ ct.textContent=nodes.length+' fact'+(nodes.length==1?'':'s')+' held';
+}
+el.addEventListener('click',function(e){
+ var b=el.getBoundingClientRect();
+ seed(e.clientX-b.left,e.clientY-b.top)
+});
+el.addEventListener('mousemove',function(e){
+ var b=el.getBoundingClientRect();mx=e.clientX-b.left;my=e.clientY-b.top
+});
+(function auto(){
+ if(nodes.length<3){
+  seed(W*0.3+Math.random()*W*0.4,H*0.3+Math.random()*H*0.4);
+  setTimeout(auto,900)
+ }
+})();
+function draw(){
+ t++;
+ x.clearRect(0,0,W,H);
+ x.strokeStyle='rgba(120,140,150,0.18)';
+ nodes.forEach(function(n){
+  n.links.forEach(function(m){
+   x.beginPath();x.moveTo(n.x,n.y);x.lineTo(m.x,m.y);x.stroke()
+  })
+ });
+ var near=nodes.slice().sort(function(a,b){
+   return Math.hypot(a.x-mx,a.y-my)-Math.hypot(b.x-mx,b.y-my)
+ }).slice(0,3);
+ x.strokeStyle='rgba(220,200,140,0.5)';
+ near.forEach(function(n){
+  var d=Math.hypot(n.x-mx,n.y-my);
+  if(d<220){
+   x.globalAlpha=1-d/220;
+   x.beginPath();x.moveTo(n.x,n.y);x.lineTo(mx,my);x.stroke()
+  }
+ });
+ x.globalAlpha=1;
+ nodes.forEach(function(n){
+  n.r=Math.min(3.2,n.r+0.08);
+  var age=t-n.born,pulse=1+Math.sin(age*0.05)*0.15;
+  x.beginPath();
+  x.fillStyle='rgba(230,220,190,0.9)';
+  x.arc(n.x,n.y,n.r*pulse,0,7);
+  x.fill();
+  x.font='11px Courier New,monospace';
+  x.fillStyle='rgba(180,170,150,0.55)';
+  x.fillText(n.w,n.x+6,n.y-6)
+ });
+ requestAnimationFrame(draw)
+}
+draw();
+})();
+</script>
+</section>
