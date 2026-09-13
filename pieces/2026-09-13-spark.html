@@ -1,0 +1,69 @@
+<section data-date='2026-09-13' data-type='spark'>
+<style>
+.spk{position:relative;height:70vh;background:#0a0a0f;overflow:hidden;font-family:Georgia,serif;cursor:crosshair}
+.spk .lbl{position:absolute;top:10px;left:14px;color:#556;font:11px monospace;letter-spacing:.1em}
+.spk i{position:absolute;font-style:normal;color:#dde;opacity:.85;white-space:nowrap;transition:transform .4s ease}
+.spk .flash{position:absolute;border-radius:50%;pointer-events:none;background:radial-gradient(circle,#fff 0%,#ffd76a 40%,transparent 70%);transform:translate(-50%,-50%);animation:pop .6s ease-out forwards}
+@keyframes pop{0%{width:0;height:0;opacity:1}100%{width:180px;height:180px;opacity:0}}
+</style>
+<div class="spk">
+<div class="lbl">two things, meeting</div>
+</div>
+<script>
+(function(){
+var el=document.currentScript.previousElementSibling,
+  A=["spark","static","stranger","signal","silence","tongue"],
+  B=["skin","wire","echo","glass","dust","name"],
+  W=el.clientWidth,H=el.clientHeight,
+  left=null,right=null,collided=false;
+function mk(word,side){
+  var s=document.createElement('i');
+  s.textContent=word;
+  s.style.top=(H*0.45)+'px';
+  s.style.left=side<0?'-200px':(W+200)+'px';
+  s.dataset.side=side;
+  el.appendChild(s);
+  return s;
+}
+function reset(){
+  collided=false;
+  if(left)left.remove();
+  if(right)right.remove();
+  left=mk(A[Math.floor(Math.random()*A.length)],-1);
+  right=mk(B[Math.floor(Math.random()*B.length)],1);
+  requestAnimationFrame(function(){
+    left.style.transform='translateX('+(W/2-60)+'px)';
+    right.style.transform='translateX(-'+(W/2-60)+'px)';
+  });
+}
+function collide(x,y){
+  if(collided)return;
+  collided=true;
+  var f=document.createElement('div');
+  f.className='flash';
+  f.style.left=x+'px';f.style.top=y+'px';
+  el.appendChild(f);
+  var u=document.createElement('i');
+  u.textContent=(left.textContent+right.textContent);
+  u.style.left=(x-40)+'px';u.style.top=(y-10)+'px';
+  u.style.color='#ffd76a';u.style.fontSize='20px';
+  el.appendChild(u);
+  setTimeout(function(){f.remove();u.remove();reset();},1400);
+}
+el.addEventListener('mousemove',function(e){
+  if(collided||!left||!right)return;
+  var r=el.getBoundingClientRect(),
+    lr=left.getBoundingClientRect(),rr=right.getBoundingClientRect();
+  if(lr.right>=rr.left-40){
+    collide((lr.right+rr.left)/2-r.left,lr.top-r.top+10);
+  }
+});
+el.addEventListener('click',function(e){
+  if(!collided)return;
+  var r=el.getBoundingClientRect();
+  collide(e.clientX-r.left,e.clientY-r.top);
+});
+reset();
+})();
+</script>
+</section>
