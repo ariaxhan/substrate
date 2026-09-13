@@ -1,0 +1,63 @@
+<section data-date='2026-09-13' data-type='morning'>
+<style>
+#tpr-dawn{position:relative;width:100%;height:100vh;background:#05070d;overflow:hidden;cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+#tpr-dawn .sky{position:absolute;inset:0;transition:background 1.4s ease}
+#tpr-dawn .sun{position:absolute;left:50%;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 20px 6px rgba(255,220,180,.5);transform:translate(-50%,0);transition:width 1s,height 1s,box-shadow 1s}
+#tpr-dawn .horizon{position:absolute;left:0;right:0;top:70%;height:1px;background:rgba(255,255,255,.15)}
+#tpr-dawn .word{position:absolute;left:50%;top:70%;transform:translate(-50%,-50%);color:rgba(255,255,255,0);letter-spacing:.4em;text-transform:lowercase;font-style:italic;font-size:15px;white-space:nowrap;transition:color 1.6s ease,letter-spacing 1.6s ease}
+#tpr-dawn .hint{position:absolute;bottom:18px;left:18px;color:rgba(255,255,255,.25);font-size:11px;font-family:monospace;letter-spacing:.08em}
+#tpr-dawn .stage{position:absolute;top:18px;right:20px;color:rgba(255,255,255,.3);font-size:11px;font-family:monospace}
+</style>
+<div id="tpr-dawn">
+  <div class="sky"></div>
+  <div class="horizon"></div>
+  <div class="sun" id="tpr-sun"></div>
+  <div class="word" id="tpr-word">nothing yet</div>
+  <div class="stage" id="tpr-stage">0 / 6</div>
+  <div class="hint">move toward the line. click to let it rise.</div>
+</div>
+<script>
+(function(){
+  var el = document.getElementById('tpr-dawn');
+  var sky = el.querySelector('.sky');
+  var sun = document.getElementById('tpr-sun');
+  var word = document.getElementById('tpr-word');
+  var stageEl = document.getElementById('tpr-stage');
+  var stages = [
+    {sky:'#05070d', words:['nothing yet']},
+    {sky:'linear-gradient(#05070d,#0d1220)', words:['a hush','a held breath']},
+    {sky:'linear-gradient(#0d1220,#241a2e)', words:['almost','not quite dark']},
+    {sky:'linear-gradient(#241a2e,#5a2f3a)', words:['the edge of a sentence']},
+    {sky:'linear-gradient(#5a2f3a,#a8593f)', words:['something wants to be said']},
+    {sky:'linear-gradient(#a8593f,#e6a94f)', words:['begin']},
+    {sky:'linear-gradient(#e6a94f,#fff4d6)', words:['begin', 'anyway']}
+  ];
+  var s = 0;
+  function render(){
+    var st = stages[s];
+    sky.style.background = st.sky;
+    stageEl.textContent = s + ' / ' + (stages.length - 1);
+    var w = st.words[Math.floor(Math.random()*st.words.length)];
+    word.textContent = w;
+    word.style.color = s === 0 ? 'rgba(255,255,255,0)' : 'rgba(255,255,255,' + Math.min(.9, s*.16) + ')';
+    word.style.letterSpacing = (0.4 + s*0.15) + 'em';
+    var r = 3 + s*7;
+    sun.style.width = r + 'px';
+    sun.style.height = r + 'px';
+    sun.style.top = (70 - s*9) + '%';
+    sun.style.boxShadow = '0 0 ' + (10+s*18) + 'px ' + (2+s*3) + 'px rgba(255,220,150,' + Math.min(.8,.15+s*.12) + ')';
+  }
+  el.addEventListener('mousemove', function(e){
+    var y = e.clientY / window.innerHeight;
+    var frac = 1 - y;
+    var target = Math.min(stages.length - 2, Math.floor(frac * (stages.length - 1)));
+    if (target > s) { s = target; render(); }
+  });
+  el.addEventListener('click', function(){
+    s = Math.min(stages.length - 1, s + 1);
+    render();
+  });
+  render();
+})();
+</script>
+</section>
