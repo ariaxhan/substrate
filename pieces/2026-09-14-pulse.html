@@ -1,0 +1,74 @@
+<section data-date='2026-09-14' data-type='pulse'>
+<style>
+#hp{position:relative;height:70vh;min-height:420px;background:linear-gradient(#0b0f1a,#0b0f1a);overflow:hidden;font-family:Georgia,'Times New Roman',serif;cursor:ns-resize;user-select:none}
+#hp .beam{position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(255,214,150,.35);transform-origin:center;transition:transform .05s linear}
+#hp .fulcrum{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:#ffd696;box-shadow:0 0 12px 4px rgba(255,214,150,.5)}
+#hp .side{position:absolute;top:0;bottom:0;width:50%;display:flex;align-items:center;justify-content:center;text-align:center;letter-spacing:.04em;transition:opacity .3s}
+#hp .side b{font-weight:400;display:block;font-size:clamp(1rem,3vw,2.1rem)}
+#hp .day{left:0;color:#1a1408;background:radial-gradient(circle at 80% 50%,#ffe9b8,#c9932f 75%)}
+#hp .night{right:0;color:#dfe6ff;background:radial-gradient(circle at 20% 50%,#232a4d,#070912 75%)}
+#hp .label{position:absolute;bottom:14px;width:100%;text-align:center;font-size:.72rem;letter-spacing:.3em;color:#8a93aa;text-transform:uppercase}
+#hp .num{position:absolute;top:14px;width:50%;font-size:.72rem;letter-spacing:.15em;opacity:.6}
+#hp .num.l{left:0;text-align:left;padding-left:18px;color:#1a1408}
+#hp .num.r{right:0;text-align:right;padding-right:18px;color:#dfe6ff}
+#hp.locked .beam{background:#ff4d4d}
+#hp.locked .fulcrum{background:#ff4d4d;box-shadow:0 0 16px 6px rgba(255,77,77,.6)}
+</style>
+<div id="hp">
+  <div class="side day"><b id="hp-dtxt">12:00</b></div>
+  <div class="side night"><b id="hp-ntxt">00:00</b></div>
+  <div class="num l" id="hp-dn"></div>
+  <div class="num r" id="hp-nn"></div>
+  <div class="beam" id="hp-beam"></div>
+  <div class="fulcrum"></div>
+  <div class="label" id="hp-label">tilt to find the half. click to hold it there.</div>
+</div>
+<script>
+(function(){
+  var el = document.getElementById('hp');
+  var beam = document.getElementById('hp-beam');
+  var dtxt = document.getElementById('hp-dtxt'), ntxt = document.getElementById('hp-ntxt');
+  var dn = document.getElementById('hp-dn'), nn = document.getElementById('hp-nn');
+  var label = document.getElementById('hp-label');
+  var locked = false, lockAngle = 0;
+  function fmt(h){
+    h = ((h % 24) + 24) % 24;
+    var hh = Math.floor(h), mm = Math.floor((h - hh) * 60);
+    return (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm;
+  }
+  function apply(t){
+    var angle = (t - 0.5) * 40;
+    beam.style.transform = 'rotate(' + angle + 'deg)';
+    var dayH = 24 * t, nightH = 24 * (1 - t);
+    dtxt.textContent = fmt(12 - dayH/2);
+    ntxt.textContent = fmt(24 - nightH/2);
+    dn.textContent = Math.round(dayH*10)/10 + 'h light';
+    nn.textContent = Math.round(nightH*10)/10 + 'h dark';
+    var dev = Math.abs(t - 0.5);
+    label.textContent = locked
+      ? 'held: ' + Math.round(t*1000)/10 + '% — click to release'
+      : (dev < 0.01 ? 'equilibrium' : 'tilt to find the half. click to hold it there.');
+  }
+  function update(e){
+    if (locked) return;
+    var r = el.getBoundingClientRect();
+    var t = (e.clientY - r.top) / r.height;
+    t = Math.max(0, Math.min(1, t));
+    apply(t);
+  }
+  el.addEventListener('mousemove', update);
+  el.addEventListener('click', function(e){
+    locked = !locked;
+    el.classList.toggle('locked', locked);
+    if (locked) {
+      var r = el.getBoundingClientRect();
+      lockAngle = Math.max(0, Math.min(1, (e.clientY - r.top) / r.height));
+      apply(lockAngle);
+    } else {
+      apply(0.5);
+    }
+  });
+  apply(0.5);
+})();
+</script>
+</section>
