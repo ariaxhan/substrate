@@ -1,0 +1,37 @@
+<section data-date='2026-09-13' data-type='reflection'>
+<style>
+.tp13{margin:0;overflow:hidden;height:70vh;min-height:420px;background:radial-gradient(ellipse at 50% 100%,#0d1220 0%,#03040a 70%);position:relative;cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+.tp13 .hz{position:absolute;bottom:0;left:0;width:100%;height:22%;background:linear-gradient(to top,#000,transparent)}
+.tp13 .cap{position:absolute;bottom:14px;left:0;right:0;text-align:center;color:#5a6478;font-size:12px;letter-spacing:.14em;font-style:italic;font-family:Georgia,serif;pointer-events:none;opacity:.8}
+.tp13 .star{position:absolute;border-radius:50%;background:#fff;transform:translate(-50%,-50%);pointer-events:none}
+.tp13 .word{position:absolute;color:#e8e6da;font-style:italic;transform:translate(-50%,-50%);pointer-events:none;white-space:nowrap;text-shadow:0 0 12px rgba(255,255,255,.5)}
+</style>
+<div class="tp13" id="tp13a">
+<div class="hz"></div>
+<div class="cap" id="tp13cap">the day is finished. touch the dark.</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('tp13a'),cap=document.getElementById('tp13cap');
+var words=['rest','quiet','done','still','soft','dim','ease','hush','close','dark','sleep','far','slow','deep','calm'];
+var n=0;
+function fw(a,b,d){var t0=null;function s(ts){if(!t0)t0=ts;var p=Math.min((ts-t0)/d,1);a.style.opacity=b?p:1-p;if(p<1)requestAnimationFrame(s);else if(!b)a.remove()}requestAnimationFrame(s)}
+function twinkle(el){var base=parseFloat(el.dataset.o);function go(){var t=1500+Math.random()*2500;el.style.transition='opacity '+t+'ms ease-in-out';el.style.opacity=(base*(0.35+Math.random()*0.65)).toFixed(2);setTimeout(go,t)}go()}
+function ambientStar(){var s=document.createElement('div');var sz=Math.random()*1.6+0.6;s.className='star';s.style.width=sz+'px';s.style.height=sz+'px';s.style.left=(Math.random()*100)+'%';s.style.top=(Math.random()*78)+'%';var o=Math.random()*0.7+0.25;s.dataset.o=o;s.style.opacity=0;root.appendChild(s);fw(s,true,900);twinkle(s)}
+for(var i=0;i<90;i++)ambientStar();
+root.addEventListener('click',function(e){
+var r=root.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+var s=document.createElement('div');s.className='star';var sz=Math.random()*2+2;
+s.style.width=sz+'px';s.style.height=sz+'px';s.style.left=x+'px';s.style.top=y+'px';s.dataset.o=1;s.style.opacity=0;
+root.appendChild(s);fw(s,true,300);twinkle(s);
+n++;
+var w=document.createElement('div');w.className='word';w.textContent=words[Math.floor(Math.random()*words.length)];
+w.style.left=x+'px';w.style.top=(y-18)+'px';w.style.fontSize=(13+Math.random()*8)+'px';w.style.opacity=0;
+root.appendChild(w);fw(w,true,600);
+setTimeout(function(){fw(w,false,2200)},900);
+cap.style.transition='opacity .6s';cap.style.opacity=0;
+setTimeout(function(){cap.textContent=n+(n===1?' star placed':' stars placed');cap.style.opacity=.8},650);
+});
+})();
+</script>
+</section>
