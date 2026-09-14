@@ -1,0 +1,80 @@
+<section data-date='2026-09-14' data-type='digest'>
+<style>
+.tp14{margin:0;overflow:hidden;background:#07080a;height:70vh;min-height:420px;position:relative;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+.tp14 svg{position:absolute;inset:0;width:100%;height:100%}
+.tp14 .cap{position:absolute;left:0;right:0;bottom:14px;text-align:center;color:#5a6270;font:italic 12px/1.4 Georgia,serif;letter-spacing:.04em;pointer-events:none;user-select:none}
+.tp14 .n{position:absolute;top:14px;left:16px;color:#3a4150;font:11px/1.4 monospace;letter-spacing:.08em;pointer-events:none}
+</style>
+<div class="tp14" id="tp14a">
+  <svg id="tp14s"></svg>
+  <div class="n" id="tp14n">00 fragments</div>
+  <div class="cap">click to place a fragment — watch it find what it already knows</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('tp14a');
+  var svg=document.getElementById('tp14s');
+  var ns='http://www.w3.org/2000/svg';
+  var pts=[],lastClick=0;
+  var words=['echo','trace','shard','recall','link','fold','seed','weave','signal','ember','root','lattice','pulse','thread','vein','bloom','core','drift','wake','fuse'];
+  function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+  function color(depth){
+    var h=210-Math.min(depth*14,180);
+    return 'hsl('+h+',70%,'+(55+Math.min(depth*3,25))+'%)';
+  }
+  function addPoint(x,y){
+    var p={x:x,y:y,depth:0,el:null};
+    var near=pts.filter(function(o){return dist(o,p)<160}).sort(function(a,b){return dist(a,p)-dist(b,p)}).slice(0,3);
+    if(near.length){p.depth=Math.max.apply(null,near.map(function(o){return o.depth}))+1}
+    near.forEach(function(o){
+      var line=document.createElementNS(ns,'line');
+      line.setAttribute('x1',o.x);line.setAttribute('y1',o.y);
+      line.setAttribute('x2',x);line.setAttribute('y2',y);
+      line.setAttribute('stroke',color(p.depth));
+      line.setAttribute('stroke-width','0.6');
+      line.setAttribute('stroke-opacity','0');
+      svg.appendChild(line);
+      var len=dist(o,p);
+      line.style.transition='stroke-opacity 900ms ease';
+      requestAnimationFrame(function(){line.setAttribute('stroke-opacity','0.55')});
+    });
+    var r=document.createElementNS(ns,'circle');
+    r.setAttribute('cx',x);r.setAttribute('cy',y);
+    r.setAttribute('r',0);
+    r.setAttribute('fill',color(p.depth));
+    svg.appendChild(r);
+    var target=2+Math.min(p.depth,6);
+    var t0=null;
+    function grow(ts){
+      if(!t0)t0=ts;
+      var k=Math.min((ts-t0)/500,1);
+      r.setAttribute('r',target*k);
+      if(k<1)requestAnimationFrame(grow)
+    }
+    requestAnimationFrame(grow);
+    if(p.depth>1){
+      var label=document.createElementNS(ns,'text');
+      label.setAttribute('x',x+8);label.setAttribute('y',y-8);
+      label.setAttribute('fill',color(p.depth));
+      label.setAttribute('font-size','10');
+      label.setAttribute('font-family','Georgia, serif');
+      label.setAttribute('font-style','italic');
+      label.setAttribute('opacity','0');
+      label.textContent=words[(x+y+p.depth|0)%words.length];
+      svg.appendChild(label);
+      label.style.transition='opacity 1200ms ease';
+      requestAnimationFrame(function(){label.setAttribute('opacity','0.65')});
+    }
+    pts.push(p);
+    document.getElementById('tp14n').textContent=String(pts.length).padStart(2,'0')+' fragments';
+  }
+  root.addEventListener('click',function(e){
+    var b=root.getBoundingClientRect();
+    addPoint(e.clientX-b.left,e.clientY-b.top);
+  });
+  var b0=root.getBoundingClientRect();
+  var seed=[[b0.width*0.3,b0.height*0.4],[b0.width*0.6,b0.height*0.6],[b0.width*0.5,b0.height*0.25]];
+  seed.forEach(function(s,i){setTimeout(function(){addPoint(s[0],s[1])},400*i)});
+})();
+</script>
+</section>
