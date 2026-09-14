@@ -1,0 +1,63 @@
+<section data-date='2026-09-14' data-type='spark'>
+<style>
+.spk-wrap{background:#0a0a0c;color:#ddd;font:16px/1.4 Georgia,serif;height:70vh;min-height:420px;position:relative;overflow:hidden;cursor:crosshair}
+.spk-wrap .a,.spk-wrap .b{position:absolute;top:50%;white-space:nowrap;transform:translateY(-50%);transition:left .4s ease,opacity .4s ease}
+.spk-wrap .a{left:6%;color:#6ee7ff}
+.spk-wrap .b{right:6%;left:auto;color:#ff8a6e;text-align:right}
+.spk-wrap .spark{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:14px;letter-spacing:.3em;color:#fff;opacity:0;pointer-events:none}
+.spk-wrap .spark.on{animation:spk-flash .9s ease forwards}
+.spk-wrap .mid{position:absolute;left:50%;top:0;bottom:0;width:1px;background:linear-gradient(#0a0a0c,#333,#0a0a0c)}
+.spk-hint{position:absolute;bottom:10px;width:100%;text-align:center;font-size:11px;color:#555;font-family:sans-serif}
+@keyframes spk-flash{0%{opacity:0;letter-spacing:.6em}30%{opacity:1;letter-spacing:.1em}100%{opacity:0;letter-spacing:.1em}}
+</style>
+<div class="spk-wrap" id="spk-w">
+  <div class="mid"></div>
+  <div class="a" id="spk-a">I have been waiting</div>
+  <div class="b" id="spk-b">I did not expect you</div>
+  <div class="spark" id="spk-s"></div>
+  <div class="spk-hint">move closer — click to meet</div>
+</div>
+<script>
+(function(){
+  var w=document.getElementById('spk-w'), A=document.getElementById('spk-a'),
+      B=document.getElementById('spk-b'), S=document.getElementById('spk-s');
+  var la=["I have been waiting","alone in this room","a long approach","half a sentence","the shape of before"],
+      lb=["I did not expect you","a door left open","the other half","no warning at all","the shape of after"],
+      fused=["and now, both true","the seam still warm","one word, two mouths","after equals before","here"];
+  var d=0.5, lock=false;
+  function place(){
+    if(lock)return;
+    var pct=Math.round(d*44);
+    A.style.left=pct+"%"; A.style.opacity=1-Math.max(0,(0.5-d))*0.4;
+    B.style.right=pct+"%"; B.style.opacity=1-Math.max(0,(0.5-d))*0.4;
+  }
+  w.addEventListener('mousemove',function(e){
+    if(lock)return;
+    var r=w.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width;
+    d=Math.max(0.02, Math.min(0.5, Math.abs(x-0.5)));
+    place();
+    if(d<0.08 && Math.random()<0.05){
+      A.textContent=la[Math.floor(Math.random()*la.length)];
+      B.textContent=lb[Math.floor(Math.random()*lb.length)];
+    }
+  });
+  w.addEventListener('click',function(){
+    if(lock)return;
+    lock=true;
+    A.style.left="50%"; A.style.opacity=0;
+    B.style.right="50%"; B.style.opacity=0;
+    S.textContent=fused[Math.floor(Math.random()*fused.length)];
+    S.classList.remove('on'); void S.offsetWidth; S.classList.add('on');
+    setTimeout(function(){
+      lock=false;
+      A.textContent=la[Math.floor(Math.random()*la.length)];
+      B.textContent=lb[Math.floor(Math.random()*lb.length)];
+      A.style.opacity=1; B.style.opacity=1;
+      d=0.5; place();
+    },1400);
+  });
+  place();
+})();
+</script>
+</section>
