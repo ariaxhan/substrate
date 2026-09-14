@@ -1,0 +1,63 @@
+<section data-date='2026-09-14' data-type='morning'>
+<style>
+#tp-dawn{--h:222;--l:6%;margin:0;overflow:hidden;height:70vh;min-height:420px;position:relative;
+background:linear-gradient(to bottom,hsl(var(--h),40%,var(--l)),hsl(calc(var(--h) - 40),35%,calc(var(--l) + 4%)));
+transition:background 2.4s ease,--h 2.4s;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+#tp-dawn .tp-sun{position:absolute;left:50%;bottom:-14%;width:26vmin;height:26vmin;border-radius:50%;
+transform:translateX(-50%);background:radial-gradient(circle at 50% 50%,#fff6da,#ffcf7a 55%,transparent 72%);
+opacity:.15;transition:bottom 2.4s cubic-bezier(.2,.7,.3,1),opacity 2.4s;filter:blur(.5px)}
+#tp-dawn .tp-word{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%);
+color:hsl(40,90%,92%);font-size:clamp(1.4rem,4.6vw,3rem);letter-spacing:.12em;opacity:0;
+font-style:italic;transition:opacity 1.8s ease;pointer-events:none;text-align:center;white-space:nowrap}
+#tp-dawn .tp-hint{position:absolute;left:50%;bottom:6%;transform:translateX(-50%);
+color:hsl(40,60%,80%);opacity:.55;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;
+transition:opacity .8s}
+#tp-dawn .tp-bird{position:absolute;color:hsl(40,80%,88%);font-size:1.1rem;opacity:0;
+transition:opacity 1.6s ease 1.2s,transform 3s ease 1.2s}
+#tp-dawn.tp-lit .tp-hint{opacity:0}
+</style>
+<div id="tp-dawn">
+  <div class="tp-sun"></div>
+  <div class="tp-word" id="tp-word">not yet written</div>
+  <div class="tp-bird" style="left:38%;top:30%;">〜</div>
+  <div class="tp-bird" style="left:60%;top:26%;">〜</div>
+  <div class="tp-hint">the day is unwritten — touch the sky</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('tp-dawn'),
+      word=document.getElementById('tp-word'),
+      words=['unwritten','possible','quiet','beginning','unmade','waking','open','first light','not yet','yours'],
+      n=0,l=6,h=222,lit=false;
+  function step(e){
+    var r=el.getBoundingClientRect(),
+        x=(e.touches?e.touches[0].clientX:e.clientX)-r.left,
+        y=(e.touches?e.touches[0].clientY:e.clientY)-r.top,
+        py=Math.max(0,Math.min(1,y/r.height));
+    l=6+(1-py)*46;
+    h=222-(1-py)*40;
+    el.style.setProperty('--l',l+'%');
+    el.style.setProperty('--h',h);
+    el.querySelector('.tp-sun').style.bottom=(-14+py*46)+'%';
+    el.querySelector('.tp-sun').style.opacity=.15+(1-py)*.65;
+  }
+  function reveal(){
+    if(!lit){lit=true;el.classList.add('tp-lit');
+      el.querySelectorAll('.tp-bird').forEach(function(b,i){
+        b.style.opacity=.85;b.style.transform='translate('+(i?40:-40)+'px,-14px)';
+      });
+    }
+    word.style.opacity=0;
+    setTimeout(function(){
+      n=(n+1)%words.length;
+      word.textContent=words[n];
+      word.style.opacity=.9;
+    },260);
+  }
+  el.addEventListener('mousemove',step);
+  el.addEventListener('touchmove',function(e){step(e);},{passive:true});
+  el.addEventListener('click',reveal);
+  el.addEventListener('touchstart',reveal);
+})();
+</script>
+</section>
