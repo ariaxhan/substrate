@@ -1,0 +1,69 @@
+<section data-date='2026-09-15' data-type='morning'>
+<style>
+.taper-dawn{margin:0;overflow:hidden;position:relative;height:70vh;min-height:420px;background:linear-gradient(#05060c,#0a0e1a 60%,#0c0f1a);cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+.taper-dawn .sky{position:absolute;inset:0;transition:background 1.2s ease}
+.taper-dawn .horizon{position:absolute;left:0;right:0;bottom:0;height:2px;background:#1a1f2e;transition:box-shadow 1.2s ease, background 1.2s ease}
+.taper-dawn .sun{position:absolute;left:50%;bottom:-40px;width:8px;height:8px;border-radius:50%;background:#221a12;box-shadow:0 0 0 rgba(255,200,120,0);transform:translateX(-50%);transition:width 1.4s ease,height 1.4s ease,bottom 1.4s ease,box-shadow 1.4s ease,background 1.4s ease}
+.taper-dawn .word{position:absolute;color:#3a3f52;font-style:italic;font-size:14px;letter-spacing:.04em;opacity:0;transition:opacity 1.8s ease,color 1.8s ease;pointer-events:none;user-select:none}
+.taper-dawn .word.lit{opacity:.85;color:#f4dcb0}
+.taper-dawn .hint{position:absolute;bottom:14px;right:18px;color:#333a4d;font-size:11px;font-family:Arial,sans-serif;letter-spacing:.08em;transition:opacity .8s}
+.taper-dawn.awake .hint{opacity:0}
+.taper-dawn .title{position:absolute;top:18px;left:20px;color:#4b5170;font-size:11px;font-family:Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase}
+</style>
+<div class="taper-dawn" id="td">
+  <div class="title">the potential of an unwritten day</div>
+  <div class="sky" id="tdsky"></div>
+  <div class="sun" id="tdsun"></div>
+  <div class="horizon" id="tdh"></div>
+  <div class="hint">move · click</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('td'),sky=document.getElementById('tdsky'),sun=document.getElementById('tdsun'),hz=document.getElementById('tdh');
+  var words=['still','unwritten','possible','quiet','before','waiting','open','unmade','soon','wide','blank','breath','first','begin'];
+  var placed=[],lit=0,awake=false;
+  function place(){
+    var w=document.createElement('div');
+    w.className='word';
+    w.textContent=words[Math.floor(Math.random()*words.length)];
+    w.style.left=(6+Math.random()*82)+'%';
+    w.style.top=(10+Math.random()*68)+'%';
+    root.appendChild(w);
+    placed.push(w);
+  }
+  for(var i=0;i<14;i++)place();
+  root.addEventListener('mousemove',function(e){
+    var r=root.getBoundingClientRect();
+    var px=(e.clientX-r.left)/r.width;
+    var py=(e.clientY-r.top)/r.height;
+    var warmth=Math.max(0,1-py*1.3);
+    sky.style.background='radial-gradient(circle at '+(px*100)+'% '+(70+py*20)+'%, rgba(255,190,120,'+(0.10*warmth)+') 0%, rgba(20,16,26,0) 55%)';
+    hz.style.background='linear-gradient(90deg, transparent, rgba(255,190,120,'+(0.5*warmth)+'), transparent)';
+    hz.style.boxShadow='0 0 '+(6+warmth*18)+'px rgba(255,190,120,'+(0.4*warmth)+')';
+    if(!awake && warmth>0.3){
+      awake=true;
+      root.classList.add('awake');
+    }
+  });
+  root.addEventListener('click',function(){
+    if(lit>=placed.length){
+      placed.forEach(function(w){w.classList.remove('lit')});
+      lit=0;
+      root.style.background='linear-gradient(#05060c,#0a0e1a 60%,#0c0f1a)';
+      sun.style.width='8px';sun.style.height='8px';sun.style.bottom='-40px';
+      sun.style.background='#221a12';sun.style.boxShadow='0 0 0 rgba(255,200,120,0)';
+      return;
+    }
+    placed[lit].classList.add('lit');
+    lit++;
+    var t=lit/placed.length;
+    sun.style.width=(8+t*46)+'px';
+    sun.style.height=(8+t*46)+'px';
+    sun.style.bottom=(-40+t*140)+'px';
+    sun.style.background='radial-gradient(circle, #fff2d6, #ffb35c '+(40+t*20)+'%, #ff7a3d)';
+    sun.style.boxShadow='0 0 '+(10+t*70)+'px rgba(255,170,90,'+(0.3+t*0.5)+')';
+    root.style.background='linear-gradient(#05060c, #12101c '+(50-t*20)+'%, #2a1a1e '+(80-t*10)+'%, #3d2418)';
+  });
+})();
+</script>
+</section>
