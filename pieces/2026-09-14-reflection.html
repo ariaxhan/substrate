@@ -1,0 +1,37 @@
+<section data-date='2026-09-14' data-type='reflection'>
+<style>
+.tp-2026-09-14{position:relative;height:100vh;height:100dvh;background:radial-gradient(ellipse at 50% 100%,#0a0e1a 0%,#04060d 60%,#000 100%);overflow:hidden;cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+.tp-2026-09-14 .horizon{position:absolute;bottom:0;left:0;width:100%;height:22%;background:linear-gradient(to top,#000 0%,transparent 100%);pointer-events:none}
+.tp-2026-09-14 .hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#3a4560;font-size:13px;letter-spacing:.14em;text-transform:uppercase;pointer-events:none;transition:opacity 1.6s ease;text-align:center;line-height:2}
+.tp-2026-09-14 .star{position:absolute;border-radius:50%;background:#fff;pointer-events:none;transform:translate(-50%,-50%);animation:tp-in .9s ease-out forwards,tp-tw var(--tw) ease-in-out infinite .9s}
+@keyframes tp-in{from{opacity:0;transform:translate(-50%,-50%) scale(0)}to{opacity:var(--o);transform:translate(-50%,-50%) scale(1)}}
+@keyframes tp-tw{0%,100%{opacity:var(--o)}50%{opacity:calc(var(--o)*.35)}}
+.tp-2026-09-14 .line{position:absolute;bottom:0;color:#556;font-size:11px;font-style:italic;letter-spacing:.05em;opacity:0;transition:opacity 2.5s ease;width:100%;text-align:center;pointer-events:none}
+</style>
+<div class="tp-2026-09-14" id="tp0914">
+  <div class="hint" id="tpHint0914">the day is finished<br>rest here a while &mdash; touch the dark</div>
+  <div class="line" id="tpLine0914" style="top:14%">so few lights, and each one enough</div>
+  <div class="horizon"></div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('tp0914'),hint=document.getElementById('tpHint0914'),line=document.getElementById('tpLine0914'),n=0;
+  root.addEventListener('click',function(e){
+    var r=root.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+    var s=document.createElement('div'),size=1+Math.random()*2.4,o=(0.45+Math.random()*0.55).toFixed(2);
+    s.className='star';
+    s.style.left=x+'px';s.style.top=y+'px';
+    s.style.width=size+'px';s.style.height=size+'px';
+    s.style.setProperty('--o',o);
+    s.style.setProperty('--tw',(2+Math.random()*3).toFixed(2)+'s');
+    s.style.boxShadow='0 0 '+(size*2.5)+'px rgba(255,255,255,'+(o*0.6)+')';
+    root.appendChild(s);
+    n++;
+    if(n===1){hint.style.opacity='0'}
+    if(n===12){line.style.opacity='1'}
+    if(n>240){root.removeChild(root.querySelector('.star'))}
+  });
+})();
+</script>
+</section>
+
