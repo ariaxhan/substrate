@@ -1,0 +1,71 @@
+<section data-date='2026-09-15' data-type='pulse'>
+<style>
+#taper-halfway{margin:0;overflow:hidden;height:70vh;min-height:420px;background:#0b0c10;position:relative;font-family:Georgia,'Times New Roman',serif;cursor:ns-resize}
+#taper-halfway .sky{position:absolute;inset:0;background:linear-gradient(to bottom,#f4a261 0%,#0b0c10 100%);opacity:.5;transition:opacity .4s}
+#taper-halfway .beam{position:absolute;left:50%;top:50%;width:70vw;max-width:640px;height:2px;background:#e9e4d8;transform-origin:center center;transition:transform .08s linear}
+#taper-halfway .pivot{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:#e9e4d8;box-shadow:0 0 20px 4px rgba(233,228,216,.5)}
+#taper-halfway .pan{position:absolute;top:0;transform:translate(-50%,0);font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:#e9e4d8;white-space:nowrap;opacity:.85}
+#taper-halfway .pan.day{color:#f4a261}
+#taper-halfway .pan.night{color:#8ecae6}
+#taper-halfway .cord{position:absolute;top:0;left:0;width:1px;background:rgba(233,228,216,.5)}
+#taper-halfway .word{position:absolute;top:20px;transform:translate(-50%,0)}
+#taper-halfway .caption{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#e9e4d8;opacity:.4}
+</style>
+<div id="taper-halfway">
+  <div class="sky"></div>
+  <div class="pivot"></div>
+  <div class="beam" id="th-beam">
+    <div class="cord" id="th-cordL"><div class="pan day" id="th-panL"><span class="word">morning</span></div></div>
+    <div class="cord" id="th-cordR"><div class="pan night" id="th-panR"><span class="word">evening</span></div></div>
+  </div>
+  <div class="caption">move to tip it &middot; release to rest</div>
+</div>
+<script>
+(function(){
+  var box=document.getElementById('taper-halfway');
+  var beam=document.getElementById('th-beam');
+  var sky=box.querySelector('.sky');
+  var cordL=document.getElementById('th-cordL'), cordR=document.getElementById('th-cordR');
+  var panL=document.getElementById('th-panL'), panR=document.getElementById('th-panR');
+  var dayWords=['morning','waking','rising','light','beginning','becoming'];
+  var nightWords=['evening','dimming','settling','dusk','ending','remembering'];
+  var target=0, cur=0, raf;
+  function resize(){ cordL.style.height=cordR.style.height='0px'; }
+  function place(){
+    var w=box.clientWidth, h=box.clientHeight;
+    var half=Math.min(w*0.35,320);
+    var rad=cur*Math.PI/180;
+    var lx=w/2-Math.cos(rad)*half, ly=h/2-Math.sin(rad)*half;
+    var rx=w/2+Math.cos(rad)*half, ry=h/2+Math.sin(rad)*half;
+    cordL.style.left=lx+'px'; cordL.style.top=Math.min(ly,h/2)+'px'; cordL.style.height=Math.abs(h/2-ly)+'px';
+    cordR.style.left=rx+'px'; cordR.style.top=Math.min(ry,h/2)+'px'; cordR.style.height=Math.abs(h/2-ry)+'px';
+    panL.style.left=lx+'px'; panL.style.top=Math.max(ly,0)+'px';
+    panR.style.left=rx+'px'; panR.style.top=Math.max(ry,0)+'px';
+  }
+  function tick(){
+    cur+=(target-cur)*0.08;
+    beam.style.transform='translate(-50%,-50%) rotate('+cur.toFixed(2)+'deg)';
+    sky.style.opacity=(0.35+Math.abs(cur)/40).toFixed(2);
+    place();
+    if(Math.abs(target-cur)>0.05) raf=requestAnimationFrame(tick); else raf=null;
+  }
+  function nudge(){ if(!raf) raf=requestAnimationFrame(tick); }
+  box.addEventListener('mousemove',function(e){
+    var r=box.getBoundingClientRect();
+    var p=(e.clientX-r.left)/r.width-0.5;
+    target=Math.max(-18,Math.min(18,p*36));
+    nudge();
+  });
+  box.addEventListener('mouseleave',function(){ target=0; nudge(); });
+  box.addEventListener('click',function(){
+    var i=Math.floor(Math.random()*dayWords.length);
+    panL.querySelector('.word').textContent=dayWords[i];
+    panR.querySelector('.word').textContent=nightWords[i];
+    target = target>=0 ? -12 : 12;
+    nudge();
+  });
+  window.addEventListener('resize',place);
+  place();
+})();
+</script>
+</section>
