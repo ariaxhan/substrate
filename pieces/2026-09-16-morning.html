@@ -1,0 +1,51 @@
+<section data-date='2026-09-16' data-type='morning'>
+<style>
+.taper-dawn{margin:0;overflow:hidden;height:70vh;min-height:420px;position:relative;background:linear-gradient(#0a0e1a,#1a2340 55%,#3a2a3a 80%,#4a2f2a);font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+.taper-dawn .sun{position:absolute;left:50%;bottom:8%;width:60px;height:60px;border-radius:50%;background:radial-gradient(circle,#fff6d8,#ffb35c 60%,transparent 72%);transform:translateX(-50%);transition:bottom 3s ease,width 3s ease,height 3s ease,box-shadow 3s ease;box-shadow:0 0 40px 10px rgba(255,179,92,.3)}
+.taper-dawn.risen .sun{bottom:38%;width:90px;height:90px;box-shadow:0 0 90px 30px rgba(255,200,120,.55)}
+.taper-dawn .word{position:absolute;color:#cfd6e8;opacity:0;font-style:italic;letter-spacing:.04em;transition:opacity 1.6s ease,transform 1.6s ease;transform:translateY(6px);pointer-events:none;font-size:15px}
+.taper-dawn .word.on{opacity:.85;transform:translateY(0)}
+.taper-dawn .hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);color:#7a86a8;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-family:sans-serif;opacity:.6}
+.taper-dawn .line{position:absolute;bottom:0;left:0;right:0;height:42%;background:linear-gradient(#00000000,#05060c 92%)}
+</style>
+<div class="taper-dawn" id="dn">
+  <div class="sun" id="dnSun"></div>
+  <div class="line"></div>
+  <div class="hint" id="dnHint">move — then click</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('dn'), sun=document.getElementById('dnSun'), hint=document.getElementById('dnHint');
+  var words=['not yet','unwritten','possible','still','before','open','becoming','blank page','first breath','nothing chosen','all of it','could be'];
+  var placed=[], risen=false;
+  function place(x,y,text){
+    var w=document.createElement('div');
+    w.className='word'; w.textContent=text;
+    w.style.left=Math.max(2,Math.min(92,x))+'%';
+    w.style.top=Math.max(4,Math.min(80,y))+'%';
+    root.appendChild(w);
+    requestAnimationFrame(function(){w.classList.add('on')});
+    placed.push(w);
+    if(placed.length>14){var old=placed.shift();old.style.opacity=0;setTimeout(function(){old.remove()},1600)}
+  }
+  var last=0;
+  root.addEventListener('mousemove',function(e){
+    var now=Date.now();
+    if(now-last<220)return;
+    last=now;
+    var r=root.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width*100;
+    var y=(e.clientY-r.top)/r.height*100;
+    place(x,y,words[Math.floor(Math.random()*words.length)]);
+  });
+  root.addEventListener('click',function(){
+    if(risen)return;
+    risen=true;
+    root.classList.add('risen');
+    hint.style.transition='opacity 1s';
+    hint.style.opacity=0;
+    place(50,20,'begin');
+  });
+})();
+</script>
+</section>
