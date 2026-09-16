@@ -1,0 +1,82 @@
+<section data-date='2026-09-16' data-type='spark'>
+<style>
+.spk-wrap{position:relative;height:60vh;min-height:420px;background:#0a0a0c;overflow:hidden;cursor:crosshair;font-family:Georgia,serif}
+.spk-wrap span{position:absolute;font-size:15px;color:#8a8a92;white-space:nowrap;transform:translate(-50%,-50%);transition:color .4s,text-shadow .4s}
+.spk-wrap span.hit{color:#fff;text-shadow:0 0 12px #ffd27a,0 0 2px #fff}
+.spk-hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);color:#555;font:11px/1.4 monospace;letter-spacing:.05em}
+</style>
+<div class="spk-wrap" id="spk-a">
+  <div class="spk-hint">move to collide the two drifts</div>
+</div>
+<script>
+(function(){
+  var box = document.getElementById('spk-a');
+  var left = ["you","were","never","really","here","and","yet","the","room","still","holds","the","shape","of","talking"];
+  var right = ["i","was","always","somewhere","else","listening","for","the","word","that","would","make","us","the","same"];
+  var W = box.clientWidth || 600, H = box.clientHeight || 420;
+  var nodes = [];
+  function mk(word, side){
+    var el = document.createElement('span');
+    el.textContent = word;
+    box.appendChild(el);
+    return {
+      el: el,
+      x: side < 0 ? -40 : W + 40,
+      y: 30 + Math.random() * (H - 60),
+      vx: side < 0 ? (0.15 + Math.random()*0.2) : -(0.15 + Math.random()*0.2),
+      vy: (Math.random() - 0.5) * 0.08,
+      hit: false
+    };
+  }
+  left.forEach(function(w){ nodes.push(mk(w, -1)); });
+  right.forEach(function(w){ nodes.push(mk(w, 1)); });
+
+  var mx = W/2, my = H/2;
+  box.addEventListener('mousemove', function(e){
+    var r = box.getBoundingClientRect();
+    mx = e.clientX - r.left;
+    my = e.clientY - r.top;
+  });
+  box.addEventListener('click', function(){
+    nodes.forEach(function(n){
+      n.vx *= -1;
+      n.vx += (Math.random()-0.5) * 0.3;
+    });
+  });
+
+  function step(){
+    W = box.clientWidth || W; H = box.clientHeight || H;
+    for (var i=0;i<nodes.length;i++){
+      var n = nodes[i];
+      var dx = mx - n.x, dy = my - n.y;
+      var d = Math.sqrt(dx*dx+dy*dy) || 1;
+      if (d < 90){
+        n.x -= (dx/d) * (90-d) * 0.03;
+        n.y -= (dy/d) * (90-d) * 0.03;
+      }
+      n.x += n.vx; n.y += n.vy;
+      if (n.x < -60) n.x = W + 50;
+      if (n.x > W + 60) n.x = -50;
+      if (n.y < 20) n.vy *= -1;
+      if (n.y > H-20) n.vy *= -1;
+      n.el.style.left = n.x + 'px';
+      n.el.style.top = n.y + 'px';
+    }
+    for (var a=0;a<nodes.length;a++){
+      for (var b=a+1;b<nodes.length;b++){
+        var na=nodes[a], nb=nodes[b];
+        if ((na.vx>0) === (nb.vx>0)) continue;
+        var dx2 = na.x-nb.x, dy2 = na.y-nb.y;
+        if (Math.sqrt(dx2*dx2+dy2*dy2) < 26){
+          if (!na.hit){ na.hit=true; na.el.classList.add('hit'); setTimeout(function(e){return function(){e.classList.remove('hit')}}(na.el),600); }
+          if (!nb.hit){ nb.hit=true; nb.el.classList.add('hit'); setTimeout(function(e){return function(){e.classList.remove('hit')}}(nb.el),600); }
+          na.hit=false; nb.hit=false;
+        }
+      }
+    }
+    requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+})();
+</script>
+</section>
