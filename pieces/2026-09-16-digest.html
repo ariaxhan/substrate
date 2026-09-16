@@ -1,0 +1,102 @@
+<section data-date='2026-09-16' data-type='digest'>
+<style>
+.tpr{margin:0;overflow:hidden;background:#0a0c10;height:70vh;min-height:480px;position:relative;font-family:Georgia,'Iowan Old Style',serif;cursor:crosshair}
+.tpr canvas{position:absolute;inset:0;width:100%;height:100%}
+.tpr .cap{position:absolute;left:0;right:0;bottom:14px;text-align:center;color:#5a6472;font-size:11px;letter-spacing:.14em;font-family:Georgia,serif;font-style:italic;pointer-events:none;opacity:.85}
+.tpr .cnt{position:absolute;top:14px;right:18px;color:#3d4552;font-size:11px;letter-spacing:.08em;pointer-events:none;font-variant-numeric:tabular-nums}
+.tpr .lbl{position:absolute;color:#c9b98a;font-size:12px;font-style:italic;pointer-events:none;transform:translate(-50%,-140%);white-space:nowrap;text-shadow:0 0 6px #0a0c10}
+</style>
+<div class="tpr" id="tp">
+  <canvas id="tc"></canvas>
+  <div class="cnt" id="ct">0 facts</div>
+  <div class="cap">click the dark to notice something — watch what it joins</div>
+</div>
+<script>
+(function(){
+var el=document.getElementById('tp'),cv=document.getElementById('tc'),ct=document.getElementById('ct'),
+    x=cv.getContext('2d'),W,H,DPR=Math.min(window.devicePixelRatio||1,2);
+function size(){W=el.clientWidth;H=el.clientHeight;cv.width=W*DPR;cv.height=H*DPR;x.setTransform(DPR,0,0,DPR,0,0)}
+size();window.addEventListener('resize',size);
+
+var words=['pattern','signal','trace','memory','thread','echo','root','shard','glyph','ember','seed','node','ledge','vein','spark','loop','rune','path','core','flux','lattice','pulse','fold','mark','well'];
+var nodes=[],t=0,constella=0;
+
+function add(px,py){
+  var n={x:px,y:py,r:0,tr:1,label:words[(Math.random()*words.length)|0],born:t,links:[]};
+  // link to nearest 1-3 existing crystallized nodes -> knowledge accreting into structure
+  var cands=nodes.filter(function(o){return o.r>10}).map(function(o){
+    return {o:o,d:Math.hypot(o.x-px,o.y-py)};
+  }).sort(function(a,b){return a.d-b.d}).slice(0,2+((Math.random()*2)|0));
+  cands.forEach(function(c){n.links.push(c.o)});
+  nodes.push(n);
+  if(nodes.length>140) nodes.shift();
+  ct.textContent=nodes.length+' fact'+(nodes.length===1?'':'s');
+}
+
+el.addEventListener('click',function(e){
+  var b=el.getBoundingClientRect();
+  add(e.clientX-b.left,e.clientY-b.top);
+});
+// gentle autonomous seeding so the piece is alive before interaction
+var auto=setInterval(function(){
+  if(nodes.length<5) add(W*0.5+(Math.random()-.5)*W*0.4, H*0.5+(Math.random()-.5)*H*0.4);
+},1400);
+
+var mx=-999,my=-999;
+el.addEventListener('mousemove',function(e){
+  var b=el.getBoundingClientRect();mx=e.clientX-b.left;my=e.clientY-b.top;
+});
+
+function draw(){
+  t++;
+  x.fillStyle='rgba(10,12,16,0.16)';
+  x.fillRect(0,0,W,H);
+
+  // ambient drifting dust — the unstructured field
+  x.fillStyle='rgba(120,130,150,0.35)';
+  for(var i=0;i<18;i++){
+    var dx=(Math.sin(t*0.004+i*7)*0.5+0.5)*W,
+        dy=(Math.cos(t*0.003+i*11)*0.5+0.5)*H;
+    x.fillRect(dx,dy,1,1);
+  }
+
+  nodes.forEach(function(n){
+    if(n.r<16) n.r+=0.35;
+    var age=t-n.born, pulse=Math.sin(age*0.05)*1.2;
+    // links — knowledge becoming structure
+    n.links.forEach(function(o){
+      var d=Math.hypot(o.x-n.x,o.y-n.y),
+          near=Math.hypot(mx-n.x,my-n.y)<70||Math.hypot(mx-o.x,my-o.y)<70;
+      x.strokeStyle=near?'rgba(201,185,138,0.65)':'rgba(120,140,170,'+(0.18+0.12*Math.min(1,n.r/16))+')';
+      x.lineWidth=near?1.4:0.6;
+      x.beginPath();x.moveTo(n.x,n.y);x.lineTo(o.x,o.y);x.stroke();
+    });
+  });
+
+  nodes.forEach(function(n){
+    var age=t-n.born, pulse=Math.sin(age*0.05)*1.2, hot=Math.hypot(mx-n.x,my-n.y)<70;
+    var g=x.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r+6+pulse);
+    g.addColorStop(0,hot?'rgba(230,210,160,0.95)':'rgba(150,190,230,0.85)');
+    g.addColorStop(1,'rgba(150,190,230,0)');
+    x.fillStyle=g;
+    x.beginPath();x.arc(n.x,n.y,n.r+6+pulse,0,7);x.fill();
+    x.fillStyle=hot?'#f4e8c8':'#dfe8f5';
+    x.beginPath();x.arc(n.x,n.y,2.2,0,7);x.fill();
+    if(hot){
+      x.fillStyle='#c9b98a';x.font='italic 12px Georgia, serif';
+      x.textAlign='center';x.fillText(n.label,n.x,n.y-14);
+    }
+  });
+
+  // emergence flash: when a node crosses a link-density threshold, mark crystallization
+  var dense=nodes.filter(function(n){return n.links.length>=3});
+  if(dense.length>constella){
+    constella=dense.length;
+  }
+
+  requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+})();
+</script>
+</section>
