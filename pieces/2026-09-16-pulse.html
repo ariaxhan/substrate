@@ -1,0 +1,55 @@
+<section data-date='2026-09-16' data-type='pulse'>
+<style>
+#fulcrum-piece{margin:0;overflow:hidden;height:70vh;min-height:420px;position:relative;background:#0b0c10;font-family:Georgia,'Times New Roman',serif;--t:0}
+#fulcrum-piece .sky{position:absolute;inset:0;background:linear-gradient(to bottom,#f4e9d8 0%,#0b0c10 100%);transform-origin:50% 50%;transform:rotate(calc(var(--t) * 1deg));transition:transform .12s ease-out}
+#fulcrum-piece .half{position:absolute;left:0;right:0;height:50%;display:flex;align-items:center;justify-content:center;letter-spacing:.35em;text-transform:uppercase;font-size:13px;color:#0b0c10;mix-blend-mode:soft-light;pointer-events:none;user-select:none}
+#fulcrum-piece .half.day{top:0}
+#fulcrum-piece .half.night{bottom:0;color:#f4e9d8}
+#fulcrum-piece .point{position:absolute;left:50%;top:50%;width:10px;height:10px;margin:-5px;border-radius:50%;background:#f4e9d8;box-shadow:0 0 24px 6px rgba(244,233,216,.5);cursor:pointer;z-index:5;transition:transform .3s ease}
+#fulcrum-piece .point:active{transform:scale(1.6)}
+#fulcrum-piece .line{position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(244,233,216,.5);transform:rotate(calc(var(--t) * 1deg));transform-origin:50% 50%}
+#fulcrum-piece .word{position:absolute;top:50%;left:50%;transform:translate(-50%,-140%);font-size:11px;letter-spacing:.5em;color:rgba(244,233,216,.6);text-transform:uppercase;pointer-events:none}
+</style>
+<div id="fulcrum-piece">
+  <div class="sky">
+    <div class="half day">morning owed</div>
+    <div class="half night">evening owed</div>
+  </div>
+  <div class="line"></div>
+  <div class="word">equal</div>
+  <div class="point" title="press to hold the balance"></div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('fulcrum-piece');
+  var sky=root.querySelector('.sky'), line=root.querySelector('.line'), point=root.querySelector('.point'), word=root.querySelector('.word');
+  var flipped=false, target=0, current=0, raf;
+  function setTilt(v){
+    current=v;
+    root.style.setProperty('--t', v.toFixed(3));
+  }
+  function onMove(e){
+    var r=root.getBoundingClientRect();
+    var x=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
+    var frac=(x/r.width)-0.5;
+    target=(flipped?-1:1)*frac*22;
+  }
+  function tick(){
+    current+=(target-current)*0.08;
+    setTilt(current);
+    raf=requestAnimationFrame(tick);
+  }
+  root.addEventListener('mousemove',onMove);
+  root.addEventListener('touchmove',function(e){onMove(e);},{passive:true});
+  root.addEventListener('mouseleave',function(){target=0;});
+  point.addEventListener('click',function(e){
+    e.stopPropagation();
+    flipped=!flipped;
+    word.textContent=flipped?'reversed':'equal';
+    point.style.background=flipped?'#0b0c10':'#f4e9d8';
+    point.style.boxShadow=flipped?'0 0 24px 6px rgba(11,12,16,.5)':'0 0 24px 6px rgba(244,233,216,.5)';
+  });
+  tick();
+})();
+</script>
+</section>
