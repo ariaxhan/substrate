@@ -1,0 +1,67 @@
+<section data-date='2026-09-15' data-type='reflection'>
+<style>
+#tp15{position:relative;overflow:hidden;height:70vh;min-height:420px;background:radial-gradient(ellipse at 50% 100%,#0d1420 0%,#020308 70%);font-family:Georgia,'Times New Roman',serif;cursor:crosshair;border-radius:2px}
+#tp15 .hz{position:absolute;bottom:0;left:0;right:0;height:38%;background:linear-gradient(to top,#000 0%,rgba(0,0,0,0) 100%)}
+#tp15 .ln{position:absolute;top:38%;left:0;right:0;text-align:center;color:#5a6a82;font-size:12px;letter-spacing:.35em;text-transform:uppercase;opacity:.5;pointer-events:none}
+#tp15 .wd{position:absolute;left:50%;top:16%;transform:translate(-50%,0);color:#cdd6e4;font-size:15px;font-style:italic;letter-spacing:.06em;opacity:0;transition:opacity 3s ease;text-align:center;white-space:nowrap;pointer-events:none}
+#tp15 .st{position:absolute;border-radius:50%;background:#fff;pointer-events:none;transform:translate(-50%,-50%)}
+#tp15 .hint{position:absolute;top:10px;left:14px;color:#3d4a5e;font-size:11px;letter-spacing:.1em;font-family:Georgia,serif;pointer-events:none}
+</style>
+<div id="tp15">
+  <div class="ln">the day, complete</div>
+  <div class="hz"></div>
+  <div class="wd" id="tp15w">rest</div>
+  <div class="hint">click the dark</div>
+</div>
+<script>
+(function(){
+  var box = document.getElementById('tp15');
+  var word = document.getElementById('tp15w');
+  var words = ['rest','still','enough','quiet','done','soft','held','later'];
+  var count = 0;
+  function place(x,y){
+    var s = document.createElement('div');
+    s.className = 'st';
+    var r = 0.6 + Math.random()*2.1;
+    s.style.width = s.style.height = r + 'px';
+    s.style.left = x + 'px';
+    s.style.top = y + 'px';
+    var b = 0.4 + Math.random()*0.6;
+    s.style.boxShadow = '0 0 ' + (r*3) + 'px rgba(255,255,255,' + b + ')';
+    s.style.opacity = '0';
+    box.appendChild(s);
+    requestAnimationFrame(function(){
+      s.style.transition = 'opacity 1.8s ease';
+      s.style.opacity = String(b);
+    });
+    var life = 9000 + Math.random()*9000;
+    setTimeout(function(){
+      s.style.transition = 'opacity 3s ease';
+      s.style.opacity = '0';
+      setTimeout(function(){ s.remove(); }, 3100);
+    }, life);
+  }
+  box.addEventListener('click', function(e){
+    var rect = box.getBoundingClientRect();
+    var x = e.clientX - rect.left, y = e.clientY - rect.top;
+    place(x,y);
+    count++;
+    if (count % 4 === 0) {
+      word.textContent = words[(count/4 - 1) % words.length];
+      word.style.opacity = '0.55';
+      (function(w){
+        setTimeout(function(){ if (word.textContent === w) word.style.opacity = '0'; }, 4200);
+      })(word.textContent);
+    }
+  });
+  var seeds = 14;
+  for (var i=0;i<seeds;i++){
+    (function(){
+      var x = Math.random()*box.clientWidth || Math.random()*600;
+      var y = Math.random()*(0.35*(box.clientHeight||420));
+      setTimeout(function(){ place(x,y); }, i*300 + Math.random()*400);
+    })();
+  }
+})();
+</script>
+</section>
