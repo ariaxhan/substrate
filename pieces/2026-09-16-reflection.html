@@ -1,0 +1,66 @@
+<section data-date='2026-09-16' data-type='reflection'>
+<style>
+#tp-2026-09-16{margin:0;overflow:hidden;height:100vh;background:radial-gradient(ellipse at 50% 100%,#0a1128 0%,#000010 70%);position:relative;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+#tp-2026-09-16 .sky{position:absolute;inset:0}
+#tp-2026-09-16 .word{position:absolute;bottom:6%;left:50%;transform:translateX(-50%);color:#5a6b8c;font-size:clamp(14px,2.6vw,26px);letter-spacing:.35em;text-transform:lowercase;opacity:.55;pointer-events:none;transition:opacity 2s ease}
+#tp-2026-09-16 .star{position:absolute;border-radius:50%;background:#fff;transform:scale(0);opacity:0;pointer-events:none}
+#tp-2026-09-16 .hint{position:absolute;top:8%;left:50%;transform:translateX(-50%);color:#3a4568;font-size:12px;letter-spacing:.3em;text-transform:uppercase;opacity:.7;transition:opacity 3s ease}
+</style>
+<div id="tp-2026-09-16">
+  <div class="hint">rest here</div>
+  <div class="sky"></div>
+  <div class="word">the day is complete</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('tp-2026-09-16');
+  var sky=root.querySelector('.sky');
+  var hint=root.querySelector('.hint');
+  var word=root.querySelector('.word');
+  var phrases=['the day is complete','stillness now','rest before beginning','nothing left to hold','only quiet','the dark keeps count'];
+  var count=0;
+  function place(x,y){
+    var s=document.createElement('div');
+    s.className='star';
+    var size=Math.random()*2.4+1;
+    s.style.width=size+'px';
+    s.style.height=size+'px';
+    s.style.left=x+'px';
+    s.style.top=y+'px';
+    var b=Math.random()*4+8;
+    s.style.boxShadow='0 0 '+b+'px '+b/2+'px rgba(255,255,255,.5)';
+    sky.appendChild(s);
+    requestAnimationFrame(function(){
+      s.style.transition='transform 1.4s cubic-bezier(.2,.9,.3,1), opacity 3s ease';
+      s.style.transform='scale(1)';
+      s.style.opacity=String(Math.random()*.5+.5);
+    });
+    count++;
+    if(count%5===0){
+      word.textContent=phrases[(count/5)%phrases.length|0];
+      word.style.opacity=.85;
+      setTimeout(function(){word.style.opacity=.55},2600);
+    }
+    if(count===1){hint.style.opacity=0}
+    if(sky.children.length>180){sky.removeChild(sky.firstChild)}
+  }
+  root.addEventListener('click',function(e){
+    var r=root.getBoundingClientRect();
+    place(e.clientX-r.left,e.clientY-r.top);
+  });
+  root.addEventListener('touchstart',function(e){
+    var t=e.touches[0];
+    var r=root.getBoundingClientRect();
+    place(t.clientX-r.left,t.clientY-r.top);
+  },{passive:true});
+  var seeds=6;
+  for(var i=0;i<seeds;i++){
+    (function(i){
+      setTimeout(function(){
+        place(Math.random()*root.clientWidth,Math.random()*root.clientHeight*.6);
+      },i*700+400);
+    })(i);
+  }
+})();
+</script>
+</section>
