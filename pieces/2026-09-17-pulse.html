@@ -1,0 +1,71 @@
+<section data-date='2026-09-17' data-type='pulse'>
+<style>
+.tpr-halfway{margin:0;overflow:hidden;height:60vh;min-height:420px;background:#0b0b0f;position:relative;font-family:Georgia,'Times New Roman',serif;user-select:none}
+.tpr-halfway .sky{position:absolute;inset:0;background:linear-gradient(to bottom,#0b0b0f,#1c1a2a 48%,#2a2320 52%,#0b0b0f);transition:background .4s}
+.tpr-halfway .beam{position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(255,235,205,.35);transform-origin:50% 50%}
+.tpr-halfway .pan{position:absolute;top:50%;width:120px;height:120px;transform:translate(-50%,-50%);transition:top .05s linear}
+.tpr-halfway .pan .disc{width:100%;height:100%;border-radius:50%;border:1px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#eee7d8}
+.tpr-halfway .pan.l{left:26%}
+.tpr-halfway .pan.l .disc{background:radial-gradient(circle at 35% 30%,#3a2f1c,#0b0b0f 70%)}
+.tpr-halfway .pan.r{left:74%}
+.tpr-halfway .pan.r .disc{background:radial-gradient(circle at 65% 30%,#1c2c3a,#0b0b0f 70%)}
+.tpr-halfway .fulcrum{position:absolute;left:50%;bottom:8%;width:0;height:0;border-left:22px solid transparent;border-right:22px solid transparent;border-bottom:70px solid #17151c;transform:translateX(-50%)}
+.tpr-halfway .mark{position:absolute;left:50%;top:50%;width:6px;height:6px;border-radius:50%;background:#fff;transform:translate(-50%,-50%);box-shadow:0 0 12px 4px rgba(255,255,255,.5);transition:opacity .3s}
+.tpr-halfway .label{position:absolute;left:50%;bottom:2%;transform:translateX(-50%);color:#8a8496;font-size:11px;letter-spacing:.3em;text-transform:uppercase;opacity:.6;transition:opacity .5s}
+.tpr-halfway.tipped .label{opacity:1}
+</style>
+<div class="tpr-halfway" id="tpr-hw">
+  <div class="sky" id="tpr-sky"></div>
+  <div class="beam" id="tpr-beam"></div>
+  <div class="pan l" id="tpr-pl"><div class="disc">morning</div></div>
+  <div class="pan r" id="tpr-pr"><div class="disc">evening</div></div>
+  <div class="mark" id="tpr-mark"></div>
+  <div class="fulcrum"></div>
+  <div class="label" id="tpr-label">equilibrium</div>
+</div>
+<script>
+(function(){
+  var box=document.getElementById('tpr-hw');
+  var beam=document.getElementById('tpr-beam');
+  var pl=document.getElementById('tpr-pl');
+  var pr=document.getElementById('tpr-pr');
+  var sky=document.getElementById('tpr-sky');
+  var label=document.getElementById('tpr-label');
+  var W=['equilibrium','the fulcrum holds','neither','tipping','still point','half and half','the hinge','balance found'];
+  function set(t){
+    var h=box.getBoundingClientRect().height;
+    var a=(t-.5)*44;
+    beam.style.transform='rotate('+a+'deg)';
+    var drop=Math.sin(a*Math.PI/180)*(h*0.28);
+    pl.style.top=(h/2+drop)+'px';
+    pr.style.top=(h/2-drop)+'px';
+    var tip=Math.abs(t-.5);
+    box.classList.toggle('tipped',tip>.06);
+    label.textContent=W[Math.min(W.length-1,Math.floor(tip*2*W.length))];
+    var g1=Math.round(28+t*30),g2=Math.round(58-t*30);
+    sky.style.background='linear-gradient(to bottom,#0b0b0f,#1c1a2a '+g1+'%,#2a2320 '+g2+'%,#0b0b0f)';
+  }
+  var raf=null,target=.5;
+  function loop(){
+    target+= (curT-target)*0.12;
+    set(target);
+    if(Math.abs(target-curT)>.001){raf=requestAnimationFrame(loop);}else{raf=null;}
+  }
+  var curT=.5;
+  box.addEventListener('mousemove',function(e){
+    var r=box.getBoundingClientRect();
+    curT=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));
+    if(!raf)raf=requestAnimationFrame(loop);
+  });
+  box.addEventListener('mouseleave',function(){
+    curT=.5;
+    if(!raf)raf=requestAnimationFrame(loop);
+  });
+  box.addEventListener('click',function(){
+    curT=curT>.5?0:1;
+    if(!raf)raf=requestAnimationFrame(loop);
+  });
+  set(.5);
+})();
+</script>
+</section>
