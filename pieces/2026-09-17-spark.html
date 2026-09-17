@@ -1,0 +1,98 @@
+<section data-date='2026-09-17' data-type='spark'>
+<style>
+#spk{position:relative;height:360px;background:#0a0a0c;overflow:hidden;font-family:Georgia,serif;cursor:crosshair}
+#spk canvas{position:absolute;top:0;left:0}
+#spk .lbl{position:absolute;top:10px;font-family:monospace;font-size:11px;color:#555;letter-spacing:.15em;text-transform:uppercase}
+#spk .l1{left:14px}#spk .l2{right:14px}
+#spk .hint{position:absolute;bottom:10px;left:0;right:0;text-align:center;font-family:monospace;font-size:10px;color:#3a3a3a}
+</style>
+<div id="spk">
+<span class="lbl l1">before</span><span class="lbl l2">after</span>
+<span class="hint">move to bring them together</span>
+</div>
+<script>
+(function(){
+var el=document.getElementById('spk');
+var c=document.createElement('canvas');
+el.appendChild(c);
+var w=el.clientWidth,h=el.clientHeight;
+c.width=w;c.height=h;
+var ctx=c.getContext('2d');
+var A=["I","was","still","and","apart"],B=["you","arrived","and","nothing","stayed"];
+var pts=[];
+function mk(words,side){
+  var arr=[];
+  for(var i=0;i<words.length;i++){
+    arr.push({
+      w:words[i],
+      x: side<0 ? -60-Math.random()*40 : w+60+Math.random()*40,
+      y: 60+i*50+Math.random()*10,
+      hx: side<0 ? w*0.5-40+Math.random()*20 : w*0.5+20-Math.random()*20,
+      hy: 60+i*50,
+      vx:0,vy:0,side:side,merged:false,hue: side<0?200:20
+    });
+  }
+  return arr;
+}
+pts=mk(A,-1).concat(mk(B,1));
+var mx=w/2,my=h/2,active=false;
+el.addEventListener('mousemove',function(e){
+  var r=el.getBoundingClientRect();
+  mx=e.clientX-r.left;my=e.clientY-r.top;active=true;
+});
+el.addEventListener('mouseleave',function(){active=false;});
+el.addEventListener('touchmove',function(e){
+  var r=el.getBoundingClientRect();
+  var t=e.touches[0];
+  mx=t.clientX-r.left;my=t.clientY-r.top;active=true;
+});
+var sparks=[];
+function collide(a,b){
+  for(var i=0;i<10;i++){
+    sparks.push({x:(a.x+b.x)/2,y:(a.y+b.y)/2,vx:(Math.random()-.5)*4,vy:(Math.random()-.5)*4,life:30});
+  }
+}
+function tick(){
+  ctx.clearRect(0,0,w,h);
+  var pull = active ? 0.06 : 0.015;
+  for(var i=0;i<pts.length;i++){
+    var p=pts[i];
+    var tx = active ? mx + p.side*70 : p.hx;
+    var ty = active ? my + (p.y-h/2)*0.3 : p.hy;
+    p.vx += (tx-p.x)*pull;
+    p.vy += (ty-p.y)*pull;
+    p.vx*=0.82;p.vy*=0.82;
+    p.x+=p.vx;p.y+=p.vy;
+    ctx.font='16px Georgia, serif';
+    ctx.fillStyle='hsla('+p.hue+',70%,72%,0.92)';
+    ctx.textAlign='center';
+    ctx.fillText(p.w,p.x,p.y);
+  }
+  for(var i=0;i<pts.length;i++){
+    for(var j=i+1;j<pts.length;j++){
+      var a=pts[i],b=pts[j];
+      if(a.side===b.side)continue;
+      var dx=a.x-b.x,dy=a.y-b.y;
+      var d=Math.sqrt(dx*dx+dy*dy);
+      if(d<28){
+        collide(a,b);
+        a.vx+=dx*0.02;a.vy+=dy*0.02;
+        b.vx-=dx*0.02;b.vy-=dy*0.02;
+      }
+    }
+  }
+  ctx.strokeStyle='rgba(255,255,255,0.5)';
+  for(var s=sparks.length-1;s>=0;s--){
+    var k=sparks[s];
+    k.x+=k.vx;k.y+=k.vy;k.life--;
+    ctx.globalAlpha=Math.max(k.life/30,0);
+    ctx.beginPath();ctx.arc(k.x,k.y,1.6,0,7);ctx.fillStyle='#fff';ctx.fill();
+    if(k.life<=0)sparks.splice(s,1);
+  }
+  ctx.globalAlpha=1;
+  requestAnimationFrame(tick);
+}
+tick();
+})();
+</script>
+</section>
