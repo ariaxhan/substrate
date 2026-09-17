@@ -1,0 +1,61 @@
+<section data-date='2026-09-17' data-type='morning'>
+<style>
+#taper-dawn{margin:0;overflow:hidden;height:70vh;min-height:420px;position:relative;background:linear-gradient(#0a0e1a,#0a0e1a);cursor:pointer;font-family:Georgia,'Times New Roman',serif;transition:background 2.2s ease}
+#taper-dawn .sky{position:absolute;inset:0;transition:opacity 2.2s ease}
+#taper-dawn .hor{position:absolute;left:0;right:0;bottom:0;height:40%;background:#050608;transition:background 2.2s ease}
+#taper-dawn .word{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);color:#eee;letter-spacing:.12em;font-size:clamp(1.1rem,3vw,2.2rem);opacity:0;transition:opacity 1.8s ease, color 2.2s ease;text-align:center;white-space:nowrap;font-style:italic}
+#taper-dawn .hint{position:absolute;bottom:10px;right:14px;color:#556;font-size:11px;font-family:sans-serif;letter-spacing:.08em;transition:opacity 1s}
+#taper-dawn .sun{position:absolute;left:50%;bottom:38%;width:14px;height:14px;border-radius:50%;background:#fff2c4;transform:translateX(-50%);box-shadow:0 0 20px 6px #fff2c4;transition:all 2.2s cubic-bezier(.2,.7,.3,1),box-shadow 2.2s ease;opacity:.15}
+#taper-dawn .bird{position:absolute;color:#333;font-size:14px;opacity:0;transition:opacity 1.5s ease, transform 8s linear;top:30%;left:-5%}
+</style>
+<div id="taper-dawn">
+  <div class="sky"></div>
+  <div class="hor"></div>
+  <div class="sun"></div>
+  <div class="bird">⌃</div>
+  <div class="word">everything, unwritten</div>
+  <div class="hint">touch the dark</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('taper-dawn');
+  var sky=root.querySelector('.sky'), sun=root.querySelector('.sun'), word=root.querySelector('.word'),
+      hint=root.querySelector('.hint'), bird=root.querySelector('.bird'), hor=root.querySelector('.hor');
+  var stages=[
+    {bg:'#0a0e1a',sun:{bottom:'38%',opacity:.15,box:'0 0 20px 6px #fff2c4'},word:'everything, unwritten',hor:'#050608'},
+    {bg:'linear-gradient(#131a30,#2a2f52)',sun:{bottom:'34%',opacity:.4,box:'0 0 30px 10px #ffe9b0'},word:'a seam of grey along the edge',hor:'#0b0d16'},
+    {bg:'linear-gradient(#2e2a4a,#8a5a72)',sun:{bottom:'22%',opacity:.75,box:'0 0 45px 16px #ffcf8a'},word:'color before it has a name',hor:'#1a1220'},
+    {bg:'linear-gradient(#f7c98a,#f2946a)',sun:{bottom:'8%',opacity:1,box:'0 0 70px 26px #fff2c4'},word:'the day has not decided what it is yet',hor:'#2a1b1c'},
+    {bg:'linear-gradient(#bfe3ff,#fdeecb)',sun:{bottom:'2%',opacity:1,box:'0 0 90px 34px #fffdf2'},word:'begin',hor:'#3a2a1c'}
+  ];
+  var i=0;
+  function paint(){
+    var s=stages[i];
+    root.style.background=s.bg;
+    hor.style.background=s.hor;
+    sun.style.bottom=s.sun.bottom;
+    sun.style.opacity=s.sun.opacity;
+    sun.style.boxShadow=s.sun.box;
+    word.style.opacity=0;
+    setTimeout(function(){ word.textContent=s.word; word.style.opacity=1; },250);
+    if(i>=3){
+      bird.style.opacity=.6;
+      bird.style.transform='translate('+(window.innerWidth+50)+'px,-40px)';
+    }
+    if(i===stages.length-1){
+      hint.style.opacity=0;
+      root.style.cursor='default';
+    }
+  }
+  paint();
+  root.addEventListener('click',function(){
+    if(i<stages.length-1){ i++; paint(); }
+  });
+  root.addEventListener('mousemove',function(e){
+    var r=root.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width-.5;
+    sun.style.marginLeft=(x*40)+'px';
+  });
+})();
+</script>
+</section>
