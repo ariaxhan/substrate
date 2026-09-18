@@ -1,0 +1,106 @@
+<section data-date='2026-09-18' data-type='spark'>
+<style>
+.spk-wrap{background:#0a0a0f;color:#eee;font-family:Georgia,serif;overflow:hidden;position:relative;height:420px;cursor:crosshair}
+.spk-hint{position:absolute;top:8px;left:12px;font:11px/1.4 monospace;color:#556;z-index:5;pointer-events:none}
+.spk-w{position:absolute;font-size:15px;white-space:nowrap;transition:opacity .6s,transform .6s;will-change:transform,opacity}
+.spk-l{color:#5ad6ff}
+.spk-r{color:#ff8a5a}
+.spk-m{color:#fff;text-shadow:0 0 12px #fff,0 0 24px #f0c}
+</style>
+<div class="spk-wrap" id="spk-w">
+<div class="spk-hint">move the cursor — two drifts meet where you cross</div>
+</div>
+<script>
+(function(){
+var host=document.getElementById('spk-w');
+var L=["salt","hour","root","echo","rain","bone","glass","wire","ash","tide"];
+var R=["light","field","glow","dust","edge","spark","hush","fold","drift","thaw"];
+var items=[];
+var N=14;
+for(var i=0;i<N;i++){
+  var isL=i%2===0;
+  var el=document.createElement('div');
+  el.className='spk-w '+(isL?'spk-l':'spk-r');
+  el.textContent=isL?L[i%L.length]:R[i%R.length];
+  var y=8+ (i/N)*90;
+  var x=isL?-10:110;
+  el.style.top=y+'%';
+  el.style.left=x+'%';
+  host.appendChild(el);
+  items.push({el:el,side:isL?-1:1,y:y,x:x,merged:false,word:el.textContent});
+}
+var mx=50,my=50;
+host.addEventListener('mousemove',function(e){
+  var r=host.getBoundingClientRect();
+  mx=(e.clientX-r.left)/r.width*100;
+  my=(e.clientY-r.top)/r.height*100;
+});
+host.addEventListener('mouseleave',function(){mx=null;});
+
+function tick(){
+  for(var i=0;i<items.length;i++){
+    var it=items[i];
+    if(it.merged) continue;
+    var target = (mx===null) ? 50 : mx;
+    it.x += (target - it.x) * 0.004 * it.side * -1 + it.side*0.06;
+    it.el.style.left=it.x+'%';
+    if(mx!==null){
+      var dy=Math.abs(it.y-my);
+      var dx=Math.abs(it.x-mx);
+      if(dx<6 && dy<8){
+        collide(it,i);
+      }
+    }
+  }
+  requestAnimationFrame(tick);
+}
+
+function collide(it,i){
+  it.merged=true;
+  var partner=null;
+  for(var j=0;j<items.length;j++){
+    if(j!==i && !items[j].merged && items[j].side!==it.side){
+      partner=items[j]; break;
+    }
+  }
+  var word = partner? blend(it.word,partner.word) : it.word;
+  if(partner) partner.merged=true;
+  var fused=document.createElement('div');
+  fused.className='spk-w spk-m';
+  fused.textContent=word;
+  fused.style.top=it.y+'%';
+  fused.style.left=mx+'%';
+  fused.style.transform='translate(-50%,-50%) scale(1.4)';
+  host.appendChild(fused);
+  it.el.style.opacity=0;
+  if(partner) partner.el.style.opacity=0;
+  setTimeout(function(){
+    fused.style.opacity=0;
+    fused.style.transform='translate(-50%,-50%) scale(2.2)';
+  },500);
+  setTimeout(function(){
+    fused.remove();
+    respawn(it);
+    if(partner) respawn(partner);
+  },1200);
+}
+
+function blend(a,b){
+  var ca=Math.ceil(a.length/2), cb=Math.floor(b.length/2);
+  return a.slice(0,ca)+b.slice(cb);
+}
+
+function respawn(it){
+  it.merged=false;
+  it.x=it.side<0?-10:110;
+  it.y=4+Math.random()*92;
+  it.el.style.top=it.y+'%';
+  it.el.style.left=it.x+'%';
+  it.el.style.opacity=1;
+  it.el.style.transform='none';
+}
+
+requestAnimationFrame(tick);
+})();
+</script>
+</section>
