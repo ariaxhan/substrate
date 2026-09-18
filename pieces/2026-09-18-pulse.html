@@ -1,0 +1,64 @@
+<section data-date='2026-09-18' data-type='pulse'>
+<style>
+#hw-a{margin:0;background:#0b0c0f;color:#e8e6df;height:60vh;min-height:420px;position:relative;overflow:hidden;font-family:Georgia,'Times New Roman',serif;cursor:crosshair;user-select:none}
+#hw-a .hw-bar{position:absolute;top:50%;left:10%;right:10%;height:1px;background:#3a3a3f;transform-origin:center center}
+#hw-a .hw-fulcrum{position:absolute;bottom:calc(50% - 1px);left:50%;width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-bottom:22px solid #cbb98a;transform:translateX(-50%)}
+#hw-a .hw-word{position:absolute;top:50%;font-size:clamp(14px,2.4vw,28px);letter-spacing:.04em;transform:translate(-50%,-50%);transition:opacity .4s ease}
+#hw-a .hw-am{left:12%;color:#8fa8c9}
+#hw-a .hw-pm{right:12%;color:#c98f6b;text-align:right}
+#hw-a .hw-mid{position:absolute;top:16%;left:50%;transform:translateX(-50%);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:#6a6a70}
+#hw-a .hw-clock{position:absolute;bottom:14%;left:50%;transform:translateX(-50%);font-size:12px;letter-spacing:.15em;color:#54545a;font-family:'Courier New',monospace}
+#hw-a .hw-hint{position:absolute;bottom:5%;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:.2em;color:#3a3a3f;text-transform:uppercase}
+#hw-a.hw-locked .hw-bar{transition:transform .6s cubic-bezier(.2,.9,.2,1.4)}
+</style>
+<div id="hw-a">
+  <div class="hw-mid">equilibrium</div>
+  <div class="hw-bar" id="hw-bar">
+    <div class="hw-fulcrum"></div>
+  </div>
+  <div class="hw-word hw-am" id="hw-am">what the morning asked of you</div>
+  <div class="hw-word hw-pm" id="hw-pm">what remains to be forgiven</div>
+  <div class="hw-clock" id="hw-clock">12:00</div>
+  <div class="hw-hint">tilt with the mouse — click to hold the balance</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('hw-a');
+  var bar=document.getElementById('hw-bar');
+  var clock=document.getElementById('hw-clock');
+  var am=document.getElementById('hw-am');
+  var pm=document.getElementById('hw-pm');
+  var locked=false, lockAngle=0;
+  function setTilt(deg){
+    bar.style.transform='rotate('+deg.toFixed(2)+'deg)';
+    var w=Math.min(1,Math.abs(deg)/14);
+    am.style.opacity=1-Math.max(0,deg)/14*0.6;
+    pm.style.opacity=1-Math.max(0,-deg)/14*0.6;
+    var h=Math.round(12-(deg/14)*11.9);
+    h=Math.max(0,Math.min(23,h));
+    var m=Math.abs(Math.round((deg%1)*59));
+    clock.textContent=(h<10?'0'+h:h)+':'+(m<10?'0'+m:m);
+  }
+  root.addEventListener('mousemove',function(e){
+    if(locked)return;
+    var r=root.getBoundingClientRect();
+    var x=(e.clientX-r.left)/r.width;
+    var deg=(x-0.5)*28;
+    setTilt(deg);
+  });
+  root.addEventListener('mouseleave',function(){
+    if(!locked)setTilt(0);
+  });
+  root.addEventListener('click',function(){
+    locked=!locked;
+    root.classList.toggle('hw-locked',locked);
+    if(locked){
+      var m=bar.style.transform.match(/-?\d+\.?\d*/);
+      lockAngle=m?parseFloat(m[0]):0;
+      setTilt(0);
+    }
+  });
+  setTilt(0);
+})();
+</script>
+</section>
