@@ -1,0 +1,59 @@
+<section data-date='2026-09-18' data-type='morning'>
+<style>
+#tpr-dawn{margin:0;overflow:hidden;height:70vh;min-height:420px;position:relative;cursor:crosshair;background:linear-gradient(to bottom,#0a0e27,#1a1030 40%,#2b1420 100%);font-family:Georgia,'Times New Roman',serif;transition:background 1.2s ease}
+#tpr-dawn .sun{position:absolute;left:50%;width:40px;height:40px;border-radius:50%;background:radial-gradient(circle,#fff8e0,#ffcf7a 60%,transparent 70%);box-shadow:0 0 40px 10px rgba(255,200,120,.4);transform:translate(-50%,-50%);transition:box-shadow .6s ease,background .6s ease}
+#tpr-dawn .horizon{position:absolute;left:0;width:100%;height:1px;background:rgba(255,220,180,.35);top:70%}
+#tpr-dawn .word{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:rgba(255,240,220,.9);font-size:15px;letter-spacing:.12em;text-transform:lowercase;opacity:0;pointer-events:none;text-shadow:0 0 12px rgba(255,180,100,.6);transition:opacity 1.8s ease}
+#tpr-dawn .word.show{opacity:1}
+#tpr-dawn .hint{position:absolute;bottom:14px;right:18px;color:rgba(255,255,255,.25);font-size:10px;letter-spacing:.15em;text-transform:uppercase;font-family:sans-serif}
+#tpr-dawn .stars{position:absolute;inset:0;opacity:.8;transition:opacity 1.5s ease}
+</style>
+<div id="tpr-dawn">
+  <div class="stars" id="tpr-stars"></div>
+  <div class="horizon"></div>
+  <div class="sun" id="tpr-sun"></div>
+  <div class="word" id="tpr-word"></div>
+  <div class="hint">move · click</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('tpr-dawn'),
+      sun=document.getElementById('tpr-sun'),
+      stars=document.getElementById('tpr-stars'),
+      word=document.getElementById('tpr-word'),
+      words=['unwritten','possible','not yet','hush','beginning again','open','the first hour','still quiet','all of it, ahead','not lost'],
+      wi=0,
+      sky=['#0a0e27,#1a1030 40%,#2b1420 100%','#0d1a3a,#3a1f3d 40%,#5c2a2e 100%','#1a2e52,#6b3040 45%,#a4522d 100%','#4a5f8a,#c06a3f 45%,#f0a15c 100%','#87ceeb,#ffd699 55%,#fff4d6 100%'];
+  var sc=0;
+  for(var i=0;i<60;i++){
+    var s=document.createElement('div');
+    s.style.cssText='position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;left:'+(Math.random()*100)+'%;top:'+(Math.random()*70)+'%;opacity:'+(Math.random()*.8+.1);
+    stars.appendChild(s);
+  }
+  function frame(e){
+    var r=el.getBoundingClientRect();
+    var x=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));
+    var y=Math.max(0,Math.min(1,(e.clientY-r.top)/r.height));
+    var rise=1-y;
+    sun.style.top=(90-rise*70)+'%';
+    sun.style.left=(20+x*60)+'%';
+    var glow=8+rise*40;
+    sun.style.boxShadow='0 0 '+glow+'px '+(glow/3)+'px rgba(255,'+(180+rise*60)+','+(100+rise*100)+',.5)';
+    var stage=Math.min(4,Math.floor(rise*5));
+    el.style.background='linear-gradient(to bottom,'+sky[stage]+')';
+    stars.style.opacity=1-rise;
+  }
+  el.addEventListener('mousemove',frame);
+  el.addEventListener('click',function(){
+    word.classList.remove('show');
+    setTimeout(function(){
+      word.textContent=words[wi%words.length];
+      wi++;
+      word.classList.add('show');
+    },80);
+  });
+  frame({clientX:0,clientY:0});
+  el.dispatchEvent(new MouseEvent('mousemove',{clientX:0,clientY:0}));
+})();
+</script>
+</section>
