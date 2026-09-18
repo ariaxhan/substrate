@@ -1,0 +1,86 @@
+<section data-date='2026-09-18' data-type='digest'>
+<style>
+#crystal-poem{margin:0;overflow:hidden;background:#0a0d12;height:80vh;min-height:480px;position:relative;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+#crystal-poem svg{width:100%;height:100%;display:block}
+#crystal-poem .lbl{fill:#d8c9a3;font-size:11px;letter-spacing:.04em;opacity:0;transition:opacity 1.2s ease}
+#crystal-poem line{stroke:#3a4a5c;stroke-width:.6;opacity:0}
+#crystal-poem circle.node{fill:#0a0d12;stroke:#8fa3b0;stroke-width:1}
+#crystal-poem .caption{position:absolute;left:0;right:0;bottom:14px;text-align:center;color:#5c6b78;font-size:12px;font-style:italic;letter-spacing:.03em;pointer-events:none}
+#crystal-poem .count{position:absolute;top:14px;right:18px;color:#3a4a5c;font-size:11px;font-family:Georgia,serif;pointer-events:none}
+</style>
+<div id="crystal-poem">
+  <svg id="cp-svg" viewBox="0 0 800 480" preserveAspectRatio="xMidYMid meet"></svg>
+  <div class="caption" id="cp-cap">a fact, alone, is only a point &mdash; click the dark</div>
+  <div class="count" id="cp-count">0 known</div>
+</div>
+<script>
+(function(){
+  var host = document.getElementById('crystal-poem');
+  var svg = document.getElementById('cp-svg');
+  var cap = document.getElementById('cp-cap');
+  var cnt = document.getElementById('cp-count');
+  var NS = 'http://www.w3.org/2000/svg';
+  var words = ["shard","echo","thread","trace","glyph","axiom","root","tide","lattice","spark","hollow","seam","grain","pulse","fold","vein","ash","ember","root","signal","husk","wick","rune","drift","core"];
+  var nodes = [];
+  var W=800,H=480;
+  function near(x,y,r){
+    var out=[];
+    for(var i=0;i<nodes.length;i++){
+      var n=nodes[i], d=Math.hypot(n.x-x,n.y-y);
+      if(d<r) out.push({n:n,d:d});
+    }
+    return out.sort(function(a,b){return a.d-b.d});
+  }
+  function addNode(x,y){
+    var w = words[Math.floor(Math.random()*words.length)];
+    var n = {x:x,y:y,w:w,id:nodes.length};
+    var linked = near(x,y,150).slice(0,3);
+    nodes.push(n);
+    linked.forEach(function(o){
+      var l = document.createElementNS(NS,'line');
+      l.setAttribute('x1',n.x); l.setAttribute('y1',n.y);
+      l.setAttribute('x2',o.n.x); l.setAttribute('y2',o.n.y);
+      svg.appendChild(l);
+      requestAnimationFrame(function(){
+        l.style.transition='opacity 1.8s ease';
+        l.style.opacity = String(0.55 - o.d/400);
+      });
+    });
+    var c = document.createElementNS(NS,'circle');
+    c.setAttribute('class','node');
+    c.setAttribute('cx',x); c.setAttribute('cy',y);
+    c.setAttribute('r',0);
+    svg.appendChild(c);
+    var grow = 2 + Math.min(6, linked.length*1.4);
+    var start=null;
+    function step(ts){
+      if(!start) start=ts;
+      var t = Math.min(1,(ts-start)/700);
+      c.setAttribute('r', (grow*t).toFixed(2));
+      if(t<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+    var t = document.createElementNS(NS,'text');
+    t.setAttribute('class','lbl');
+    t.setAttribute('x', x+8); t.setAttribute('y', y-8);
+    t.textContent = w;
+    svg.appendChild(t);
+    setTimeout(function(){ t.style.opacity = linked.length>1 ? '0.85':'0.4'; },80);
+    cnt.textContent = nodes.length + (nodes.length===1?' known':' known');
+    if(nodes.length===1) cap.textContent = 'one thing, unattached';
+    else if(nodes.length===5) cap.textContent = 'clusters begin to lean on each other';
+    else if(nodes.length===12) cap.textContent = 'this is what a pattern feels like from inside it';
+    else if(nodes.length===20) cap.textContent = 'you could stop. the shape would still hold.';
+    else if(nodes.length>20 && nodes.length%15===0) cap.textContent = 'still crystallizing';
+  }
+  host.addEventListener('click', function(e){
+    var r = host.getBoundingClientRect();
+    var x = (e.clientX-r.left)/r.width*W;
+    var y = (e.clientY-r.top)/r.height*H;
+    addNode(x,y);
+  });
+  // seed with a single quiet point so the field isn't empty
+  setTimeout(function(){ addNode(W*0.5,H*0.5); }, 400);
+})();
+</script>
+</section>
