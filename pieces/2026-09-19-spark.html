@@ -1,0 +1,21 @@
+<section data-date='2026-09-19' data-type='spark'>
+<style>
+#s{position:relative;background:#0b0710;height:320px;overflow:hidden;cursor:crosshair;font:italic 15px Georgia,serif;color:#f4e3c1}
+#s b{position:absolute;font-weight:400;white-space:nowrap;transition:transform .5s,color .5s,opacity .5s;text-shadow:0 0 8px currentColor}
+#s .a{color:#ff6b4a}#s .c{color:#4ad7ff}#s .m{color:#ffe28a;font-size:22px}
+#s p{position:absolute;bottom:8px;left:12px;margin:0;font-size:11px;opacity:.5}
+</style>
+<div id="s"><p>move. let them meet.</p></div>
+<script>
+(function(){var s=document.getElementById('s'),A='ember spark flint rust heat blood'.split(' '),C='tide frost glass salt ash moon'.split(' '),P=[],W=0;
+function mk(t,c,x,y){var e=document.createElement('b');e.textContent=t;e.className=c;s.appendChild(e);return{e:e,x:x,y:y,vx:(Math.random()-.5)*.6,vy:(Math.random()-.5)*.6,c:c,t:t}}
+A.forEach(function(t){P.push(mk(t,'a',Math.random()*140,Math.random()*280))});
+C.forEach(function(t){P.push(mk(t,'c',300+Math.random()*140,Math.random()*280))});
+var mx=-99,my=-99;s.onmousemove=function(e){var r=s.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top};
+function f(){P.forEach(function(p){if(p.c=='m'&&p.life--<0){p.c=Math.random()<.5?'a':'c';p.e.className=p.c;p.e.textContent=p.t}
+var dx=mx-p.x,dy=my-p.y,d=Math.hypot(dx,dy)+1;if(d<200){p.vx+=dx/d*.03*(p.c=='c'?-1:1);p.vy+=dy/d*.03*(p.c=='c'?-1:1)}
+p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>s.clientWidth-60)p.vx*=-1;if(p.y<0||p.y>290)p.vy*=-1;p.e.style.transform='translate('+p.x+'px,'+p.y+'px)'});
+for(var i=0;i<P.length;i++)for(var j=i+1;j<P.length;j++){var a=P[i],b=P[j];if(a.c+b.c=='ac'||a.c+b.c=='ca'){if(Math.hypot(a.x-b.x,a.y-b.y)<40){var n=a.c=='a'?a.t+b.t:b.t+a.t;a.c=b.c='m';a.life=b.life=90;a.e.className=b.e.className='m';a.e.textContent=b.e.textContent=n;a.vx=-b.vx;a.vy=-b.vy}}}
+requestAnimationFrame(f)}f()})()
+</script>
+</section>
