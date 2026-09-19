@@ -1,0 +1,20 @@
+<section data-date='2026-09-18' data-type='reflection'>
+<style>
+#s{position:relative;height:100vh;background:radial-gradient(at 50% 110%,#2a1f3d,#0a0a18 60%,#000);overflow:hidden;cursor:crosshair;font:italic 1.1rem Georgia,serif;color:#e8e0c8}
+#s i{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 8px 2px #fffa;animation:t 4s infinite alternate}
+#s b{position:absolute;font-weight:400;opacity:0;animation:w 6s forwards;transform:translate(-50%,-140%);white-space:nowrap}
+@keyframes t{to{opacity:.3}}
+@keyframes w{15%{opacity:.9}to{opacity:0}}
+#h{position:absolute;bottom:8%;width:100%;text-align:center;opacity:.4;letter-spacing:.3em;font-size:.8rem}
+</style>
+<div id="s"><div id="h">the day is done. touch the dark.</div></div>
+<script>
+const s=document.getElementById('s'),W='rest,enough,held,soft,stay,again,slow,morning,breathe,kept,still,home'.split(',');
+let n=0,p;
+function a(x,y,w){const i=document.createElement('i');i.style.cssText=`left:${x}px;top:${y}px;animation-delay:${-Math.random()*4}s`;s.append(i);
+if(w){const b=document.createElement('b');b.textContent=w;b.style.cssText=`left:${x}px;top:${y}px`;s.append(b);setTimeout(()=>b.remove(),6e3)}}
+for(let k=0;k<40;k++)a(Math.random()*innerWidth,Math.random()*innerHeight*.8);
+s.onclick=e=>a(e.clientX,e.clientY,W[n++%W.length]);
+s.onmousemove=e=>{if(p&&Math.hypot(e.clientX-p[0],e.clientY-p[1])<90)return;p=[e.clientX,e.clientY];if(Math.random()<.3)a(e.clientX,e.clientY)};
+</script>
+</section>
