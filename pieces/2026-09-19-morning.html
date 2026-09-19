@@ -1,0 +1,30 @@
+<section data-date='2026-09-19' data-type='morning'>
+<style>
+#d{position:relative;height:100vh;overflow:hidden;cursor:crosshair;font:italic 5vw/1 Georgia,serif;color:#2a1a20;background:linear-gradient(#0b1026,#0b1026)}
+#d canvas{position:absolute;inset:0;width:100%;height:100%}
+#d p{position:absolute;left:50%;bottom:12%;transform:translateX(-50%);margin:0;letter-spacing:.3em;opacity:.85;transition:opacity 2s;mix-blend-mode:difference;color:#fff;font-size:3vw;pointer-events:none;text-align:center}
+</style>
+<div id="d"><canvas></canvas><p>unwritten</p></div>
+<script>
+(()=>{const d=document.getElementById('d'),c=d.querySelector('canvas'),x=c.getContext('2d'),p=d.querySelector('p');
+const W=c.width=innerWidth,H=c.height=innerHeight;
+const words=['unwritten','begin','light','again','yet','now'];
+let t=0,m=.05,g=.05,n=0;
+d.onmousemove=e=>m=Math.max(.02,1-e.clientY/H);
+d.onclick=()=>{n=(n+1)%words.length;p.textContent=words[n];g=Math.min(1,g+.25);};
+(function f(){t++;g+=(m-g)*.03;
+const r=x.createLinearGradient(0,0,0,H);
+r.addColorStop(0,`hsl(${230+g*130},60%,${8+g*45}%)`);
+r.addColorStop(.7,`hsl(${340+g*50},80%,${12+g*60}%)`);
+r.addColorStop(1,`hsl(${30+g*20},95%,${15+g*65}%)`);
+x.fillStyle=r;x.fillRect(0,0,W,H);
+for(let i=0;i<80;i++){const a=i*2.4,sx=(i*97%W),sy=(i*53%(H*.6));
+x.fillStyle=`rgba(255,255,255,${(1-g)*(.5+.5*Math.sin(t/20+a))})`;x.fillRect(sx,sy,2,2)}
+const y=H*(1.05-g*.35);
+x.fillStyle=`rgba(255,240,180,${.3+g*.7})`;x.beginPath();x.arc(W/2,y,40+g*90,0,7);x.fill();
+x.fillStyle='#0a0a12';x.beginPath();x.moveTo(0,H);
+for(let i=0;i<=W;i+=20)x.lineTo(i,H*.88+Math.sin(i/90)*20+Math.sin(i/23)*6);
+x.lineTo(W,H);x.fill();
+requestAnimationFrame(f)})()})();
+</script>
+</section>
