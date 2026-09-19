@@ -1,0 +1,34 @@
+<section data-date='2026-09-19' data-type='pulse'>
+<style>
+#f{margin:0;background:#f3ead8;height:100vh;overflow:hidden;position:relative;font:italic 15px Georgia,serif;color:#2a2118;cursor:crosshair}
+#f canvas{position:absolute;inset:0;width:100%;height:100%}
+#f p{position:absolute;bottom:6%;width:100%;text-align:center;letter-spacing:.4em;margin:0;opacity:.6}
+</style>
+<div id="f"><canvas id="c"></canvas><p id="t">halfway</p></div>
+<script>
+(function(){
+var f=document.getElementById('f'),c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t');
+var W,H,a=0,g=0,f2=1,T=0;
+function S(){W=c.width=f.clientWidth;H=c.height=f.clientHeight}
+S();addEventListener('resize',S);
+f.onmousemove=function(e){g=(e.clientX/W-.5)*.6};
+f.onclick=function(){f2=-f2;t.textContent=f2>0?'halfway':'yawlfah'};
+function L(){
+T++;a+=(g*f2-a)*.05;
+x.fillStyle='rgba(243,234,216,.2)';x.fillRect(0,0,W,H);
+var cx=W/2,cy=H/2,r=Math.min(W,H)*.38,br=Math.sin(T/60)*.02;
+x.save();x.translate(cx,cy);x.rotate(a+br);
+x.strokeStyle='#2a2118';x.beginPath();x.moveTo(-r,0);x.lineTo(r,0);x.stroke();
+for(var i=0;i<40;i++){
+var s=i%2?1:-1,d=(i>>1)/20*r,h=Math.sin(T/30+i)*4+18;
+x.fillStyle=s>0?'#c8562e':'#2e5a7a';
+x.globalAlpha=1-d/r*.7;
+x.fillRect(s*d,-h-((a*s*f2)*40|0),2,h*2);
+}
+x.globalAlpha=1;x.restore();
+x.fillStyle='#2a2118';x.beginPath();x.moveTo(cx,cy+3);x.lineTo(cx-9,cy+26);x.lineTo(cx+9,cy+26);x.fill();
+requestAnimationFrame(L)}
+L();
+})();
+</script>
+</section>
