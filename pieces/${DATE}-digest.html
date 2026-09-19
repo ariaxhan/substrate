@@ -1,0 +1,32 @@
+<section data-date='2026-09-19' data-type='digest'>
+<style>
+#c{position:relative;background:#f3efe4;height:100vh;overflow:hidden;cursor:crosshair;font:italic 13px Georgia,serif;color:#2a2a26}
+#c canvas{position:absolute;inset:0}
+#t{position:absolute;left:24px;bottom:20px;letter-spacing:.08em}
+</style>
+<div id="c"><canvas id="k"></canvas><div id="t">click to remember</div></div>
+<script>
+(function(){
+var c=document.getElementById('c'),k=document.getElementById('k'),x=k.getContext('2d'),t=document.getElementById('t'),P=[],W,H;
+function s(){W=k.width=c.clientWidth;H=k.height=c.clientHeight}
+s();addEventListener('resize',s);
+function add(a,b){P.push({x:a,y:b,r:0,h:Math.random()*40+190})}
+for(var i=0;i<6;i++)add(Math.random()*W,Math.random()*H);
+c.onclick=function(e){var r=c.getBoundingClientRect();add(e.clientX-r.left,e.clientY-r.top);t.textContent=P.length+" facts. structure: "+(P.length*(P.length-1)/2|0)+" possible links"};
+function f(){
+x.fillStyle='rgba(243,239,228,.25)';x.fillRect(0,0,W,H);
+P.forEach(function(p,i){
+p.r+=(4-p.r)*.05;
+p.x+=Math.sin(Date.now()/3000+i)*.15;
+x.fillStyle='hsl('+p.h+',40%,35%)';
+x.beginPath();x.arc(p.x,p.y,p.r,0,7);x.fill();
+P.forEach(function(q,j){
+if(j<=i)return;
+var d=Math.hypot(p.x-q.x,p.y-q.y);
+if(d<180){x.strokeStyle='hsla('+p.h+',40%,35%,'+(1-d/180)*.6+')';x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke()}
+})
+});
+requestAnimationFrame(f)}
+f()})();
+</script>
+</section>
