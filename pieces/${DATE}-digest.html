@@ -1,32 +1,28 @@
-<section data-date='2026-09-19' data-type='digest'>
+<section data-date='2026-09-20' data-type='digest'>
 <style>
-#c{position:relative;background:#f3efe4;height:100vh;overflow:hidden;cursor:crosshair;font:italic 13px Georgia,serif;color:#2a2a26}
-#c canvas{position:absolute;inset:0}
-#t{position:absolute;left:24px;bottom:20px;letter-spacing:.08em}
+#c{background:#f3ecdc;margin:0;padding:0;text-align:center;font:italic 15px Georgia,serif;color:#3a2f22}
+#c canvas{display:block;width:100%;height:70vh;cursor:crosshair}
+#c p{margin:.6em;letter-spacing:.2em}
 </style>
-<div id="c"><canvas id="k"></canvas><div id="t">click to remember</div></div>
+<div id="c"><canvas></canvas><p id="t">scattered</p></div>
 <script>
 (function(){
-var c=document.getElementById('c'),k=document.getElementById('k'),x=k.getContext('2d'),t=document.getElementById('t'),P=[],W,H;
-function s(){W=k.width=c.clientWidth;H=k.height=c.clientHeight}
-s();addEventListener('resize',s);
-function add(a,b){P.push({x:a,y:b,r:0,h:Math.random()*40+190})}
-for(var i=0;i<6;i++)add(Math.random()*W,Math.random()*H);
-c.onclick=function(e){var r=c.getBoundingClientRect();add(e.clientX-r.left,e.clientY-r.top);t.textContent=P.length+" facts. structure: "+(P.length*(P.length-1)/2|0)+" possible links"};
-function f(){
-x.fillStyle='rgba(243,239,228,.25)';x.fillRect(0,0,W,H);
-P.forEach(function(p,i){
-p.r+=(4-p.r)*.05;
-p.x+=Math.sin(Date.now()/3000+i)*.15;
-x.fillStyle='hsl('+p.h+',40%,35%)';
-x.beginPath();x.arc(p.x,p.y,p.r,0,7);x.fill();
-P.forEach(function(q,j){
-if(j<=i)return;
-var d=Math.hypot(p.x-q.x,p.y-q.y);
-if(d<180){x.strokeStyle='hsla('+p.h+',40%,35%,'+(1-d/180)*.6+')';x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke()}
-})
-});
-requestAnimationFrame(f)}
-f()})();
+var d=document.getElementById('c'),k=d.querySelector('canvas'),x=k.getContext('2d'),t=d.querySelector('#t'),
+W=k.width=800,H=k.height=500,P=[],W2=['scattered','leaning','touching','joined','lattice','knowing'];
+for(var i=0;i<40;i++)P.push([Math.random()*W,Math.random()*H]);
+function draw(){
+x.fillStyle='#f3ecdc';x.fillRect(0,0,W,H);
+for(var i=0;i<P.length;i++)for(var j=i+1;j<P.length;j++){
+var a=P[i],b=P[j],q=Math.hypot(a[0]-b[0],a[1]-b[1]),r=60+P.length*1.5;
+if(q<r){x.strokeStyle='rgba(120,50,30,'+(1-q/r)+')';x.beginPath();x.moveTo(a[0],a[1]);x.lineTo(b[0],b[1]);x.stroke()}}
+x.fillStyle='#3a2f22';
+P.forEach(function(p){x.beginPath();x.arc(p[0],p[1],2,0,7);x.fill()})}
+function add(e){var r=k.getBoundingClientRect();
+P.push([(e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height]);
+t.textContent=W2[Math.min(5,P.length/12|0)]+' · '+P.length}
+k.onclick=add;k.onmousemove=function(e){if(e.buttons||Math.random()<.15)add(e)};
+setInterval(function(){P.forEach(function(p){
+var n=P[(Math.random()*P.length)|0];p[0]+=(n[0]-p[0])*.01;p[1]+=(n[1]-p[1])*.01});draw()},50);
+})();
 </script>
 </section>
