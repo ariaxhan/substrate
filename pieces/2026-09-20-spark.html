@@ -1,0 +1,39 @@
+<section data-date='2026-09-20' data-type='spark'>
+<style>
+.sp{background:#0b0a10;color:#e8dcc8;font:14px/1.6 Georgia,serif;text-align:center;padding:8px;position:relative}
+.sp canvas{width:100%;max-width:480px;height:auto;aspect-ratio:1;display:block;margin:0 auto;cursor:crosshair}
+.sp p{margin:4px;letter-spacing:.2em;font-size:12px;opacity:.7;min-height:1.6em}
+</style>
+<div class='sp'>
+<canvas id='sc' width='480' height='480'></canvas>
+<p id='sl'>two things, apart. move between them.</p>
+</div>
+<script>
+(function(){
+var c=document.getElementById('sc'),x=c.getContext('2d'),l=document.getElementById('sl'),
+W=480,m={x:240,y:240},t=0,pts=[],words=['ember','tide','iron','moss','glass','salt'];
+var A={x:60,y:240,vx:0,vy:0,h:20},B={x:420,y:240,vx:0,vy:0,h:200},merged=0;
+c.onmousemove=function(e){var r=c.getBoundingClientRect();m.x=(e.clientX-r.left)*W/r.width;m.y=(e.clientY-r.top)*W/r.height};
+c.onclick=function(){merged=0;A.x=60;B.x=420;A.y=B.y=m.y;A.vx=A.vy=B.vx=B.vy=0;l.textContent='again. apart.'};
+function pull(a,b,k){var dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)+1;a.vx+=dx/d*k;a.vy+=dy/d*k}
+function burst(px,py){for(var i=0;i<60;i++){var a=Math.random()*6.283,s=Math.random()*3+.5;
+pts.push({x:px,y:py,vx:Math.cos(a)*s,vy:Math.sin(a)*s,h:i%2?20:200,life:1,w:i%10?'':words[i%6]})}}
+function step(){t++;
+x.fillStyle='rgba(11,10,16,.18)';x.fillRect(0,0,W,W);
+if(!merged){
+var mid={x:m.x,y:m.y};
+pull(A,mid,.05);pull(B,mid,.05);pull(A,B,.02);pull(B,A,.02);
+[A,B].forEach(function(o){o.vx*=.94;o.vy*=.94;o.x+=o.vx;o.y+=o.vy;
+x.fillStyle='hsl('+o.h+',90%,60%)';x.beginPath();x.arc(o.x,o.y,10,0,7);x.fill();
+x.strokeStyle='hsla('+o.h+',90%,60%,.3)';x.beginPath();x.moveTo(o.x,o.y);x.lineTo(m.x,m.y);x.stroke()});
+if(Math.hypot(A.x-B.x,A.y-B.y)<20){merged=1;burst((A.x+B.x)/2,(A.y+B.y)/2);l.textContent='a third thing, neither of them.'}
+}else{
+x.fillStyle='hsl(110,80%,65%)';x.beginPath();x.arc((A.x+B.x)/2,(A.y+B.y)/2,6+Math.sin(t/8)*3,0,7);x.fill()}
+pts.forEach(function(p){p.x+=p.vx;p.y+=p.vy;p.vx*=.98;p.vy*=.98;p.life-=.004;
+x.fillStyle='hsla('+(p.h+(1-p.life)*(110-p.h))+',85%,62%,'+Math.max(p.life,0)+')';
+if(p.w){x.font='11px Georgia';x.fillText(p.w,p.x,p.y)}else x.fillRect(p.x,p.y,2,2)});
+pts=pts.filter(function(p){return p.life>0});
+requestAnimationFrame(step)}
+step()})();
+</script>
+</section>
