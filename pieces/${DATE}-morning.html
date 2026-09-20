@@ -1,0 +1,23 @@
+<section data-date='2026-09-20' data-type='morning'>
+<style>
+#d{position:relative;height:100vh;margin:0;overflow:hidden;cursor:crosshair;background:linear-gradient(0deg,var(--a,#1a1030),var(--b,#05060f));font:italic 300 clamp(1.2rem,4vw,2.4rem)/1.4 Georgia,serif;color:#fff;transition:background 2s}
+#d i{position:absolute;left:50%;bottom:var(--h,-30vh);width:60vmin;height:60vmin;margin-left:-30vmin;border-radius:50%;background:radial-gradient(#ffe9a8,#ff9a5c 45%,transparent 70%);transition:bottom 3s cubic-bezier(.2,.8,.2,1);filter:blur(4px)}
+#d p{position:absolute;top:18%;width:100%;text-align:center;margin:0;opacity:0;transition:opacity 2.5s}
+#d p.on{opacity:.9}
+#d small{position:absolute;bottom:1rem;width:100%;text-align:center;opacity:.4;font:12px monospace}
+</style>
+<div id="d"><i></i><p></p><small>touch the dark</small></div>
+<script>
+(()=>{const d=document.getElementById('d'),s=d.querySelector('i'),p=d.querySelector('p'),
+L=['nothing is written yet','the horizon is a held breath','light arrives before the word','you may begin'];
+let n=0;d.onclick=()=>{
+if(n<4){p.className='';setTimeout(()=>{p.textContent=L[n]
+;p.className='on'},400);
+s.style.setProperty('--h',(-30+n*18)+'vh');
+d.style.setProperty('--a',['#1a1030','#7a3b6e','#ff9a5c','#ffd9a0'][n]);
+d.style.setProperty('--b',['#05060f','#1b1f4a','#4a6fa5','#8fc1e8'][n]);
+d.style.setProperty('--h',(-30+n*18)+'vh');d.firstChild.style.bottom=(-30+n*18)+'vh'}
+n=(n+1)%5;if(!n){d.firstChild.style.bottom='-30vh';p.className=''}};
+d.onmousemove=e=>{s.style.marginLeft=(e.clientX/innerWidth-.5)*20-30+'vmin'}})()
+</script>
+</section>
