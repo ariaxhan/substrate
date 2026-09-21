@@ -1,0 +1,36 @@
+<section data-date='2026-09-21' data-type='spark'>
+<style>
+#s{background:#0b0a10;margin:0;position:relative;height:360px;overflow:hidden;font:14px Georgia,serif;color:#e8dfd0;cursor:crosshair}
+#s canvas{position:absolute;inset:0;width:100%;height:100%}
+#s p{position:absolute;left:14px;bottom:8px;margin:0;font-style:italic;opacity:.75;letter-spacing:.06em;pointer-events:none}
+</style>
+<div id="s"><canvas id="c"></canvas><p id="t">two things, apart</p></div>
+<script>
+(function(){
+var c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),
+W=c.width=600,H=c.height=360,m={x:300,y:180},P=[],F=[],n=0,
+words=['you','I','and','now','us','spark','more'];
+for(var i=0;i<60;i++)P.push({x:Math.random()*W,y:Math.random()*H,vx:0,vy:0,h:i%2?20:200,a:Math.random()*6.28});
+c.parentNode.onmousemove=function(e){var r=c.getBoundingClientRect();m.x=(e.clientX-r.left)*W/r.width;m.y=(e.clientY-r.top)*H/r.height};
+c.parentNode.onclick=function(){
+for(var i=0;i<24;i++){var a=Math.random()*6.28,s=1+Math.random()*3;F.push({x:m.x,y:m.y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:60,h:110})}
+t.textContent=words[n++%words.length]};
+function f(){
+x.fillStyle='rgba(11,10,16,.18)';x.fillRect(0,0,W,H);
+var cx=W-m.x,cy=H-m.y;
+P.forEach(function(p,i){
+var tx=i%2?m.x:cx,ty=i%2?m.y:cy;
+p.a+=.03;
+p.vx+=(tx-p.x)*.0008+Math.cos(p.a)*.05;p.vy+=(ty-p.y)*.0008+Math.sin(p.a)*.05;
+p.vx*=.97;p.vy*=.97;p.x+=p.vx;p.y+=p.vy;
+x.fillStyle='hsl('+p.h+',80%,60%)';x.fillRect(p.x,p.y,2,2)});
+var d=Math.hypot(m.x-cx,m.y-cy);
+if(d<90){x.strokeStyle='hsla(50,90%,70%,'+(1-d/90)+')';x.beginPath();
+P.forEach(function(p,i){if(i%2==0){var q=P[i+1];if(Math.hypot(p.x-q.x,p.y-q.y)<50){x.moveTo(p.x,p.y);x.lineTo(q.x,q.y)}}});x.stroke();
+t.textContent=d<30?'one':'meeting'}
+else if(!F.length)t.textContent='two things, apart';
+F=F.filter(function(q){q.x+=q.vx;q.y+=q.vy;q.l--;x.fillStyle='hsla('+q.h+',90%,70%,'+q.l/60+')';x.fillRect(q.x,q.y,2,2);return q.l>0});
+requestAnimationFrame(f)}
+f()})();
+</script>
+</section>
