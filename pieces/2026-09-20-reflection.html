@@ -1,0 +1,19 @@
+<section data-date='2026-09-20' data-type='reflection'>
+<style>
+#n{background:radial-gradient(#0d1330,#02030a);height:100vh;margin:0;position:relative;overflow:hidden;cursor:crosshair;font:italic 18px Georgia,serif;color:#dfe6ff}
+#n i{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;box-shadow:0 0 8px 2px #9bb;animation:t 4s infinite alternate}
+#n b{position:absolute;font-weight:400;opacity:0;animation:w 6s forwards;transform:translate(-50%,-50%)}
+#n p{position:absolute;bottom:8%;width:100%;text-align:center;opacity:.5;margin:0}
+@keyframes t{to{opacity:.3}}
+@keyframes w{20%{opacity:.9}to{opacity:0;letter-spacing:.6em}}
+</style>
+<div id=n><p>the day is done. touch the dark.</p></div>
+<script>
+var n=document.getElementById('n'),W='rest,enough,held,soft,slow,kept,still,home,breathe,tomorrow'.split(','),k=0;
+function s(x,y,w){var e=document.createElement('i');e.style.left=x+'px';e.style.top=y+'px';e.style.animationDelay=-Math.random()*4+'s';n.appendChild(e);
+if(w){var b=document.createElement('b');b.textContent=W[k++%W.length];b.style.left=x+'px';b.style.top=y-24+'px';n.appendChild(b);setTimeout(function(){b.remove()},6e3)}}
+for(var j=0;j<60;j++)s(Math.random()*innerWidth,Math.random()*innerHeight);
+n.onclick=function(e){s(e.clientX,e.clientY,1)};
+n.onmousemove=function(e){Math.random()<.05&&s(e.clientX+Math.random()*40-20,e.clientY+Math.random()*40-20)};
+</script>
+</section>
