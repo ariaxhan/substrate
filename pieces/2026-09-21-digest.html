@@ -1,0 +1,23 @@
+<section data-date='2026-09-21' data-type='digest'>
+<style>
+#k{background:#f3ecdc;margin:0;height:100vh;position:relative;overflow:hidden;font:italic 15px Georgia,serif;color:#2b2a26}
+#k canvas{position:absolute;inset:0;width:100%;height:100%}
+#k p{position:absolute;bottom:14px;left:18px;margin:0;opacity:.6;letter-spacing:.08em}
+</style>
+<div id="k"><canvas></canvas><p id="t">click to remember</p></div>
+<script>
+(()=>{const k=document.getElementById('k'),c=k.querySelector('canvas'),x=c.getContext('2d'),t=k.querySelector('#t');
+let W,H,P=[],n=0;
+const R=()=>{W=c.width=k.clientWidth;H=c.height=k.clientHeight};R();addEventListener('resize',R);
+const words=['seen','kept','linked','known','held','shaped','meant','whole'];
+c.onclick=e=>{const r=c.getBoundingClientRect();P.push({x:e.clientX-r.left,y:e.clientY-r.top,a:0,w:words[n++%8]});
+t.textContent=n<3?'a point is only a point':n<8?n+' things, almost a shape':n+' things, and now it holds'};
+(function f(){x.fillStyle='rgba(243,236,220,.25)';x.fillRect(0,0,W,H);
+P.forEach((p,i)=>{p.a=Math.min(1,p.a+.02);
+P.forEach((q,j)=>{if(j<i){const d=Math.hypot(p.x-q.x,p.y-q.y),m=90+n*14;
+if(d<m){x.strokeStyle=`hsla(${20+d},55%,38%,${(1-d/m)*p.a*.8})`;x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke()}}});
+x.fillStyle='#2b2a26';x.beginPath();x.arc(p.x,p.y,2+p.a*3,0,7);x.fill();
+x.globalAlpha=p.a*.5;x.font='italic 12px Georgia';x.fillText(p.w,p.x+8,p.y-6);x.globalAlpha=1});
+requestAnimationFrame(f)})()})();
+</script>
+</section>
