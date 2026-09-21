@@ -1,0 +1,25 @@
+<section data-date='2026-09-21' data-type='morning'>
+<style>
+#d{position:relative;height:100vh;margin:0;overflow:hidden;background:#0b0d1a;font:italic 1.4rem/1.6 Georgia,serif;color:#fff;cursor:pointer;transition:background 2s}
+#d canvas{position:absolute;inset:0;width:100%;height:100%}
+#d p{position:absolute;bottom:12%;width:100%;text-align:center;margin:0;letter-spacing:.3em;mix-blend-mode:difference;transition:opacity 1.5s}
+#d small{position:absolute;top:8%;width:100%;text-align:center;font:.7rem monospace;opacity:.4;letter-spacing:.4em}
+</style>
+<div id="d"><canvas id="c"></canvas><small>click to begin</small><p>nothing yet</p></div>
+<script>
+(()=>{const d=document.getElementById('d'),c=d.querySelector('canvas'),x=c.getContext('2d'),p=d.querySelector('p'),W=['nothing yet','a seam','a thin gold','the day is unwritten','begin'];
+let t=0,g=0,mx=.5,s=0;const r=()=>{c.width=innerWidth;c.height=innerHeight};r();onresize=r;
+d.onmousemove=e=>mx=e.clientX/innerWidth;
+d.onclick=()=>{s=Math.min(s+1,4);p.textContent=W[s];g=s/4};
+(function f(){t+=.01;const w=c.width,h=c.height,y=h*(1-.15-.6*g*(.9+.1*Math.sin(t)));
+const G=x.createLinearGradient(0,0,0,h);
+G.addColorStop(0,`hsl(${230-40*g},50%,${8+20*g}%)`);G.addColorStop(.6,`hsl(${20+20*mx},80%,${20+40*g}%)`);G.addColorStop(1,`hsl(${45},90%,${30+40*g}%)`);
+x.fillStyle=G;x.fillRect(0,0,w,h);
+x.fillStyle='#0b0d1a';x.beginPath();x.moveTo(0,h);
+for(let i=0;i<=w;i+=8)x.lineTo(i,h*.85+Math.sin(i*.006+1)*30+Math.sin(i*.02)*8);
+x.lineTo(w,h);x.fill();
+const R=x.createRadialGradient(w*mx,y,0,w*mx,y,150+200*g);
+R.addColorStop(0,'rgba(255,240,180,'+(.3+.6*g)+')');R.addColorStop(1,'rgba(255,200,100,0)');
+x.fillStyle=R;x.fillRect(0,0,w,h);requestAnimationFrame(f)})()})()
+</script>
+</section>
