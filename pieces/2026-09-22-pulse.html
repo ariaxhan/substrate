@@ -1,0 +1,53 @@
+<section data-date='2026-09-22' data-type='pulse'>
+<style>
+.taper-halfway{margin:0;overflow:hidden;height:70vh;min-height:420px;background:#0b0c10;position:relative;font-family:Georgia,'Times New Roman',serif;cursor:crosshair;user-select:none}
+.taper-halfway .field{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.taper-halfway .beam{width:70vw;max-width:640px;height:1px;background:#555;position:relative;transition:transform .12s linear}
+.taper-halfway .fulcrum{position:absolute;left:50%;top:50%;width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:15px solid #d8b64c;transform:translate(-50%,0)}
+.taper-halfway .word{position:absolute;top:50%;font-size:2.1em;letter-spacing:.06em;color:#e8e2d0;transform:translateY(-50%);transition:color .4s ease,opacity .4s ease}
+.taper-halfway .word.dawn{left:0;transform-origin:left center}
+.taper-halfway .word.dusk{right:0;transform-origin:right center;text-align:right}
+.taper-halfway .hour{position:absolute;bottom:10%;left:50%;transform:translateX(-50%);color:#665;font-size:.7em;letter-spacing:.3em;text-transform:uppercase}
+.taper-halfway .flip .word.dawn{color:#7fa8c9}
+.taper-halfway .flip .word.dusk{color:#c97f7f}
+</style>
+<div class="taper-halfway" id="th-root">
+  <div class="field">
+    <div class="beam" id="th-beam">
+      <div class="fulcrum"></div>
+      <div class="word dawn" id="th-dawn">morning</div>
+      <div class="word dusk" id="th-dusk">evening</div>
+    </div>
+  </div>
+  <div class="hour" id="th-hour">12:00</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('th-root');
+  var beam=document.getElementById('th-beam');
+  var hour=document.getElementById('th-hour');
+  var flipped=false;
+  var tilt=0;
+  function paint(){
+    beam.style.transform='rotate('+tilt+'deg)';
+    var h=(12+tilt/3).toFixed(2);
+    var hh=Math.floor(h)%24, mm=Math.round((h-Math.floor(h))*60);
+    hour.textContent=(hh<10?'0':'')+hh+':'+(mm<10?'0':'')+mm;
+  }
+  root.addEventListener('mousemove',function(e){
+    var r=root.getBoundingClientRect();
+    var p=(e.clientX-r.left)/r.width; // 0..1
+    tilt=(p-0.5)*24;
+    paint();
+  });
+  root.addEventListener('mouseleave',function(){tilt=0;paint();});
+  root.addEventListener('click',function(){
+    flipped=!flipped;
+    root.classList.toggle('flip',flipped);
+    var d=document.getElementById('th-dawn'), u=document.getElementById('th-dusk');
+    var t=d.textContent; d.textContent=u.textContent; u.textContent=t;
+  });
+  paint();
+})();
+</script>
+</section>
