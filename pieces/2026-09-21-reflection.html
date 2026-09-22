@@ -1,62 +1,89 @@
 <section data-date='2026-09-21' data-type='reflection'>
 <style>
-#taper-0921{margin:0;overflow:hidden;height:100vh;background:radial-gradient(ellipse at 50% 100%,#0a1128 0%,#020208 70%);position:relative;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
-#taper-0921 .horizon{position:absolute;bottom:0;left:0;width:100%;height:22%;background:linear-gradient(to top,#000,rgba(0,0,0,0));z-index:2}
-#taper-0921 .word{position:absolute;bottom:18%;left:50%;transform:translateX(-50%);color:#5a6a8a;font-size:clamp(14px,2.4vw,26px);letter-spacing:.35em;text-transform:lowercase;opacity:0;transition:opacity 3s ease;z-index:3;pointer-events:none;text-align:center;width:90%}
-#taper-0921 .word.on{opacity:.8}
-#taper-0921 .hint{position:absolute;top:16px;left:16px;color:#3a4560;font-size:11px;letter-spacing:.2em;font-family:Arial,sans-serif;text-transform:uppercase;opacity:.6}
-#taper-0921 .count{position:absolute;top:16px;right:18px;color:#2c3552;font-size:11px;font-family:Arial,sans-serif;letter-spacing:.15em}
+#tp-2026-09-21{position:relative;height:70vh;min-height:420px;background:radial-gradient(ellipse at 50% 100%,#0d1526 0%,#04060d 70%);overflow:hidden;font-family:Georgia,'Times New Roman',serif;cursor:crosshair;border-radius:2px}
+#tp-2026-09-21 .tp-sky{position:absolute;inset:0}
+#tp-2026-09-21 .tp-word{position:absolute;bottom:6%;left:50%;transform:translateX(-50%);color:#5a6a8a;font-size:14px;letter-spacing:.35em;text-transform:uppercase;opacity:.55;pointer-events:none;text-align:center;width:90%}
+#tp-2026-09-21 .tp-count{position:absolute;top:14px;right:18px;color:#3a4560;font-size:11px;letter-spacing:.2em;font-family:Georgia,serif;pointer-events:none}
+#tp-2026-09-21 .tp-hint{position:absolute;top:14px;left:18px;color:#3a4560;font-size:11px;letter-spacing:.15em;font-style:italic;pointer-events:none;transition:opacity 1.2s}
+#tp-2026-09-21 .tp-moon{position:absolute;top:10%;right:12%;width:38px;height:38px;border-radius:50%;background:#eee6d0;box-shadow:0 0 40px 6px rgba(238,230,208,.25);opacity:.85;pointer-events:none}
 </style>
-<div id="taper-0921">
-  <div class="hint">click the dark</div>
-  <div class="count" id="tp-count">0 stars</div>
-  <div class="word" id="tp-word"></div>
-  <div class="horizon"></div>
+<div id="tp-2026-09-21">
+  <div class="tp-moon"></div>
+  <div class="tp-sky"></div>
+  <div class="tp-hint">touch the dark</div>
+  <div class="tp-count"></div>
+  <div class="tp-word">the day is complete. rest before the next beginning.</div>
 </div>
 <script>
 (function(){
-  var root=document.getElementById('taper-0921');
-  var wordEl=document.getElementById('tp-word');
-  var countEl=document.getElementById('tp-count');
-  var words=['the day is complete','rest now','nothing left undone','stillness','tomorrow can wait','breathe','the dark holds you','enough','let it close','quiet now'];
-  var used=[];
-  var stars=[];
+  var root=document.getElementById('tp-2026-09-21');
+  var sky=root.querySelector('.tp-sky');
+  var hint=root.querySelector('.tp-hint');
+  var count=root.querySelector('.tp-count');
   var n=0;
-  function nextWord(){
-    if(used.length===words.length)used=[];
-    var w;
-    do{w=words[Math.floor(Math.random()*words.length)];}while(used.indexOf(w)>-1);
-    used.push(w);
-    return w;
-  }
-  function showWord(){
-    wordEl.textContent=nextWord();
-    wordEl.classList.add('on');
-    setTimeout(function(){wordEl.classList.remove('on');},2800);
+  var words=['still','quiet','soft','done','enough','ember','hush','close','slow','dim','deep','rest'];
+  function place(x,y){
+    var d=document.createElement('div');
+    var s=2+Math.random()*3;
+    n++;
+    d.style.position='absolute';
+    d.style.left=x+'px';
+    d.style.top=y+'px';
+    d.style.width=s+'px';
+    d.style.height=s+'px';
+    d.style.marginLeft=(-s/2)+'px';
+    d.style.marginTop=(-s/2)+'px';
+    d.style.borderRadius='50%';
+    d.style.background='#fdf6e3';
+    d.style.boxShadow='0 0 '+(s*4)+'px '+(s*1.2)+'px rgba(253,246,227,.5)';
+    d.style.opacity='0';
+    d.style.transition='opacity 2.4s ease-in, transform 6s ease-out';
+    sky.appendChild(d);
+    requestAnimationFrame(function(){
+      d.style.opacity=.15+Math.random()*.7;
+      d.style.transform='scale('+(1+Math.random()*.4)+')';
+    });
+    if(n%3===0){
+      var w=document.createElement('span');
+      w.textContent=words[Math.floor(Math.random()*words.length)];
+      w.style.position='absolute';
+      w.style.left=x+'px';
+      w.style.top=(y-16)+'px';
+      w.style.transform='translateX(-50%)';
+      w.style.color='#8a94b8';
+      w.style.fontSize='10px';
+      w.style.letterSpacing='.2em';
+      w.style.opacity='0';
+      w.style.transition='opacity 3s ease-in, top 3s ease-out';
+      w.style.pointerEvents='none';
+      sky.appendChild(w);
+      requestAnimationFrame(function(){
+        w.style.opacity='.5';
+        w.style.top=(y-40)+'px';
+      });
+      setTimeout(function(){w.style.opacity='0';},2600);
+      setTimeout(function(){w.remove();},6000);
+    }
+    count.textContent=n+' star'+(n===1?'':'s');
+    hint.style.opacity='0';
   }
   root.addEventListener('click',function(e){
-    if(e.target.closest('.horizon'))return;
-    var rect=root.getBoundingClientRect();
-    var x=e.clientX-rect.left, y=e.clientY-rect.top;
-    var s=document.createElement('div');
-    var size=(Math.random()*2.2+1).toFixed(2);
-    s.style.cssText='position:absolute;left:'+x+'px;top:'+y+'px;width:'+size+'px;height:'+size+'px;border-radius:50%;background:#fff;box-shadow:0 0 '+(size*4)+'px '+(size*1.5)+'px rgba(255,255,255,.55);transform:translate(-50%,-50%);opacity:0;transition:opacity 2.5s ease;z-index:1;pointer-events:none';
-    root.appendChild(s);
-    requestAnimationFrame(function(){s.style.opacity=(Math.random()*.5+.5).toFixed(2);});
-    var drift=(Math.random()*40-20);
-    setTimeout(function(){s.style.transform='translate(calc(-50% + '+drift+'px),-50%)';s.style.transition='transform 40s linear, opacity 2.5s ease';},50);
-    stars.push(s);
-    n++;
-    countEl.textContent=n+(n===1?' star':' stars');
-    if(n%4===0)showWord();
-    if(stars.length>140){var old=stars.shift();old.style.opacity=0;setTimeout(function(){old.remove();},2500);}
+    var r=root.getBoundingClientRect();
+    place(e.clientX-r.left,e.clientY-r.top);
   });
+  root.addEventListener('touchstart',function(e){
+    var r=root.getBoundingClientRect();
+    var t=e.touches[0];
+    place(t.clientX-r.left,t.clientY-r.top);
+  },{passive:true});
   setTimeout(function(){
-    var rect=root.getBoundingClientRect();
-    for(var i=0;i<3;i++){
-      root.dispatchEvent(new MouseEvent('click',{clientX:rect.left+rect.width*Math.random(),clientY:rect.top+rect.height*Math.random()*0.7}));
+    var r=root.getBoundingClientRect();
+    for(var i=0;i<5;i++){
+      setTimeout(function(){
+        place(Math.random()*r.width,Math.random()*r.height*.7);
+      },i*900);
     }
-  },900);
+  },1500);
 })();
 </script>
 </section>
