@@ -1,0 +1,109 @@
+<section data-date='2026-09-21' data-type='reflection'>
+<style>
+#taper-2026-09-21{margin:0;height:80vh;min-height:520px;background:radial-gradient(ellipse at 50% 100%,#0d1224 0%,#050710 60%,#020308 100%);position:relative;overflow:hidden;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+#taper-2026-09-21 .tp-sky{position:absolute;inset:0}
+#taper-2026-09-21 .tp-star{position:absolute;border-radius:50%;background:#fff;opacity:0;transform:scale(0);pointer-events:none;animation:tp-in 1.8s ease-out forwards,tp-tw 3.6s ease-in-out infinite;animation-delay:0s,1.8s}
+#taper-2026-09-21 .tp-line{position:absolute;font-size:.62rem;letter-spacing:.14em;color:#7d88b8;opacity:0;transition:opacity 1.4s ease}
+#taper-2026-09-21 .tp-line.tp-show{opacity:.85}
+#taper-2026-09-21 .tp-word{position:absolute;color:#e9e4d8;opacity:0;transform:translateY(6px);transition:opacity 1.6s ease, transform 1.6s ease;pointer-events:none;font-style:italic}
+#taper-2026-09-21 .tp-word.tp-show{opacity:.9;transform:translateY(0)}
+#taper-2026-09-21 .tp-hint{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:#4a5484;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;opacity:.55}
+#taper-2026-09-21 .tp-title{position:absolute;top:22px;left:0;right:0;text-align:center;color:#c7cbe6;font-size:1rem;letter-spacing:.5em;text-transform:uppercase;opacity:.5}
+@keyframes tp-in{to{opacity:1;transform:scale(1)}}
+@keyframes tp-tw{0%,100%{opacity:.35}50%{opacity:1}}
+</style>
+<div id="taper-2026-09-21">
+  <div class="tp-title">rest</div>
+  <div class="tp-sky" id="tp-sky"></div>
+  <div class="tp-hint">the day is finished. touch the dark.</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('taper-2026-09-21');
+  var sky = document.getElementById('tp-sky');
+  if(!root || !sky) return;
+  var words = ["still","done","enough","quiet","held","soft","kept","whole","hushed","dark"];
+
+  var used = 0, MAX = 60;
+  var last = {t:0};
+
+  function place(el, x, y){ el.style.left = x + 'px'; el.style.top = y + 'px'; }
+
+  function star(x, y){
+
+    if (used >= MAX) return;
+    used++;
+    var s = document.createElement('div');
+    s.className = 'tp-star';
+    var r = 1 + Math.random() * 2.2;
+    s.style.width = r + 'px';
+    s.style.height = r + 'px';
+    s.style.boxShadow = '0 0 ' + (r*3) + 'px ' + (r) + 'px rgba(255,255,255,.55)';
+    place(s, x - r/2, y - r/2);
+    sky.appendChild(s);
+
+    if (Math.random() < 0.4) {
+      var w = document.createElement('div');
+      w.className = 'tp-word';
+      w.textContent = words[Math.floor(Math.random()*words.length)];
+      w.style.fontSize = (0.7 + Math.random()*0.6) + 'rem';
+      place(w, x + 8, y - 4);
+      sky.appendChild(w);
+      requestAnimationFrame(function(){ w.classList.add('tp-show'); });
+      setTimeout(function(){ w.style.opacity = 0; }, 5200 + Math.random()*1800);
+    }
+  }
+
+  function constellate(x, y){
+    var now = Date.now ? Date.now() : (new Date()).getTime();
+    if (now - last.t < 90) return;
+    last.t = now;
+    var stars = sky.querySelectorAll('.tp-star');
+    if (stars.length < 2) return;
+    var near = [];
+    stars.forEach(function(s){
+      var sx = parseFloat(s.style.left), sy = parseFloat(s.style.top);
+      var d = Math.hypot(sx - x, sy - y);
+      if (d < 140) near.push({s:s, d:d, x:sx, y:sy});
+    });
+    near.sort(function(a,b){ return a.d - b.d; });
+    if (near.length < 2) return;
+    var a = near[0], b = near[1];
+    var dx = b.x - a.x, dy = b.y - a.y;
+    var len = Math.hypot(dx, dy);
+    var line = document.createElement('div');
+    line.className = 'tp-line tp-show';
+    line.style.width = len + 'px';
+    line.style.height = '1px';
+    line.style.background = 'linear-gradient(90deg, rgba(160,170,220,0), rgba(160,170,220,.5), rgba(160,170,220,0))';
+    line.style.left = a.x + 'px';
+    line.style.top = a.y + 'px';
+    line.style.transformOrigin = '0 0';
+    line.style.transform = 'rotate(' + (Math.atan2(dy,dx) * 180/Math.PI) + 'deg)';
+    sky.appendChild(line);
+    setTimeout(function(){ line.style.opacity = 0; setTimeout(function(){ line.remove(); }, 1500); }, 900);
+  }
+
+  root.addEventListener('click', function(e){
+    var rect = root.getBoundingClientRect();
+    star(e.clientX - rect.left, e.clientY - rect.top);
+  });
+
+  root.addEventListener('mousemove', function(e){
+    var rect = root.getBoundingClientRect();
+    constellate(e.clientX - rect.left, e.clientY - rect.top);
+  });
+
+  // a few stars already settled, as if the night began before we arrived
+  var rect0 = root.getBoundingClientRect();
+  var w0 = rect0.width || 900, h0 = rect0.height || 520;
+  for (var i = 0; i < 7; i++){
+    (function(i){
+      setTimeout(function(){
+        star(Math.random()*w0, Math.random()*h0*0.7);
+      }, 400 + i*260);
+    })(i);
+  }
+})();
+</script>
+</section>
