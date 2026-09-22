@@ -1,0 +1,63 @@
+<section data-date='2026-09-22' data-type='spark'>
+<style>
+.spk{background:#0a0a0f;color:#eee;height:100vh;overflow:hidden;position:relative;font-family:Georgia,serif;cursor:crosshair}
+.spk .lane{position:absolute;top:50%;width:100%;transform:translateY(-50%);white-space:nowrap;font-size:5vw;letter-spacing:2px}
+.spk .l{color:#4cf;text-shadow:0 0 12px #4cf8;left:-100%}
+.spk .r{color:#f4a;text-shadow:0 0 12px #f4a8;right:-100%;text-align:right}
+.spk .mid{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:3vw;color:#fff;opacity:0;pointer-events:none;text-align:center}
+.spk small{position:absolute;bottom:6px;left:10px;font-family:sans-serif;font-size:10px;color:#555}
+</style>
+<div class="spk" id="sp">
+  <div class="lane l" id="lL"></div>
+  <div class="lane r" id="lR"></div>
+  <div class="mid" id="lM"></div>
+  <small>click to collide</small>
+</div>
+<script>
+(function(){
+var a=["you","the wave","a name","this hand","the signal","one voice","the past"],
+b=["the shore","a name","the wire","this hand","the answer","one voice","the future"],
+el=document.getElementById("sp"),L=document.getElementById("lL"),R=document.getElementById("lR"),M=document.getElementById("lM"),
+x=-100,hit=false,t=0;
+function w(){return a[Math.floor(Math.random()*a.length)]+"   "+a[Math.floor(Math.random()*a.length)]+"   "+a[Math.floor(Math.random()*a.length)]}
+function v(){return b[Math.floor(Math.random()*b.length)]+"   "+b[Math.floor(Math.random()*b.length)]+"   "+b[Math.floor(Math.random()*b.length)]}
+L.textContent=w();R.textContent=v();
+function tick(){
+  t+=0.6;
+  if(!hit){
+    x=(Math.sin(t/40)*40)+50;
+    L.style.left=(x-100)+"%";
+    R.style.right=(x-100)+"%";
+  }
+  requestAnimationFrame(tick);
+}
+tick();
+function collide(e){
+  hit=true;
+  var cx=e.clientX/window.innerWidth*100;
+  L.style.transition="left .4s ease-in";
+  R.style.transition="right .4s ease-in";
+  L.style.left=(cx-50)+"%";
+  R.style.right=(50-cx)+"%";
+  setTimeout(function(){
+    var pair=a[Math.floor(Math.random()*a.length)]+" meets "+b[Math.floor(Math.random()*b.length)];
+    M.textContent=pair;
+    M.style.transition="opacity .3s";
+    M.style.opacity=1;
+    el.style.background="radial-gradient(circle at "+cx+"% 50%, #331 0%, #0a0a0f 60%)";
+    setTimeout(function(){
+      M.style.opacity=0;
+      el.style.background="#0a0a0f";
+      L.style.transition="";R.style.transition="";
+      L.textContent=w();R.textContent=v();
+      hit=false;
+    },1600);
+  },400);
+}
+el.addEventListener("click",collide);
+el.addEventListener("mousemove",function(e){
+  if(!hit && Math.random()<0.02) collide(e);
+});
+})();
+</script>
+</section>
