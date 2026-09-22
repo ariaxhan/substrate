@@ -1,0 +1,74 @@
+<section data-date='2026-09-22' data-type='digest'>
+<style>
+#tp22{position:relative;width:100%;height:100%;min-height:520px;background:#07080c;overflow:hidden;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+#tp22 h2{position:absolute;top:14px;left:18px;margin:0;font:italic 13px/1.4 Georgia,serif;color:#5a6478;letter-spacing:.04em;z-index:3;pointer-events:none}
+#tp22 .hint{position:absolute;bottom:14px;left:18px;font:11px/1.4 monospace;color:#3a4258;z-index:3;pointer-events:none;transition:opacity .6s}
+#tp22 svg{position:absolute;inset:0;width:100%;height:100%}
+#tp22 .n{fill:#e8d9b5}
+#tp22 .lbl{fill:#8a93a8;font:italic 10px Georgia,serif}
+#tp22 .lbl.first{fill:#c9b27a}
+#tp22 .cnt{position:absolute;top:14px;right:18px;font:11px monospace;color:#4a5268;z-index:3}
+</style>
+<div id="tp22">
+<h2>crystallization &mdash; every knowing needs a neighbor</h2>
+<span class="cnt" id="tp22c">0 points</span>
+<svg id="tp22s"></svg>
+<div class="hint" id="tp22h">click to know something</div>
+</div>
+<script>
+(function(){
+var host=document.getElementById('tp22'),svg=document.getElementById('tp22s'),
+cnt=document.getElementById('tp22c'),hint=document.getElementById('tp22h');
+var NS='http://www.w3.org/2000/svg';
+var words=['ember','thread','signal','root','shard','echo','seed','lattice','trace','vault','pulse','grain','wick','node','glyph','drift','core','arc','prism','loom'];
+var pts=[];
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function add(x,y){
+ var w=words[Math.floor(Math.random()*words.length)]+(pts.length?'':'·genesis');
+ var p={x:x,y:y,w:w};
+ var near=pts.slice().sort(function(a,b){return dist(a,p)-dist(b,p)}).slice(0,Math.min(3,pts.length));
+ near.forEach(function(o){
+  if(dist(o,p)<260){
+   var l=document.createElementNS(NS,'line');
+   l.setAttribute('x1',o.x);l.setAttribute('y1',o.y);
+   l.setAttribute('x2',p.x);l.setAttribute('y2',p.y);
+   l.setAttribute('stroke','rgba(200,178,122,'+(0.5-dist(o,p)/520).toFixed(2)+')');
+   l.setAttribute('stroke-width','1');
+   l.style.strokeDasharray='240';l.style.strokeDashoffset='240';
+   l.style.transition='stroke-dashoffset 900ms ease-out';
+   svg.appendChild(l);
+   requestAnimationFrame(function(){requestAnimationFrame(function(){l.style.strokeDashoffset='0'})});
+  }
+ });
+ var c=document.createElementNS(NS,'circle');
+ c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r',0);c.setAttribute('class','n');
+ svg.appendChild(c);
+ var r0=2+Math.random()*2;
+ var t0=null;
+ function grow(ts){
+  if(!t0)t0=ts;var k=Math.min(1,(ts-t0)/500);
+  c.setAttribute('r',(r0*k).toFixed(2));
+  c.setAttribute('opacity',(0.4+0.6*k).toFixed(2));
+  if(k<1)requestAnimationFrame(grow)
+ }
+ requestAnimationFrame(grow);
+ var t=document.createElementNS(NS,'text');
+ t.setAttribute('x',x+7);t.setAttribute('y',y-7);
+ t.setAttribute('class','lbl'+(pts.length===0?' first':''));
+ t.textContent=p.w;t.setAttribute('opacity','0');
+ svg.appendChild(t);
+ setTimeout(function(){t.style.transition='opacity 1200ms';t.setAttribute('opacity','0.85')},300);
+ pts.push(p);
+ cnt.textContent=pts.length+(pts.length===1?' point':' points');
+ if(pts.length===1)hint.textContent='again — let it find a neighbor';
+ else if(pts.length===5)hint.textContent='a pattern is starting to hold';
+ else if(pts.length===12){hint.style.opacity='0'}
+}
+host.addEventListener('click',function(e){
+ var r=host.getBoundingClientRect();
+ add(e.clientX-r.left,e.clientY-r.top);
+});
+[[0.2,0.3],[0.75,0.6]].forEach(function(){});
+})();
+</script>
+</section>
