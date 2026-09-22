@@ -1,0 +1,75 @@
+<section data-date='2026-09-22' data-type='morning'>
+<style>
+.taper-2026-09-22-morning{margin:0;overflow:hidden;height:100vh;background:linear-gradient(#0a0e1a,#0a0e1a);position:relative;cursor:pointer;font-family:Georgia,'Times New Roman',serif}
+.taper-2026-09-22-morning .sky{position:absolute;inset:0;transition:background 2.5s ease}
+.taper-2026-09-22-morning .word{position:absolute;color:#f2ede2;opacity:0;letter-spacing:.08em;transition:opacity 1.8s ease, transform 1.8s ease;transform:translateY(6px)}
+.taper-2026-09-22-morning .word.on{opacity:.92;transform:translateY(0)}
+.taper-2026-09-22-morning .hint{position:absolute;bottom:6%;left:50%;transform:translateX(-50%);color:#8a93a8;font-size:12px;font-family:ui-sans-serif,system-ui,sans-serif;letter-spacing:.3em;text-transform:uppercase;opacity:.6;transition:opacity 1s}
+.taper-2026-09-22-morning .sun{position:absolute;left:50%;bottom:-20%;width:40vmin;height:40vmin;border-radius:50%;background:radial-gradient(circle at center,#ffe9b0,#ffb35c 60%,transparent 70%);transform:translateX(-50%);transition:bottom 3s cubic-bezier(.2,.7,.3,1),opacity 3s;opacity:0}
+.taper-2026-09-22-morning .title{position:absolute;top:6%;left:50%;transform:translateX(-50%);color:#5c6580;font-size:11px;font-family:ui-monospace,monospace;letter-spacing:.2em;text-transform:uppercase;opacity:.5}
+</style>
+<div class="taper-2026-09-22-morning" id="t20260922m">
+  <div class="title">unwritten</div>
+  <div class="sky"></div>
+  <div class="sun"></div>
+  <div class="hint">touch the dark</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('t20260922m');
+  var sky = root.querySelector('.sky');
+  var sun = root.querySelector('.sun');
+  var hint = root.querySelector('.hint');
+  var words = ['before','light','has','a','name','—','everything','is','still','possible'];
+  var placed = [];
+  var stage = 0;
+  var palette = [
+    'linear-gradient(#0a0e1a,#0a0e1a)',
+    'linear-gradient(#151a2c,#20182c)',
+    'linear-gradient(#2a2038,#5a3448)',
+    'linear-gradient(#5a3448,#c96a4e)',
+    'linear-gradient(#8bb4d8,#ffe4b0)'
+  ];
+  function place(){
+    words.forEach(function(w, i){
+      var el = document.createElement('div');
+      el.className = 'word';
+      el.textContent = w;
+      var fs = 14 + Math.random()*46;
+      el.style.fontSize = fs + 'px';
+      el.style.left = (8 + Math.random()*74) + '%';
+      el.style.top = (12 + Math.random()*56) + '%';
+      el.style.transitionDelay = (i*90) + 'ms';
+      root.appendChild(el);
+      placed.push(el);
+    });
+  }
+  place();
+  function advance(){
+    if (stage >= palette.length - 1 && stage >= words.length) return;
+    stage++;
+    sky.style.background = palette[Math.min(stage, palette.length-1)];
+    var reveal = Math.ceil((stage/ (palette.length-1)) * placed.length);
+    placed.forEach(function(el, i){ if (i < reveal) el.classList.add('on'); });
+    if (stage >= 2) { sun.style.opacity = Math.min(1, (stage-1)/3); sun.style.bottom = (-20 + stage*14) + '%'; }
+    if (stage === 1) hint.style.opacity = 0;
+    if (stage >= palette.length - 1) {
+      hint.textContent = 'the day is unwritten';
+      hint.style.opacity = .5;
+    }
+  }
+  root.addEventListener('click', advance);
+  root.addEventListener('mousemove', function(e){
+    var r = root.getBoundingClientRect();
+    var x = (e.clientX - r.left) / r.width - .5;
+    var y = (e.clientY - r.top) / r.height - .5;
+    placed.forEach(function(el, i){
+      if (!el.classList.contains('on')) return;
+      var depth = (i % 5) + 1;
+      el.style.transform = 'translate(' + (x*depth*4) + 'px,' + (y*depth*4 + (el.classList.contains('on')?0:6)) + 'px)';
+    });
+    sun.style.transform = 'translateX(calc(-50% + ' + (x*20) + 'px))';
+  });
+})();
+</script>
+</section>
