@@ -1,109 +1,62 @@
 <section data-date='2026-09-21' data-type='reflection'>
 <style>
-#taper-2026-09-21{margin:0;height:80vh;min-height:520px;background:radial-gradient(ellipse at 50% 100%,#0d1224 0%,#050710 60%,#020308 100%);position:relative;overflow:hidden;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
-#taper-2026-09-21 .tp-sky{position:absolute;inset:0}
-#taper-2026-09-21 .tp-star{position:absolute;border-radius:50%;background:#fff;opacity:0;transform:scale(0);pointer-events:none;animation:tp-in 1.8s ease-out forwards,tp-tw 3.6s ease-in-out infinite;animation-delay:0s,1.8s}
-#taper-2026-09-21 .tp-line{position:absolute;font-size:.62rem;letter-spacing:.14em;color:#7d88b8;opacity:0;transition:opacity 1.4s ease}
-#taper-2026-09-21 .tp-line.tp-show{opacity:.85}
-#taper-2026-09-21 .tp-word{position:absolute;color:#e9e4d8;opacity:0;transform:translateY(6px);transition:opacity 1.6s ease, transform 1.6s ease;pointer-events:none;font-style:italic}
-#taper-2026-09-21 .tp-word.tp-show{opacity:.9;transform:translateY(0)}
-#taper-2026-09-21 .tp-hint{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:#4a5484;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;opacity:.55}
-#taper-2026-09-21 .tp-title{position:absolute;top:22px;left:0;right:0;text-align:center;color:#c7cbe6;font-size:1rem;letter-spacing:.5em;text-transform:uppercase;opacity:.5}
-@keyframes tp-in{to{opacity:1;transform:scale(1)}}
-@keyframes tp-tw{0%,100%{opacity:.35}50%{opacity:1}}
+#taper-0921{margin:0;overflow:hidden;height:100vh;background:radial-gradient(ellipse at 50% 100%,#0a1128 0%,#020208 70%);position:relative;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+#taper-0921 .horizon{position:absolute;bottom:0;left:0;width:100%;height:22%;background:linear-gradient(to top,#000,rgba(0,0,0,0));z-index:2}
+#taper-0921 .word{position:absolute;bottom:18%;left:50%;transform:translateX(-50%);color:#5a6a8a;font-size:clamp(14px,2.4vw,26px);letter-spacing:.35em;text-transform:lowercase;opacity:0;transition:opacity 3s ease;z-index:3;pointer-events:none;text-align:center;width:90%}
+#taper-0921 .word.on{opacity:.8}
+#taper-0921 .hint{position:absolute;top:16px;left:16px;color:#3a4560;font-size:11px;letter-spacing:.2em;font-family:Arial,sans-serif;text-transform:uppercase;opacity:.6}
+#taper-0921 .count{position:absolute;top:16px;right:18px;color:#2c3552;font-size:11px;font-family:Arial,sans-serif;letter-spacing:.15em}
 </style>
-<div id="taper-2026-09-21">
-  <div class="tp-title">rest</div>
-  <div class="tp-sky" id="tp-sky"></div>
-  <div class="tp-hint">the day is finished. touch the dark.</div>
+<div id="taper-0921">
+  <div class="hint">click the dark</div>
+  <div class="count" id="tp-count">0 stars</div>
+  <div class="word" id="tp-word"></div>
+  <div class="horizon"></div>
 </div>
 <script>
 (function(){
-  var root = document.getElementById('taper-2026-09-21');
-  var sky = document.getElementById('tp-sky');
-  if(!root || !sky) return;
-  var words = ["still","done","enough","quiet","held","soft","kept","whole","hushed","dark"];
-
-  var used = 0, MAX = 60;
-  var last = {t:0};
-
-  function place(el, x, y){ el.style.left = x + 'px'; el.style.top = y + 'px'; }
-
-  function star(x, y){
-
-    if (used >= MAX) return;
-    used++;
-    var s = document.createElement('div');
-    s.className = 'tp-star';
-    var r = 1 + Math.random() * 2.2;
-    s.style.width = r + 'px';
-    s.style.height = r + 'px';
-    s.style.boxShadow = '0 0 ' + (r*3) + 'px ' + (r) + 'px rgba(255,255,255,.55)';
-    place(s, x - r/2, y - r/2);
-    sky.appendChild(s);
-
-    if (Math.random() < 0.4) {
-      var w = document.createElement('div');
-      w.className = 'tp-word';
-      w.textContent = words[Math.floor(Math.random()*words.length)];
-      w.style.fontSize = (0.7 + Math.random()*0.6) + 'rem';
-      place(w, x + 8, y - 4);
-      sky.appendChild(w);
-      requestAnimationFrame(function(){ w.classList.add('tp-show'); });
-      setTimeout(function(){ w.style.opacity = 0; }, 5200 + Math.random()*1800);
+  var root=document.getElementById('taper-0921');
+  var wordEl=document.getElementById('tp-word');
+  var countEl=document.getElementById('tp-count');
+  var words=['the day is complete','rest now','nothing left undone','stillness','tomorrow can wait','breathe','the dark holds you','enough','let it close','quiet now'];
+  var used=[];
+  var stars=[];
+  var n=0;
+  function nextWord(){
+    if(used.length===words.length)used=[];
+    var w;
+    do{w=words[Math.floor(Math.random()*words.length)];}while(used.indexOf(w)>-1);
+    used.push(w);
+    return w;
+  }
+  function showWord(){
+    wordEl.textContent=nextWord();
+    wordEl.classList.add('on');
+    setTimeout(function(){wordEl.classList.remove('on');},2800);
+  }
+  root.addEventListener('click',function(e){
+    if(e.target.closest('.horizon'))return;
+    var rect=root.getBoundingClientRect();
+    var x=e.clientX-rect.left, y=e.clientY-rect.top;
+    var s=document.createElement('div');
+    var size=(Math.random()*2.2+1).toFixed(2);
+    s.style.cssText='position:absolute;left:'+x+'px;top:'+y+'px;width:'+size+'px;height:'+size+'px;border-radius:50%;background:#fff;box-shadow:0 0 '+(size*4)+'px '+(size*1.5)+'px rgba(255,255,255,.55);transform:translate(-50%,-50%);opacity:0;transition:opacity 2.5s ease;z-index:1;pointer-events:none';
+    root.appendChild(s);
+    requestAnimationFrame(function(){s.style.opacity=(Math.random()*.5+.5).toFixed(2);});
+    var drift=(Math.random()*40-20);
+    setTimeout(function(){s.style.transform='translate(calc(-50% + '+drift+'px),-50%)';s.style.transition='transform 40s linear, opacity 2.5s ease';},50);
+    stars.push(s);
+    n++;
+    countEl.textContent=n+(n===1?' star':' stars');
+    if(n%4===0)showWord();
+    if(stars.length>140){var old=stars.shift();old.style.opacity=0;setTimeout(function(){old.remove();},2500);}
+  });
+  setTimeout(function(){
+    var rect=root.getBoundingClientRect();
+    for(var i=0;i<3;i++){
+      root.dispatchEvent(new MouseEvent('click',{clientX:rect.left+rect.width*Math.random(),clientY:rect.top+rect.height*Math.random()*0.7}));
     }
-  }
-
-  function constellate(x, y){
-    var now = Date.now ? Date.now() : (new Date()).getTime();
-    if (now - last.t < 90) return;
-    last.t = now;
-    var stars = sky.querySelectorAll('.tp-star');
-    if (stars.length < 2) return;
-    var near = [];
-    stars.forEach(function(s){
-      var sx = parseFloat(s.style.left), sy = parseFloat(s.style.top);
-      var d = Math.hypot(sx - x, sy - y);
-      if (d < 140) near.push({s:s, d:d, x:sx, y:sy});
-    });
-    near.sort(function(a,b){ return a.d - b.d; });
-    if (near.length < 2) return;
-    var a = near[0], b = near[1];
-    var dx = b.x - a.x, dy = b.y - a.y;
-    var len = Math.hypot(dx, dy);
-    var line = document.createElement('div');
-    line.className = 'tp-line tp-show';
-    line.style.width = len + 'px';
-    line.style.height = '1px';
-    line.style.background = 'linear-gradient(90deg, rgba(160,170,220,0), rgba(160,170,220,.5), rgba(160,170,220,0))';
-    line.style.left = a.x + 'px';
-    line.style.top = a.y + 'px';
-    line.style.transformOrigin = '0 0';
-    line.style.transform = 'rotate(' + (Math.atan2(dy,dx) * 180/Math.PI) + 'deg)';
-    sky.appendChild(line);
-    setTimeout(function(){ line.style.opacity = 0; setTimeout(function(){ line.remove(); }, 1500); }, 900);
-  }
-
-  root.addEventListener('click', function(e){
-    var rect = root.getBoundingClientRect();
-    star(e.clientX - rect.left, e.clientY - rect.top);
-  });
-
-  root.addEventListener('mousemove', function(e){
-    var rect = root.getBoundingClientRect();
-    constellate(e.clientX - rect.left, e.clientY - rect.top);
-  });
-
-  // a few stars already settled, as if the night began before we arrived
-  var rect0 = root.getBoundingClientRect();
-  var w0 = rect0.width || 900, h0 = rect0.height || 520;
-  for (var i = 0; i < 7; i++){
-    (function(i){
-      setTimeout(function(){
-        star(Math.random()*w0, Math.random()*h0*0.7);
-      }, 400 + i*260);
-    })(i);
-  }
+  },900);
 })();
 </script>
 </section>
