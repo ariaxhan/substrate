@@ -1,0 +1,62 @@
+<section data-date='2026-09-23' data-type='pulse'>
+<style>
+#hw{margin:0;overflow:hidden;height:70vh;background:#0e0e12;color:#eee;font-family:Georgia,'Times New Roman',serif;position:relative;transition:background 1.2s ease,color 1.2s ease;cursor:ns-resize}
+#hw.f{background:#f3efe6;color:#141414}
+#hw .beam{position:absolute;top:50%;left:8%;right:8%;height:1px;background:currentColor;opacity:.35;transform-origin:center;transition:transform .08s linear}
+#hw .pivot{position:absolute;top:50%;left:50%;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:currentColor;z-index:3}
+#hw .side{position:absolute;top:50%;font-size:clamp(.75rem,2vw,1.4rem);letter-spacing:.08em;white-space:nowrap;transform-origin:center;transition:transform .08s linear,opacity .8s ease}
+#hw .l{left:10%}
+#hw .r{right:10%;text-align:right}
+#hw .word{display:block;opacity:.55;margin:.15em 0}
+#hw .word.n{opacity:.95;font-style:italic}
+#hw .mid{position:absolute;top:50%;left:50%;transform:translate(-50%,-140%);font-size:.65rem;letter-spacing:.35em;text-transform:uppercase;opacity:.5}
+#hw .hint{position:absolute;bottom:6%;left:50%;transform:translateX(-50%);font-size:.6rem;letter-spacing:.2em;opacity:.3;text-transform:uppercase}
+</style>
+<div id="hw">
+  <div class="mid">equilibrium</div>
+  <div class="beam"></div>
+  <div class="pivot"></div>
+  <div class="side l">
+    <span class="word">waking light</span>
+    <span class="word">cold tea</span>
+    <span class="word n">the hour before decisions</span>
+    <span class="word">a door still closed</span>
+  </div>
+  <div class="side r">
+    <span class="word">long shadow</span>
+    <span class="word">warm glass</span>
+    <span class="word n">the hour after keeping score</span>
+    <span class="word">a door left open</span>
+  </div>
+  <div class="hint">tilt the day &middot; click to hold it still</div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('hw'),
+      beam=el.querySelector('.beam'),
+      l=el.querySelector('.l'),
+      r=el.querySelector('.r'),
+      held=false,
+      lock=0;
+  function tilt(deg){
+    beam.style.transform='rotate('+deg+'deg)';
+    l.style.transform='translateY(-50%) rotate('+(deg*0.4)+'deg) translateY('+(deg*-0.6)+'px)';
+    r.style.transform='translateY(-50%) rotate('+(deg*0.4)+'deg) translateY('+(deg*0.6)+'px)';
+  }
+  el.addEventListener('mousemove',function(e){
+    if(held)return;
+    var x=e.clientX/window.innerWidth-0.5;
+    tilt(x*22);
+  });
+  el.addEventListener('mouseleave',function(){ if(!held) tilt(0); });
+  el.addEventListener('click',function(){
+    held=!held;
+    if(held){
+      lock=parseFloat(beam.style.transform&&beam.style.transform.match(/-?[\d.]+/)?beam.style.transform.match(/-?[\d.]+/)[0]:0)||0;
+      el.classList.toggle('f');
+      tilt(0);
+    }
+  });
+})();
+</script>
+</section>
