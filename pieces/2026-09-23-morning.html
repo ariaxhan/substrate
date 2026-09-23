@@ -1,0 +1,79 @@
+<section data-date='2026-09-23' data-type='morning'>
+<style>
+#taper-0923 *{box-sizing:border-box}
+#taper-0923{margin:0;height:100vh;overflow:hidden;background:#0a0e1a;position:relative;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+#taper-0923 .sky{position:absolute;inset:0;transition:background 1.4s ease}
+#taper-0923 .sun{position:absolute;width:14px;height:14px;border-radius:50%;background:#fff8e0;box-shadow:0 0 40px 10px #ffdca0;left:50%;bottom:-20px;transform:translateX(-50%);transition:bottom 1.6s cubic-bezier(.2,.8,.2,1),box-shadow 1.6s ease}
+#taper-0923 .horizon{position:absolute;left:0;right:0;bottom:38%;height:1px;background:rgba(255,220,160,.25)}
+#taper-0923 .words{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;pointer-events:none}
+#taper-0923 .words span{display:block;font-size:clamp(1.1rem,3.4vw,2.6rem);letter-spacing:.06em;color:rgba(255,255,255,.08);font-style:italic;transition:color 1.2s ease,transform 1.2s ease;transform:translateY(6px)}
+#taper-0923 .words span.lit{color:#fff3d6;transform:translateY(0);text-shadow:0 0 18px rgba(255,200,120,.5)}
+#taper-0923 .hint{position:absolute;bottom:18px;left:0;right:0;text-align:center;font-family:monospace;font-size:11px;letter-spacing:.2em;color:rgba(255,255,255,.25);text-transform:uppercase;pointer-events:none;transition:opacity 1s}
+#taper-0923 .stars{position:absolute;inset:0;pointer-events:none}
+#taper-0923 .stars i{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;transition:opacity 1.6s ease}
+</style>
+<div id="taper-0923">
+  <div class="sky"></div>
+  <div class="stars" id="t23stars"></div>
+  <div class="horizon"></div>
+  <div class="sun" id="t23sun"></div>
+  <div class="words" id="t23words">
+    <span data-i="0">before the first word,</span>
+    <span data-i="1">there is only the shape of one</span>
+    <span data-i="2">— an hour, unwritten,</span>
+    <span data-i="3">waiting to be spent.</span>
+    <span data-i="4">this is where you begin.</span>
+  </div>
+  <div class="hint" id="t23hint">click to bring up the light</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('taper-0923');
+  var sky=root.querySelector('.sky');
+  var sun=document.getElementById('t23sun');
+  var words=document.getElementById('t23words').children;
+  var hint=document.getElementById('t23hint');
+  var starsEl=document.getElementById('t23stars');
+  var n=0,stars=[];
+  var skyStops=[
+    '#0a0e1a','linear-gradient(#0d1224,#161022)',
+    'linear-gradient(#12172c,#2a1a2e)',
+    'linear-gradient(#2a2440,#5c3350)',
+    'linear-gradient(#5c4560,#c9754f)',
+    'linear-gradient(#7fa4c9,#ffd9a0)'
+  ];
+  for(var i=0;i<40;i++){
+    var s=document.createElement('i');
+    s.style.left=(Math.random()*100)+'%';
+    s.style.top=(Math.random()*55)+'%';
+    s.style.opacity=(.15+Math.random()*.6).toFixed(2);
+    starsEl.appendChild(s);
+    stars.push(s);
+  }
+  function paint(){
+    sky.style.background=skyStops[Math.min(n,skyStops.length-1)];
+    sun.style.bottom=(-20+n*20)+'vh';
+    sun.style.boxShadow='0 0 '+(40+n*16)+'px '+(10+n*6)+'px rgba(255,'+(180+n*10)+','+(90+n*25)+',.8)';
+    for(var k=0;k<words.length;k++){
+      words[k].classList.toggle('lit',k<n);
+    }
+    stars.forEach(function(s){s.style.opacity=n>=3?0:s.style.opacity;});
+    if(n>=words.length){
+      hint.style.opacity=0;
+    }else{
+      hint.textContent = n===0 ? 'click to bring up the light' : 'again';
+      hint.style.opacity=.6;
+    }
+  }
+  root.addEventListener('click',function(){
+    n=(n+1)%(words.length+1);
+    paint();
+  });
+  root.addEventListener('mousemove',function(e){
+    var x=e.clientX/window.innerWidth;
+    sun.style.left=(40+x*20)+'%';
+  });
+  paint();
+})();
+</script>
+</section>
