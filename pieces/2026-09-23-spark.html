@@ -1,0 +1,70 @@
+<section data-date='2026-09-23' data-type='spark'>
+<style>
+.spark-wrap{--f:20px;background:#0a0a0c;color:#ddd;font:var(--f) Georgia,serif;height:70vh;min-height:420px;position:relative;overflow:hidden;cursor:crosshair;border-radius:4px}
+.spark-wrap .hint{position:absolute;top:10px;left:14px;font:11px monospace;color:#666;z-index:5;letter-spacing:1px}
+.spark-wrap .p{position:absolute;width:5px;height:5px;border-radius:50%;pointer-events:none;transition:opacity .6s}
+.spark-wrap .a{background:#ff6a3d;box-shadow:0 0 8px #ff6a3d}
+.spark-wrap .b{background:#3dc7ff;box-shadow:0 0 8px #3dc7ff}
+.spark-wrap .w{position:absolute;font-size:var(--f);white-space:nowrap;opacity:0;transform:translate(-50%,-50%) scale(.4);transition:opacity .5s,transform .5s;color:#fff;text-shadow:0 0 12px #fff8}
+</style>
+<div class="spark-wrap" id="sw">
+<div class="hint">move to orbit · click to collide</div>
+</div>
+<script>
+(function(){
+var el=document.getElementById('sw');
+var W=["spark","meet","fuse","echo","two","one","strike","bloom","become","seam","edge","here"];
+var A=[],B=[],words=[];
+function mk(cls){var d=document.createElement('div');d.className='p '+cls;el.appendChild(d);return d}
+for(var i=0;i<14;i++)A.push({e:mk('a'),a:i/14*Math.PI*2,r:0});
+for(var i=0;i<14;i++)B.push({e:mk('b'),a:i/14*Math.PI*2,r:0});
+var mx=0,my=0,hasMouse=false,t=0,cx=0,cy=0;
+el.addEventListener('mousemove',function(ev){
+var r=el.getBoundingClientRect();mx=ev.clientX-r.left;my=ev.clientY-r.top;hasMouse=true;
+});
+function collide(x,y){
+var w=W[Math.floor(Math.random()*W.length)];
+var s=document.createElement('div');
+s.className='w';s.textContent=w;
+s.style.left=x+'px';s.style.top=y+'px';
+el.appendChild(s);
+requestAnimationFrame(function(){s.style.opacity=1;s.style.transform='translate(-50%,-50%) scale(1)'});
+setTimeout(function(){s.style.opacity=0;s.style.transform='translate(-50%,-50%) scale(1.8)'},900);
+setTimeout(function(){s.remove()},1500);
+}
+el.addEventListener('click',function(ev){
+var r=el.getBoundingClientRect();
+collide(ev.clientX-r.left,ev.clientY-r.top);
+});
+function dist(x1,y1,x2,y2){var dx=x1-x2,dy=y1-y2;return Math.sqrt(dx*dx+dy*dy)}
+function tick(){
+t+=0.02;
+var w=el.clientWidth,h=el.clientHeight;
+cx = hasMouse ? mx : w/2 + Math.sin(t*0.3)*w*0.2;
+cy = hasMouse ? my : h/2 + Math.cos(t*0.3)*h*0.2;
+var rx=w*0.32, ry=h*0.32;
+A.forEach(function(p,i){
+p.a+=0.014;
+var x=cx+Math.cos(p.a)*rx*0.55, y=cy+Math.sin(p.a)*ry*0.55;
+p.e.style.left=x+'px';p.e.style.top=y+'px';
+p._x=x;p._y=y;
+});
+B.forEach(function(p,i){
+p.a-=0.011;
+var x=cx+Math.cos(p.a+Math.PI)*rx, y=cy+Math.sin(p.a+Math.PI)*ry;
+p.e.style.left=x+'px';p.e.style.top=y+'px';
+p._x=x;p._y=y;
+});
+A.forEach(function(pa){
+B.forEach(function(pb){
+if(dist(pa._x,pa._y,pb._x,pb._y)<9 && Math.random()<0.06){
+collide((pa._x+pb._x)/2,(pa._y+pb._y)/2);
+}
+});
+});
+requestAnimationFrame(tick);
+}
+tick();
+})();
+</script>
+</section>
