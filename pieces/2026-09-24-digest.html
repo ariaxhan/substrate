@@ -1,0 +1,40 @@
+<section data-date='2026-09-24' data-type='digest'>
+<style>
+#t24{height:70vh;min-height:490px;position:relative;overflow:hidden;box-sizing:border-box;background:radial-gradient(ellipse at 50% 42%,#faf7eb,#e4e9dc);color:#30493d;font-family:Georgia,serif;cursor:crosshair;user-select:none;touch-action:manipulation}
+#t24 *{box-sizing:border-box}
+#t24 .field{position:absolute;inset:13% 8% 17%;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(5,1fr);border:1px solid #58705a25}
+#t24 .cell{position:relative;border-right:1px solid #58705a20;border-bottom:1px solid #58705a20;display:flex;align-items:center;justify-content:center;text-align:center;padding:3px}
+#t24 .cell:nth-child(5n){border-right:0}
+#t24 .cell:nth-child(n+21){border-bottom:0}
+#t24 .word{font-size:clamp(12px,2.5vw,28px);line-height:1.1;letter-spacing:-.04em;opacity:0;transform:scale(.15) rotate(-20deg);transition:transform 1.2s cubic-bezier(.16,1,.3,1),opacity 1s,color 1s;color:#7e8f72}
+#t24 .cell.set .word{opacity:1;transform:scale(1) rotate(0);color:#29483a}
+#t24 .cell.set:before{content:'';position:absolute;inset:7px;border:1px solid #617c5655;border-radius:50%;animation:t24ring 1.4s ease-out forwards;pointer-events:none}
+@keyframes t24ring{from{transform:scale(.2);opacity:.9}to{transform:scale(1.1);opacity:0}}
+#t24 .grain{position:absolute;width:5px;height:5px;border-radius:50%;background:#a7784a;pointer-events:none;animation:t24fall 1s ease-out forwards}
+@keyframes t24fall{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+#t24 .caption{position:absolute;bottom:5%;left:8%;right:8%;display:flex;justify-content:space-between;gap:12px;color:#6e806e;font:10px/1.4 'Courier New',monospace;letter-spacing:.12em;text-transform:uppercase}
+#t24 .number{font-variant-numeric:tabular-nums}
+@media(max-width:600px){#t24 .field{inset:18% 4% 20%}#t24 .caption{left:4%;right:4%}#t24 .word{font-size:clamp(11px,3vw,18px)}}
+</style>
+<div id="t24" role="button" tabindex="0" aria-label="Tap to grow a poem one word at a time">
+<div class="field" aria-live="polite"></div>
+<div class="caption"><span class="hint">touch anywhere; a thought finds its place</span><span class="number">00 / 25</span></div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('t24'),field=root.querySelector('.field'),hint=root.querySelector('.hint'),count=root.querySelector('.number');
+var words='a fact waits for another and finds a line where scattered things learn the weight of together until the empty squares begin to remember us'.split(' '),cells=[],n=0;
+words.forEach(function(w){var cell=document.createElement('div'),word=document.createElement('span');cell.className='cell';word.className='word';word.textContent=w;cell.appendChild(word);field.appendChild(cell);cells.push(cell)});
+function grow(e){
+ if(n===words.length){cells.forEach(function(c){c.classList.remove('set')});n=0}
+ var box=root.getBoundingClientRect(),x=e&&e.clientX!=null?e.clientX-box.left:box.width/2,y=e&&e.clientY!=null?e.clientY-box.top:box.height/2;
+ var dest=cells[n].getBoundingClientRect(),dx=dest.left+dest.width/2-box.left-x,dy=dest.top+dest.height/2-box.top-y;
+ for(var i=0;i<5;i++){var dot=document.createElement('i');dot.className='grain';dot.style.left=x+'px';dot.style.top=y+'px';dot.style.setProperty('--dx',dx*(.8+Math.random()*.4)+Math.random()*24-12+'px');dot.style.setProperty('--dy',dy*(.8+Math.random()*.4)+Math.random()*24-12+'px');root.appendChild(dot);dot.addEventListener('animationend',function(){this.remove()})}
+ cells[n++].classList.add('set');count.textContent=String(n).padStart(2,'0')+' / 25';
+ hint.textContent=n===25?'touch again; even a shape can begin again':'touch anywhere; a thought finds its place';
+}
+root.addEventListener('click',grow);
+root.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();grow()}});
+})();
+</script>
+</section>
