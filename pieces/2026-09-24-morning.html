@@ -1,0 +1,49 @@
+<section data-date='2026-09-24' data-type='morning'>
+<style>
+#taper-dawn{margin:0;overflow:hidden;position:relative;height:70vh;min-height:420px;background:linear-gradient(to bottom,#0a0e1a,#1a1030 40%,#3a1f3d 65%,#6b2f3a 80%,#0a0e1a);cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+#taper-dawn .sky{position:absolute;inset:0;transition:filter .6s ease}
+#taper-dawn .sun{position:absolute;left:50%;bottom:-60px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,#fff3d6,#ffcf6b 55%,transparent 75%);transform:translateX(-50%);transition:bottom 1.4s cubic-bezier(.2,.7,.3,1),opacity 1.4s;opacity:.15;filter:blur(1px)}
+#taper-dawn.risen .sun{bottom:38%;opacity:1}
+#taper-dawn .line{position:absolute;left:0;right:0;height:1px;background:rgba(255,214,150,.25)}
+#taper-dawn .word{position:absolute;color:#e8d9c0;letter-spacing:.04em;opacity:0;transform:translateY(14px);transition:opacity 1.1s ease,transform 1.1s ease,color 1.4s ease;font-style:italic;white-space:nowrap;user-select:none}
+#taper-dawn.risen .word{opacity:.92;transform:translateY(0);color:#fff6e6}
+#taper-dawn .hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.35);font:12px/1 sans-serif;letter-spacing:.15em;text-transform:uppercase;pointer-events:none;transition:opacity .8s}
+#taper-dawn.risen .hint{opacity:0}
+</style>
+<div id="taper-dawn">
+  <div class="sky"></div>
+  <div class="sun"></div>
+  <div class="hint">the day has not been written &mdash; touch it</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('taper-dawn');
+  var words=['it begins','unmarked','nothing owed yet','a blank hour','still possible','before the first mistake','light, not yet meaning','everything, undecided','the page before the sentence','waiting to be spent','not morning &mdash; almost morning','open'];
+  var placed=false;
+  function scatter(){
+    if(placed) return; placed=true;
+    var w=root.clientWidth,h=root.clientHeight;
+    words.forEach(function(t,i){
+      var el=document.createElement('div');
+      el.className='word';
+      el.innerHTML=t;
+      var fs=14+Math.random()*20;
+      el.style.fontSize=fs+'px';
+      el.style.left=(6+Math.random()*70)+'%';
+      el.style.top=(10+ (i/words.length)*70 + Math.random()*6)+'%';
+      el.style.transitionDelay=(i*90)+'ms';
+      root.appendChild(el);
+    });
+    root.classList.add('risen');
+  }
+  root.addEventListener('click',scatter);
+  root.addEventListener('touchstart',scatter);
+  root.addEventListener('mousemove',function(e){
+    var r=root.getBoundingClientRect();
+    var px=(e.clientX-r.left)/r.width;
+    var hue=210+px*60;
+    root.querySelector('.sky').style.filter='hue-rotate('+((px-.5)*20)+'deg) brightness('+(1+(px-.5)*.15)+')';
+  });
+})();
+</script>
+</section>
