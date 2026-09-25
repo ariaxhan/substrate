@@ -1,0 +1,107 @@
+<section data-date='2026-09-25' data-type='pulse'>
+<style>
+#tp-2026-09-25 {
+  margin:0; height:70vh; min-height:420px; position:relative; overflow:hidden;
+  background:#0b0c10; font-family:'Iowan Old Style','Georgia',serif;
+  display:flex; align-items:center; justify-content:center;
+  cursor:crosshair; user-select:none;
+}
+#tp-2026-09-25 .tp-sky {
+  position:absolute; inset:0;
+  background:linear-gradient(to bottom, var(--tp-top,#0b0c10), var(--tp-bot,#f4ede0));
+  transition:background 120ms linear;
+}
+#tp-2026-09-25 .tp-rig {
+  position:relative; width:min(80vw,640px); height:2px;
+}
+#tp-2026-09-25 .tp-beam {
+  position:absolute; top:0; left:0; width:100%; height:2px;
+  background:#ddd; transform-origin:center center;
+  transform:rotate(var(--tp-tilt,0deg));
+  transition:transform 60ms ease-out;
+}
+#tp-2026-09-25 .tp-pin {
+  position:absolute; top:-1px; left:50%; width:6px; height:6px;
+  background:#ddd; border-radius:50%; transform:translate(-50%,-50%);
+}
+#tp-2026-09-25 .tp-pan {
+  position:absolute; top:0; width:1px; height:60px; background:#888;
+  transform-origin:top center;
+}
+#tp-2026-09-25 .tp-pan.tp-l { left:6%; }
+#tp-2026-09-25 .tp-pan.tp-r { right:6%; }
+#tp-2026-09-25 .tp-word {
+  position:absolute; top:60px; left:50%; transform:translateX(-50%);
+  font-size:clamp(14px,2.4vw,22px); letter-spacing:0.12em;
+  white-space:nowrap;
+}
+#tp-2026-09-25 .tp-l .tp-word { color:#e7dfce; }
+#tp-2026-09-25 .tp-r .tp-word { color:#3a2f1e; }
+#tp-2026-09-25 .tp-caption {
+  position:absolute; bottom:8%; left:50%; transform:translateX(-50%);
+  font-size:12px; letter-spacing:0.3em; text-transform:uppercase;
+  color:#999; opacity:0.65; pointer-events:none;
+}
+#tp-2026-09-25 .tp-hint {
+  position:absolute; top:6%; left:50%; transform:translateX(-50%);
+  font-size:11px; letter-spacing:0.2em; text-transform:uppercase;
+  color:#777; opacity:0.5; pointer-events:none;
+}
+</style>
+<div id="tp-2026-09-25">
+  <div class="tp-sky"></div>
+  <div class="tp-hint">tilt the day</div>
+  <div class="tp-rig">
+    <div class="tp-pin"></div>
+    <div class="tp-beam"></div>
+    <div class="tp-pan tp-l"><div class="tp-word">night</div></div>
+    <div class="tp-pan tp-r"><div class="tp-word">day</div></div>
+  </div>
+  <div class="tp-caption" id="tp-2026-09-25-cap">12:00 — even</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('tp-2026-09-25');
+  var beam = root.querySelector('.tp-beam');
+  var panL = root.querySelector('.tp-l');
+  var panR = root.querySelector('.tp-r');
+  var cap  = document.getElementById('tp-2026-09-25-cap');
+  var settled = 0, target = 0, raf;
+
+  function mix(a,b,f){
+    var r=[0,1,2].map(function(i){return Math.round(a[i]+(b[i]-a[i])*f)});
+    return 'rgb('+r+')';
+  }
+  function colors(t){
+    var f=(t+1)/2;
+    root.style.setProperty('--tp-top', mix([11,12,16],[143,184,216],f));
+    root.style.setProperty('--tp-bot', mix([26,30,38],[244,237,224],f));
+  }
+  function label(t){
+    var mins = Math.round((t+1)/2 * 1440);
+    var h = Math.floor(mins/60), m = mins%60;
+    var word = Math.abs(t) < 0.04 ? 'even' : (t < 0 ? 'toward night' : 'toward day');
+    cap.textContent = (h<10?'0':'')+h+':'+(m<10?'0':'')+m+' — '+word;
+  }
+  function tick(){
+    settled += (target - settled) * 0.08;
+    var deg = settled * 14;
+    beam.style.setProperty('--tp-tilt', deg+'deg');
+    panL.style.transform = 'rotate('+(-deg)+'deg)';
+    panR.style.transform = 'rotate('+(-deg)+'deg)';
+    colors(settled);
+    label(settled);
+    raf = requestAnimationFrame(tick);
+  }
+  root.addEventListener('mousemove', function(e){
+    var r = root.getBoundingClientRect();
+    target = Math.max(-1, Math.min(1, ((e.clientX - r.left) / r.width - 0.5) * 2));
+  });
+  root.addEventListener('mouseleave', function(){ target = 0; });
+  root.addEventListener('click', function(){
+    target = target === 0 ? (Math.random() < 0.5 ? 1 : -1) : 0;
+  });
+  tick();
+})();
+</script>
+</section>
