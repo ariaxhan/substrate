@@ -1,0 +1,21 @@
+<section data-date='2026-09-25' data-type='morning' aria-label='First light: an interactive poem'>
+<style>
+section[data-date='2026-09-25']{--light:0;box-sizing:border-box;position:relative;display:grid;place-items:center;isolation:isolate;overflow:hidden;min-height:100svh;padding:2rem;background:linear-gradient(180deg,#17132c 0%,#34233c 52%,#ad6374 82%,#f4b987 100%);color:#fff2e4;font-family:Georgia,serif;transition:background 1.4s,color 1.4s}
+section[data-date='2026-09-25'] *{box-sizing:border-box}
+section[data-date='2026-09-25']::before{content:'';position:absolute;z-index:-1;left:50%;bottom:15%;width:clamp(9rem,24vw,22rem);aspect-ratio:1;border-radius:50%;transform:translate(-50%,calc(80% - var(--light)*9%));background:#ffe0a0;box-shadow:0 0 5rem 2rem #ffb46a99;filter:blur(1px);transition:transform 1.5s,box-shadow 1.5s}
+section[data-date='2026-09-25']::after{content:'';position:absolute;z-index:-1;inset:85% 0 0;background:linear-gradient(#493849,#17172c)}
+section[data-date='2026-09-25'] .page{width:min(100%,43rem);margin-top:-12vh;text-align:center}
+section[data-date='2026-09-25'] .small{font: .7rem/1.5 ui-monospace,SFMono-Regular,monospace;letter-spacing:.3em;text-transform:uppercase;opacity:.65}
+section[data-date='2026-09-25'] h1{margin:2.5rem 0 1rem;font-size:clamp(3.2rem,11vw,7.8rem);font-weight:400;line-height:.92;letter-spacing:-.055em}
+section[data-date='2026-09-25'] h1 em{display:block;font-weight:400}
+section[data-date='2026-09-25'] .line{min-height:2.7em;margin:2rem 0 0;font-size:clamp(1.1rem,3vw,1.5rem);line-height:1.5;font-style:italic}
+section[data-date='2026-09-25'] button{margin-top:1rem;padding:.7rem 1.2rem;border:1px solid currentColor;border-radius:50%;background:transparent;color:inherit;font:1.5rem Georgia,serif;cursor:pointer;transition:background .3s,transform .3s}
+section[data-date='2026-09-25'] button:hover,section[data-date='2026-09-25'] button:focus-visible{background:#fff2e433;transform:scale(1.1)}
+section[data-date='2026-09-25'] .hint{display:block;margin-top:.8rem;font: .65rem ui-monospace,SFMono-Regular,monospace;letter-spacing:.15em;opacity:.7}
+@media (prefers-reduced-motion:reduce){section[data-date='2026-09-25'],section[data-date='2026-09-25']::before,section[data-date='2026-09-25'] button{transition:none}}
+</style>
+<div class='page'><div class='small'>the hour before the hour</div><h1>not yet<em>is a place</em></h1><p class='line' aria-live='polite'>the page is holding its breath</p><button type='button' aria-label='Let in a little light'>✳</button><span class='hint'>touch for a possible beginning</span></div>
+<script>
+(()=>{const s=document.currentScript.closest('section'),line=s.querySelector('.line'),button=s.querySelector('button');let n=0;const first=['a door','a river','a name','a bird','a road','a seed','a thought','a hand'],last=['opens','remembers','arrives','wakes','turns toward you','begins again','finds its way','lets the light in'];button.addEventListener('click',()=>{const i=n%first.length;line.textContent=first[i]+' '+last[(i*3+Math.floor(n/first.length))%last.length];n++;s.style.setProperty('--light',Math.min(n,8));s.style.background=`linear-gradient(180deg,${n<4?'#17132c':'#43324b'} 0%,#85556a 52%,#ed9e79 82%,#ffe1aa 100%)`;button.setAttribute('aria-label','Find another beginning')})})();
+</script>
+</section>
