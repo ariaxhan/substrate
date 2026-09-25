@@ -1,0 +1,101 @@
+<section data-date='2026-09-25' data-type='digest'>
+<style>
+.tp-crys{margin:0;overflow:hidden;background:#0a0b0e;height:100vh;position:relative;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+.tp-crys canvas{display:block;position:absolute;top:0;left:0}
+.tp-crys .hint{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:#3a3f4a;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-family:Georgia,serif;pointer-events:none;transition:opacity 2s}
+.tp-crys .cnt{position:absolute;top:16px;right:20px;color:#4a5568;font-size:11px;font-family:Georgia,serif;font-style:italic;pointer-events:none}
+</style>
+<div class="tp-crys" id="tpc">
+  <canvas id="tpcv"></canvas>
+  <div class="hint" id="tph">tap to know something</div>
+  <div class="cnt" id="tpn">0 held</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('tpc'),cv=document.getElementById('tpcv'),ctx=cv.getContext('2d'),
+    hint=document.getElementById('tph'),cnt=document.getElementById('tpn');
+var W,H;
+function size(){W=cv.width=root.clientWidth;H=cv.height=root.clientHeight}
+size();window.addEventListener('resize',size);
+
+var words=['spore','trace','glimpse','echo','shard','signal','root','seed','link','fold',
+  'residue','pattern','thread','node','memory','grain','loop','bearing','witness','strand'];
+var pts=[],t=0;
+
+function addPoint(x,y){
+  var w=words[pts.length%words.length]+ (pts.length>=words.length? String(pts.length) : '');
+  pts.push({x:x,y:y,r:0,w:w,born:t,links:[]});
+  // link to nearby crystallized points, favoring proximity — knowledge finds its neighbors
+  for(var i=0;i<pts.length-1;i++){
+    var p=pts[i],dx=p.x-x,dy=p.y-y,d=Math.sqrt(dx*dx+dy*dy);
+    if(d<Math.min(W,H)*0.32){
+      pts[pts.length-1].links.push(i);
+    }
+  }
+  cnt.textContent=pts.length+' held';
+  hint.style.opacity=0;
+}
+
+root.addEventListener('click',function(e){
+  var r=root.getBoundingClientRect();
+  addPoint(e.clientX-r.left,e.clientY-r.top);
+});
+root.addEventListener('touchstart',function(e){
+  var r=root.getBoundingClientRect(),tt=e.touches[0];
+  addPoint(tt.clientX-r.left,tt.clientY-r.top);
+},{passive:true});
+
+// seed three faint ambient points so the field isn't empty on load
+setTimeout(function(){
+  addPoint(W*0.3,H*0.4);
+},400);
+setTimeout(function(){
+  addPoint(W*0.68,H*0.6);
+},1400);
+
+function draw(){
+  t++;
+  ctx.fillStyle='rgba(10,11,14,0.16)';
+  ctx.fillRect(0,0,W,H);
+
+  for(var i=0;i<pts.length;i++){
+    var p=pts[i];
+    if(p.r<14)p.r+=0.4;
+    var age=t-p.born,pulse=1+0.06*Math.sin(age*0.03);
+
+    // links crystallize: draw with strength growing over time, color shifting warm as bonds mature
+    for(var j=0;j<p.links.length;j++){
+      var q=pts[p.links[j]];
+      var la=Math.min(1,(t-p.born)/120);
+      var grad=ctx.createLinearGradient(p.x,p.y,q.x,q.y);
+      grad.addColorStop(0,'rgba(180,150,255,'+(0.10+0.22*la)+')');
+      grad.addColorStop(1,'rgba(255,196,140,'+(0.10+0.22*la)+')');
+      ctx.strokeStyle=grad;
+      ctx.lineWidth=0.6+0.8*la;
+      ctx.beginPath();
+      ctx.moveTo(p.x,p.y);
+      ctx.lineTo(q.x,q.y);
+      ctx.stroke();
+    }
+  }
+  for(var i=0;i<pts.length;i++){
+    var p=pts[i],pulse=1+0.06*Math.sin((t-p.born)*0.03);
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r*pulse,0,6.283);
+    ctx.fillStyle='#f5e9d8';
+    ctx.shadowColor='rgba(255,220,170,0.6)';
+    ctx.shadowBlur=10;
+    ctx.fill();
+    ctx.shadowBlur=0;
+    if(p.r>10){
+      ctx.font='italic 12px Georgia, serif';
+      ctx.fillStyle='rgba(210,200,190,0.75)';
+      ctx.fillText(p.w,p.x+10,p.y-10);
+    }
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+})();
+</script>
+</section>
