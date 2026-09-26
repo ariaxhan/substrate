@@ -1,0 +1,62 @@
+<section data-date='2026-09-26' data-type='pulse'>
+<style>
+#tp26{position:relative;height:70vh;min-height:420px;overflow:hidden;background:linear-gradient(180deg,#0b0e14,#1a1f2b);font-family:Georgia,'Times New Roman',serif;cursor:ns-resize;transition:background 1.2s ease}
+#tp26 .sky{position:absolute;inset:0;transition:opacity 1.2s ease}
+#tp26 .day{background:linear-gradient(180deg,#f4ede1,#dcd0b8);opacity:var(--d,.5)}
+#tp26 .night{background:linear-gradient(180deg,#0b0e14,#1a1f2b);opacity:var(--n,.5)}
+#tp26 .beam{position:absolute;top:50%;left:8%;right:8%;height:2px;background:rgba(200,190,170,.55);transform-origin:center;transform:translateY(-50%) rotate(var(--r,0deg));transition:transform .08s linear}
+#tp26 .pivot{position:absolute;top:50%;left:50%;width:10px;height:10px;border-radius:50%;background:#e8c468;box-shadow:0 0 24px 6px rgba(232,196,104,.5);transform:translate(-50%,-50%);z-index:5}
+#tp26 .word{position:absolute;top:50%;font-size:clamp(1.1rem,3vw,2.4rem);letter-spacing:.05em;white-space:nowrap;transform:translateY(-50%);mix-blend-mode:difference;color:#fff;user-select:none}
+#tp26 .w-left{left:10%}
+#tp26 .w-right{right:10%;transform:translateY(-50%) scaleX(-1) scaleX(-1)}
+#tp26 .hint{position:absolute;bottom:14px;width:100%;text-align:center;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:rgba(230,220,200,.45);font-family:Arial,sans-serif}
+#tp26 .tick{position:absolute;top:calc(50% - 5px);width:1px;height:10px;background:rgba(200,190,170,.3)}
+</style>
+<div id="tp26">
+  <div class="sky day"></div>
+  <div class="sky night"></div>
+  <div class="pivot"></div>
+  <div class="beam" id="tp26beam">
+    <span class="word w-left">morning</span>
+    <span class="word w-right">midnight</span>
+  </div>
+  <div class="hint">move to tilt · click to hold the middle</div>
+</div>
+<script>
+(function(){
+  var el = document.getElementById('tp26'),
+      beam = document.getElementById('tp26beam'),
+      day = el.querySelector('.day'),
+      night = el.querySelector('.night'),
+      locked = false,
+      r = 0;
+  function apply(v){
+    r = Math.max(-24, Math.min(24, v));
+    beam.style.setProperty('--r', r + 'deg');
+    var b = (r + 24) / 48;
+    day.style.setProperty('--d', (1 - b).toFixed(3));
+    night.style.setProperty('--n', b.toFixed(3));
+    el.style.background = 'linear-gradient(180deg,' +
+      (b < .5 ? '#0b0e14,#1a1f2b' : '#f4ede1,#dcd0b8') + ')';
+  }
+  el.addEventListener('mousemove', function(e){
+    if (locked) return;
+    var rect = el.getBoundingClientRect();
+    var mid = rect.top + rect.height / 2;
+    apply((e.clientY - mid) / (rect.height / 2) * 24);
+  });
+  el.addEventListener('mouseleave', function(){ if(!locked) apply(0); });
+  el.addEventListener('click', function(){
+    locked = !locked;
+    if (locked) apply(0);
+  });
+  el.addEventListener('touchmove', function(e){
+    if (locked) return;
+    var rect = el.getBoundingClientRect();
+    var mid = rect.top + rect.height / 2;
+    var y = e.touches[0].clientY;
+    apply((y - mid) / (rect.height / 2) * 24);
+  }, {passive:true});
+})();
+</script>
+</section>
