@@ -1,0 +1,62 @@
+<section data-date='2026-09-25' data-type='reflection'>
+<style>
+#taper-2026-09-25{margin:0;overflow:hidden;height:100vh;background:radial-gradient(ellipse at 50% 100%,#0b1024 0%,#04050c 60%,#010103 100%);cursor:crosshair;position:relative;font-family:Georgia,'Times New Roman',serif}
+#taper-2026-09-25 .horizon{position:absolute;bottom:0;left:0;width:100%;height:18%;background:linear-gradient(to top,#000 0%,rgba(0,0,0,0) 100%)}
+#taper-2026-09-25 .word{position:absolute;bottom:6%;left:50%;transform:translateX(-50%);color:#e8e2d0;letter-spacing:.35em;font-size:13px;text-transform:lowercase;opacity:.55;text-align:center;width:100%;pointer-events:none;transition:opacity 4s ease}
+#taper-2026-09-25 .star{position:absolute;border-radius:50%;background:#fff;pointer-events:none;transform:scale(0);animation:tap-in .9s ease forwards, tap-glow 3.6s ease-in-out .9s infinite}
+#taper-2026-09-25 .whisper{position:absolute;color:#cfd6ea;font-size:11px;font-style:italic;opacity:0;white-space:nowrap;pointer-events:none;animation:tap-whisper 3.4s ease forwards}
+@keyframes tap-in{to{transform:scale(1)}}
+@keyframes tap-glow{0%,100%{filter:drop-shadow(0 0 2px #fff)}50%{filter:drop-shadow(0 0 7px #fff)}}
+@keyframes tap-whisper{0%{opacity:0;transform:translateY(4px)}15%{opacity:.8}100%{opacity:0;transform:translateY(-10px)}}
+</style>
+<div id="taper-2026-09-25">
+  <div class="horizon"></div>
+  <div class="word" id="tap-word">the day is complete</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('taper-2026-09-25');
+  var w=document.getElementById('tap-word');
+  var msgs=["rest now","the dark keeps count","stillness","tomorrow waits, unhurried","you were enough today","breathe","nothing left to hold","quiet"];
+  var count=0;
+  function place(x,y){
+    var size=1+Math.random()*2.2;
+    var s=document.createElement('div');
+    s.className='star';
+    s.style.width=s.style.height=size+'px';
+    s.style.left=x+'px';
+    s.style.top=y+'px';
+    root.appendChild(s);
+    setTimeout(function(){s.remove()},9000);
+  }
+  root.addEventListener('click',function(e){
+    var rect=root.getBoundingClientRect();
+    var x=e.clientX-rect.left, y=e.clientY-rect.top;
+    place(x,y);
+    for(var i=0;i<2;i++){
+      place(x+(Math.random()*40-20),y+(Math.random()*40-20));
+    }
+    count++;
+    var m=document.createElement('div');
+    m.className='whisper';
+    m.textContent=msgs[count%msgs.length];
+    m.style.left=Math.max(10,Math.min(rect.width-140,x-40))+'px';
+    m.style.top=Math.max(10,y-24)+'px';
+    root.appendChild(m);
+    setTimeout(function(){m.remove()},3500);
+    w.style.opacity=.15;
+    clearTimeout(root._t);
+    root._t=setTimeout(function(){w.style.opacity=.55},2600);
+  });
+  root.addEventListener('mousemove',function(e){
+    if(Math.random()>0.94){
+      var rect=root.getBoundingClientRect();
+      place(e.clientX-rect.left,e.clientY-rect.top);
+    }
+  });
+  for(var i=0;i<14;i++){
+    place(Math.random()*window.innerWidth,Math.random()*window.innerHeight*0.75);
+  }
+})();
+</script>
+</section>
