@@ -1,0 +1,58 @@
+<section data-date='2026-09-26' data-type='morning'>
+<style>
+.taper-dawn{margin:0;height:70vh;min-height:420px;overflow:hidden;position:relative;background:#0a0e1a;cursor:crosshair;font-family:Georgia,serif}
+.taper-dawn .sky{position:absolute;inset:0;transition:background 0.6s ease}
+.taper-dawn .word{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);color:#fff;font-size:clamp(1.4rem,4vw,3rem);letter-spacing:0.08em;opacity:0.92;text-shadow:0 0 30px rgba(255,200,120,0.4);user-select:none;transition:opacity 0.4s ease}
+.taper-dawn .hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.35);font-family:sans-serif;font-size:11px;letter-spacing:0.15em;text-transform:uppercase}
+.taper-dawn .sun{position:absolute;left:50%;border-radius:50%;background:radial-gradient(circle,#fff6d8 0%,#ffcf7a 45%,rgba(255,153,60,0) 70%);transform:translate(-50%,-50%);pointer-events:none;transition:background 0.5s ease}
+</style>
+<div class="taper-dawn" id="td">
+  <div class="sky" id="tdsky"></div>
+  <div class="sun" id="tdsun"></div>
+  <div class="word" id="tdword">unwritten</div>
+  <div class="hint">move to raise the light</div>
+</div>
+<script>
+(function(){
+  var box=document.getElementById('td'),sky=document.getElementById('tdsky'),
+      sun=document.getElementById('tdsun'),word=document.getElementById('tdword');
+  var words=['unwritten','possible','beginning','unnamed','waking','first','open','becoming'];
+  var stops=[
+    [10,14,26],[26,20,46],[74,58,66],[255,196,110],[255,240,214]
+  ];
+  function lerp(a,b,t){return a+(b-a)*t}
+  function mixColor(t){
+    var n=stops.length-1,seg=Math.min(n-1,Math.floor(t*n)),lt=t*n-seg;
+    var a=stops[seg],b=stops[seg+1];
+    return 'rgb('+Math.round(lerp(a[0],b[0],lt))+','+Math.round(lerp(a[1],b[1],lt))+','+Math.round(lerp(a[2],b[2],lt))+')';
+  }
+  function paint(t){
+    var horizon=mixColor(t);
+    var top=mixColor(Math.max(0,t-0.3));
+    sky.style.background='linear-gradient(to bottom,'+top+' 0%,'+horizon+' 100%)';
+    var size=lerp(40,260,t);
+    sun.style.width=size+'px';
+    sun.style.height=size+'px';
+    sun.style.top=lerp(92,38,t)+'%';
+    word.style.opacity=0.35+0.6*t;
+    word.style.color=t<0.5?'#fff':'#3a2410';
+    word.textContent=words[Math.min(words.length-1,Math.floor(t*words.length))];
+  }
+  paint(0.05);
+  box.addEventListener('mousemove',function(e){
+    var r=box.getBoundingClientRect();
+    var t=Math.min(1,Math.max(0,1-(e.clientY-r.top)/r.height));
+    paint(t);
+  });
+  box.addEventListener('touchmove',function(e){
+    var r=box.getBoundingClientRect(),y=e.touches[0].clientY;
+    var t=Math.min(1,Math.max(0,1-(y-r.top)/r.height));
+    paint(t);
+  },{passive:true});
+  box.addEventListener('click',function(){
+    var idx=Math.floor(Math.random()*words.length);
+    word.textContent=words[idx];
+  });
+})();
+</script>
+</section>
