@@ -1,0 +1,63 @@
+<section data-date='2026-09-27' data-type='morning'>
+<style>
+#taper2026 {margin:0;overflow:hidden;position:relative;height:70vh;min-height:420px;
+  background:linear-gradient(to bottom,#05060c,#0b1024 55%,#1a1230 100%);
+  font-family:'Georgia',serif;cursor:crosshair}
+#taper2026 .glow{position:absolute;left:0;right:0;bottom:0;height:0;
+  background:radial-gradient(ellipse at 50% 100%,#ffd9a0,#ff9d5c 30%,#7a3b6e 60%,transparent 75%);
+  transition:height 1.4s cubic-bezier(.2,.8,.2,1),opacity 1.4s;opacity:.85;filter:blur(2px)}
+#taper2026 .sky{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;text-align:center;gap:.4em;pointer-events:none}
+#taper2026 .w{opacity:0;transform:translateY(14px);
+  transition:opacity 2s ease,transform 2s ease,color 2s ease;
+  font-size:clamp(1.1rem,3.4vw,2.4rem);letter-spacing:.06em;color:#334}
+#taper2026 .w.on{opacity:1;transform:translateY(0);color:#fff2d8}
+#taper2026 .hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
+  font:12px/1.4 monospace;color:#88799e;letter-spacing:.12em;opacity:.6;pointer-events:none}
+#taper2026 .sun{position:absolute;left:50%;bottom:-40px;width:26px;height:26px;border-radius:50%;
+  background:#fff6d8;box-shadow:0 0 40px 10px #ffb35c;transform:translateX(-50%);
+  transition:bottom 1.4s cubic-bezier(.2,.8,.2,1),box-shadow 1.4s}
+</style>
+<div id="taper2026">
+  <div class="glow" id="t26glow"></div>
+  <div class="sun" id="t26sun"></div>
+  <div class="sky" id="t26sky"></div>
+  <div class="hint" id="t26hint">touch the dark to begin</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('taper2026');
+  var glow=document.getElementById('t26glow');
+  var sun=document.getElementById('t26sun');
+  var sky=document.getElementById('t26sky');
+  var hint=document.getElementById('t26hint');
+  var lines=["before the word,","a held breath.","the sky has not decided","what color to be.","nothing is ruined yet.","everything is still possible.","begin."];
+  var i=0,rise=0,spans=[];
+  lines.forEach(function(t){
+    var s=document.createElement('div');
+    s.className='w'; s.textContent=t;
+    sky.appendChild(s); spans.push(s);
+  });
+  function step(){
+    if(i>=spans.length) return;
+    spans[i].classList.add('on');
+    rise=Math.min(100,rise+15);
+    glow.style.height=rise+'%';
+    sun.style.bottom=(rise-8)+'%';
+    sun.style.boxShadow='0 0 '+(20+rise*0.6)+'px '+(6+rise*0.15)+'px #ffb35c';
+    i++;
+    if(i===1) hint.style.opacity=0;
+    if(i>=spans.length){
+      root.style.transition='background 3s';
+      root.style.background='linear-gradient(to bottom,#12203f,#5a3a5c 45%,#ffb37a 100%)';
+    }
+  }
+  root.addEventListener('click',step);
+  root.addEventListener('mousemove',function(e){
+    var r=root.getBoundingClientRect();
+    var p=(e.clientX-r.left)/r.width;
+    sun.style.left=(30+p*40)+'%';
+  });
+})();
+</script>
+</section>
