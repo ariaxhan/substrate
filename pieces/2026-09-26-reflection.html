@@ -1,0 +1,62 @@
+<section data-date='2026-09-26' data-type='reflection'>
+<style>
+.rf-wrap{margin:0;background:#04070d;height:100vh;overflow:hidden;position:relative;cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+.rf-wrap::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg,#04070d 0%,#070b16 55%,#0a0f1e 100%)}
+.rf-sky{position:absolute;inset:0}
+.rf-star{position:absolute;width:2px;height:2px;border-radius:50%;background:#dfe6f7;opacity:0;transform:scale(0);animation:rf-bloom 2.4s ease-out forwards;box-shadow:0 0 6px 1px rgba(223,230,247,.7)}
+@keyframes rf-bloom{0%{opacity:0;transform:scale(0)}12%{opacity:1;transform:scale(1.6)}30%{opacity:.85;transform:scale(1)}100%{opacity:.55;transform:scale(1)}}
+.rf-word{position:absolute;color:rgba(223,230,247,.65);font-size:11px;letter-spacing:.14em;text-transform:lowercase;opacity:0;animation:rf-say 2.6s ease-out forwards;pointer-events:none;white-space:nowrap}
+@keyframes rf-say{0%{opacity:0;transform:translateY(4px)}20%{opacity:.9;transform:translateY(0)}70%{opacity:.5}100%{opacity:0}}
+.rf-hush{position:absolute;bottom:6%;left:0;right:0;text-align:center;color:rgba(190,200,220,.32);font-size:12px;letter-spacing:.3em;text-transform:uppercase;transition:opacity 2s}
+.rf-count{position:absolute;top:5%;right:6%;color:rgba(190,200,220,.22);font-size:10px;letter-spacing:.2em;font-family:Georgia,serif}
+</style>
+<div class="rf-wrap" id="rfWrap">
+  <div class="rf-sky" id="rfSky"></div>
+  <div class="rf-hush" id="rfHush">the day is finished. rest, before the next beginning.</div>
+  <div class="rf-count" id="rfCount"></div>
+</div>
+<script>
+(function(){
+  var sky=document.getElementById('rfSky'),
+      wrap=document.getElementById('rfWrap'),
+      hush=document.getElementById('rfHush'),
+      count=document.getElementById('rfCount'),
+      words=['still','quiet','done','dark now','breathe','enough','soon','later','sleep','held'],
+      n=0, fade;
+  function star(x,y){
+    var s=document.createElement('div');
+    s.className='rf-star';
+    var r=Math.random();
+    var size=r<.15?3:(r<.6?2:1);
+    s.style.width=size+'px';s.style.height=size+'px';
+    s.style.left=x+'px';s.style.top=y+'px';
+    sky.appendChild(s);
+    n++; count.textContent=n+' lights';
+    if(sky.childNodes.length>240) sky.removeChild(sky.firstChild);
+  }
+  function whisper(x,y){
+    if(Math.random()>.4) return;
+    var w=document.createElement('div');
+    w.className='rf-word';
+    w.textContent=words[Math.floor(Math.random()*words.length)];
+    w.style.left=(x+8)+'px'; w.style.top=(y-6)+'px';
+    sky.appendChild(w);
+    setTimeout(function(){ w.remove(); },2700);
+  }
+  wrap.addEventListener('click',function(e){
+    var r=wrap.getBoundingClientRect();
+    var x=e.clientX-r.left, y=e.clientY-r.top;
+    star(x,y); whisper(x,y);
+    hush.style.opacity=0;
+    clearTimeout(fade);
+    fade=setTimeout(function(){ hush.style.opacity=1; },3200);
+  });
+  for(var i=0;i<9;i++){
+    (function(){
+      var x=Math.random()*window.innerWidth, y=Math.random()*window.innerHeight*.7;
+      setTimeout(function(){ star(x,y); }, i*260);
+    })();
+  }
+})();
+</script>
+</section>
