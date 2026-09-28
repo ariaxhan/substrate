@@ -1,0 +1,48 @@
+<section data-date='2026-09-28' data-type='morning'>
+<style>
+#taper-dawn{position:relative;height:70vh;min-height:420px;background:#05070c;overflow:hidden;font-family:Georgia,'Times New Roman',serif;cursor:crosshair;border-radius:4px}
+#taper-dawn .glow{position:absolute;inset:0;background:radial-gradient(600px 600px at var(--x,50%) var(--y,120%),rgba(255,196,120,.55),rgba(255,120,90,.18) 35%,transparent 60%);transition:background .08s linear}
+#taper-dawn .horizon{position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,transparent,#ffdca8,transparent);opacity:.6}
+#taper-dawn .line{position:absolute;left:50%;bottom:18%;transform:translateX(-50%);text-align:center;width:90%;max-width:640px;font-size:clamp(1.1rem,3vw,1.8rem);color:#3a2a20;letter-spacing:.02em;line-height:1.6;user-select:none}
+#taper-dawn .line span{opacity:0;transition:opacity 1.4s ease,color 1.4s ease}
+#taper-dawn .line span.lit{opacity:1;color:#ffe9c7;text-shadow:0 0 18px rgba(255,196,120,.5)}
+#taper-dawn .hint{position:absolute;top:14px;left:16px;font-family:ui-monospace,monospace;font-size:11px;color:#5a5040;letter-spacing:.08em;text-transform:uppercase}
+#taper-dawn .count{position:absolute;top:14px;right:16px;font-family:ui-monospace,monospace;font-size:11px;color:#5a5040}
+</style>
+<div id="taper-dawn">
+  <div class="glow" id="td-glow"></div>
+  <div class="horizon"></div>
+  <div class="hint">move to warm the sky &middot; click to write</div>
+  <div class="count" id="td-count">0 / 12</div>
+  <p class="line" id="td-line"></p>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('taper-dawn');
+  var glow=document.getElementById('td-glow');
+  var line=document.getElementById('td-line');
+  var counter=document.getElementById('td-count');
+  var words="the day has not decided what it will be yet, and neither have you".split(' ');
+  var spans=words.map(function(w){var s=document.createElement('span');s.textContent=w+' ';line.appendChild(s);return s;});
+  var lit=0;
+  root.addEventListener('mousemove',function(e){
+    var r=root.getBoundingClientRect();
+    var x=((e.clientX-r.left)/r.width*100).toFixed(1)+'%';
+    var y=((e.clientY-r.top)/r.height*100).toFixed(1)+'%';
+    glow.style.setProperty('--x',x);
+    glow.style.setProperty('--y',y);
+  });
+  root.addEventListener('click',function(){
+    if(lit>=spans.length){
+      spans.forEach(function(s){s.classList.remove('lit');});
+      lit=0;
+      counter.textContent='0 / '+spans.length;
+      return;
+    }
+    spans[lit].classList.add('lit');
+    lit++;
+    counter.textContent=lit+' / '+spans.length;
+  });
+})();
+</script>
+</section>
