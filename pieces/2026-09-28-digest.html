@@ -1,0 +1,73 @@
+<section data-date='2026-09-28' data-type='digest'>
+<style>
+.tp28{margin:0;overflow:hidden;background:#08090b;height:100vh;position:relative;font-family:Georgia,'Iowan Old Style',serif;cursor:crosshair}
+.tp28 canvas{position:absolute;top:0;left:0}
+.tp28 .hint{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);color:#5b6470;font:italic 12px Georgia,serif;letter-spacing:.04em;opacity:.7;pointer-events:none;transition:opacity 1.2s}
+.tp28 .word{position:absolute;color:#cfd6de;font-style:italic;pointer-events:none;opacity:0;transition:opacity 2.4s ease-out;white-space:nowrap}
+</style>
+<div class="tp28" id="tp28">
+<canvas id="tp28c"></canvas>
+<div class="word" id="tp28w"></div>
+<div class="hint" id="tp28h">touch the dark to begin knowing something</div>
+</div>
+<script>
+(function(){
+var root=document.getElementById('tp28'),cv=document.getElementById('tp28c'),ctx=cv.getContext('2d'),hint=document.getElementById('tp28h'),wl=document.getElementById('tp28w');
+function sz(){cv.width=root.clientWidth;cv.height=root.clientHeight}
+sz();window.addEventListener('resize',sz);
+var pts=[],terms=['a pattern','a name','a shape recurring','a rule','a memory','a link','a reason','a structure','an edge','a whole'],used=0;
+function add(x,y){
+  pts.push({x:x,y:y,r:0,born:performance.now()});
+  if(hint.style.opacity!='0'){hint.style.opacity='0'}
+  if(used<terms.length && Math.random()<.85){
+    wl.textContent=terms[used++];
+    wl.style.left=(x+14)+'px';wl.style.top=(y-10)+'px';
+    wl.style.opacity='0';
+    requestAnimationFrame(function(){wl.style.opacity='.85'});
+    setTimeout(function(){wl.style.opacity='0'},2600);
+  }
+}
+root.addEventListener('click',function(e){
+  var b=root.getBoundingClientRect();
+  add(e.clientX-b.left,e.clientY-b.top);
+});
+root.addEventListener('touchstart',function(e){
+  var t=e.touches[0],b=root.getBoundingClientRect();
+  add(t.clientX-b.left,t.clientY-b.top);
+},{passive:true});
+var mx=-999,my=-999;
+root.addEventListener('mousemove',function(e){
+  var b=root.getBoundingClientRect();mx=e.clientX-b.left;my=e.clientY-b.top;
+});
+function dist(a,b){var dx=a.x-b.x,dy=a.y-b.y;return Math.sqrt(dx*dx+dy*dy)}
+function frame(t){
+  ctx.clearRect(0,0,cv.width,cv.height);
+  for(var i=0;i<pts.length;i++){
+    var p=pts[i],age=t-p.born;
+    p.r=Math.min(2.6,age/220);
+    for(var j=i+1;j<pts.length;j++){
+      var q=pts[j],d=dist(p,q);
+      if(d<170){
+        var strength=1-d/170;
+        var flicker=.12+.5*strength*(.6+.4*Math.sin((t+i*97+j*53)/900));
+        ctx.strokeStyle='rgba(150,170,200,'+flicker.toFixed(3)+')';
+        ctx.lineWidth=strength*1.3;
+        ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();
+      }
+    }
+    var dm=dist(p,{x:mx,y:my});
+    if(dm<140){
+      ctx.strokeStyle='rgba(255,214,150,'+(0.35*(1-dm/140)).toFixed(3)+')';
+      ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(mx,my);ctx.stroke();
+    }
+    var glow=.55+.25*Math.sin((t+i*211)/700);
+    ctx.fillStyle='rgba(226,232,240,'+glow.toFixed(3)+')';
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,7);ctx.fill();
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+})();
+</script>
+</section>
