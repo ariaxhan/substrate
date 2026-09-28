@@ -1,0 +1,47 @@
+<section data-date='2026-09-28' data-type='reflection'>
+<style>
+.taper-2026-09-28{margin:0;overflow:hidden;background:#05070d;height:100vh;position:relative;cursor:crosshair;font-family:Georgia,serif}
+.taper-2026-09-28 .sky{position:absolute;inset:0}
+.taper-2026-09-28 .horizon{position:absolute;bottom:0;left:0;width:100%;height:22%;background:linear-gradient(to top,#0a0e1a,transparent)}
+.taper-2026-09-28 .word{position:absolute;bottom:6%;width:100%;text-align:center;color:#8a93a8;font-size:13px;letter-spacing:.3em;text-transform:uppercase;opacity:.55;user-select:none;pointer-events:none}
+.taper-2026-09-28 .star{position:absolute;border-radius:50%;background:#fff;transform:translate(-50%,-50%);animation:taper-appear 2.4s ease-out forwards;pointer-events:none}
+@keyframes taper-appear{0%{opacity:0;transform:translate(-50%,-50%) scale(0)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.6)}30%{transform:translate(-50%,-50%) scale(1)}100%{opacity:.75;transform:translate(-50%,-50%) scale(1)}}
+.taper-2026-09-28 .count{position:absolute;top:5%;left:50%;transform:translateX(-50%);color:#4a5268;font-size:11px;letter-spacing:.2em;user-select:none;pointer-events:none}
+</style>
+<div class="taper-2026-09-28" id="t20260928">
+  <div class="sky"></div>
+  <div class="horizon"></div>
+  <div class="count" id="t20260928-count">the day is complete</div>
+  <div class="word" id="t20260928-word">rest, before the next beginning</div>
+</div>
+<script>
+(function(){
+  var root = document.getElementById('t20260928');
+  var count = document.getElementById('t20260928-count');
+  var messages = ['the day is complete','stillness settles','nothing left to finish','the dark holds what it is given','one more, if you like'];
+  var n = 0;
+  function place(x, y){
+    var s = document.createElement('div');
+    var size = 1 + Math.random() * 2.2;
+    s.className = 'star';
+    s.style.left = x + 'px';
+    s.style.top = y + 'px';
+    s.style.width = size + 'px';
+    s.style.height = size + 'px';
+    s.style.boxShadow = '0 0 ' + (size * 3) + 'px rgba(255,255,255,.8)';
+    root.appendChild(s);
+    n++;
+    count.textContent = n === 1 ? 'one star' : messages[Math.min(n - 1, messages.length - 1)];
+  }
+  root.addEventListener('click', function(e){
+    var r = root.getBoundingClientRect();
+    place(e.clientX - r.left, (e.clientY - r.top) * 0.82);
+  });
+  for (var i = 0; i < 40; i++){
+    place(Math.random() * root.clientWidth, Math.random() * root.clientHeight * 0.82);
+  }
+  n = 0;
+  count.textContent = 'the day is complete';
+})();
+</script>
+</section>

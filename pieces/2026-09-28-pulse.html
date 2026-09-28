@@ -1,0 +1,73 @@
+<section data-date='2026-09-28' data-type='pulse'>
+<style>
+#pulse-halfway{position:relative;height:70vh;min-height:420px;background:#0b0d10;overflow:hidden;font-family:Georgia,'Times New Roman',serif;cursor:crosshair;border-radius:2px}
+#pulse-halfway .axis{position:absolute;left:0;right:0;top:50%;height:1px;background:linear-gradient(90deg,transparent,#665a4a,transparent);transform-origin:center}
+#pulse-halfway .fulcrum{position:absolute;left:50%;top:50%;width:6px;height:6px;margin:-3px;border-radius:50%;background:#e8c99a;box-shadow:0 0 12px 2px rgba(232,201,154,.5);transition:box-shadow .3s}
+#pulse-halfway .beam{position:absolute;left:50%;top:50%;width:2px;background:#333;transform-origin:top center}
+#pulse-halfway .half{position:absolute;left:50%;top:50%;width:46%;transform-origin:0 0;font-size:15px;letter-spacing:.05em;line-height:1.9}
+#pulse-halfway .upper{color:#f4ede0;text-align:right}
+#pulse-halfway .lower{color:#8f97a3;text-align:left}
+#pulse-halfway .upper span{display:block;transform:translateX(-100%);margin-right:14px}
+#pulse-halfway .lower span{display:block;margin-left:14px}
+#pulse-halfway .hint{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-family:sans-serif;font-size:10px;letter-spacing:.2em;color:#4a4f57;text-transform:uppercase;pointer-events:none}
+#pulse-halfway .reading{position:absolute;top:14px;left:0;right:0;text-align:center;font-family:sans-serif;font-size:11px;letter-spacing:.15em;color:#665a4a;pointer-events:none}
+</style>
+<div id="pulse-halfway">
+  <div class="reading" id="ph-read">12:00 — equilibrium</div>
+  <div class="axis" id="ph-axis"></div>
+  <div class="beam" id="ph-beamL" style="transform:rotate(0deg)"></div>
+  <div class="beam" id="ph-beamR" style="transform:rotate(180deg)"></div>
+  <div class="fulcrum" id="ph-f"></div>
+  <div class="half upper" id="ph-up" style="transform:rotate(0deg) translateX(-100%)"></div>
+  <div class="half lower" id="ph-lo" style="transform:rotate(0deg)"></div>
+  <div class="hint">move to tip the day — click to hold the moment</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('pulse-halfway');
+  var up=document.getElementById('ph-up'), lo=document.getElementById('ph-lo');
+  var axis=document.getElementById('ph-axis'), f=document.getElementById('ph-f');
+  var read=document.getElementById('ph-read');
+  var dawn=['waking','first light','cold water','the door unlocked','still quiet','not yet spoken'];
+  var dusk=['unwinding','last light','warm dark','the door closed','not quite silent','already remembered'];
+  function fill(el,words){
+    el.innerHTML='';
+    words.forEach(function(w){
+      var s=document.createElement('span');
+      s.textContent=w;
+      el.appendChild(s);
+    });
+  }
+  fill(up,dawn);
+  fill(lo,dusk);
+  var held=false;
+  function apply(deg){
+    up.style.transform='translate(-50%,-50%) rotate('+deg+'deg) translateY(-4px)';
+    lo.style.transform='translate(-50%,-50%) rotate('+deg+'deg) translateY(4px)';
+    axis.style.transform='translateY(-50%) rotate('+deg+'deg)';
+    var pct=Math.max(0,Math.min(1,(deg+18)/36));
+    var hh=Math.round(pct*24), mm=Math.round((pct*24*60)%60);
+    var label=(pct>0.48&&pct<0.52)?'equilibrium':(pct<0.5?'tipping toward dawn':'tipping toward dusk');
+    read.textContent=(hh<10?'0':'')+hh+':'+(mm<10?'0':'')+mm+' — '+label;
+    f.style.boxShadow='0 0 '+(6+Math.abs(deg))+'px '+(1+Math.abs(deg)/6)+'px rgba(232,201,154,'+(.35+Math.abs(deg)/40)+')';
+  }
+  root.addEventListener('mousemove',function(e){
+    if(held) return;
+    var r=root.getBoundingClientRect();
+    var deg=Math.max(-18,Math.min(18,((e.clientX-r.left-r.width/2)/(r.width/2))*18));
+    apply(deg);
+  });
+  root.addEventListener('mouseleave',function(){ if(!held) apply(0); });
+  root.addEventListener('click',function(e){
+    held=!held;
+    if(held){
+      var r=root.getBoundingClientRect();
+      apply(Math.max(-18,Math.min(18,((e.clientX-r.left-r.width/2)/(r.width/2))*18)));
+      f.style.background='#fff';
+    } else f.style.background='#e8c99a';
+  });
+  apply(0);
+})();
+</script>
+</section>
+
