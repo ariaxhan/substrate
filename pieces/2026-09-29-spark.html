@@ -1,0 +1,57 @@
+<section data-date='2026-09-29' data-type='spark'>
+<style>
+.tp{position:relative;background:#07060c;overflow:hidden;height:360px;cursor:crosshair;font:12px/1 Georgia,serif;color:#b9a}
+.tp canvas{display:block;width:100%;height:100%}
+.tp p{position:absolute;left:14px;bottom:10px;margin:0;letter-spacing:.3em;text-transform:lowercase;opacity:.7}
+</style>
+<div class="tp"><canvas></canvas><p>move: one of you. click: send the other.</p></div>
+<script>
+(()=>{
+const d=document.currentScript.previousElementSibling,c=d.querySelector('canvas'),x=c.getContext('2d'),p=d.querySelector('p');
+let W,H,m={x:0,y:0,on:0},n=0,S=[],T=0;
+const rs=()=>{W=c.width=c.clientWidth;H=c.height=c.clientHeight;m.x=W/2;m.y=H/2};
+rs();addEventListener('resize',rs);
+const A={x:W/2,y:H/2,h:20},B={x:0,y:0,vx:0,vy:0,h:200,r:0};
+const send=()=>{const e=Math.random()*6.283;B.x=W/2+Math.cos(e)*W;B.y=H/2+Math.sin(e)*H;B.vx=B.vy=0;B.r=1};
+send();
+c.onmousemove=e=>{const b=c.getBoundingClientRect();m.x=e.clientX-b.left;m.y=e.clientY-b.top;m.on=1};
+c.onclick=send;
+const boom=(X,Y)=>{
+  n++;p.textContent='synthesis × '+n;
+  for(let i=0;i<70;i++){const a=Math.random()*6.283,v=1+Math.random()*4;
+    S.push({x:X,y:Y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:1,h:i%3?110:(i%2?20:200)+Math.random()*40})}
+  S.push({x:X,y:Y,vx:0,vy:0,l:1,ring:1});
+  B.r=0;setTimeout(send,1400);
+};
+const f=()=>{
+  T++;
+  x.fillStyle='rgba(7,6,12,.18)';x.fillRect(0,0,W,H);
+  A.x+=(m.x-A.x)*.15;A.y+=(m.y-A.y)*.15;
+  if(B.r){
+    const dx=A.x-B.x,dy=A.y-B.y,r=Math.hypot(dx,dy)||1;
+    B.vx=B.vx*.97+dx/r*.12;B.vy=B.vy*.97+dy/r*.12;
+    B.x+=B.vx;B.y+=B.vy;
+    x.strokeStyle='hsla(150,60%,60%,'+Math.min(.5,60/r)+')';
+    x.beginPath();x.moveTo(A.x,A.y);x.lineTo(B.x,B.y);x.stroke();
+    if(r<16)boom((A.x+B.x)/2,(A.y+B.y)/2);
+  }
+  for(const o of[A,B]){
+    if(o==B&&!B.r)continue;
+    x.fillStyle='hsl('+o.h+',90%,62%)';
+    x.shadowBlur=18;x.shadowColor=x.fillStyle;
+    x.beginPath();x.arc(o.x,o.y,7+Math.sin(T/8)*1.5,0,6.283);x.fill();
+  }
+  x.shadowBlur=0;
+  S=S.filter(s=>(s.l-=s.ring?.02:.012)>0);
+  for(const s of S){
+    if(s.ring){x.strokeStyle='rgba(255,240,200,'+s.l+')';x.beginPath();x.arc(s.x,s.y,(1-s.l)*120,0,6.283);x.stroke();continue}
+    s.x+=s.vx;s.y+=s.vy;s.vx*=.98;s.vy*=.98;s.vy+=.02;
+    x.fillStyle='hsla('+s.h+',90%,65%,'+s.l+')';
+    x.fillRect(s.x,s.y,2,2);
+  }
+  requestAnimationFrame(f);
+};
+f();
+})();
+</script>
+</section>
