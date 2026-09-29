@@ -1,0 +1,42 @@
+<section data-date='2026-09-29' data-type='pulse'>
+<style>
+#h{position:relative;height:100vh;overflow:hidden;margin:0;background:#111;font:italic 5vmin Georgia,serif;cursor:crosshair}
+#h canvas{position:absolute;inset:0;width:100%;height:100%}
+#t{position:absolute;left:0;right:0;bottom:12vh;text-align:center;color:#fff;mix-blend-mode:difference;letter-spacing:.3em;pointer-events:none;transition:letter-spacing 1.5s,opacity 1.5s}
+</style>
+<div id=h><canvas id=c></canvas><div id=t>halfway</div></div>
+<script>
+(function(){
+var h=document.getElementById('h'),c=document.getElementById('c'),t=document.getElementById('t'),x=c.getContext('2d'),
+W,H,a=0,g=0,f=1,fa=1,r=[],m=.5;
+function z(){W=c.width=h.clientWidth;H=c.height=h.clientHeight}
+z();addEventListener('resize',z);
+h.onmousemove=function(e){m=e.clientX/W};
+h.ontouchmove=function(e){m=e.touches[0].clientX/W};
+h.onclick=function(){f=-f};
+function L(u,v,k){return u+(v-u)*k}
+function d(){
+fa=L(fa,f,.05);g=(m-.5)*1.2*fa;a=L(a,g,.08);
+var s=Math.min(W,H),cx=W/2,cy=H*.55,w=W*.4;
+var q=x.createLinearGradient(0,0,W,0),A=fa>0?'#0b0b12':'#efe6d0',B=fa>0?'#efe6d0':'#0b0b12';
+q.addColorStop(0,A);q.addColorStop(.5,A);q.addColorStop(.5,B);q.addColorStop(1,B);
+x.fillStyle=q;x.fillRect(0,0,W,H);
+var ok=Math.abs(a)<.012;
+if(ok&&Math.random()<.04)r.push(0);
+r=r.filter(function(p){return p<1});
+r.forEach(function(p,i){r[i]+=.008;x.strokeStyle='rgba(200,60,40,'+(1-p)*.8+')';x.lineWidth=2;x.beginPath();x.arc(cx,cy,p*s*.6,0,7);x.stroke()});
+x.save();x.translate(cx,cy);x.rotate(a);
+x.strokeStyle='#c83c28';x.lineWidth=3;x.beginPath();x.moveTo(-w,0);x.lineTo(w,0);x.stroke();
+var R=s*.07*(1+.3*Math.sin(a*0));
+x.fillStyle=fa>0?'#efe6d0':'#0b0b12';x.beginPath();x.arc(-w,-R,R,0,7);x.fill();
+x.fillStyle=fa>0?'#0b0b12':'#efe6d0';x.beginPath();x.arc(w,-R,R,0,7);x.fill();
+x.fillStyle=fa>0?'#0b0b12':'#efe6d0';x.beginPath();x.arc(fa>0?w-R*.5:-w+R*.5,-R*1.2,R*.75,0,7);x.fill();
+x.restore();
+x.fillStyle='#c83c28';x.beginPath();x.moveTo(cx,cy);x.lineTo(cx-s*.03,H);x.lineTo(cx+s*.03,H);x.fill();
+x.beginPath();x.arc(cx,cy,5,0,7);x.fill();
+t.style.letterSpacing=ok?'.05em':(.3+Math.abs(a)*3)+'em';
+t.textContent=ok?'here':'halfway';
+requestAnimationFrame(d)}
+d()})();
+</script>
+</section>
