@@ -1,0 +1,25 @@
+<section data-date='2026-09-29' data-type='morning'>
+<style>
+.tp0929{--x:50%;--y:80%;--t:0;margin:0;height:100vh;position:relative;overflow:hidden;cursor:none;font-family:Georgia,serif;background:radial-gradient(circle at var(--x) var(--y),#ffd9a0 0,#f08a6b calc(8% + var(--t)*20%),#5b4a8a calc(30% + var(--t)*30%),#0b1026 90%)}
+.tp0929 .line{position:absolute;left:0;right:0;top:42%;text-align:center;font-size:clamp(28px,6vw,64px);font-style:italic;color:#fff;letter-spacing:.04em;user-select:none;pointer-events:none;-webkit-mask:radial-gradient(circle 190px at var(--x) var(--y),#000 0,transparent 100%);mask:radial-gradient(circle 190px at var(--x) var(--y),#000 0,transparent 100%)}
+.tp0929 .w{position:absolute;color:#fff8e6;font-size:18px;transform:translate(-50%,-50%);animation:tp0929a 3s ease-out forwards;pointer-events:none;text-shadow:0 0 12px #ffd9a0}
+@keyframes tp0929a{0%{opacity:0;letter-spacing:.8em}25%{opacity:1}100%{opacity:.85;letter-spacing:.1em}}
+.tp0929 .sun{position:absolute;left:var(--x);top:var(--y);width:14px;height:14px;margin:-7px;border-radius:50%;background:#fff;box-shadow:0 0 40px 18px #ffd9a0;pointer-events:none}
+</style>
+<div class="tp0929" id="tp0929">
+<div class="line">nothing is written yet.<br>everything is possible.</div>
+<div class="sun"></div>
+</div>
+<script>
+(function(){
+var e=document.getElementById('tp0929'),
+W=['begin','again','now','light','open','&nbsp;yes','hello','soft','here','today'],i=0;
+function m(x,y){var r=e.getBoundingClientRect();e.style.setProperty('--x',x-r.left+'px');e.style.setProperty('--y',y-r.top+'px');e.style.setProperty('--t',1-(y-r.top)/r.height)}
+e.addEventListener('mousemove',function(v){m(v.clientX,v.clientY)});
+e.addEventListener('click',function(v){
+var r=e.getBoundingClientRect(),d=document.createElement('div');
+d.className='w';d.innerHTML=W[i++%W.length];
+d.style.left=v.clientX-r.left+'px';d.style.top=v.clientY-r.top+'px';e.appendChild(d)});
+})();
+</script>
+</section>
