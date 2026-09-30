@@ -1,0 +1,88 @@
+<section data-date='2026-09-30' data-type='spark'>
+<style>
+.spk-wrap{margin:0;overflow:hidden;background:#0b0c10;height:100vh;cursor:crosshair;position:relative;font-family:Georgia,serif}
+.spk-wrap canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+.spk-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);color:#5a5f6b;font:12px Arial;letter-spacing:.08em;z-index:5;pointer-events:none}
+.spk-word{position:absolute;color:#f4e9d8;font-style:italic;pointer-events:none;transition:opacity 1.4s ease,transform 1.4s ease;opacity:0;white-space:nowrap;text-shadow:0 0 12px #ffb35a}
+</style>
+<div class="spk-wrap" id="spkWrap">
+<canvas id="spkC"></canvas>
+<div class="spk-hint">move to draw two paths — click where they cross</div>
+</div>
+<script>
+(function(){
+var wrap=document.getElementById('spkWrap'),cv=document.getElementById('spkC'),x=cv.getContext('2d');
+function fit(){cv.width=wrap.clientWidth;cv.height=wrap.clientHeight}
+fit();window.addEventListener('resize',fit);
+var w=[],mx=0,my=0,t=0,words=['spark','meet','fuse','become','one','edge','touch','bloom'];
+function P(seed,phase,hue){return{seed:seed,phase:phase,hue:hue,pts:[]}}
+var a=P(1,0,'#ffb35a'),b=P(2,Math.PI,'#5ac8ff');
+wrap.addEventListener('mousemove',function(e){
+  var r=wrap.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top;
+});
+function drop(msg){
+  var s=document.createElement('div');
+  s.className='spk-word';s.textContent=msg;
+  s.style.left=(mx-20)+'px';s.style.top=(my-20)+'px';
+  wrap.appendChild(s);
+  requestAnimationFrame(function(){s.style.opacity=1;s.style.transform='translateY(-40px) scale(1.3)'});
+  setTimeout(function(){s.style.opacity=0},900);
+  setTimeout(function(){s.remove()},2400);
+}
+wrap.addEventListener('click',function(){
+  drop(words[Math.floor(Math.random()*words.length)]);
+  for(var i=0;i<18;i++){
+    var ang=Math.random()*Math.PI*2,sp=1+Math.random()*3;
+    w.push({x:mx,y:my,vx:Math.cos(ang)*sp,vy:Math.sin(ang)*sp,life:40+Math.random()*30,c:Math.random()<0.5?a.hue:b.hue});
+  }
+});
+function track(p,t,cx,cy,rad,speed){
+  var px=cx+Math.cos(t*speed+p.phase)*rad*(0.6+0.4*Math.sin(t*0.3));
+  var py=cy+Math.sin(t*speed*1.3+p.phase)*rad*0.5;
+  p.pts.push({x:px,y:py});
+  if(p.pts.length>140)p.pts.shift();
+  return {x:px,y:py};
+}
+function dist(p1,p2){var dx=p1.x-p2.x,dy=p1.y-p2.y;return Math.sqrt(dx*dx+dy*dy)}
+var last=null;
+function loop(){
+  t+=0.02;
+  x.fillStyle='rgba(11,12,16,0.14)';
+  x.fillRect(0,0,cv.width,cv.height);
+  var cx=cv.width/2,cy=cv.height/2,rad=Math.min(cv.width,cv.height)*0.28;
+  var pa=track(a,t,cx,cy,rad,1),pb=track(b,t,cx,cy,rad,-1);
+  [a,b].forEach(function(p){
+    x.beginPath();
+    for(var i=0;i<p.pts.length;i++){
+      var q=p.pts[i];
+      i===0?x.moveTo(q.x,q.y):x.lineTo(q.x,q.y);
+    }
+    x.strokeStyle=p.hue;x.lineWidth=2;x.globalAlpha=0.7;x.stroke();x.globalAlpha=1;
+  });
+  var d=dist(pa,pb);
+  if(d<26){
+    x.beginPath();
+    x.arc((pa.x+pb.x)/2,(pa.y+pb.y)/2,26-d,0,Math.PI*2);
+    x.fillStyle='rgba(255,255,255,0.9)';x.fill();
+    if(!last||t-last>0.6){
+      last=t;
+      mx=(pa.x+pb.x)/2;my=(pa.y+pb.y)/2;
+      drop(words[Math.floor(Math.random()*words.length)]);
+    }
+  }
+  x.beginPath();x.arc(pa.x,pa.y,4,0,Math.PI*2);x.fillStyle=a.hue;x.fill();
+  x.beginPath();x.arc(pb.x,pb.y,4,0,Math.PI*2);x.fillStyle=b.hue;x.fill();
+  w=w.filter(function(pt){
+    pt.life--;pt.x+=pt.vx;pt.y+=pt.vy;pt.vx*=0.96;pt.vy*=0.96;
+    if(pt.life<=0)return false;
+    x.globalAlpha=Math.max(0,pt.life/60);
+    x.fillStyle=pt.c;x.fillRect(pt.x,pt.y,2,2);
+    x.globalAlpha=1;
+    return true;
+  });
+  requestAnimationFrame(loop);
+}
+loop();
+})();
+</script>
+</section>
