@@ -1,0 +1,62 @@
+<section data-date='2026-09-29' data-type='reflection'>
+<style>
+#taper-2026-09-29{position:relative;margin:0;height:70vh;min-height:420px;overflow:hidden;background:radial-gradient(ellipse at 50% 100%,#0b1224 0%,#05070f 55%,#000 100%);cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+#taper-2026-09-29 .tp-sky{position:absolute;inset:0}
+#taper-2026-09-29 .tp-star{position:absolute;border-radius:50%;background:#fff;opacity:0;transform:scale(.2);transition:opacity 1.8s ease,transform 1.8s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 6px 1px rgba(255,255,255,.6)}
+#taper-2026-09-29 .tp-star.on{opacity:var(--o,.9);transform:scale(1)}
+#taper-2026-09-29 .tp-word{position:absolute;left:50%;bottom:8%;transform:translateX(-50%);color:#cfd6e8;letter-spacing:.12em;font-style:italic;font-size:clamp(13px,2vw,20px);opacity:.18;text-align:center;width:80%;pointer-events:none;transition:opacity 2.5s ease}
+#taper-2026-09-29 .tp-count{position:absolute;top:14px;right:18px;color:#4a5578;font-size:11px;letter-spacing:.2em;text-transform:uppercase;pointer-events:none;font-family:Georgia,serif}
+#taper-2026-09-29 .tp-hint{position:absolute;top:14px;left:18px;color:#3c4562;font-size:11px;letter-spacing:.15em;text-transform:uppercase;pointer-events:none}
+</style>
+<div id="taper-2026-09-29">
+  <div class="tp-sky" id="tp-sky-0929"></div>
+  <div class="tp-hint">the day is complete</div>
+  <div class="tp-count" id="tp-count-0929">0 stars</div>
+  <div class="tp-word" id="tp-word-0929">rest, before the next beginning</div>
+</div>
+<script>
+(function(){
+  var host = document.getElementById('taper-2026-09-29');
+  var sky = document.getElementById('tp-sky-0929');
+  var count = document.getElementById('tp-count-0929');
+  var word = document.getElementById('tp-word-0929');
+  var phrases = ['still.', 'quiet now.', 'the light lets go.', 'nothing left to finish.', 'only this dark, held gently.', 'tomorrow is not yet asking.', 'enough, for today.'];
+  var n = 0;
+  function star(x, y){
+    var s = document.createElement('div');
+    var size = 1 + Math.random() * 2.4;
+    s.className = 'tp-star';
+    s.style.left = x + 'px';
+    s.style.top = y + 'px';
+    s.style.width = size + 'px';
+    s.style.height = size + 'px';
+    s.style.setProperty('--o', (0.4 + Math.random() * 0.6).toFixed(2));
+    sky.appendChild(s);
+    requestAnimationFrame(function(){ s.classList.add('on'); });
+    n++;
+    count.textContent = n + (n === 1 ? ' star' : ' stars');
+    word.textContent = phrases[Math.min(n - 1, phrases.length - 1)];
+    word.style.opacity = .55;
+    clearTimeout(word._t);
+    word._t = setTimeout(function(){ word.style.opacity = .18; }, 2600);
+    if (n > 220) { sky.removeChild(sky.firstChild); }
+  }
+  host.addEventListener('click', function(e){
+    var r = host.getBoundingClientRect();
+    star(e.clientX - r.left, e.clientY - r.top);
+  });
+  host.addEventListener('touchstart', function(e){
+    var r = host.getBoundingClientRect();
+    var t = e.touches[0];
+    star(t.clientX - r.left, t.clientY - r.top);
+  }, {passive:true});
+  var seedTimes = [0.15, 0.35, 0.6, 0.75, 0.5, 0.82, 0.28];
+  seedTimes.forEach(function(f, i){
+    setTimeout(function(){
+      var r = host.getBoundingClientRect();
+      star(r.width * f, r.height * (0.1 + ((i * 37) % 60) / 100));
+    }, 300 + i * 260);
+  });
+})();
+</script>
+</section>
