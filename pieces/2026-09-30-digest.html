@@ -1,0 +1,40 @@
+<section data-date='2026-09-30' data-type='digest'>
+<style>
+.k{margin:0;background:#efe9dc;height:100vh;overflow:hidden;position:relative;cursor:crosshair;font:italic 15px Georgia,serif;color:#3a3226}
+.k canvas{position:absolute;inset:0}
+.k p{position:absolute;left:24px;bottom:18px;margin:0;letter-spacing:.04em;transition:opacity 2s}
+</style>
+<div class="k" id="k"><canvas id="c"></canvas><p id="t">noise, waiting to be noticed</p></div>
+<script>
+(function(){
+var k=document.getElementById('k'),c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),
+W,H,G=46,P=[],M={x:-9,y:-9},S=0,words=['noise, waiting to be noticed','something leans toward you','a pattern, held','structure is attention, remembered','the lattice was always there'];
+function R(){W=c.width=k.clientWidth;H=c.height=k.clientHeight}
+R();onresize=R;
+function add(a,b){P.push({x:a,y:b,vx:Math.random()-.5,vy:Math.random()-.5,s:0})}
+for(var i=0;i<90;i++)add(Math.random()*W,Math.random()*H);
+k.onmousemove=function(e){M.x=e.clientX;M.y=e.clientY};
+k.onclick=function(e){for(var i=0;i<6;i++)add(e.clientX+Math.random()*40-20,e.clientY+Math.random()*40-20)};
+function L(){
+x.fillStyle='rgba(239,233,220,.35)';x.fillRect(0,0,W,H);
+var n=0;
+P.forEach(function(p){
+var d=Math.hypot(p.x-M.x,p.y-M.y);
+if(d<170)p.s=Math.min(1,p.s+.02);else p.s=Math.max(0,p.s-.0008);
+var gx=Math.round(p.x/G)*G,gy=Math.round(p.y/G)*G;
+p.vx+=(Math.random()-.5)*.2;p.vy+=(Math.random()-.5)*.2;
+p.vx=p.vx*.94+(gx-p.x)*.03*p.s;p.vy=p.vy*.94+(gy-p.y)*.03*p.s;
+p.x=(p.x+p.vx+W)%W;p.y=(p.y+p.vy+H)%H;
+if(p.s>.9)n++;
+});
+for(var i=0;i<P.length;i++)for(var j=i+1;j<P.length;j++){
+var a=P[i],b=P[j],d=Math.hypot(a.x-b.x,a.y-b.y),m=Math.min(a.s,b.s);
+if(d<G*1.1&&m>.3){x.strokeStyle='rgba(150,60,30,'+m*.6+')';x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}
+}
+P.forEach(function(p){x.fillStyle=p.s>.5?'#963c1e':'#3a3226';x.beginPath();x.arc(p.x,p.y,1.5+p.s*2.5,0,7);x.fill()});
+var w=words[Math.min(4,n/12|0)];if(t.textContent!=w)t.textContent=w;
+requestAnimationFrame(L)}
+L();
+})();
+</script>
+</section>
