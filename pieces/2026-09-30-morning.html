@@ -1,0 +1,52 @@
+<section data-date='2026-09-30' data-type='morning'>
+<style>
+.taper-dawn{margin:0;overflow:hidden;height:70vh;min-height:420px;position:relative;background:linear-gradient(#0a0e1a,#0a0e1a);cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+.taper-dawn .sky{position:absolute;inset:0;transition:background 0.6s linear}
+.taper-dawn .sun{position:absolute;left:50%;width:14px;height:14px;border-radius:50%;background:#fff8e7;box-shadow:0 0 40px 10px rgba(255,220,150,0.6);transform:translate(-50%,0);transition:box-shadow 0.6s linear}
+.taper-dawn .line{position:absolute;left:0;right:0;height:1px;background:rgba(255,255,255,0.08)}
+.taper-dawn .word{position:absolute;opacity:0;color:#fff;font-style:italic;letter-spacing:0.02em;font-size:15px;pointer-events:none;transition:opacity 2.5s ease,transform 2.5s ease}
+.taper-dawn .word.show{opacity:0.85;transform:translateY(-14px)}
+.taper-dawn .hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,0.35);font-size:11px;letter-spacing:0.08em;font-family:Arial,sans-serif;text-transform:uppercase}
+</style>
+<div class="taper-dawn" id="td">
+  <div class="sky" id="tdsky"></div>
+  <div class="sun" id="tdsun"></div>
+  <div class="hint">move · click</div>
+</div>
+<script>
+(function(){
+  var root=document.getElementById('td'),sky=document.getElementById('tdsky'),sun=document.getElementById('tdsun');
+  var W=['begin','unwritten','still','possible','light','again','first','before','open','quiet','ahead','wakes','not yet','becomes'];
+  var h=0.5,used=0;
+  function paint(y){
+    h=1-y;
+    var night=[10,14,26],dawn=[255,183,120],day=[173,216,255];
+    var c1=h<0.5?lerp(night,dawn,h*2):lerp(dawn,day,(h-0.5)*2);
+    sky.style.background='linear-gradient(#05060c,'+rgb(c1)+' 40%, rgba(255,244,214,'+(0.15+h*0.3)+') 100%)';
+    sun.style.top=(78-h*60)+'%';
+    sun.style.boxShadow='0 0 '+(30+h*50)+'px '+(8+h*14)+'px rgba(255,'+Math.round(200+h*40)+','+Math.round(140+h*90)+',0.7)';
+  }
+  function lerp(a,b,t){return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t]}
+  function rgb(c){return 'rgb('+c.map(Math.round).join(',')+')'}
+  root.addEventListener('mousemove',function(e){
+    var r=root.getBoundingClientRect();
+    paint((e.clientY-r.top)/r.height);
+  });
+  root.addEventListener('click',function(e){
+    var r=root.getBoundingClientRect();
+    var x=e.clientX-r.left,y=e.clientY-r.top;
+    var w=document.createElement('div');
+    w.className='word';
+    w.textContent=W[used%W.length];
+    used++;
+    w.style.left=Math.max(4,Math.min(r.width-90,x))+'px';
+    w.style.top=y+'px';
+    root.appendChild(w);
+    requestAnimationFrame(function(){w.classList.add('show')});
+    setTimeout(function(){w.style.opacity=0},2600);
+    setTimeout(function(){w.remove()},5200);
+  });
+  paint(0.55);
+})();
+</script>
+</section>
