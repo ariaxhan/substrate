@@ -1,0 +1,37 @@
+<section data-date='2026-10-01' data-type='pulse'>
+<style>
+.h{position:relative;height:100%;min-height:360px;background:#efe6d2;overflow:hidden;font:italic 15px Georgia,serif;color:#3b2f24;cursor:crosshair}
+.h canvas{width:100%;height:100%;display:block}
+.h p{position:absolute;left:0;right:0;bottom:7%;margin:0;text-align:center;letter-spacing:.3em;transition:opacity 1.5s;opacity:.5}
+</style>
+<div class="h"><canvas></canvas><p>morning &nbsp;·&nbsp; evening</p></div>
+<script>
+(()=>{
+const d=document.currentScript.previousElementSibling,c=d.firstElementChild,x=c.getContext('2d'),p=d.lastElementChild;
+let W,H,a,t,T=new Date,s=1,n=[],r=[];
+t=a=(T.getHours()+T.getMinutes()/60-12)/12;
+for(let i=0;i<40;i++)n.push(i/39*2-1);
+const f=()=>{W=c.width=d.clientWidth;H=c.height=d.clientHeight};f();onresize=f;
+d.onmousemove=e=>{const b=d.getBoundingClientRect();t=((e.clientX-b.left)/b.width-.5)*2};
+d.onclick=()=>{s=-s;t=-t;n=n.map(u=>-u)};
+(function L(){
+a+=(t-a)*.04;
+n=n.map((u,i)=>{u+=a*s*.006+Math.sin(i+Date.now()/900)*.0007;return Math.max(-1,Math.min(1,u))});
+const e=Math.abs(a)<.04;
+if(e&&Math.random()<.04)r.push(0);
+r=r.map(v=>v+2).filter(v=>v<W/2);
+x.fillStyle='rgba(239,230,210,.25)';x.fillRect(0,0,W,H);
+x.clearRect(0,0,W,H);
+const cx=W/2,cy=H*.6,L2=W*.4,an=a*s*.25;
+x.strokeStyle='#8a6a4a';r.forEach(v=>{x.globalAlpha=1-v/(W/2);x.beginPath();x.arc(cx,cy,v,0,7);x.stroke()});x.globalAlpha=1;
+x.fillStyle='#3b2f24';x.beginPath();x.moveTo(cx,cy);x.lineTo(cx-18,cy+H*.25);x.lineTo(cx+18,cy+H*.25);x.fill();
+x.save();x.translate(cx,cy);x.rotate(an);
+x.fillRect(-L2,-2,L2*2,4);
+n.forEach((u,i)=>{x.fillStyle=u<0?'#c4572f':'#2f5d7c';x.beginPath();x.arc(u*L2,-9-(i%3)*7,4,0,7);x.fill()});
+x.restore();
+x.fillStyle='#3b2f24';x.beginPath();x.arc(cx,cy,6,0,7);x.fill();
+p.style.opacity=e?1:.4;p.textContent=e?'noon':'morning  ·  evening';
+requestAnimationFrame(L)})()
+})()
+</script>
+</section>
