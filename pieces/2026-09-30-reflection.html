@@ -1,0 +1,33 @@
+<section data-date='2026-09-30' data-type='reflection'>
+<style>
+#n{position:relative;height:100vh;overflow:hidden;background:linear-gradient(#05060f,#141233 70%,#2a1b3d);font:italic 20px/1 Georgia,serif;color:#cfc8ff;cursor:crosshair}
+#n canvas{position:absolute;inset:0;width:100%;height:100%}
+#n p{position:absolute;left:0;right:0;bottom:7%;text-align:center;margin:0;letter-spacing:.3em;font-size:13px;opacity:.5;transition:opacity 3s;pointer-events:none}
+.w{position:absolute;transform:translate(-50%,-170%);opacity:0;animation:f 6s forwards;pointer-events:none;white-space:nowrap}
+@keyframes f{20%{opacity:.9}to{opacity:0}}
+</style>
+<div id="n"><canvas></canvas><p>the day is complete. touch the dark.</p></div>
+<script>
+(function(){
+var n=document.getElementById('n'),c=n.firstChild,x=c.getContext('2d'),S=[],m={x:-9,y:-9},
+W=['rest','enough','kept','softly','later','done','breathe','held','still','tomorrow','thank','close'],
+p=n.querySelector('p');
+function R(){c.width=n.clientWidth;c.height=n.clientHeight}R();addEventListener('resize',R);
+function add(X,Y,t){S.push({x:X,y:Y,t:t||0,r:1+Math.random()*2,k:Math.random()*6})}
+for(var i=0;i<40;i++)add(Math.random()*c.width,Math.random()*c.height*.8,-i*9);
+n.onclick=function(e){var r=n.getBoundingClientRect(),X=e.clientX-r.left,Y=e.clientY-r.top;
+add(X,Y,0);S[S.length-1].r=3.5;p.style.opacity=0;
+var w=document.createElement('span');w.className='w';w.textContent=W[Math.random()*W.length|0];
+w.style.left=X+'px';w.style.top=Y+'px';n.appendChild(w);setTimeout(function(){w.remove()},6e3)};
+n.onmousemove=function(e){var r=n.getBoundingClientRect();m.x=e.clientX-r.left;m.y=e.clientY-r.top};
+(function L(){x.clearRect(0,0,c.width,c.height);
+S.forEach(function(s){s.t++;var a=Math.min(1,Math.max(0,s.t/60))*(.6+.4*Math.sin(s.t/40+s.k));
+x.fillStyle='rgba(235,230,255,'+a+')';x.beginPath();x.arc(s.x,s.y,s.r,0,7);x.fill()});
+S.forEach(function(a,i){if(Math.hypot(a.x-m.x,a.y-m.y)>150)return;
+S.forEach(function(b,j){if(j<=i)return;var d=Math.hypot(a.x-b.x,a.y-b.y);
+if(d<170&&Math.hypot(b.x-m.x,b.y-m.y)<190){x.strokeStyle='rgba(180,170,255,'+(1-d/170)*.5+')';
+x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}})});
+requestAnimationFrame(L)})()
+})()
+</script>
+</section>
