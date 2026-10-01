@@ -1,0 +1,28 @@
+<section data-date='2026-10-01' data-type='morning'>
+<style>
+.d{position:relative;height:100vh;overflow:hidden;cursor:crosshair;font:italic 22px Georgia,serif;color:#2a2233;
+background:radial-gradient(circle at var(--x,50%) var(--y,95%),#fff6d8 0,#ffc58a 14%,#e88a8a 32%,#6b5b95 60%,#16162e 100%);transition:filter 1s}
+.d b{position:absolute;left:0;right:0;top:calc(var(--y,95%) + 6%);bottom:0;background:#0d0d1f;opacity:.85;pointer-events:none}
+.d i{position:absolute;transform:translate(-50%,-50%);opacity:0;animation:w 6s forwards;pointer-events:none;white-space:nowrap}
+@keyframes w{15%{opacity:1;letter-spacing:.05em}100%{opacity:0;letter-spacing:.6em;margin-top:-60px}}
+.d p{position:absolute;bottom:6%;width:100%;text-align:center;color:#ffe9c0;opacity:.5;transition:opacity 2s;margin:0}
+.d:hover p{opacity:.9}
+</style>
+<div class="d" id="d"><b></b><p>the page is empty. lift the sun. touch it.</p></div>
+<script>
+var d=document.getElementById('d'),
+W=["begin","not yet","a hand","breath","warm","unwritten","enough","now","open","you","again","soft"];
+d.onmousemove=function(e){
+ d.style.setProperty('--x',e.clientX/innerWidth*100+'%');
+ d.style.setProperty('--y',Math.max(18,Math.min(96,e.clientY/innerHeight*100))+'%');
+ d.style.filter='saturate('+(.6+e.clientY/innerHeight*-.4+.6)+')';
+};
+d.onclick=function(e){
+ var i=document.createElement('i');
+ i.textContent=W[Math.random()*W.length|0];
+ i.style.left=e.clientX+'px';i.style.top=e.clientY+'px';
+ i.style.color=e.clientY<innerHeight*.6?'#2a2233':'#ffe9c0';
+ d.appendChild(i);setTimeout(function(){i.remove()},6000);
+};
+</script>
+</section>
