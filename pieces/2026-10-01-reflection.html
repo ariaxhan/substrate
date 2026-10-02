@@ -1,0 +1,28 @@
+<section data-date='2026-10-01' data-type='reflection'>
+<style>
+.nt{position:relative;width:100%;height:100vh;min-height:360px;overflow:hidden;background:linear-gradient(#0b1026,#1b1838 70%,#3a2748);font-family:Georgia,serif;cursor:crosshair}
+.nt canvas{position:absolute;inset:0;width:100%;height:100%}
+.nt p{position:absolute;bottom:7%;width:100%;text-align:center;margin:0;color:#e8e0ff;opacity:.35;font-style:italic;letter-spacing:.3em;font-size:14px;pointer-events:none}
+</style>
+<div class="nt"><canvas></canvas><p>the day is complete. touch the dark.</p></div>
+<script>
+(()=>{const w=document.currentScript.previousElementSibling,c=w.firstChild,x=c.getContext('2d'),W=['rest','enough','held','soon','done','breathe','still'];
+let S=[],T=[],m=null,t=0;
+const R=()=>{c.width=w.clientWidth;c.height=w.clientHeight};R();addEventListener('resize',R);
+const add=(a,b,big)=>S.push({x:a,y:b,r:big?2.4:Math.random()*1.2+.4,p:Math.random()*6,a:big?1:.6});
+for(let i=0;i<40;i++)add(Math.random()*c.width,Math.random()*c.height*.8);
+w.onclick=e=>{const r=c.getBoundingClientRect(),a=e.clientX-r.left,b=e.clientY-r.top;add(a,b,1);T.push({x:a,y:b-14,s:W[S.length%W.length],l:1})};
+w.onmousemove=e=>{const r=c.getBoundingClientRect();m={x:e.clientX-r.left,y:e.clientY-r.top}};
+w.onmouseleave=()=>m=null;
+(function f(){t+=.02;x.clearRect(0,0,c.width,c.height);
+S.forEach(s=>{const d=m?Math.hypot(s.x-m.x,s.y-m.y):999,g=d<110?1-d/110:0,o=s.a*(.55+.35*Math.sin(t+s.p))+g;
+x.fillStyle=`rgba(255,244,214,${Math.min(o,1)})`;x.shadowColor='#ffe9b0';x.shadowBlur=4+g*18;
+x.beginPath();x.arc(s.x,s.y,s.r+g*1.5,0,7);x.fill();s.g=g});
+x.shadowBlur=0;
+for(let i=0;i<S.length;i++)for(let j=i+1;j<S.length;j++){const a=S[i],b=S[j],k=Math.min(a.g,b.g);
+if(k>0&&Math.hypot(a.x-b.x,a.y-b.y)<220){x.strokeStyle=`rgba(255,233,176,${k*.5})`;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}}
+x.font='italic 18px Georgia';x.textAlign='center';
+T=T.filter(q=>{q.l-=.004;q.y-=.05;x.fillStyle=`rgba(232,224,255,${q.l})`;x.fillText(q.s,q.x,q.y);return q.l>0});
+requestAnimationFrame(f)})()})();
+</script>
+</section>
