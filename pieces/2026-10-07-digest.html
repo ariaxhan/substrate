@@ -1,0 +1,28 @@
+<section data-date='2026-10-07' data-type='digest'>
+<style>
+section[data-date='2026-10-07'][data-type='digest']{--ink:#372846;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;box-sizing:border-box;min-height:560px;height:85svh;overflow:hidden;padding:36px 20px;background:radial-gradient(circle at 50% 20%,#f9e9d8,#e7d9e5 72%,#d4c3d9);color:var(--ink);font-family:Georgia,serif;cursor:crosshair;isolation:isolate}
+section[data-date='2026-10-07'][data-type='digest'] *{box-sizing:border-box}
+section[data-date='2026-10-07'][data-type='digest'] .field{width:min(600px,100%);height:min(440px,65svh);position:relative;display:flex;flex-direction:column;justify-content:center;gap:3px}
+section[data-date='2026-10-07'][data-type='digest'] .rule{position:absolute;top:4%;bottom:4%;left:50%;width:1px;background:linear-gradient(transparent,#9d7591 25%,#9d7591 75%,transparent);transform:scaleY(0);transition:transform 2s;opacity:.7}
+section[data-date='2026-10-07'][data-type='digest'].formed .rule{transform:scaleY(1)}
+section[data-date='2026-10-07'][data-type='digest'] .line{z-index:1;position:relative;min-height:28px;display:flex;justify-content:center;align-items:baseline;gap:.6em;white-space:nowrap;font-size:clamp(17px,3vw,26px);font-style:italic;letter-spacing:-.025em;animation:arrive 1.4s ease both}
+section[data-date='2026-10-07'][data-type='digest'] .grain{font:10px/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.28em;color:#9a819c;opacity:.55}
+section[data-date='2026-10-07'][data-type='digest'] .word{display:inline-block;padding:0 .25em;background:#eee1e7;box-shadow:0 0 18px 8px #eee1e7;transition:color 1s,background 1s,box-shadow 1s}
+section[data-date='2026-10-07'][data-type='digest'].formed .word{color:#6b3459;background:#f4e5d8;box-shadow:0 0 18px 8px #f4e5d8}
+section[data-date='2026-10-07'][data-type='digest'] .meta{position:absolute;left:5%;right:5%;bottom:5%;display:flex;justify-content:space-between;gap:12px;font:10px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:#765c7a}
+section[data-date='2026-10-07'][data-type='digest'] .meta span:last-child{text-align:right}
+section[data-date='2026-10-07'][data-type='digest']:focus-visible{outline:2px solid #6b3459;outline-offset:-3px}
+@keyframes arrive{from{opacity:0;filter:blur(8px);transform:translateY(20px)}to{opacity:1;filter:blur(0);transform:translateY(0)}}
+@media(max-width:500px){section[data-type='digest'] .grain{display:none}}
+</style>
+<div class="field"><div class="rule"></div></div>
+<div class="meta"><span>touch to add a trace</span><span class="count">00 traces</span></div>
+<script>
+(()=>{const s=document.currentScript.closest('section'),f=s.querySelector('.field'),c=s.querySelector('.count');
+const lines=['a little dust remembers','the shape of a hand','another trace rests beside it','and distance becomes a measure','then measure becomes a path','then path becomes a name','until the scattered almosts','hold each other in place','and the place can hold us'];
+let n=0;
+function add(){if(n===lines.length)return;const row=document.createElement('div');row.className='line';const left=document.createElement('span'),word=document.createElement('span'),right=document.createElement('span');left.className=right.className='grain';word.className='word';left.textContent='· '.repeat(5+n%4);word.textContent=lines[n];right.textContent=' ·'.repeat(4+(n*3)%5);row.append(left,word,right);f.append(row);n++;c.textContent=String(n).padStart(2,'0')+' / 09 traces';if(n===lines.length){s.classList.add('formed');s.querySelector('.meta span:first-child').textContent='a pattern is a place to stand'}}
+s.tabIndex=0;s.setAttribute('role','button');s.setAttribute('aria-label','Add a trace to the accumulating poem');s.addEventListener('click',add);s.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();add()}});
+})();
+</script>
+</section>
