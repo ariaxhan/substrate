@@ -1,0 +1,35 @@
+<section data-date='2026-10-07' data-type='pulse'>
+<style>
+section[data-date='2026-10-07'][data-type='pulse']{--cut:50%;position:relative;display:block;min-height:400px;height:min(72svh,650px);overflow:hidden;background:#e9dfc9;color:#142943;cursor:crosshair;touch-action:manipulation;isolation:isolate}
+section[data-date='2026-10-07'][data-type='pulse'] *{box-sizing:border-box}
+section[data-date='2026-10-07'][data-type='pulse'] .night{position:absolute;inset:0 auto 0 0;width:var(--cut);background:#142943;color:#e9dfc9;transition:width 1.2s cubic-bezier(.2,.7,.2,1)}
+section[data-date='2026-10-07'][data-type='pulse'] .day{position:absolute;inset:0 0 0 var(--cut);transition:left 1.2s cubic-bezier(.2,.7,.2,1)}
+section[data-date='2026-10-07'][data-type='pulse'] .half{display:flex;align-items:center;justify-content:center;overflow:hidden}
+section[data-date='2026-10-07'][data-type='pulse'] .word{font:italic clamp(42px,10vw,150px)/1 Georgia,serif;white-space:nowrap;letter-spacing:-.07em;opacity:.9;transition:transform 1.2s,opacity 1.2s}
+section[data-date='2026-10-07'][data-type='pulse'] .night .word{transform:translateX(calc((50% - var(--cut)) * .2))}
+section[data-date='2026-10-07'][data-type='pulse'] .day .word{transform:translateX(calc((var(--cut) - 50%) * .2))}
+section[data-date='2026-10-07'][data-type='pulse'] .seam{position:absolute;top:0;bottom:0;left:var(--cut);width:1px;background:#cf754e;box-shadow:0 0 22px 2px #cf754e99;transition:left 1.2s cubic-bezier(.2,.7,.2,1);pointer-events:none}
+section[data-date='2026-10-07'][data-type='pulse'] .pin{position:absolute;left:var(--cut);top:50%;width:13px;height:13px;border-radius:50%;background:#cf754e;transform:translate(-50%,-50%);box-shadow:0 0 0 6px #cf754e33;transition:left 1.2s cubic-bezier(.2,.7,.2,1);pointer-events:none}
+section[data-date='2026-10-07'][data-type='pulse'] .top,section[data-date='2026-10-07'][data-type='pulse'] .bottom{position:absolute;left:5%;right:5%;display:flex;justify-content:space-between;gap:12px;font:10px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.22em;text-transform:uppercase;pointer-events:none}
+section[data-date='2026-10-07'][data-type='pulse'] .top{top:8%;color:#cf754e}
+section[data-date='2026-10-07'][data-type='pulse'] .bottom{bottom:8%;color:#cf754e}
+section[data-date='2026-10-07'][data-type='pulse'] .bottom span:last-child{text-align:right}
+section[data-date='2026-10-07'][data-type='pulse']:focus-visible{outline:3px solid #cf754e;outline-offset:-3px}
+@media(max-width:550px){section[data-date='2026-10-07'][data-type='pulse'] .word{font-size:clamp(36px,11vw,72px)}section[data-date='2026-10-07'][data-type='pulse'] .top,section[data-date='2026-10-07'][data-type='pulse'] .bottom{font-size:9px;letter-spacing:.08em}}
+</style>
+<div class="night half"><span class="word">was</span></div>
+<div class="day half"><span class="word">will</span></div>
+<div class="seam"></div><div class="pin"></div>
+<div class="top"><span>00:00</span><span>12:00</span><span>24:00</span></div>
+<div class="bottom"><span>touch where the day should divide</span><span>the middle is a verb</span></div>
+<script>
+(()=>{const s=document.currentScript.closest('section');let n=0;
+function move(x){let p=Math.max(18,Math.min(82,x*100));s.style.setProperty('--cut',p+'%');
+const w=s.querySelectorAll('.word');w[0].textContent=p<47?'had':p>53?'was':'was';w[1].textContent=p<47?'will':p>53?'might':'will';
+const b=s.querySelector('.bottom span:last-child');b.textContent=Math.abs(p-50)<3?'for one breath, neither side wins':p<50?'tomorrow borrows the weight':'yesterday asks for more';}
+s.addEventListener('click',e=>{const r=s.getBoundingClientRect();move((e.clientX-r.left)/r.width)});
+s.tabIndex=0;s.setAttribute('role','button');s.setAttribute('aria-label','A day divided. Click or press Enter to shift the balance.');
+s.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();move([.35,.65,.5][n++%3])}});
+})();
+</script>
+</section>
