@@ -1,0 +1,42 @@
+<section data-date='2026-10-07' data-type='morning'>
+<style>
+section[data-date='2026-10-07']{--warm:0;display:grid;place-items:center;min-height:100svh;box-sizing:border-box;padding:clamp(24px,7vw,90px);background:linear-gradient(160deg,#e9eef0, #f7f5ed 60%,#fff0d9);color:#253039;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;transition:background 1s}
+section[data-date='2026-10-07'] .page{width:min(100%,650px);position:relative;padding:clamp(30px,8vw,70px) 0;border-top:1px solid #9ca5a5;border-bottom:1px solid #9ca5a5}
+section[data-date='2026-10-07'] .page:before{content:'';position:absolute;top:-2px;left:0;width:calc(var(--warm)*100%);height:3px;background:#e58957;box-shadow:0 0 25px #e58957;transition:width .8s}
+section[data-date='2026-10-07'] .hint{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#687479;margin:0 0 2.8em}
+section[data-date='2026-10-07'] .line{display:flex;align-items:center;min-height:2.3em;width:100%;padding:0;border:0;border-bottom:1px solid #c9d0cd;background:transparent;color:inherit;text-align:left;font:clamp(17px,3.5vw,29px)/1.4 Georgia,serif;cursor:pointer;transition:color .5s,background .5s;touch-action:manipulation}
+section[data-date='2026-10-07'] .line:before{content:attr(data-n);min-width:3.8em;font:10px ui-monospace,SFMono-Regular,Menlo,monospace;color:#929d9c;letter-spacing:.12em}
+section[data-date='2026-10-07'] .line:hover,section[data-date='2026-10-07'] .line:focus-visible{background:#ffffff80;outline:0}
+section[data-date='2026-10-07'] .line span{display:inline-block;transition:opacity .5s,transform .5s;opacity:.28}
+section[data-date='2026-10-07'] .line.written span{opacity:1;transform:translateX(.15em)}
+section[data-date='2026-10-07'] .line.written:before{color:#d4774d}
+section[data-date='2026-10-07'] .foot{display:flex;justify-content:space-between;margin:2em 0 0;color:#929d9c;font-size:10px;letter-spacing:.12em}
+</style>
+<div class="page">
+<p class="hint">touch a line · touch it again</p>
+<div class="lines"></div>
+<p class="foot"><span>FIRST LIGHT</span><span class="count">00 / 06</span></p>
+</div>
+<script>
+(()=>{
+const root=document.currentScript.closest('section'), box=root.querySelector('.lines'), count=root.querySelector('.count');
+const choices=[
+['before','beneath','beyond'],
+['the first light','the quiet window','the waking sky'],
+['there is','there may be','there remains'],
+['room','time','a little space'],
+['for what has','for all that has','for the day that has'],
+['not yet begun.','not yet been said.','not yet arrived.']
+];
+const touched=Array(6).fill(-1);
+choices.forEach((words,i)=>{
+ const line=document.createElement('button');line.type='button';line.className='line';line.dataset.n=String(i+1).padStart(2,'0');
+ const span=document.createElement('span');span.textContent='· · · · · · · · ·';line.append(span);
+ line.addEventListener('click',()=>{
+  touched[i]=(touched[i]+1)%words.length;span.textContent=words[touched[i]];line.classList.add('written');
+  const n=touched.filter(x=>x>=0).length;root.style.setProperty('--warm',n/6);count.textContent=String(n).padStart(2,'0')+' / 06';
+ });box.append(line);
+});
+})();
+</script>
+</section>
