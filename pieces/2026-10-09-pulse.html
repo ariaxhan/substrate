@@ -1,0 +1,30 @@
+<section data-date='2026-10-09' data-type='pulse'>
+<style>
+.h{position:relative;height:100%;min-height:360px;background:#efe6d2;overflow:hidden;font:italic 15px Georgia,serif;color:#2a2118;cursor:crosshair}
+.h canvas{width:100%;height:100%;display:block}
+.h p{position:absolute;left:0;right:0;bottom:14px;margin:0;text-align:center;letter-spacing:.2em;opacity:.55;transition:opacity 1s}
+</style>
+<div class=h><canvas></canvas><p>halfway</p></div>
+<script>
+(()=>{const h=document.currentScript.previousElementSibling,c=h.querySelector('canvas'),x=c.getContext('2d'),p=h.querySelector('p');
+let W,H,a=0,t=0,s=1,m=0,r=[],T=0;
+const R=()=>{W=c.width=h.clientWidth;H=c.height=h.clientHeight};R();addEventListener('resize',R);
+h.onmousemove=e=>{const b=h.getBoundingClientRect();t=((e.clientX-b.left)/W-.5)*.7;
+ if(Math.hypot(e.clientX-b.left-W/2,e.clientY-b.top-H*.62)<30&&r.length<6)r.push(0)};
+h.ontouchmove=e=>{t=(e.touches[0].clientX/W-.5)*.7};
+h.onclick=()=>{s=-s;t=0;p.textContent=s>0?'halfway':'yawah flah';p.style.opacity=1};
+(function f(){T++;a+=(t-a)*.06;m+=(Math.abs(a)<.02?1:0);
+ x.fillStyle='#efe6d2';x.fillRect(0,0,W,H);
+ const cx=W/2,cy=H*.62,L=W*.38,d=Math.abs(a)<.02;
+ r=r.map(v=>v+2.5).filter(v=>v<W/2);
+ r.forEach(v=>{x.strokeStyle=`rgba(42,33,24,${1-v/(W/2)})`;x.beginPath();x.arc(cx,cy,v,0,7);x.stroke()});
+ x.save();x.translate(cx,cy);x.rotate(a*s);
+ x.fillStyle='#2a2118';x.fillRect(-L,-2,2*L,4);
+ for(let i=0;i<40;i++){const u=(i/39-.5)*2*L,v=Math.sin(T/30+i)*3;
+  x.fillStyle=u<0?'#d9822b':'#2b3a67';x.beginPath();x.arc(u,-14-Math.abs(v)*(u<0?1:0)-(u>0?v:0),3+(1-Math.abs(i/39-.5)*2)*3,0,7);x.fill()}
+ x.restore();
+ x.fillStyle=d?'#a33':'#2a2118';x.beginPath();x.moveTo(cx-18,cy+40);x.lineTo(cx,cy+3);x.lineTo(cx+18,cy+40);x.fill();
+ if(d&&m>90&&!(m%90))r.push(0);
+ requestAnimationFrame(f)})()})();
+</script>
+</section>
