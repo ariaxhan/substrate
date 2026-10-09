@@ -1,0 +1,35 @@
+<section data-date='2026-10-08' data-type='digest' id='crystal-field'>
+<style>
+#crystal-field{position:relative;isolation:isolate;overflow:hidden;min-height:540px;height:82svh;max-height:800px;background:radial-gradient(circle at 50% 48%,#172e45 0,#101c32 55%,#090f20 100%);color:#e7e2cb;font-family:Georgia,serif;cursor:crosshair;user-select:none;touch-action:manipulation}
+#crystal-field svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+#crystal-field line{stroke:#98d9cf;stroke-width:.15;opacity:.52}
+#crystal-field circle{fill:#e9bc83}
+#crystal-field .word{position:absolute;z-index:1;transform:translate(-50%,-50%);font:clamp(11px,1.7vw,17px)/1.1 Georgia,serif;font-style:italic;white-space:nowrap;text-shadow:0 1px 8px #091425,0 0 10px #091425;animation:appear .8s ease-out both;pointer-events:none}
+#crystal-field .word:nth-of-type(3n){color:#a4d6cf}
+#crystal-field .title{position:absolute;top:5%;left:6%;font:10px/1.4 'Courier New',monospace;letter-spacing:.26em;text-transform:uppercase;color:#9badaf}
+#crystal-field .note{position:absolute;bottom:6%;left:6%;right:6%;display:flex;justify-content:space-between;gap:1em;font:10px/1.4 'Courier New',monospace;letter-spacing:.14em;text-transform:uppercase;color:#9badaf}
+#crystal-field .revelation{position:absolute;z-index:2;top:50%;left:50%;width:80%;transform:translate(-50%,-50%);font:italic clamp(24px,5vw,55px)/1.15 Georgia,serif;text-align:center;color:#f1d7ad;text-shadow:0 2px 25px #091425;opacity:0;transition:opacity 1.8s;pointer-events:none}
+#crystal-field.complete .revelation{opacity:1}
+#crystal-field:focus-visible{outline:2px solid #e9bc83;outline-offset:-3px}
+@keyframes appear{from{opacity:0;filter:blur(7px);transform:translate(-50%,-50%) scale(.7)}to{opacity:1;filter:blur(0);transform:translate(-50%,-50%) scale(1)}}
+@media(max-width:540px){#crystal-field{min-height:480px}#crystal-field .word{font-size:11px}#crystal-field .note{font-size:9px}}
+</style>
+<svg viewBox='0 0 100 100' preserveAspectRatio='none' aria-hidden='true'></svg>
+<div class='title'>an unfinished constellation</div>
+<div class='revelation'>between the facts<br>something holds</div>
+<div class='note'><span class='invitation'>touch the dark / add a fragment</span><span class='count'>00 / 21</span></div>
+<script>
+(()=>{const s=document.currentScript.closest('section'),v=s.querySelector('svg'),count=s.querySelector('.count');
+const words=['a mark','another','kept','near','a trace','until','the space','between','begins','to mean','a path','then','a pattern','then','a place','where','each small','knowing','can hold','the next','one'];
+const points=[];let n=0;
+function add(){if(n===words.length)return;
+const angle=n*2.3999632297,r=5+Math.sqrt(n)*8.6,x=50+Math.cos(angle)*r,y=50+Math.sin(angle)*r*.8,p={x,y};
+const near=points.map(q=>({q,d:(q.x-x)**2+(q.y-y)**2})).sort((a,b)=>a.d-b.d).slice(0,2);
+for(const {q} of near){const line=document.createElementNS('http://www.w3.org/2000/svg','line');line.setAttribute('x1',q.x);line.setAttribute('y1',q.y);line.setAttribute('x2',x);line.setAttribute('y2',y);v.append(line)}
+const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');dot.setAttribute('cx',x);dot.setAttribute('cy',y);dot.setAttribute('r','.38');v.append(dot);
+const w=document.createElement('span');w.className='word';w.textContent=words[n];w.style.left=x+'%';w.style.top=y+'%';s.append(w);points.push(p);n++;count.textContent=String(n).padStart(2,'0')+' / 21';
+if(n===words.length){s.classList.add('complete');s.querySelector('.invitation').textContent='all the fragments are touching'}}
+s.tabIndex=0;s.setAttribute('role','button');s.setAttribute('aria-label','Add a fragment to the constellation');s.addEventListener('click',add);s.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();add()}});add();add();
+})();
+</script>
+</section>

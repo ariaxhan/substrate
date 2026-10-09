@@ -1,0 +1,23 @@
+<section data-date='2026-10-09' data-type='morning'>
+<style>
+section[data-date='2026-10-09']{--rise:0;position:relative;display:grid;place-items:center;min-height:100svh;overflow:hidden;box-sizing:border-box;background:#17222c;color:#f8ead2;font-family:Georgia,'Times New Roman',serif;isolation:isolate;transition:background 1.5s}
+section[data-date='2026-10-09'] *{box-sizing:border-box}
+section[data-date='2026-10-09'] .sky{position:absolute;inset:0;background:linear-gradient(to top,#f3b789 0%,#f6d9b5 19%,#e8e5d6 46%,#a5c5ce 100%);clip-path:inset(calc(100% - var(--rise)*100%) 0 0);transition:clip-path 1.4s cubic-bezier(.25,.8,.2,1)}
+section[data-date='2026-10-09'] .sun{position:absolute;left:50%;top:calc(87% - var(--rise)*61%);width:min(44vw,250px);aspect-ratio:1;border-radius:50%;background:#ffd7a0;box-shadow:0 0 90px 20px #f6b88299;transform:translate(-50%,-50%);opacity:calc(.18 + var(--rise)*.82);transition:top 1.4s cubic-bezier(.25,.8,.2,1),opacity 1.4s}
+section[data-date='2026-10-09'] .horizon{position:absolute;z-index:1;left:0;right:0;top:calc(100% - var(--rise)*100%);height:1px;background:#f4c19a;box-shadow:0 0 20px #edb186;transition:top 1.4s cubic-bezier(.25,.8,.2,1)}
+section[data-date='2026-10-09'] .poem{position:relative;z-index:2;width:min(82vw,760px);text-align:center;mix-blend-mode:difference;color:#fff;pointer-events:none}
+section[data-date='2026-10-09'] .before{font:11px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.34em;text-transform:uppercase;opacity:.7}
+section[data-date='2026-10-09'] .line{display:block;min-height:2.5em;margin:1.3em 0 .5em;font-size:clamp(29px,6vw,72px);line-height:1.16;font-weight:normal;font-style:italic}
+section[data-date='2026-10-09'] .after{font:11px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.18em;opacity:.65}
+section[data-date='2026-10-09'] button{position:absolute;inset:0;z-index:3;width:100%;border:0;background:transparent;color:transparent;cursor:pointer;touch-action:manipulation}
+section[data-date='2026-10-09'] button:focus-visible{outline:2px solid #f8ead2;outline-offset:-8px}
+section[data-date='2026-10-09'] .cue{position:absolute;z-index:2;bottom:5%;left:50%;transform:translateX(-50%);white-space:nowrap;color:#f5dec4;font:10px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.2em;text-transform:uppercase;pointer-events:none;mix-blend-mode:difference}
+@media(prefers-reduced-motion:reduce){section[data-date='2026-10-09'] .sky,section[data-date='2026-10-09'] .sun,section[data-date='2026-10-09'] .horizon{transition:none}}
+</style>
+<div class="sky"></div><div class="sun"></div><div class="horizon"></div>
+<div class="poem"><div class="before">before the first word</div><i class="line" aria-live="polite">the page holds its breath</i><div class="after">· · · · · · · · · · · ·</div></div>
+<div class="cue">touch the horizon</div><button type="button" aria-label="Raise the dawn"></button>
+<script>
+(()=>{const s=document.currentScript.closest('section'),line=s.querySelector('.line'),cue=s.querySelector('.cue');const words=['the page holds its breath','a margin becomes a window','the unwritten lets in light','even silence has a morning','begin anywhere'];let n=0;s.querySelector('button').addEventListener('click',()=>{n=(n+1)%words.length;s.style.setProperty('--rise',n/(words.length-1));line.textContent=words[n];cue.textContent=n===words.length-1?'touch to begin again':'touch the horizon'});})();
+</script>
+</section>

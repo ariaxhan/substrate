@@ -1,0 +1,26 @@
+<section data-date='2026-10-07' data-type='reflection' tabindex='0' role='button' aria-label='Night sky. Tap or press Enter to bring out a star and a word.'>
+<style>
+section[data-date='2026-10-07'][data-type='reflection']{position:relative;display:grid;place-items:center;box-sizing:border-box;min-height: min(760px,100svh);height:100svh;overflow:hidden;isolation:isolate;cursor:crosshair;touch-action:manipulation;background:radial-gradient(ellipse at 50% 115%,#3b3141 0%,#171a30 47%,#090f20 100%);color:#e8dfd4;font-family:Georgia,serif}
+section[data-date='2026-10-07'][data-type='reflection'] *{box-sizing:border-box}
+section[data-date='2026-10-07'][data-type='reflection']:before{content:'';position:absolute;width:min(72vw,500px);aspect-ratio:1;border:1px solid #d5b89624;border-radius:50%;box-shadow:0 0 0 1px #d5b8960a,0 0 110px #bb8e6d14;pointer-events:none}
+section[data-date='2026-10-07'][data-type='reflection'] .poem{position:relative;z-index:2;text-align:center;pointer-events:none;padding:2rem;text-shadow:0 2px 22px #090f20}
+section[data-date='2026-10-07'][data-type='reflection'] .poem p{margin:0;font:italic clamp(2rem,5vw,4.5rem)/1.35 Georgia,serif;letter-spacing:-.055em}
+section[data-date='2026-10-07'][data-type='reflection'] .poem p+p{color:#c7a98b}
+section[data-date='2026-10-07'][data-type='reflection'] .hint{position:absolute;bottom:clamp(24px,6vh,60px);left:0;right:0;text-align:center;font:10px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.24em;text-transform:uppercase;color:#b9a99e;pointer-events:none}
+section[data-date='2026-10-07'][data-type='reflection'] .star{position:absolute;z-index:1;width:4px;height:4px;border-radius:50%;background:#fff3d8;box-shadow:0 0 9px 3px #e9c99b88,0 0 30px 9px #e9c99b36;transform:translate(-50%,-50%) scale(0);animation:appear 1.5s ease-out forwards;pointer-events:none}
+section[data-date='2026-10-07'][data-type='reflection'] .star:after{content:attr(data-word);position:absolute;left:13px;top:-8px;white-space:nowrap;color:#e4c7a6;font:italic clamp(13px,2vw,17px) Georgia,serif;letter-spacing:.02em;opacity:0;animation:word 2.4s .35s ease-out forwards}
+section[data-date='2026-10-07'][data-type='reflection'] .star.bare:after{display:none}
+section[data-date='2026-10-07'][data-type='reflection']:focus-visible{outline:2px solid #e4c7a6;outline-offset:-5px}
+@keyframes appear{to{transform:translate(-50%,-50%) scale(1)}}
+@keyframes word{to{opacity:1}}
+@media (prefers-reduced-motion:reduce){section[data-date='2026-10-07'][data-type='reflection'] .star,section[data-date='2026-10-07'][data-type='reflection'] .star:after{animation-duration:.01ms}}
+</style>
+<div class='poem'><p>the day has set down</p><p>its last small weight.</p></div>
+<div class='hint'>touch the quiet · leave a light</div>
+<script>
+(()=>{const s=document.currentScript.closest('section'),words=['even','the unfinished','may rest','until','morning','finds us'];let n=0;
+function light(x,y){const r=s.getBoundingClientRect(),a=document.createElement('i');a.className='star'+(n>=words.length?' bare':'');a.dataset.word=words[n++]||'';a.style.left=Math.max(5,Math.min(80,100*(x-r.left)/r.width))+'%';a.style.top=Math.max(8,Math.min(88,100*(y-r.top)/r.height))+'%';s.append(a);}
+s.addEventListener('click',e=>light(e.clientX,e.clientY));s.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();const r=s.getBoundingClientRect();light(r.left+r.width*(.18+Math.random()*.58),r.top+r.height*(.18+Math.random()*.65))}});
+})();
+</script>
+</section>

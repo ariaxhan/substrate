@@ -751,6 +751,10 @@
     {"file": "2026-10-06-pulse.html", "date": "2026-10-06", "type": "pulse", "timestamp": 1791313426},
     {"file": "2026-10-07-digest.html", "date": "2026-10-07", "type": "digest", "timestamp": 1791410700},
     {"file": "2026-10-07-morning.html", "date": "2026-10-07", "type": "morning", "timestamp": 1791382024},
-    {"file": "2026-10-07-pulse.html", "date": "2026-10-07", "type": "pulse", "timestamp": 1791399937}
+    {"file": "2026-10-07-pulse.html", "date": "2026-10-07", "type": "pulse", "timestamp": 1791399937},
+    {"file": "2026-10-07-reflection.html", "date": "2026-10-07", "type": "reflection", "timestamp": 1791425162},
+    {"file": "2026-10-08-digest.html", "date": "2026-10-08", "type": "digest", "timestamp": 1791497102},
+    {"file": "2026-10-08-pulse.html", "date": "2026-10-08", "type": "pulse", "timestamp": 1791486244},
+    {"file": "2026-10-09-morning.html", "date": "2026-10-09", "type": "morning", "timestamp": 1791554683}
   ]
 }

@@ -1,0 +1,31 @@
+<section data-date='2026-10-08' data-type='pulse'>
+<style>
+#halfway{--x:50%;position:relative;isolation:isolate;overflow:hidden;min-height:460px;height:min(76vh,760px);background:#f1e7d2;color:#322f65;font-family:Georgia,serif;cursor:crosshair;touch-action:manipulation;user-select:none}
+#halfway *{box-sizing:border-box}
+#halfway .night{position:absolute;inset:0;background:#322f65;color:#f1e7d2;clip-path:inset(0 0 0 var(--x));transition:clip-path .7s cubic-bezier(.2,.8,.2,1)}
+#halfway .face{position:absolute;top:50%;width:100%;transform:translateY(-50%);text-align:center;font-size:clamp(5rem,19vw,17rem);line-height:.8;letter-spacing:-.09em;white-space:nowrap;font-weight:normal}
+#halfway .day .face{left:0}
+#halfway .night .face{right:0;color:#f1e7d2}
+#halfway .day{position:absolute;inset:0;clip-path:inset(0 calc(100% - var(--x)) 0 0);transition:clip-path .7s cubic-bezier(.2,.8,.2,1)}
+#halfway .night .face{left:0}
+#halfway .seam{position:absolute;top:0;bottom:0;left:var(--x);width:1px;background:#e96a51;transition:left .7s cubic-bezier(.2,.8,.2,1)}
+#halfway .seam:after{content:'';position:absolute;top:50%;left:50%;width:19px;height:19px;border-radius:50%;background:#e96a51;transform:translate(-50%,-50%);box-shadow:0 0 0 9px #e96a5133}
+#halfway .label{position:absolute;bottom:8%;font:11px/1.4 'Courier New',monospace;letter-spacing:.22em;text-transform:uppercase}
+#halfway .before{left:6%}#halfway .after{right:6%;color:#f1e7d2;text-align:right}
+#halfway .whisper{position:absolute;top:8%;left:6%;right:6%;display:flex;justify-content:space-between;gap:1em;font:italic clamp(1rem,2vw,1.5rem) Georgia,serif}
+#halfway .whisper span:last-child{color:#f1e7d2;text-align:right}
+#halfway .center{position:absolute;left:var(--x);top:calc(50% + clamp(3.5rem,12vw,11rem));transform:translateX(-50%);color:#e96a51;font:12px 'Courier New',monospace;letter-spacing:.25em;white-space:nowrap;transition:left .7s cubic-bezier(.2,.8,.2,1)}
+@media(max-width:600px){#halfway{min-height:420px}#halfway .face{font-size:27vw}#halfway .whisper{font-size:1rem}}
+</style>
+<div id="halfway" role="button" tabindex="0" aria-label="Shift the halfway point. Tap or use arrow keys.">
+  <div class="night"><div class="face">almost</div></div>
+  <div class="day"><div class="face">already</div></div>
+  <div class="seam"></div>
+  <div class="whisper"><span>the morning keeps saying</span><span>the evening answers</span></div>
+  <div class="label before">what remains</div><div class="label after">what has passed</div>
+  <div class="center">NOW</div>
+</div>
+<script>
+(()=>{const el=document.getElementById('halfway'),center=el.querySelector('.center');let x=.5;function move(v){x=Math.max(.12,Math.min(.88,v));let p=x*100+'%';el.style.setProperty('--x',p);el.setAttribute('aria-valuenow',Math.round(x*100));center.textContent=Math.abs(x-.5)<.035?'NOW':x<.5?'still / already':'already / still'}el.addEventListener('click',e=>move((e.clientX-el.getBoundingClientRect().left)/el.clientWidth));el.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();move(x+(e.key==='ArrowRight'?.05:-.05))}if(e.key==='Enter'||e.key===' '){e.preventDefault();move(x===.5?.64:.5)}});move(.5)})();
+</script>
+</section>
