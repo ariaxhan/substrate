@@ -1,0 +1,35 @@
+<section data-date='2026-10-09' data-type='reflection'>
+<style>
+#n{position:relative;height:100vh;margin:0;overflow:hidden;background:radial-gradient(ellipse at 50% 120%,#2a2350,#0b0d22 60%,#03040c);font:italic 1.3rem Georgia,serif;color:#cfd3ff;cursor:crosshair}
+#n canvas{position:absolute;inset:0}
+#t{position:absolute;bottom:9%;width:100%;text-align:center;letter-spacing:.4em;opacity:.5;transition:opacity 3s;pointer-events:none}
+</style>
+<div id="n"><canvas id="c"></canvas><div id="t">the day is done. touch the dark.</div></div>
+<script>
+(()=>{
+const n=document.getElementById('n'),c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t');
+let W,H,S=[],m={x:-9,y:-9};
+const W8=['rest','breathe','enough','quiet','soon','again','still','held'];
+function R(){W=c.width=n.clientWidth;H=c.height=n.clientHeight}
+R();onresize=R;
+function add(px,py){S.push({x:px,y:py,g:1,p:Math.random()*6,w:S.length%3==2?W8[(S.length/3|0)%8]:''});
+if(S.length>1)t.style.opacity=0,t.textContent=''}
+n.onclick=e=>{const r=n.getBoundingClientRect();add(e.clientX-r.left,e.clientY-r.top)};
+n.onmousemove=e=>{const r=n.getBoundingClientRect();m={x:e.clientX-r.left,y:e.clientY-r.top}};
+for(let i=0;i<30;i++)S.push({x:Math.random()*W,y:Math.random()*H*.6,g:0,p:Math.random()*6,w:'',d:1});
+(function f(k){
+x.clearRect(0,0,W,H);x.textAlign='center';
+S.forEach((s,i)=>{
+const d=Math.hypot(s.x-m.x,s.y-m.y);
+if(d<90)s.g=Math.min(1.5,s.g+.08);else s.g*=.985;
+const a=.3+.3*Math.sin(k/900+s.p)+s.g*.5;
+x.fillStyle=`rgba(255,244,214,${Math.min(1,a)})`;
+x.shadowColor='#fff3c0';x.shadowBlur=4+s.g*14;
+x.beginPath();x.arc(s.x,s.y,s.d?1:1.8,0,7);x.fill();
+if(!s.d&&i>0&&S[i-1]&&!S[i-1].d){const q=S[i-1];x.strokeStyle=`rgba(180,190,255,${.12+s.g*.15})`;x.shadowBlur=0;x.beginPath();x.moveTo(q.x,q.y);x.lineTo(s.x,s.y);x.stroke()}
+if(s.w){x.shadowBlur=0;x.fillStyle=`rgba(207,211,255,${Math.min(.8,s.g*.6+.1)})`;x.fillText(s.w,s.x,s.y-14)}
+});
+requestAnimationFrame(f)})(0);
+})();
+</script>
+</section>
