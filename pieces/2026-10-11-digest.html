@@ -1,0 +1,32 @@
+<section data-date='2026-10-11' data-type='digest'>
+<style>
+.tc{position:relative;height:100vh;background:#efe8d8;overflow:hidden;font:italic 15px Georgia,serif;color:#2a2118;cursor:crosshair}
+.tc canvas{position:absolute;inset:0;width:100%;height:100%}
+.tc p{position:absolute;left:24px;bottom:18px;margin:0;opacity:.6;letter-spacing:.05em}
+</style>
+<div class="tc"><canvas></canvas><p id="tp">noise, settling. touch it.</p></div>
+<script>
+(()=>{const d=document.currentScript.previousElementSibling,c=d.firstChild,x=c.getContext('2d'),m=d.lastChild,
+W=['seen','twice','linked','named','kept','rhymes','holds','recurs','agrees','bears weight','a floor','a wall'];
+let w,h,P=[],S=36,H=S*.866,mx=-9,my=-9;
+const rs=()=>{w=c.width=innerWidth;h=c.height=innerHeight},
+add=(a,b)=>P.push({x:a,y:b,vx:Math.random()-.5,vy:Math.random()-.5,a:0,t:W[P.length%W.length]}),
+snap=p=>{let r=Math.round(p.y/H),o=r%2?S/2:0,q=Math.round((p.x-o)/S);return[q*S+o,r*H]};
+rs();onresize=rs;for(let i=0;i<40;i++)add(Math.random()*w,Math.random()*h);
+d.onclick=e=>{for(let i=0;i<5;i++)add(e.clientX+Math.random()*60-30,e.clientY+Math.random()*60-30)};
+d.onmousemove=e=>{mx=e.clientX;my=e.clientY;if(Math.random()<.12)add(mx,my)};
+(function f(){x.fillStyle='rgba(239,232,216,.35)';x.fillRect(0,0,w,h);
+if(P.length>220)P.splice(0,P.length-220);
+let o=0;
+P.forEach(p=>{const[g,k]=snap(p),e=Math.hypot(g-p.x,k-p.y);p.a=Math.min(1,p.a+.004);
+p.vx+=(g-p.x)*.002*p.a;p.vy+=(k-p.y)*.002*p.a;
+p.vx=p.vx*.97+(Math.random()-.5)*.1*(1-p.a);p.vy=p.vy*.97+(Math.random()-.5)*.1*(1-p.a);
+p.x+=p.vx;p.y+=p.vy;if(e<3)o++});
+for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){const a=P[i],b=P[j],D=Math.hypot(a.x-b.x,a.y-b.y);
+if(D<S*1.2){x.strokeStyle=`rgba(42,33,24,${.5*Math.min(a.a,b.a)*(1-D/(S*1.2))+.05})`;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}}
+P.forEach(p=>{const n=Math.hypot(p.x-mx,p.y-my)<50;x.fillStyle=p.a>.8?'#a8321c':'#2a2118';x.beginPath();x.arc(p.x,p.y,1.5+p.a*1.5,0,7);x.fill();
+if(n){x.fillStyle='#a8321c';x.font='italic 13px Georgia';x.fillText(p.t,p.x+8,p.y-6)}});
+m.textContent=o>P.length*.7?'structure. it was always the grid.':o>P.length*.3?'something is agreeing with itself.':'noise, settling. touch it.';
+requestAnimationFrame(f)})()})();
+</script>
+</section>
