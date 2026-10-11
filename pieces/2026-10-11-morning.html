@@ -1,0 +1,15 @@
+<section data-date='2026-10-11' data-type='morning'>
+<style>
+#d{position:relative;height:100vh;min-height:360px;overflow:hidden;cursor:crosshair;font:italic 300 clamp(18px,3vw,30px)/1 Georgia,'Times New Roman',serif;background:radial-gradient(circle at var(--x,50%) var(--y,100%),#ffd9a0 0,#f08a6b 14%,#6a4a7a 40%,#10122a 80%);color:#fff7e6;transition:filter 2s}
+#d.l{filter:brightness(1.25) saturate(.8)}
+#d p{position:absolute;left:50%;top:42%;margin:0;transform:translate(-50%,-50%);letter-spacing:.4em;opacity:.55;text-align:center;pointer-events:none}
+#d b{position:absolute;font-weight:300;transform:translate(-50%,-50%);animation:u 6s ease-out forwards;pointer-events:none;text-shadow:0 0 12px #ffd9a0}
+@keyframes u{0%{opacity:0;letter-spacing:1em}20%{opacity:1}100%{opacity:0;margin-top:-80px;letter-spacing:.1em}}
+</style>
+<div id=d><p>nothing is written yet</p></div>
+<script>
+(function(){var d=document.getElementById('d'),w='begin,light,again,yes,now,open,a name,warm,here,first,almost'.split(','),i=0,t=0;
+d.onmousemove=function(e){var r=d.getBoundingClientRect();d.style.setProperty('--x',(e.clientX-r.left)+'px');d.style.setProperty('--y',(e.clientY-r.top)+'px')};
+d.onclick=function(e){var r=d.getBoundingClientRect(),b=document.createElement('b');b.textContent=w[i++%w.length];b.style.left=e.clientX-r.left+'px';b.style.top=e.clientY-r.top+'px';d.appendChild(b);setTimeout(function(){b.remove()},6e3);d.classList.toggle('l',++t%5==0);d.firstChild.textContent=t>4?'the day is already yours':'nothing is written yet'}})()
+</script>
+</section>
