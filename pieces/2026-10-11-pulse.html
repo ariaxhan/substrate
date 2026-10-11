@@ -1,0 +1,40 @@
+<section data-date='2026-10-11' data-type='pulse'>
+<style>
+.hw{position:relative;height:100vh;background:#efe6d2;overflow:hidden;font:italic 15px Georgia,serif;color:#3a2f26;cursor:crosshair}
+.hw canvas{display:block;width:100%;height:100%}
+.hw p{position:absolute;left:0;right:0;bottom:9%;margin:0;text-align:center;letter-spacing:.4em;transition:opacity 1.5s}
+</style>
+<div class="hw"><canvas></canvas><p>&nbsp;</p></div>
+<script>
+(()=>{const w=document.querySelector('.hw'),c=w.querySelector('canvas'),x=c.getContext('2d'),p=w.querySelector('p');
+let W,H,a=.4,v=0,t=0,m=0,f=1,N=120,L=60,still=0;
+const g=[...Array(N)].map((_,i)=>({s:i<N/2?0:1,u:Math.random(),r:Math.random()}));
+const rs=()=>{W=c.width=w.clientWidth;H=c.height=w.clientHeight};rs();onresize=rs;
+w.onmousemove=e=>{const b=w.getBoundingClientRect();m=((e.clientX-b.left)/W-.5)*1.2};
+w.ontouchmove=e=>{m=(e.touches[0].clientX/W-.5)*1.2};
+w.onclick=e=>{if(Math.hypot(e.clientX-W/2,e.clientY-H*.62)<70){f=-f;v+=.2*f}else m=0};
+(function d(){t++;
+v+=(-a*.012-v*.03)+(m-a)*.002;a+=v;
+const R=Math.min(W,H)*.34,cx=W/2,cy=H*.5;
+x.fillStyle='#efe6d2';x.fillRect(0,0,W,H);
+x.save();x.translate(cx,cy);x.rotate(a);
+x.strokeStyle='#3a2f26';x.lineWidth=2;x.beginPath();x.moveTo(-R,0);x.lineTo(R,0);x.stroke();
+const sides=[-R,R];
+// sand flows to the low side
+const q=Math.max(0,Math.min(1,.5+a*1.2));
+g.forEach((o,i)=>{const want=i/N<q?1:0;if(o.s!=want&&Math.random()<.04)o.s=want;
+const sx=sides[o.s],k=g.filter((z,j)=>j<i&&z.s==o.s).length;
+const ox=sx+(((k%9)-4)*7)*(o.s?1:1),oy=-8-Math.floor(k/9)*7;
+x.fillStyle=(o.s^(f<0))?'#2b3a55':'#c9742c';
+x.beginPath();x.arc(ox,oy,3+o.r*1.5,0,7);x.fill()});
+x.restore();
+x.fillStyle='#3a2f26';x.beginPath();x.moveTo(cx,cy);x.lineTo(cx-44,H*.62+30);x.lineTo(cx+44,H*.62+30);x.fill();
+x.beginPath();x.arc(cx,cy,5,0,7);x.fillStyle='#efe6d2';x.fill();
+x.beginPath();x.arc(cx,cy,5,0,7);x.stroke();
+still=Math.abs(a)<.012&&Math.abs(v)<.0007?still+1:0;
+p.style.opacity=still>40?1:0;p.textContent=still>40?'H A L F W A Y':'';
+if(!still&&t%1==0&&Math.abs(m)<.01)m=0;
+requestAnimationFrame(d)})();
+})();
+</script>
+</section>
