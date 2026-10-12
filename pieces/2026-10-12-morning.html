@@ -1,0 +1,22 @@
+<section data-date='2026-10-12' data-type='morning'>
+<style>
+#d{position:relative;height:100vh;overflow:hidden;cursor:crosshair;font:italic 1.3rem Georgia,serif;color:#3b2a2a;
+background:radial-gradient(circle at var(--x,50%) var(--y,100%),#fff4d6 0,#ffc98a 12%,#f2a0a0 30%,#8f87b8 55%,#1d2140 100%);transition:filter 1.5s}
+#d h1{position:absolute;left:0;right:0;top:42%;margin:0;text-align:center;font-weight:400;letter-spacing:.5em;font-size:.8rem;color:#fff8;transition:opacity 2s}
+#d i{position:absolute;transform:translate(-50%,-50%);animation:u 6s forwards;pointer-events:none;white-space:nowrap}
+@keyframes u{0%{opacity:0;margin-top:20px}20%{opacity:1}100%{opacity:0;margin-top:-90px}}
+#d:hover h1{opacity:0}
+</style>
+<div id=d><h1>NOT YET WRITTEN</h1></div>
+<script>
+(function(){
+var d=document.getElementById('d'),w='begin,again,yet,now,open,light,hello,first,breathe,maybe,today,rise'.split(','),n=0;
+d.onmousemove=function(e){var r=d.getBoundingClientRect();
+d.style.setProperty('--x',(e.clientX-r.left)/r.width*100+'%');
+d.style.setProperty('--y',(e.clientY-r.top)/r.height*100+'%')};
+d.onclick=function(e){var r=d.getBoundingClientRect(),s=document.createElement('i');
+s.textContent=w[n++%w.length];s.style.left=e.clientX-r.left+'px';s.style.top=e.clientY-r.top+'px';
+s.style.color=n%2?'#fff':'#2a1f3a';d.appendChild(s);setTimeout(function(){s.remove()},6000)};
+})();
+</script>
+</section>
