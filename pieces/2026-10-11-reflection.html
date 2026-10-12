@@ -1,0 +1,37 @@
+<section data-date='2026-10-11' data-type='reflection'>
+<style>
+.nt{position:relative;height:100vh;background:linear-gradient(#0b1026,#05060f 70%,#000);overflow:hidden;cursor:crosshair;font:italic 1.3em Georgia,serif;color:#e8e2cf}
+.nt canvas{position:absolute;inset:0;width:100%;height:100%}
+.nt p{position:absolute;margin:0;transform:translate(-50%,-50%);pointer-events:none;letter-spacing:.2em;text-shadow:0 0 12px #ffe9a8;animation:nw 7s forwards}
+.nt i{position:absolute;bottom:5%;width:100%;text-align:center;font-size:.6em;opacity:.35;letter-spacing:.4em}
+@keyframes nw{0%{opacity:0;filter:blur(8px)}20%{opacity:.9;filter:none}100%{opacity:0;filter:blur(6px)}}
+</style>
+<div class="nt"><canvas></canvas><i>the day is complete. touch the dark.</i>
+<script>
+(function(){
+var d=document.currentScript.parentNode,c=d.firstChild,x=c.getContext('2d'),S=[],W,H,
+w='rest|enough|done|soft|still|held|breathe|later|here|keep'.split('|'),n=0;
+function R(){W=c.width=d.clientWidth;H=c.height=d.clientHeight}
+R();addEventListener('resize',R);
+function add(a,b,t){S.push({x:a,y:b,r:1+Math.random()*2,t:t||0,p:Math.random()*6})}
+for(var i=0;i<14;i++)add(Math.random()*W,Math.random()*H*.8);
+d.onclick=function(e){
+var r=d.getBoundingClientRect(),a=e.clientX-r.left,b=e.clientY-r.top;
+add(a,b,1);var p=document.createElement('p');
+p.textContent=w[n++%w.length];p.style.left=a+'px';p.style.top=b-30+'px';
+d.appendChild(p);setTimeout(function(){p.remove()},7000)};
+d.onmousemove=function(e){var r=d.getBoundingClientRect();d.mx=e.clientX-r.left;d.my=e.clientY-r.top};
+(function f(t){
+x.clearRect(0,0,W,H);
+S.forEach(function(s,i){
+var g=.5+.5*Math.sin(t/900+s.p),k=s.t?1:.6;
+x.fillStyle='rgba(255,240,200,'+(.3+.7*g)*k+')';
+x.shadowBlur=s.t?14:6;x.shadowColor='#ffe9a8';
+x.beginPath();x.arc(s.x,s.y,s.r*(1+g*.3),0,7);x.fill();
+S.forEach(function(o,j){
+if(j<=i)return;var q=Math.hypot(s.x-o.x,s.y-o.y),m=Math.hypot(d.mx-s.x,d.my-s.y);
+if(q<160&&m<200){x.shadowBlur=0;x.strokeStyle='rgba(255,233,168,'+(1-q/160)*(1-m/200)*.6+')';
+x.beginPath();x.moveTo(s.x,s.y);x.lineTo(o.x,o.y);x.stroke()}})});
+requestAnimationFrame(f)})(0)})()
+</script></div>
+</section>
