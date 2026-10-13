@@ -1,0 +1,31 @@
+<section data-date='2026-10-13' data-type='digest'>
+<style>
+#k{margin:0;background:#efe8d8;position:relative;height:100vh;overflow:hidden;cursor:crosshair;font:italic 15px Georgia,serif;color:#3a2f26}
+#k canvas{display:block;width:100%;height:100%}
+#k p{position:absolute;left:0;right:0;bottom:6vh;text-align:center;margin:0;transition:opacity 3s;pointer-events:none;letter-spacing:.08em}
+</style>
+<div id="k"><canvas></canvas><p>so much falling. press where it should hold.</p></div>
+<script>
+(()=>{const k=document.getElementById('k'),c=k.querySelector('canvas'),x=c.getContext('2d'),t=k.querySelector('p');
+let W,H,P=[],S=[],G=30,R=Math.random;
+const rs=()=>{W=c.width=k.clientWidth;H=c.height=k.clientHeight};rs();onresize=rs;
+for(let i=0;i<260;i++)P.push({x:R()*W,y:R()*H,a:R()*6.28,s:-1,n:0});
+// triangular lattice node nearest to p, relative to seed
+const snap=(p,s)=>{let dx=p.x-s.x,dy=p.y-s.y,r=Math.round(dy/(G*.866)),o=r&1?G/2:0,q=Math.round((dx-o)/G);return[s.x+q*G+o,s.y+r*G*.866]};
+k.onclick=e=>{const b=k.getBoundingClientRect();S.push({x:e.clientX-b.left,y:e.clientY-b.top,r:0,n:0});t.style.opacity=0;
+for(let i=0;i<40;i++)P.push({x:R()*W,y:R()<.5?0:H,a:R()*6.28,s:-1,n:0})};
+(function f(){x.fillStyle='rgba(239,232,216,.35)';x.fillRect(0,0,W,H);
+S.forEach(s=>{s.r+=.35+s.n*.01});
+for(const p of P){
+ if(p.s<0){p.a+=(R()-.5)*.6;p.x=(p.x+Math.cos(p.a)*1.1+W)%W;p.y=(p.y+Math.sin(p.a)*1.1+H)%H;
+  S.forEach((s,i)=>{if(p.s<0&&Math.hypot(p.x-s.x,p.y-s.y)<s.r){p.s=i;s.n++}});
+  x.fillStyle='#8a7a66';x.fillRect(p.x,p.y,2,2)}
+ else{const s=S[p.s],q=snap(p,s);p.x+=(q[0]-p.x)*.06;p.y+=(q[1]-p.y)*.06;
+  x.fillStyle='#7a2a1c';x.beginPath();x.arc(p.x,p.y,2.4,0,6.28);x.fill()}}
+x.lineWidth=.8;
+for(let i=0;i<P.length;i++){const a=P[i];if(a.s<0)continue;
+ for(let j=i+1;j<P.length;j++){const b=P[j];if(b.s!=a.s)continue;const d=Math.hypot(a.x-b.x,a.y-b.y);
+  if(d<G*1.15){x.strokeStyle='rgba(122,42,28,'+(1.2-d/G)+')';x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}}}
+requestAnimationFrame(f)})()})();
+</script>
+</section>

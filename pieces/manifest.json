@@ -763,6 +763,7 @@
     {"file": "2026-10-11-pulse.html", "date": "2026-10-11", "type": "pulse", "timestamp": 1791745433},
     {"file": "2026-10-11-reflection.html", "date": "2026-10-11", "type": "reflection", "timestamp": 1791770701},
     {"file": "2026-10-12-morning.html", "date": "2026-10-12", "type": "morning", "timestamp": 1791813892},
-    {"file": "2026-10-12-reflection.html", "date": "2026-10-12", "type": "reflection", "timestamp": 1791857167}
+    {"file": "2026-10-12-reflection.html", "date": "2026-10-12", "type": "reflection", "timestamp": 1791857167},
+    {"file": "2026-10-13-digest.html", "date": "2026-10-13", "type": "digest", "timestamp": 1791929443}
   ]
 }
