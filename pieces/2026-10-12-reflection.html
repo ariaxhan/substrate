@@ -1,0 +1,34 @@
+<section data-date='2026-10-12' data-type='reflection'>
+<style>
+.nt{position:relative;height:100vh;min-height:360px;background:radial-gradient(ellipse at 50% 120%,#1d2250,#07081a 70%);overflow:hidden;cursor:crosshair;font:italic 18px Georgia,serif;color:#cfd6ff}
+.nt canvas{position:absolute;inset:0;width:100%;height:100%}
+.nt p{position:absolute;left:0;right:0;bottom:7%;text-align:center;margin:0;letter-spacing:.2em;opacity:.5;transition:opacity 3s}
+.nt b{position:absolute;font-weight:400;font-size:15px;transform:translate(-50%,-150%);opacity:0;animation:w 9s ease-out forwards;pointer-events:none;white-space:nowrap}
+@keyframes w{15%{opacity:.9}100%{opacity:.25}}
+</style>
+<div class="nt"><canvas></canvas><p>the day is done. touch the dark.</p></div>
+<script>
+(()=>{
+const d=document.currentScript.previousElementSibling,c=d.querySelector('canvas'),x=c.getContext('2d'),
+W=['rest','enough','held','soft','still','kept','let go','begin again','quiet','whole','home','slow'],
+S=[],m={x:-9,y:-9};let w,h,n=0;
+const R=()=>{w=c.width=d.clientWidth;h=c.height=d.clientHeight};R();addEventListener('resize',R);
+const add=(X,Y,t)=>S.push({x:X,y:Y,r:1+Math.random()*1.5,t:t||0,p:Math.random()*6});
+for(let i=0;i<40;i++)add(Math.random()*w,Math.random()*h*.8);
+d.onclick=e=>{const r=d.getBoundingClientRect(),X=e.clientX-r.left,Y=e.clientY-r.top;
+add(X,Y,1);const b=document.createElement('b');b.textContent=W[n++%W.length];
+b.style.left=X+'px';b.style.top=Y+'px';d.appendChild(b);setTimeout(()=>b.remove(),9e3);
+d.querySelector('p').style.opacity=0};
+d.onmousemove=e=>{const r=d.getBoundingClientRect();m.x=e.clientX-r.left;m.y=e.clientY-r.top};
+d.onmouseleave=()=>m.x=-9;
+(function f(t){x.clearRect(0,0,w,h);
+for(const s of S){const g=.5+.5*Math.sin(t/900+s.p),dm=Math.hypot(s.x-m.x,s.y-m.y);
+x.fillStyle=`rgba(220,226,255,${(s.t?.9:.4)*(.5+g/2)+(dm<130?.4:0)})`;
+x.beginPath();x.arc(s.x,s.y,s.r*(dm<130?1.8:1),0,7);x.fill();
+for(const q of S)if(q!==s&&s.t&&q.t){const l=Math.hypot(s.x-q.x,s.y-q.y);
+if(l<170){x.strokeStyle=`rgba(160,175,255,${.25*(1-l/170)})`;x.beginPath();x.moveTo(s.x,s.y);x.lineTo(q.x,q.y);x.stroke()}}
+if(dm<130){x.strokeStyle=`rgba(200,210,255,${.35*(1-dm/130)})`;x.beginPath();x.moveTo(s.x,s.y);x.lineTo(m.x,m.y);x.stroke()}}
+requestAnimationFrame(f)})(0)
+})()
+</script>
+</section>
