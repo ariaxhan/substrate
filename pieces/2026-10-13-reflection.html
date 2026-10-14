@@ -1,0 +1,23 @@
+<section data-date='2026-10-13' data-type='reflection'>
+<style>
+.nt{position:relative;height:100%;min-height:360px;background:radial-gradient(ellipse at 50% 120%,#2b2350,#0a0c1f 60%,#03040c);overflow:hidden;cursor:crosshair;font:italic 1.1rem Georgia,serif;color:#cfd3ff}
+.nt canvas{position:absolute;inset:0;width:100%;height:100%}
+.nt p{position:absolute;bottom:6%;width:100%;text-align:center;margin:0;letter-spacing:.3em;opacity:.45;pointer-events:none;transition:opacity 3s}
+</style>
+<div class="nt"><canvas></canvas><p>the day is done. touch the dark.</p></div>
+<script>
+(()=>{const r=document.currentScript.previousElementSibling,c=r.querySelector('canvas'),x=c.getContext('2d'),p=r.querySelector('p'),S=[],W=['rest','soft','held','enough','still','kept','home','slow','here','later'];
+let w,h,m={x:-9,y:-9};
+const f=()=>{w=c.width=r.clientWidth;h=c.height=r.clientHeight};f();addEventListener('resize',f);
+const add=(a,b,t)=>S.push({x:a,y:b,t:t||0,w:Math.random()<.5?W[S.length%10]:'',b:0,s:Math.random()*2+1,o:Math.random()*6});
+for(let i=0;i<30;i++)add(Math.random()*w,Math.random()*h*.8,'');
+r.onclick=e=>{const k=r.getBoundingClientRect();add(e.clientX-k.left,e.clientY-k.top,1);S[S.length-1].w=W[S.length%10];S[S.length-1].b=1.5;p.style.opacity=0};
+r.onmousemove=e=>{const k=r.getBoundingClientRect();m={x:e.clientX-k.left,y:e.clientY-k.top}};
+(function d(T){x.clearRect(0,0,w,h);x.font='italic 14px Georgia';
+for(const s of S){const n=Math.hypot(s.x-m.x,s.y-m.y);s.b=Math.max(s.b*.985,n<110?1-n/110:0);s.a=.35+.2*Math.sin(T/700+s.o)+s.b;
+x.fillStyle=`rgba(220,225,255,${Math.min(1,s.a)})`;x.beginPath();x.arc(s.x,s.y,s.s*(1+s.b),0,7);x.fill();
+if(s.t&&s.w){x.fillStyle=`rgba(255,230,180,${Math.min(1,.3+s.b)})`;x.fillText(s.w,s.x+9,s.y+4)}}
+for(const a of S)if(a.b>.1)for(const b of S)if(b!=a&&b.b>.1&&Math.hypot(a.x-b.x,a.y-b.y)<160){x.strokeStyle=`rgba(180,190,255,${Math.min(a.b,b.b)*.5})`;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}
+requestAnimationFrame(d)})(0)})()
+</script>
+</section>
