@@ -1,0 +1,33 @@
+<section data-date='2026-10-14' data-type='digest'>
+<style>
+#s{position:relative;width:100%;height:100vh;background:#f1ebdc;overflow:hidden;cursor:crosshair;font:italic 15px Georgia,serif;color:#3b2f24}
+#s canvas{position:absolute;inset:0}
+#t{position:absolute;left:24px;bottom:20px;pointer-events:none;letter-spacing:.04em}
+</style>
+<div id="s"><canvas id="c"></canvas><div id="t">dust, drifting. touch it.</div></div>
+<script>
+(()=>{const s=document.getElementById('s'),c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),G=34;
+let W,H,d=[],n=new Map,m={x:-9,y:-9};
+const R=()=>{W=c.width=s.clientWidth;H=c.height=s.clientHeight};R();onresize=R;
+for(let i=0;i<160;i++)d.push({x:Math.random()*W,y:Math.random()*H,a:Math.random()*6.28,v:.2+Math.random()*.4});
+const words=['noise','signal','pattern','lattice','memory','form','meaning'];
+function add(px,py){const k=Math.round(px/G)+','+Math.round(py/G);if(!n.has(k))n.set(k,{i:Math.round(px/G),j:Math.round(py/G),w:words[n.size%7],b:0})}
+s.onclick=e=>{const r=s.getBoundingClientRect(),px=e.clientX-r.left,py=e.clientY-r.top;add(px,py);
+d=d.filter(p=>{if(Math.hypot(p.x-px,p.y-py)<150){add(p.x,p.y);return 0}return 1});
+t.textContent=n.size+' points. '+(n.size>20?'it was always a grid.':'structure wants to happen.')};
+s.onmousemove=e=>{const r=s.getBoundingClientRect();m={x:e.clientX-r.left,y:e.clientY-r.top}};
+(function f(){x.clearRect(0,0,W,H);
+x.fillStyle='#b8a98c';
+for(const p of d){p.a+=(Math.random()-.5)*.3;p.x=(p.x+Math.cos(p.a)*p.v+W)%W;p.y=(p.y+Math.sin(p.a)*p.v+H)%H;x.fillRect(p.x,p.y,2,2)}
+x.lineWidth=1;
+for(const a of n.values()){a.b=Math.min(1,a.b+.02);let deg=0;
+for(let di=-1;di<=1;di++)for(let dj=-1;dj<=1;dj++){if(!di&&!dj)continue;const o=n.get((a.i+di)+','+(a.j+dj));
+if(o){deg++;x.strokeStyle='rgba(120,52,36,'+.5*a.b+')';x.beginPath();x.moveTo(a.i*G,a.j*G);x.lineTo(o.i*G,o.j*G);x.stroke()}}
+const h=Math.hypot(a.i*G-m.x,a.j*G-m.y)<46;
+x.fillStyle=deg>2?'#7a2f1f':'#3b2f24';
+const z=(deg>2?7:3)*a.b;x.fillRect(a.i*G-z/2,a.j*G-z/2,z,z);
+if(h){x.fillStyle='#7a2f1f';x.fillText(a.w+' · '+deg,a.i*G+9,a.j*G-8)}}
+requestAnimationFrame(f)})();
+})();
+</script>
+</section>
