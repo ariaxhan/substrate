@@ -1,0 +1,21 @@
+<section data-date='2026-10-15' data-type='morning'>
+<style>
+#d{--p:0;position:relative;height:100vh;overflow:hidden;cursor:crosshair;font:italic 5vmin Georgia,serif;
+background:linear-gradient(#0b0d1c calc(60% - var(--p)*60%),hsl(calc(250 - var(--p)*215) 70% calc(10% + var(--p)*55%)) calc(100% - var(--p)*20%),#f6d9a0);color:#fff}
+#s{position:absolute;left:50%;top:calc(100% - var(--p)*62%);width:22vmin;height:22vmin;margin:-11vmin;border-radius:50%;
+background:#fff6d8;box-shadow:0 0 12vmin 6vmin #ffd37a;opacity:calc(.2 + var(--p))}
+#g{position:absolute;bottom:0;width:100%;height:30%;background:#05060d}
+#t{position:absolute;bottom:8%;width:100%;text-align:center;mix-blend-mode:difference;letter-spacing:.3em;transition:opacity 1s}
+#w{position:absolute;top:12%;width:100%;text-align:center;font-size:7vmin;min-height:1em}
+#w b{font-weight:400;display:inline-block;animation:r 3s both}
+@keyframes r{from{opacity:0;transform:translateY(3vmin);filter:blur(1vmin)}}
+</style>
+<div id="d"><div id="w"></div><div id="s"></div><div id="g"></div><div id="t">nothing is written yet</div></div>
+<script>
+const d=document.getElementById('d'),w=document.getElementById('w'),t=document.getElementById('t'),
+W='begin in breathe light open yes now again here soft'.split(' ');let p=0,i=0;
+d.onmousemove=e=>{p=1-e.clientY/innerHeight;d.style.setProperty('--p',p);t.style.opacity=1-p*1.5};
+d.onclick=()=>{let b=document.createElement('b');b.textContent=W[i++%W.length]+' ';w.append(b);
+if(w.children.length>5)w.firstChild.remove()};
+</script>
+</section>
