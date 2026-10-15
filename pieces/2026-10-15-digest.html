@@ -1,0 +1,28 @@
+<section data-date='2026-10-15' data-type='digest'>
+<style>
+.cx{position:relative;background:#f3ecdc;height:100vh;overflow:hidden;font:italic 15px Georgia,serif;color:#2b2a26;cursor:crosshair}
+.cx canvas{position:absolute;inset:0}
+.cx p{position:absolute;left:24px;bottom:18px;margin:0;opacity:.6;letter-spacing:.04em}
+</style>
+<div class="cx"><canvas></canvas><p id="t">scattered. click to add what you know.</p></div>
+<script>
+(()=>{const d=document.currentScript.previousElementSibling,c=d.querySelector('canvas'),x=c.getContext('2d'),t=d.querySelector('#t'),G=44,
+W=['noted','seen twice','linked','half-true','kept','a pattern','recurs','rhymes with','settled','the third time','almost','holds'];
+let w,h,N=[],m=[0,0];
+const R=()=>{w=c.width=d.clientWidth;h=c.height=d.clientHeight};R();onresize=R;
+const add=(a,b)=>N.push({x:a,y:b,vx:Math.random()-.5,vy:Math.random()-.5,s:0,w:W[N.length%W.length]});
+for(let i=0;i<14;i++)add(Math.random()*w,Math.random()*h);
+d.onclick=e=>{add(e.offsetX,e.offsetY);t.textContent=N.length+' facts. '+N.filter(n=>n.s>.9).length+' have found their place.'};
+d.onmousemove=e=>m=[e.offsetX,e.offsetY];
+(function f(){x.fillStyle='#f3ecdc';x.fillRect(0,0,w,h);
+N.forEach(n=>{const gx=Math.round(n.x/G)*G,gy=Math.round(n.y/G)*G,k=.012*(1+N.length/30);
+n.vx=n.vx*.96+(gx-n.x)*k;n.vy=n.vy*.96+(gy-n.y)*k;n.x+=n.vx;n.y+=n.vy;
+n.s=Math.max(0,1-Math.hypot(gx-n.x,gy-n.y)/9)});
+N.forEach((a,i)=>{N.slice(i+1).forEach(b=>{const q=Math.hypot(a.x-b.x,a.y-b.y);
+if(q<G*1.5){x.strokeStyle='rgba(43,42,38,'+(a.s*b.s*.7+.05)+')';x.lineWidth=a.s*b.s*1.6+.3;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}})});
+N.forEach(n=>{const near=Math.hypot(n.x-m[0],n.y-m[1])<30;
+x.fillStyle=n.s>.9?'#a3361f':'#2b2a26';x.beginPath();x.arc(n.x,n.y,2+n.s*2.5,0,7);x.fill();
+if(near){x.fillStyle='#a3361f';x.font='italic 14px Georgia';x.fillText(n.w,n.x+10,n.y-8)}});
+requestAnimationFrame(f)})()})();
+</script>
+</section>
