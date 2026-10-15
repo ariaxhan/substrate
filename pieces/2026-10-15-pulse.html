@@ -1,0 +1,45 @@
+<section data-date='2026-10-15' data-type='pulse'>
+<style>
+.fl{position:relative;height:100vh;background:#efe6d2;overflow:hidden;font:italic 15px Georgia,serif;color:#2a2118;cursor:crosshair}
+.fl canvas{position:absolute;inset:0;width:100%;height:100%}
+.fl p{position:absolute;left:0;right:0;bottom:8vh;text-align:center;margin:0;letter-spacing:.3em;opacity:0;transition:opacity 1.5s}
+.fl.ok p{opacity:.8}
+</style>
+<div class="fl" id="fl"><canvas id="c"></canvas><p>halfway</p></div>
+<script>
+(function(){
+var f=document.getElementById('fl'),c=document.getElementById('c'),x=c.getContext('2d'),W,H,
+t=0,tg=0,m=.5,s=1,r=[],N=60;
+function rs(){W=c.width=f.clientWidth;H=c.height=f.clientHeight}
+rs();onresize=rs;
+f.onmousemove=function(e){m=e.clientX/W;tg=(m-.5)*.9};
+f.ontouchmove=function(e){m=e.touches[0].clientX/W;tg=(m-.5)*.9};
+f.onclick=function(){s=-s;r.push({a:0,x:W/2,y:H*.6})};
+function d(){
+x.fillStyle='#efe6d2';x.fillRect(0,0,W,H);
+t+=(tg*s-t)*.06;
+var cx=W/2,cy=H*.6,L=Math.min(W*.42,360),
+ok=Math.abs(t)<.03;
+if(ok&&!f.classList.contains('ok')){f.classList.add('ok');r.push({a:0,x:cx,y:cy})}
+if(!ok)f.classList.remove('ok');
+x.strokeStyle='#2a2118';x.fillStyle='#2a2118';
+r=r.filter(function(q){return q.a<1});
+r.forEach(function(q){q.a+=.012;x.globalAlpha=1-q.a;x.beginPath();x.arc(q.x,q.y,q.a*Math.max(W,H)*.5,0,7);x.stroke()});
+x.globalAlpha=1;
+x.beginPath();x.moveTo(cx,cy);x.lineTo(cx-28,cy+70);x.lineTo(cx+28,cy+70);x.fill();
+x.save();x.translate(cx,cy);x.rotate(t);
+x.lineWidth=2;x.beginPath();x.moveTo(-L,0);x.lineTo(L,0);x.stroke();
+for(var i=0;i<N;i++){
+var k=i/N,side=i%2?1:-1,
+w=side<0?1-t*1.5:1+t*1.5,
+n=Math.round(N/2*Math.max(0,Math.min(2,w))/2);
+if(Math.floor(i/2)>=n)continue;
+var px=side*(L*.15+(Math.floor(i/2)%10)*L*.08),py=-6-Math.floor(Math.floor(i/2)/10)*9;
+x.fillStyle=side<0?'#c8742a':'#2c4a6b';
+x.beginPath();x.arc(px,py,3.5,0,7);x.fill()}
+x.restore();
+x.fillStyle='#2a2118';x.beginPath();x.arc(cx,cy,5,0,7);x.fill();
+requestAnimationFrame(d)}
+d()})();
+</script>
+</section>
