@@ -1,0 +1,42 @@
+<section data-date='2026-10-16' data-type='pulse'>
+<style>
+#fx{position:relative;height:100vh;min-height:360px;overflow:hidden;background:#111;font:italic 14px Georgia,serif;cursor:crosshair}
+#fx canvas{width:100%;height:100%;display:block}
+#fx p{position:absolute;left:0;right:0;bottom:8%;margin:0;text-align:center;color:#fff;letter-spacing:.5em;transition:opacity 1.5s}
+</style>
+<div id="fx"><canvas></canvas><p>halfway</p></div>
+<script>
+(function(){
+var f=document.getElementById('fx'),c=f.querySelector('canvas'),x=c.getContext('2d'),t=f.querySelector('p'),
+W,H,tilt=0,aim=0,flip=1,k=0,N=40;
+function R(){W=c.width=f.clientWidth;H=c.height=f.clientHeight}
+R();addEventListener('resize',R);
+function P(e){var r=f.getBoundingClientRect();aim=((e.clientX-r.left)/r.width-.5)*2}
+f.addEventListener('mousemove',P);
+f.addEventListener('touchmove',function(e){P(e.touches[0])});
+f.addEventListener('click',function(){flip=-flip});
+function L(){
+k+=.02;
+tilt+=(aim*flip*.5+Math.sin(k)*.02-tilt)*.06;
+var level=Math.abs(tilt)<.03;
+x.fillStyle='rgba(17,17,17,.25)';x.fillRect(0,0,W,H);
+var cx=W/2,cy=H/2,L=W*.42,a=Math.sin(tilt)*.5;
+for(var i=-N;i<=N;i++){
+ var u=i/N,px=cx+Math.cos(tilt)*u*L,py=cy+Math.sin(tilt)*u*L;
+ var m=Math.abs(u),g=u<0?[255,170,60]:[70,130,255];
+ var wob=Math.sin(k*3+i*.4)*(level?9:2)*(1-m);
+ var h=(level?24:8)*(1-m)+4;
+ x.fillStyle='rgba('+g+','+(.35+.65*(1-m))+')';
+ x.fillRect(px-1,py-h/2+wob,2,h);
+ var side=(u*tilt>0)?1:-1;
+ x.fillStyle='rgba('+g+',.07)';
+ x.fillRect(px-1,py+Math.abs(tilt)*40*side,2,H*.1);
+}
+x.fillStyle='#fff';x.beginPath();x.moveTo(cx,cy+8);x.lineTo(cx-10,cy+30);x.lineTo(cx+10,cy+30);x.fill();
+if(level){x.strokeStyle='rgba(255,255,255,'+(.3+.2*Math.sin(k*4))+')';
+ for(var r=1;r<5;r++){x.beginPath();x.arc(cx,cy,r*20+(k*30)%20,0,7);x.stroke()}}
+t.style.opacity=level?1:.15;
+requestAnimationFrame(L)}
+L()})();
+</script>
+</section>
