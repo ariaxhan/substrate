@@ -1,0 +1,47 @@
+<section data-date='2026-10-16' data-type='spark'>
+<style>
+#s{position:relative;background:#0b0710;height:360px;overflow:hidden;cursor:crosshair}
+#s canvas{display:block;width:100%;height:100%}
+#s p{position:absolute;left:12px;bottom:8px;margin:0;font:11px Georgia,serif;color:#8a7a99;letter-spacing:.2em}
+</style>
+<div id="s"><canvas id="c"></canvas><p>move one toward the other</p></div>
+<script>
+(function(){
+var c=document.getElementById('c'),x=c.getContext('2d'),W,H,m={x:90,y:150},t=0,P=[],S=[],A='EMBER',B='TIDE...';
+function rs(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight}
+rs();addEventListener('resize',rs);
+m.x=W*.2;m.y=H/2;
+var a={x:W*.2,y:H/2},b={x:W*.8,y:H/2};
+function pos(e){var r=c.getBoundingClientRect(),p=e.touches?e.touches[0]:e;m.x=p.clientX-r.left;m.y=p.clientY-r.top}
+c.onmousemove=pos;c.ontouchmove=pos;
+c.onclick=function(e){pos(e);boom(m.x,m.y,30)};
+function boom(px,py,n){for(var i=0;i<n;i++){var q=Math.random()*6.28,v=1+Math.random()*3;S.push({x:px,y:py,vx:Math.cos(q)*v,vy:Math.sin(q)*v,l:1,h:Math.random()<.5?330:35})}}
+function draw(){
+x.fillStyle='rgba(11,7,16,.22)';x.fillRect(0,0,W,H);
+a.x+=(m.x-a.x)*.08;a.y+=(m.y-a.y)*.08;
+var ox=W*.8+Math.sin(t*.01)*20,oy=H/2+Math.cos(t*.013)*40;
+b.x+=(ox-b.x)*.02;b.y+=(oy-b.y)*.02;
+var d=Math.hypot(a.x-b.x,a.y-b.y),k=Math.max(0,1-d/160);
+if(k>.6&&Math.random()<.5)boom((a.x+b.x)/2,(a.y+b.y)/2,2);
+// partner drifts toward the visitor as they near
+b.x+=(a.x-b.x)*k*.03;b.y+=(a.y-b.y)*k*.03;
+x.font='22px Georgia,serif';x.textAlign='center';
+for(var i=0;i<A.length;i++){
+var s=(i-2)*(26-k*22),j=Math.sin(t*.05+i)*3*(1-k);
+x.fillStyle='hsl(330,'+(60+k*40)+'%,'+(60+k*25)+'%)';
+x.fillText(A[i],a.x+s,a.y+j+k*Math.sin(i*2+t*.2)*5)}
+for(i=0;i<B.length;i++){
+s=(i-3)*(24-k*21);j=Math.cos(t*.05+i)*3*(1-k);
+x.fillStyle='hsl(35,'+(60+k*40)+'%,'+(60+k*25)+'%)';
+x.fillText(B[i],b.x+s,b.y+j+k*Math.cos(i*2+t*.2)*5)}
+if(k>.3){x.font='bold '+(20+k*50|0)+'px Georgia,serif';
+x.fillStyle='rgba(255,240,220,'+(k*k)+')';
+x.fillText('US',(a.x+b.x)/2,(a.y+b.y)/2-30*k)}
+for(i=S.length-1;i>=0;i--){var p=S[i];p.x+=p.vx;p.y+=p.vy;p.vy+=.04;p.l-=.015;
+if(p.l<=0){S.splice(i,1);continue}
+x.fillStyle='hsla('+p.h+',90%,70%,'+p.l+')';x.fillRect(p.x,p.y,2,2)}
+t++;requestAnimationFrame(draw)}
+draw();
+})();
+</script>
+</section>
