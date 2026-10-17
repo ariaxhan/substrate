@@ -1,0 +1,31 @@
+<section data-date='2026-10-17' data-type='spark'>
+<style>
+#c7{background:#0b0a10;color:#ccc;font:14px Georgia,serif;position:relative;overflow:hidden;cursor:crosshair;height:360px}
+#c7 canvas{display:block;width:100%;height:100%}
+#c7 i{position:absolute;left:10px;bottom:8px;font-size:11px;opacity:.5;letter-spacing:.15em}
+</style>
+<div id="c7"><canvas></canvas><i>move to carry · click to send another</i></div>
+<script>
+(()=>{
+const R=document.getElementById('c7'),C=R.querySelector('canvas'),x=C.getContext('2d');
+let W,H;const fit=()=>{W=C.width=R.clientWidth||600;H=C.height=360};fit();
+const P=[['salt','water','brine'],['ash','rain','lye'],['moon','tide','pull'],['iron','fire','blade'],['you','I','we'],['dusk','dawn','gold']];
+let a={x:W*.2,y:180,w:'',c:'#7fd'},b={x:W*.8,y:180,w:'',c:'#f95'},m=null,sp=[],k=0,mx=W*.3,my=180,t=0;
+const set=()=>{const p=P[k++%P.length];a.w=p[0];b.w=p[1];a.m=p[2];a.x=W*.15;b.x=W*.85;a.y=b.y=60+Math.random()*240;a.vx=a.vy=0;b.vx=-1.2;b.vy=0;m=null};
+set();
+R.onmousemove=e=>{const r=R.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top};
+R.onclick=()=>{if(m)set()};
+const burst=(X,Y)=>{for(let i=0;i<50;i++){const q=Math.random()*6.28,s=Math.random()*3;sp.push({x:X,y:Y,vx:Math.cos(q)*s,vy:Math.sin(q)*s,l:60,c:i%2?a.c:b.c})}};
+const f=()=>{t++;x.fillStyle='rgba(11,10,16,.18)';x.fillRect(0,0,W,H);
+if(!m){a.x+=(mx-a.x)*.08;a.y+=(my-a.y)*.08;
+const dx=a.x-b.x,dy=a.y-b.y,d=Math.hypot(dx,dy)||1;
+b.vx+=dx/d*.05+Math.sin(t/40)*.02;b.vy+=dy/d*.05;b.vx*=.98;b.vy*=.98;b.x+=b.vx;b.y+=b.vy;
+x.strokeStyle='rgba(200,200,255,'+Math.min(.5,60/d)+')';x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();
+x.textAlign='center';x.font='20px Georgia';x.fillStyle=a.c;x.fillText(a.w,a.x,a.y);x.fillStyle=b.c;x.fillText(b.w,b.x,b.y);
+if(d<34){m={x:(a.x+b.x)/2,y:(a.y+b.y)/2,w:a.m,s:0};burst(m.x,m.y)}}
+else{m.s=Math.min(1,m.s+.02);x.textAlign='center';x.font=(20+m.s*34|0)+'px Georgia';x.fillStyle='hsl(45,'+(m.s*80)+'%,'+(60+m.s*20)+'%)';x.fillText(m.w,m.x,m.y);x.font='11px Georgia';x.fillStyle='#887';x.fillText(a.w+' + '+b.w,m.x,m.y+30)}
+sp=sp.filter(p=>p.l-->0);sp.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vx*=.97;p.vy*=.97;x.fillStyle=p.c;x.globalAlpha=p.l/60;x.fillRect(p.x,p.y,2,2)});x.globalAlpha=1;
+requestAnimationFrame(f)};f();
+})();
+</script>
+</section>
