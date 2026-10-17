@@ -1,0 +1,38 @@
+<section data-date='2026-10-17' data-type='pulse'>
+<style>
+#h{position:relative;height:100vh;margin:0;overflow:hidden;font:italic 18px Georgia,serif;cursor:crosshair}
+#h canvas{position:absolute;inset:0;width:100%;height:100%}
+#t{position:absolute;left:0;right:0;bottom:12%;text-align:center;color:#fff;letter-spacing:.3em;transition:opacity 2s;opacity:0;mix-blend-mode:difference}
+</style>
+<div id="h"><canvas id="c"></canvas><div id="t">still. the hinge of the day.</div></div>
+<script>
+(function(){
+var h=document.getElementById('h'),c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),
+W,H,tgt=0,a=0,v=0,s=1,calm=0,P=[];
+function R(){W=c.width=h.clientWidth;H=c.height=h.clientHeight}
+R();onresize=R;
+h.onmousemove=function(e){var r=h.getBoundingClientRect();tgt=((e.clientX-r.left)/W-.5)*.9;calm=0};
+h.onclick=function(){s=-s;for(var i=0;i<30;i++)P.push({x:W/2,y:H/2,vx:(Math.random()-.5)*8,vy:-Math.random()*6,l:1})};
+function m(p,q,k){return Math.round(p+(q-p)*k)}
+function f(){
+ a+=v=(v+(tgt-a)*.02)*.92;
+ var k=.5+a*s*.9,L=Math.min(W,H)*.38,
+ g=x.createLinearGradient(0,0,W,0);
+ g.addColorStop(0,'rgb('+m(250,20,k)+','+m(214,18,k)+','+m(150,50,k)+')');
+ g.addColorStop(1,'rgb('+m(20,250,k)+','+m(18,150,k)+','+m(50,120,k)+')');
+ x.fillStyle=g;x.fillRect(0,0,W,H);
+ x.save();x.translate(W/2,H/2);x.rotate(a);
+ x.strokeStyle='#111';x.lineWidth=2;x.beginPath();x.moveTo(-L,0);x.lineTo(L,0);x.stroke();
+ x.fillStyle='#fff8e0';x.beginPath();x.arc(-L*s,-26,16+10*(1-k),0,7);x.fill();
+ x.fillStyle='#111';x.beginPath();x.arc(L*s,-22,14+10*k,0,7);x.fill();
+ x.restore();
+ x.fillStyle='#111';x.beginPath();x.moveTo(W/2,H/2);x.lineTo(W/2-18,H/2+60);x.lineTo(W/2+18,H/2+60);x.fill();
+ if(Math.random()<.3&&Math.abs(a)>.03)P.push({x:W/2+Math.sin(a)*-L*.6*Math.sign(a)*-1,y:H/2,vx:Math.sign(a)*2,vy:0,l:1});
+ P=P.filter(function(p){p.x+=p.vx;p.y+=p.vy;p.vy+=.15;p.l-=.01;x.fillStyle='rgba(17,17,17,'+p.l+')';x.fillRect(p.x,p.y,3,3);return p.l>0});
+ calm=Math.abs(a)<.015&&Math.abs(tgt)<.03?calm+1:0;
+ t.style.opacity=calm>120?1:0;
+ requestAnimationFrame(f)}
+f();
+})();
+</script>
+</section>
