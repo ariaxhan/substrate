@@ -1,0 +1,27 @@
+<section data-date='2026-10-17' data-type='reflection'>
+<style>
+#n{position:relative;height:100vh;min-height:360px;overflow:hidden;background:linear-gradient(#05060f,#141a38 70%,#2a2547);font:italic 18px Georgia,serif;color:#dfe4ff;cursor:crosshair}
+#n canvas{position:absolute;inset:0;width:100%;height:100%}
+#n h1{position:absolute;bottom:6%;width:100%;text-align:center;font-weight:400;font-size:14px;letter-spacing:.4em;opacity:.35;margin:0;transition:opacity 3s}
+#n span{position:absolute;pointer-events:none;transform:translate(-50%,-34px);animation:w 7s forwards;text-shadow:0 0 12px #9ab}
+@keyframes w{0%{opacity:0}20%{opacity:.9}100%{opacity:0;transform:translate(-50%,-60px)}}
+</style>
+<div id=n><canvas></canvas><h1>the day is done. touch the dark.</h1></div>
+<script>
+(()=>{var n=document.getElementById('n'),c=n.firstChild,x=c.getContext('2d'),W,H,S=[],M={x:-9,y:-9},T=0,
+words='rest,enough,kept,soft,later,still,held,sleep,whole,tomorrow'.split(','),k=0,
+bg=[...Array(90)].map(()=>[Math.random(),Math.random(),Math.random()*6]);
+function R(){W=c.width=n.clientWidth;H=c.height=n.clientHeight}R();onresize=R;
+n.onmousemove=e=>{var b=n.getBoundingClientRect();M={x:e.clientX-b.left,y:e.clientY-b.top}};
+n.onclick=e=>{var b=n.getBoundingClientRect(),p={x:e.clientX-b.left,y:e.clientY-b.top,t:T};S.push(p);
+var s=document.createElement('span');s.textContent=words[k++%words.length];s.style.left=p.x+'px';s.style.top=p.y+'px';n.appendChild(s);setTimeout(()=>s.remove(),7000);};
+function f(){T+=.016;x.clearRect(0,0,W,H);
+bg.forEach(s=>{x.fillStyle='rgba(200,210,255,'+(.15+.25*Math.sin(T+s[2])**2)+')';x.fillRect(s[0]*W,s[1]*H*.9,1.3,1.3)});
+S.forEach((a,i)=>{var d=Math.hypot(a.x-M.x,a.y-M.y),g=Math.max(0,1-d/160),r=2+Math.min(T-a.t,2)*1.5+g*4;
+S.forEach((b,j)=>{if(j>i){var m=Math.hypot(a.x-b.x,a.y-b.y);if(m<220&&(g>0||Math.hypot(b.x-M.x,b.y-M.y)<160)){x.strokeStyle='rgba(180,195,255,'+(.5*(1-m/220))+')';x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}}});
+var h=x.createRadialGradient(a.x,a.y,0,a.x,a.y,r*5);h.addColorStop(0,'rgba(255,248,220,.9)');h.addColorStop(1,'rgba(255,248,220,0)');
+x.fillStyle=h;x.beginPath();x.arc(a.x,a.y,r*5,0,7);x.fill()});
+if(S.length)n.querySelector('h1').style.opacity=0;
+requestAnimationFrame(f)}f()})()
+</script>
+</section>

@@ -1,54 +1,44 @@
-<section data-date='2026-10-17' data-type='digest'>
+<section data-date='2026-10-01' data-type='digest'>
 <style>
-section{position:relative;height:100vh;margin:0;background:#f1ebdd;overflow:hidden;font:italic 15px Georgia,serif;color:#2b2a26;cursor:crosshair}
-section canvas{position:absolute;inset:0;width:100%;height:100%}
-section p{position:absolute;left:24px;bottom:18px;margin:0;letter-spacing:.04em;pointer-events:none;transition:opacity 2s}
+.cx{position:relative;background:#f1ebdd;height:100vh;overflow:hidden;cursor:crosshair;font:italic 15px Georgia,serif;color:#2b2a33}
+.cx canvas{display:block;width:100%;height:100%}
+.cx p{position:absolute;left:24px;bottom:18px;margin:0;letter-spacing:.04em}
 </style>
-<canvas id=c></canvas>
-<p id=t>drift</p>
+<div class="cx"><canvas></canvas><p>drift. touch. <b id="n">0</b> known.</p></div>
 <script>
-(function(){
-var c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),W,H,G=48,P=[],L=[],m={x:-1e3,y:-1e3};
-var words=['drift','notice','hold','link','align','know','lattice','crystal'];
-function rs(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight}
-rs();onresize=rs;
-function add(a,b){P.push({x:a,y:b,vx:0,vy:0,k:0,a:Math.random()*6.28})}
-for(var i=0;i<90;i++)add(Math.random()*W,Math.random()*H);
-function learn(p){
- if(p.k)return;p.k=1;
- var best=null,d=1e9;
- P.forEach(function(q){if(q!=p&&q.k){var e=Math.hypot(q.x-p.x,q.y-p.y);if(e<d){d=e;best=q}}});
- if(best&&d<220)L.push([p,best]);
-}
-c.onmousemove=function(e){m.x=e.offsetX;m.y=e.offsetY;
- P.forEach(function(p){if(Math.hypot(p.x-m.x,p.y-m.y)<70)learn(p)})};
-c.onclick=function(e){add(e.offsetX,e.offsetY);learn(P[P.length-1])};
-function f(){
+(()=>{
+const w=document.currentScript.previousElementSibling,c=w.querySelector('canvas'),x=c.getContext('2d'),
+N=w.querySelector('#n'),G=56,R=Math.random;
+let W,H,P=[],K={};
+function fit(){W=c.width=w.clientWidth;H=c.height=w.clientHeight}
+fit();addEventListener('resize',fit);
+for(let i=0;i<160;i++)P.push({x:R()*W,y:R()*H,vx:R()-.5,vy:R()-.5,s:0});
+function snap(p){
+ let r=Math.round(p.y/G),q=Math.round((p.x-(r%2)*G/2)/G);
+ p.k=q+','+r;p.tx=q*G+(r%2)*G/2;p.ty=r*G;
+ if(K[p.k]&&K[p.k]!==p)return 0;K[p.k]=p;p.s=1;return 1}
+function poke(mx,my,rad){
+ P.forEach(p=>{if(!p.s&&Math.hypot(p.x-mx,p.y-my)<rad)snap(p)})}
+w.onmousemove=e=>{let b=c.getBoundingClientRect();poke(e.clientX-b.left,e.clientY-b.top,60)};
+w.onclick=e=>{let b=c.getBoundingClientRect();
+ P.push({x:e.clientX-b.left,y:e.clientY-b.top,vx:0,vy:0,s:0});snap(P[P.length-1])};
+(function f(){
  x.fillStyle='rgba(241,235,221,.35)';x.fillRect(0,0,W,H);
- var n=0;
- P.forEach(function(p){
-  if(p.k){n++;
-   var tx=Math.round(p.x/G)*G,ty=Math.round(p.y/G)*G;
-   p.x+=(tx-p.x)*.012;p.y+=(ty-p.y)*.012;
-  }else{p.a+=(Math.random()-.5)*.3;p.x+=Math.cos(p.a)*.5;p.y+=Math.sin(p.a)*.5;
-   if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0}
+ let n=0;
+ P.forEach(p=>{
+  if(p.s){p.x+=(p.tx-p.x)*.08;p.y+=(p.ty-p.y)*.08;n++}
+  else{p.x+=p.vx;p.y+=p.vy;p.vx+=(R()-.5)*.2;p.vy+=(R()-.5)*.2;
+   if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1}
  });
  x.lineWidth=1;
- L.forEach(function(l){
-  var a=l[0],b=l[1],g=Math.abs(a.x-b.x)<2||Math.abs(a.y-b.y)<2;
-  x.strokeStyle=g?'#a8452a':'rgba(43,42,38,.45)';
-  x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();
- });
- P.forEach(function(p){
-  var h=Math.hypot(p.x-m.x,p.y-m.y)<40;
-  x.fillStyle=p.k?'#a8452a':'#2b2a26';
-  x.beginPath();x.arc(p.x,p.y,p.k?3.2:1.6,0,6.28);x.fill();
-  if(p.k&&h){x.fillStyle='#2b2a26';x.fillText(words[(p.x/G+p.y/G|0)%8&7],p.x+8,p.y-6)}
- });
- t.textContent=words[Math.min(7,n/12|0)]+' · '+n;
- requestAnimationFrame(f);
-}
-f();
+ P.forEach(p=>{if(!p.s)return;
+  P.forEach(q=>{if(q.s&&q!==p){let d=Math.hypot(p.x-q.x,p.y-q.y);
+   if(d<G*1.05){x.strokeStyle='rgba(168,60,40,'+(1-d/G/1.2)+')';
+    x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke()}}})});
+ P.forEach(p=>{x.fillStyle=p.s?'#a83c28':'#2b2a33';
+  x.beginPath();x.arc(p.x,p.y,p.s?4:1.6,0,7);x.fill()});
+ N.textContent=n;
+ requestAnimationFrame(f)})();
 })();
 </script>
 </section>
