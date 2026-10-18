@@ -1,0 +1,43 @@
+<section data-date='2026-10-18' data-type='digest'>
+<style>
+.cx{margin:0;background:#f1ebdd;position:relative;height:100vh;overflow:hidden;cursor:crosshair}
+.cx canvas{display:block;width:100%;height:100%}
+.cx p{position:absolute;left:5vw;bottom:4vh;margin:0;font:italic 15px/1.5 Georgia,serif;color:#3a342a;pointer-events:none;letter-spacing:.04em}
+</style>
+<div class="cx"><canvas id="c"></canvas><p id="t">a few loose facts. touch the page.</p></div>
+<script>
+(()=>{
+const c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t');
+let W,H,P=[],R=90,words=['loose','near','held','linked','shape','known','lattice','whole'];
+function rs(){W=c.width=c.clientWidth;H=c.height=c.clientHeight;R=Math.min(W,H)/7}
+rs();onresize=rs;
+function add(a,b){P.push({x:a,y:b,vx:Math.random()-.5,vy:Math.random()-.5,age:0})}
+for(let i=0;i<9;i++)add(Math.random()*W,Math.random()*H);
+c.onclick=e=>{add(e.offsetX,e.offsetY);add(e.offsetX+(Math.random()-.5)*R,e.offsetY+(Math.random()-.5)*R)};
+c.onmousemove=e=>{if(Math.random()<.08)add(e.offsetX,e.offsetY)};
+function f(){
+x.fillStyle='rgba(241,235,221,.35)';x.fillRect(0,0,W,H);
+if(P.length>260)P.splice(0,P.length-260);
+let L=0,T=0,n=P.length,N=[];
+for(let i=0;i<n;i++)N[i]=[];
+P.forEach(p=>{p.age++;p.x+=p.vx;p.y+=p.vy;
+if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1});
+for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){
+const a=P[i],b=P[j],d=Math.hypot(a.x-b.x,a.y-b.y);
+if(d<R){N[i].push(j);N[j].push(i);L++;
+const k=1-d/R;
+a.vx+=(b.x-a.x)*k*.0004;a.vy+=(b.y-a.y)*k*.0004;
+b.vx-=(b.x-a.x)*k*.0004;b.vy-=(b.y-a.y)*k*.0004;
+x.strokeStyle='rgba(58,52,42,'+k*.7+')';x.lineWidth=.6;
+x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}}
+for(let i=0;i<n;i++)for(const j of N[i])if(j>i)for(const k of N[j])if(k>j&&N[i].includes(k)){
+T++;x.fillStyle='hsla('+(18+(i*7)%30)+',60%,45%,.07)';
+x.beginPath();x.moveTo(P[i].x,P[i].y);x.lineTo(P[j].x,P[j].y);x.lineTo(P[k].x,P[k].y);x.fill()}
+P.forEach((p,i)=>{p.vx*=.995;p.vy*=.995;
+x.fillStyle=N[i].length>3?'#a8431f':'#3a342a';
+x.beginPath();x.arc(p.x,p.y,1.5+Math.min(N[i].length,6)*.6,0,7);x.fill()});
+t.textContent=words[Math.min(7,T/6|0)]+' — '+n+' points, '+L+' links, '+T+' faces';
+requestAnimationFrame(f)}
+f()})();
+</script>
+</section>
