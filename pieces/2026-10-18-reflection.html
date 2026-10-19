@@ -1,0 +1,34 @@
+<section data-date='2026-10-18' data-type='reflection'>
+<style>
+.nt{position:relative;height:100vh;min-height:360px;overflow:hidden;background:linear-gradient(#05060f,#141233 70%,#2a1f45);font:italic 17px Georgia,serif;color:#e9e4ff;cursor:crosshair}
+.nt canvas{position:absolute;inset:0;width:100%;height:100%}
+.nt p{position:absolute;bottom:6%;width:100%;text-align:center;margin:0;letter-spacing:.3em;opacity:.35;pointer-events:none}
+.nt i{position:absolute;pointer-events:none;transform:translate(-50%,-150%);animation:w 6s forwards;font-size:15px;letter-spacing:.2em}
+@keyframes w{0%{opacity:0}15%{opacity:.9}100%{opacity:0;margin-top:-30px}}
+</style>
+<div class="nt"><canvas></canvas><p>the day is complete</p></div>
+<script>
+(function(){
+var d=document.currentScript.previousElementSibling,c=d.querySelector('canvas'),x=c.getContext('2d'),
+W,H,S=[],m={x:-9,y:-9},T=['rest','enough','still','done','soon','sleep','held'];
+function R(){W=c.width=d.clientWidth;H=c.height=d.clientHeight}
+R();addEventListener('resize',R);
+for(var i=0;i<70;i++)S.push({x:Math.random(),y:Math.random()*.9,g:0,r:Math.random()*1.2+.4,p:Math.random()*6});
+d.onmousemove=function(e){var b=d.getBoundingClientRect();m.x=e.clientX-b.left;m.y=e.clientY-b.top};
+d.onclick=function(e){var b=d.getBoundingClientRect(),X=e.clientX-b.left,Y=e.clientY-b.top;
+S.push({x:X/W,y:Y/H,g:1,r:2.4,p:0,u:1});
+var w=document.createElement('i');w.textContent=T[Math.random()*T.length|0];w.style.left=X+'px';w.style.top=Y+'px';d.appendChild(w);setTimeout(function(){w.remove()},6000)};
+function f(t){x.clearRect(0,0,W,H);var L=[];
+S.forEach(function(s){var px=s.x*W,py=s.y*H,q=Math.hypot(px-m.x,py-m.y);
+if(q<110)s.g=Math.min(1,s.g+.08);else s.g*=s.u?.9995:.97;
+var a=.25+.15*Math.sin(t/900+s.p)+s.g*.7;
+x.fillStyle='rgba(235,230,255,'+a+')';x.shadowColor='#bda8ff';x.shadowBlur=s.g*18;
+x.beginPath();x.arc(px,py,s.r+s.g*1.5,0,7);x.fill();
+if(s.g>.3)L.push([px,py,s.g])});
+x.shadowBlur=0;
+for(var i=0;i<L.length;i++)for(var j=i+1;j<L.length;j++){var A=L[i],B=L[j];
+if(Math.hypot(A[0]-B[0],A[1]-B[1])<190){x.strokeStyle='rgba(190,170,255,'+.3*Math.min(A[2],B[2])+')';x.beginPath();x.moveTo(A[0],A[1]);x.lineTo(B[0],B[1]);x.stroke()}}
+requestAnimationFrame(f)}
+f(0)})();
+</script>
+</section>
