@@ -1,0 +1,46 @@
+<section data-date='2026-10-19' data-type='pulse'>
+<style>
+.fv{position:relative;width:100%;height:100vh;background:#efe6d4;overflow:hidden;font:italic 15px Georgia,serif;color:#2a2118;cursor:crosshair}
+.fv canvas{width:100%;height:100%;display:block}
+.fv p{position:absolute;left:0;right:0;bottom:12%;margin:0;text-align:center;letter-spacing:.4em;opacity:0;transition:opacity 1.5s;pointer-events:none}
+.fv.ok p{opacity:.8}
+</style>
+<div class="fv" id="fv"><canvas id="c"></canvas><p>halfway</p></div>
+<script>
+(function(){
+var f=document.getElementById('fv'),c=document.getElementById('c'),x=c.getContext('2d'),W,H,t=0,tg=0,a=0,fl=1,r=0,N=40,s=[];
+function rs(){W=c.width=innerWidth;H=c.height=innerHeight}rs();onresize=rs;
+for(var i=0;i<N;i++)s.push(Math.random());
+f.onmousemove=function(e){tg=(e.clientX/W-.5)*.7};
+f.ontouchmove=function(e){tg=(e.touches[0].clientX/W-.5)*.7};
+f.onclick=function(){fl=-fl;r=1};
+function d(){
+t+=.02;a+=(tg-a)*.06;
+var cx=W/2,cy=H*.55,L=Math.min(W*.4,420),bal=Math.abs(a)<.015;
+f.classList.toggle('ok',bal);
+x.fillStyle=fl>0?'#efe6d4':'#1d1a24';x.fillRect(0,0,W,H);
+var ink=fl>0?'#2a2118':'#efe6d4',am=fl>0?'#c96a2b':'#7aa0d8',nt=fl>0?'#3b4a7a':'#e6b45a';
+f.style.background=fl>0?'#efe6d4':'#1d1a24';f.style.color=ink;
+x.save();x.translate(cx,cy);
+x.strokeStyle=ink;x.lineWidth=1;
+x.beginPath();x.moveTo(-18,40);x.lineTo(0,0);x.lineTo(18,40);x.closePath();x.stroke();
+x.rotate(a);
+x.beginPath();x.moveTo(-L,0);x.lineTo(L,0);x.stroke();
+for(var i=0;i<N;i++){
+ var side=i%2?1:-1,u=s[i],lo=side*a>0?0:0;
+ // grains settle toward low end
+ var k=(i>>1)/(N/2),p=side*(L*(.12+.85*((k+(side*a*1.4)+1)%1)*.9+.0));
+ var h=-6-8*Math.sin(k*9+t)*(bal?1.2:.4);
+ x.fillStyle=side<0?am:nt;
+ x.beginPath();x.arc(p,h-3,2.5+u*2,0,7);x.fill();
+}
+x.fillStyle=am;x.beginPath();x.arc(-L,-10,10,0,7);x.fill();
+x.fillStyle=nt;x.beginPath();x.arc(L,-10,10,0,7);x.fill();
+x.restore();
+if(r>0){x.strokeStyle=ink;x.globalAlpha=r;for(var j=0;j<3;j++){x.beginPath();x.arc(cx,cy,(1-r)*W*.5*(1+j*.2),0,7);x.stroke()}x.globalAlpha=1;r-=.012}
+if(bal){x.strokeStyle=ink;x.globalAlpha=.3;x.beginPath();x.arc(cx,cy,24+6*Math.sin(t*3),0,7);x.stroke();x.globalAlpha=1}
+requestAnimationFrame(d)}
+d();
+})();
+</script>
+</section>
