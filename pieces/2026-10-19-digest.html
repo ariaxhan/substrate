@@ -1,0 +1,57 @@
+<section data-date='2026-10-19' data-type='digest'>
+<style>
+.cr{margin:0;background:#efe8d8;position:relative;overflow:hidden;height:100vh;cursor:crosshair;font:italic 15px Georgia,serif;color:#3a2e22}
+.cr canvas{display:block;width:100%;height:100%}
+.cr p{position:absolute;left:24px;bottom:18px;margin:0;opacity:.7;pointer-events:none;transition:opacity 2s}
+</style>
+<div class="cr"><canvas id="c"></canvas><p id="t">a single fact is only a mark</p></div>
+<script>
+(function(){
+var c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),
+W,H,P=[],E=[],T=[],k=0,
+words=['two facts, a line','three, and a surface','the surface remembers','structure is what stays','keep going'];
+function size(){W=c.width=c.clientWidth;H=c.height=c.clientHeight}
+size();onresize=size;
+function has(a,b){return E.some(function(e){return e[0]==a&&e[1]==b||e[0]==b&&e[1]==a})}
+function add(px,py){
+ var n=P.length,d=P.map(function(p,i){return[i,Math.hypot(p[0]-px,p[1]-py)]}).sort(function(a,b){return a[1]-b[1]});
+ P.push([px,py,0]);
+ d.slice(0,3).forEach(function(q){
+  E.push([n,q[0],0]);
+ });
+ d.slice(0,3).forEach(function(q,i){
+  d.slice(i+1,3).forEach(function(r){
+   if(has(q[0],r[0])&&!T.some(function(s){return s.join()==[n,q[0],r[0]].join()}))T.push([n,q[0],r[0]]);
+  });
+ });
+ if(n<6){t.textContent=words[Math.min(4,n>>1)]}
+ if(n==12)t.textContent=words[4];
+}
+c.onclick=function(e){add(e.offsetX,e.offsetY)};
+c.onmousemove=function(e){
+ if(k++%40==0&&P.length>2)add(e.offsetX+Math.random()*30-15,e.offsetY+Math.random()*30-15)
+};
+add(W/2,H/2);add(W/2+60,H/2-30);
+function draw(){
+ x.fillStyle='rgba(239,232,216,.25)';x.fillRect(0,0,W,H);
+ T.forEach(function(s,i){
+  x.fillStyle='rgba(160,60,40,.07)';x.beginPath();
+  s.forEach(function(j,m){m?x.lineTo(P[j][0],P[j][1]):x.moveTo(P[j][0],P[j][1])});
+  x.fill();
+ });
+ E.forEach(function(e){
+  e[2]=Math.min(1,e[2]+.02);
+  var a=P[e[0]],b=P[e[1]];
+  x.strokeStyle='rgba(58,46,34,'+(.5*e[2])+')';x.lineWidth=.7;
+  x.beginPath();x.moveTo(a[0],a[1]);x.lineTo(a[0]+(b[0]-a[0])*e[2],a[1]+(b[1]-a[1])*e[2]);x.stroke();
+ });
+ P.forEach(function(p){
+  p[2]=Math.min(1,p[2]+.04);
+  x.fillStyle='#a03c28';x.beginPath();x.arc(p[0],p[1],1+3*p[2],0,7);x.fill();
+ });
+ requestAnimationFrame(draw);
+}
+draw();
+})();
+</script>
+</section>
