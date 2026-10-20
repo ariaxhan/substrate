@@ -1,0 +1,42 @@
+<section data-date='2026-10-19' data-type='reflection'>
+<style>
+#n{position:relative;height:100vh;margin:0;overflow:hidden;background:radial-gradient(ellipse at 50% 120%,#2a1f4a,#0a0c1f 55%,#02030a);cursor:crosshair;font:italic 18px Georgia,serif;color:#e9e2c8}
+#n canvas{position:absolute;inset:0}
+#n p{position:absolute;bottom:6%;width:100%;text-align:center;margin:0;letter-spacing:.3em;opacity:.5;font-size:13px;pointer-events:none;transition:opacity 3s}
+</style>
+<div id="n"><canvas id="c"></canvas><p id="t">the day is done. touch the dark.</p></div>
+<script>
+(function(){
+var d=document.getElementById('n'),c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),
+S=[],W=[],M=null,w,h,
+words=['rest','enough','held','soft','kept','still','here','dark is kind','tomorrow waits','breathe'];
+function R(){w=c.width=d.clientWidth;h=c.height=d.clientHeight}
+R();addEventListener('resize',R);
+function add(px,py){S.push({x:px,y:py,b:0,p:Math.random()*6,r:1+Math.random()*2});
+ if(S.length%3==0)W.push({s:words[(S.length/3-1)%words.length|0],x:px,y:py-18,a:0});
+ t.style.opacity=0}
+for(var i=0;i<14;i++)add(Math.random()*innerWidth,Math.random()*innerHeight*.7);
+S.forEach(function(s){s.b=.3});W.length=0;
+d.onclick=function(e){add(e.offsetX,e.offsetY)};
+d.onmousemove=function(e){M=[e.offsetX,e.offsetY]};
+d.onmouseleave=function(){M=null};
+function f(k){
+ x.clearRect(0,0,w,h);
+ S.forEach(function(s,i){
+  var m=M&&Math.hypot(M[0]-s.x,M[1]-s.y)<140;
+  s.b+=((m?1:.35+.15*Math.sin(k/900+s.p))-s.b)*.05;
+  if(s.b<1&&s.b>0&&s.b<=0){}
+  S.forEach(function(o,j){if(j>i){var q=Math.hypot(o.x-s.x,o.y-s.y),g=s.b*o.b;
+   if(q<170&&g>.5){x.strokeStyle='rgba(233,226,200,'+(g-.5)*.5*(1-q/170)+')';x.beginPath();x.moveTo(s.x,s.y);x.lineTo(o.x,o.y);x.stroke()}}});
+  var r=s.r*(1+s.b*1.5);
+  var G=x.createRadialGradient(s.x,s.y,0,s.x,s.y,r*6);
+  G.addColorStop(0,'rgba(255,248,220,'+s.b+')');G.addColorStop(1,'rgba(255,248,220,0)');
+  x.fillStyle=G;x.beginPath();x.arc(s.x,s.y,r*6,0,7);x.fill()});
+ x.font='italic 18px Georgia,serif';x.textAlign='center';
+ W.forEach(function(v){v.a=Math.min(1,v.a+.006);v.y-=.04;
+  x.fillStyle='rgba(233,226,200,'+v.a*.7+')';x.fillText(v.s,v.x,v.y)});
+ requestAnimationFrame(f)}
+requestAnimationFrame(f);
+})();
+</script>
+</section>
