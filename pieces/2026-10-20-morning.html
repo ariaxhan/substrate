@@ -1,0 +1,29 @@
+<section data-date='2026-10-20' data-type='morning'>
+<style>
+#d{position:relative;height:100vh;overflow:hidden;cursor:crosshair;margin:0;
+--x:50%;--y:78%;--h:0;
+background:radial-gradient(circle at var(--x) var(--y),hsl(calc(18 + var(--h)*30) 95% 78%) 0,hsl(340 70% calc(35 + var(--h)*25)) 18%,hsl(235 45% calc(9 + var(--h)*22)) 60%,#05060f 100%);
+font:italic 300 clamp(18px,3vw,34px)/1.4 Georgia,'Times New Roman',serif;color:#fff;transition:background .6s}
+#d p{position:absolute;left:0;right:0;top:12%;text-align:center;margin:0;letter-spacing:.3em;opacity:.55;pointer-events:none}
+#d i{position:absolute;transform:translate(-50%,-50%);font-style:normal;text-shadow:0 0 18px #fda;animation:u 4s forwards;pointer-events:none}
+#d b{position:absolute;left:0;right:0;top:var(--y);height:1px;background:#fff6;box-shadow:0 0 30px 4px #fb8}
+@keyframes u{0%{opacity:0;letter-spacing:-.2em;margin-top:30px}20%{opacity:1}100%{opacity:.0;letter-spacing:.4em;margin-top:-60px}}
+</style>
+<div id="d"><p id="t">not yet written</p><b></b></div>
+<script>
+(function(){
+var d=document.getElementById('d'),t=document.getElementById('t'),
+w=['begin','again','light','yet','now','open','wake','this','hello','you'],n=0,k=0;
+function m(x,y){d.style.setProperty('--x',x+'%');d.style.setProperty('--y',y+'%');
+d.style.setProperty('--h',Math.max(0,Math.min(1,1-y/100)))}
+d.onmousemove=function(e){var r=d.getBoundingClientRect();
+m(100*(e.clientX-r.left)/r.width,100*(e.clientY-r.top)/r.height)};
+d.onclick=function(e){var r=d.getBoundingClientRect(),s=document.createElement('i');
+s.textContent=w[n++%w.length];s.style.left=e.clientX-r.left+'px';s.style.top=e.clientY-r.top+'px';
+d.appendChild(s);setTimeout(function(){s.remove()},4000);
+t.textContent=n>2?'it is being written':'a first word';};
+var a=0;setInterval(function(){if(!k){a+=.4;m(50,78-Math.min(a,30))}},200);
+d.addEventListener('mousemove',function(){k=1},{once:true});
+})();
+</script>
+</section>
