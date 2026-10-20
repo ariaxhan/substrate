@@ -1,0 +1,47 @@
+<section data-date='2026-10-20' data-type='digest'>
+<style>
+#k{background:#efe8d8;margin:0;position:relative;height:100vh;overflow:hidden;font:italic 15px Georgia,serif;color:#2a2118;cursor:crosshair}
+#k canvas{position:absolute;inset:0}
+#k p{position:absolute;left:24px;bottom:18px;margin:0;opacity:.55;transition:opacity 2s}
+</style>
+<div id="k"><canvas></canvas><p>a scatter of facts. touch it.</p></div>
+<script>
+(()=>{
+const k=document.getElementById('k'),c=k.querySelector('canvas'),x=c.getContext('2d'),p=k.querySelector('p'),G=48,
+W=['seen','kept','linked','known','held','named','whole'];
+let w,h,N=[],m={x:-9,y:-9};
+function R(){w=c.width=k.clientWidth;h=c.height=k.clientHeight}
+R();onresize=R;
+function add(px,py){
+N.push({x:px,y:py,gx:Math.round(px/G)*G,gy:Math.round(py/G)*G,s:0,w:W[N.length%7]});
+p.style.opacity=0;
+}
+for(let i=0;i<14;i++)add(Math.random()*w,Math.random()*h);
+k.onclick=e=>add(e.clientX,e.clientY);
+k.onmousemove=e=>{m={x:e.clientX,y:e.clientY};if(Math.random()<.08)add(m.x+Math.random()*30-15,m.y+Math.random()*30-15)};
+function f(){
+x.fillStyle='rgba(239,232,216,.3)';x.fillRect(0,0,w,h);
+x.clearRect(0,0,w,h);
+N.forEach(a=>{a.d=0});
+for(let i=0;i<N.length;i++)for(let j=i+1;j<N.length;j++){
+ let a=N[i],b=N[j],d=Math.hypot(a.x-b.x,a.y-b.y);
+ if(d<130){a.d++;b.d++;
+  x.strokeStyle='rgba(42,33,24,'+(1-d/130)*.5*(1+Math.min(a.s,b.s))+')';
+  x.lineWidth=.6+Math.min(a.s,b.s);
+  x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}}
+N.forEach(a=>{
+ a.s+=((a.d>=3?1:0)-a.s)*.02;
+ a.x+=(a.gx-a.x)*.04*a.s+(Math.random()-.5)*(1-a.s)*1.2;
+ a.y+=(a.gy-a.y)*.04*a.s+(Math.random()-.5)*(1-a.s)*1.2;
+ let r=2+a.s*4;
+ x.fillStyle=a.s>.5?'#a8321f':'#2a2118';
+ x.beginPath();
+ if(a.s>.5)x.rect(a.x-r,a.y-r,r*2,r*2);else x.arc(a.x,a.y,r,0,7);
+ x.fill();
+ if(Math.hypot(a.x-m.x,a.y-m.y)<60){x.fillStyle='#2a2118';x.fillText(a.w+' '+a.d,a.x+10,a.y-8)}
+});
+requestAnimationFrame(f)}
+f();
+})();
+</script>
+</section>
