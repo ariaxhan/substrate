@@ -1,0 +1,39 @@
+<section data-date='2026-10-20' data-type='reflection'>
+<style>
+#n{position:relative;height:100vh;min-height:360px;background:radial-gradient(ellipse at 50% 120%,#1d2250,#07091c 70%);overflow:hidden;cursor:crosshair;font:italic 15px Georgia,serif;color:#cdd3ff}
+#n canvas{position:absolute;inset:0;width:100%;height:100%}
+#h{position:absolute;bottom:9%;width:100%;text-align:center;letter-spacing:.4em;opacity:.35;transition:opacity 3s;pointer-events:none}
+</style>
+<div id="n"><canvas></canvas><div id="h">the day is done. touch the dark.</div></div>
+<script>
+(()=>{
+const n=document.getElementById('n'),c=n.querySelector('canvas'),x=c.getContext('2d'),h=document.getElementById('h');
+const W=['kept','enough','soft','slow','held','softly','let go','home','still','mended','thanks','breathe'];
+let S=[],w,H,t=0,mx=-9,my=-9;
+function R(){w=c.width=n.clientWidth;H=c.height=n.clientHeight}
+R();addEventListener('resize',R);
+for(let i=0;i<40;i++)S.push({x:Math.random()*w,y:Math.random()*H,r:Math.random()*.9+.3,p:Math.random()*9,b:0});
+function add(X,Y){
+ S.push({x:X,y:Y,r:2,p:0,b:1,w:W[S.length%W.length],a:0});
+ h.style.opacity=0;
+}
+n.onclick=e=>{const r=n.getBoundingClientRect();add(e.clientX-r.left,e.clientY-r.top)};
+n.onmousemove=e=>{const r=n.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top};
+(function f(){
+ t+=.02;x.clearRect(0,0,w,H);
+ x.textAlign='center';
+ let B=S.filter(s=>s.b);
+ x.strokeStyle='rgba(160,170,255,.18)';
+ B.forEach((s,i)=>{if(i){x.beginPath();x.moveTo(B[i-1].x,B[i-1].y);x.lineTo(s.x,s.y);x.stroke()}});
+ S.forEach(s=>{
+  let d=Math.hypot(s.x-mx,s.y-my),g=d<90?1-d/90:0;
+  let a=.35+.3*Math.sin(t+s.p)+g*.6+(s.b?.4:0);
+  x.fillStyle='rgba(215,220,255,'+Math.min(a,1)+')';
+  x.shadowColor='#9aa4ff';x.shadowBlur=s.b?14:g*12;
+  x.beginPath();x.arc(s.x,s.y,s.r*(1+g),0,7);x.fill();
+  if(s.w){s.a=Math.min(s.a+.01,.8);x.shadowBlur=0;x.fillStyle='rgba(205,211,255,'+s.a+')';x.fillText(s.w,s.x,s.y-14)}
+ });
+ requestAnimationFrame(f)
+})();
+</script>
+</section>
