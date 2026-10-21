@@ -1,0 +1,39 @@
+<section data-date='2026-10-21' data-type='digest'>
+<style>
+#x{position:relative;width:100%;height:100vh;background:#0e1116;overflow:hidden;cursor:crosshair;font-family:Georgia,serif}
+#x canvas{position:absolute;inset:0}
+#x p{position:absolute;left:0;right:0;bottom:6vh;margin:0;text-align:center;color:#c9b27c;font-style:italic;letter-spacing:.2em;font-size:13px;transition:opacity 2s;pointer-events:none}
+</style>
+<div id="x"><canvas id="c"></canvas><p id="t">a grain is not yet a thought</p></div>
+<script>
+(()=>{
+const c=document.getElementById('c'),g=c.getContext('2d'),t=document.getElementById('t'),x=document.getElementById('x');
+let W,H,N=[],L=["a grain is not yet a thought","two grains lean","three make a plane","now it holds","structure remembers what you forgot"];
+const R=()=>{W=c.width=x.clientWidth;H=c.height=x.clientHeight};R();onresize=R;
+const add=(a,b,s)=>N.push({x:a,y:b,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,a:0,s,k:0});
+for(let i=0;i<14;i++)add(Math.random()*W,Math.random()*H,0);
+let last=0;
+x.onmousemove=e=>{const r=x.getBoundingClientRect(),n=performance.now();if(n-last>140){last=n;add(e.clientX-r.left,e.clientY-r.top,0)}};
+x.onclick=e=>{const r=x.getBoundingClientRect();for(let i=0;i<6;i++)add(e.clientX-r.left+(Math.random()-.5)*60,e.clientY-r.top+(Math.random()-.5)*60,1)};
+(function f(){
+g.fillStyle='rgba(14,17,22,.25)';g.fillRect(0,0,W,H);
+if(N.length>260)N.splice(0,N.length-260);
+N.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.a=Math.min(1,p.a+.01);p.k=0});
+const D=110;let E=0;
+for(let i=0;i<N.length;i++)for(let j=i+1;j<N.length;j++){
+const a=N[i],b=N[j],d=Math.hypot(a.x-b.x,a.y-b.y);
+if(d<D){E++;a.k++;b.k++;
+const w=1-d/D;g.strokeStyle='rgba(201,178,124,'+w*.5*Math.min(a.a,b.a)+')';
+g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.stroke();
+a.vx+=(b.x-a.x)*.00005;a.vy+=(b.y-a.y)*.00005;b.vx+=(a.x-b.x)*.00005;b.vy+=(a.y-b.y)*.00005;
+for(let k=j+1;k<N.length;k++){const q=N[k];
+if(Math.hypot(a.x-q.x,a.y-q.y)<D&&Math.hypot(b.x-q.x,b.y-q.y)<D){
+g.fillStyle='rgba(120,170,200,.035)';g.beginPath();g.moveTo(a.x,a.y);g.lineTo(b.x,b.y);g.lineTo(q.x,q.y);g.fill()}}}}
+N.forEach(p=>{p.vx*=.99;p.vy*=.99;
+g.fillStyle=p.k>3?'#e8d9a8':'rgba(201,178,124,'+p.a*.6+')';
+g.beginPath();g.arc(p.x,p.y,1.5+Math.min(p.k,6)*.5,0,7);g.fill()});
+const s=Math.min(4,Math.floor(E/40));t.textContent=L[s];
+requestAnimationFrame(f)})();
+})();
+</script>
+</section>
