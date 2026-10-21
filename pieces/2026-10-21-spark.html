@@ -1,0 +1,42 @@
+<section data-date='2026-10-21' data-type='spark'>
+<style>
+.cv{position:relative;background:#0b0a10;color:#e8dcc8;font:13px Georgia,serif;height:360px;overflow:hidden;cursor:crosshair}
+.cv canvas{display:block;width:100%;height:100%}
+.cv p{position:absolute;left:14px;bottom:10px;margin:0;font-style:italic;opacity:.7;pointer-events:none;letter-spacing:.05em}
+</style>
+<div class="cv"><canvas id="c"></canvas><p id="t">move: be one body. wait for the other.</p></div>
+<script>
+(function(){
+var c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),W,H,m={x:0,y:0,on:0},P=[],S=[],n=0,ph=0;
+function rs(){W=c.width=c.clientWidth;H=c.height=c.clientHeight}rs();addEventListener('resize',rs);
+var words=['I','you','yes','no','here','both','then','now','ours'];
+function Pt(s){var a=Math.random()*6.28;return{x:s?W*.15:W*.85,y:H/2+(Math.random()-.5)*60,vx:Math.cos(a)*.6,vy:Math.sin(a)*.6,s:s}}
+for(var i=0;i<60;i++)P.push(Pt(i%2));
+c.onmousemove=function(e){var r=c.getBoundingClientRect();m.x=e.clientX-r.left;m.y=e.clientY-r.top;m.on=1};
+c.onclick=function(){ph=0;P.forEach(function(p){p.x=p.s?W*.1:W*.9})};
+function spark(px,py){for(var i=0;i<6;i++){var a=Math.random()*6.28;S.push({x:px,y:py,vx:Math.cos(a)*2,vy:Math.sin(a)*2,l:1,w:words[n++%words.length]})}}
+function f(){
+x.fillStyle='rgba(11,10,16,.2)';x.fillRect(0,0,W,H);
+P.forEach(function(p,i){
+ var tx=m.on?m.x:W/2,ty=m.on?m.y:H/2;
+ var d=p.s?-1:1;
+ p.vx+=(tx-p.x)*.0006*(m.on?1:.3)+(p.s?.01:-.01);
+ p.vy+=(ty-p.y)*.0006;
+ p.x+=p.vx;p.y+=p.vy;p.vx*=.99;p.vy*=.99;
+ for(var j=i+1;j<P.length;j++){var q=P[j];
+  if(q.s!=p.s){var dx=p.x-q.x,dy=p.y-q.y,r=dx*dx+dy*dy;
+   if(r<900){x.strokeStyle='rgba(255,200,120,'+(1-r/900)+')';x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke();
+    if(r<36){spark((p.x+q.x)/2,(p.y+q.y)/2);p.s=q.s=2;q.x=p.x;q.vx=p.vx=0}}}}
+ x.fillStyle=p.s==2?'#fff3c0':p.s?'#e0507a':'#4fb0d8';
+ x.beginPath();x.arc(p.x,p.y,p.s==2?3:2,0,6.28);x.fill();
+ if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1;
+});
+x.font='italic 14px Georgia';
+S=S.filter(function(s){s.x+=s.vx;s.y+=s.vy;s.l-=.012;x.fillStyle='rgba(255,230,170,'+s.l+')';x.fillText(s.w,s.x,s.y);return s.l>0});
+var m2=P.filter(function(p){return p.s==2}).length;
+t.textContent=m2?'merged: '+m2+' / '+P.length+(m2==P.length?' — one color, no name for it. click to begin again.':''):'move: be one body. wait for the other.';
+requestAnimationFrame(f)}
+f();
+})();
+</script>
+</section>
