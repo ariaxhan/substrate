@@ -1,0 +1,52 @@
+<section data-date='2026-10-21' data-type='pulse'>
+<style>
+#p{position:relative;width:100%;height:100vh;min-height:320px;overflow:hidden;background:#111;font:italic 18px Georgia,serif;cursor:crosshair}
+#p canvas{display:block;width:100%;height:100%}
+#w{position:absolute;left:0;right:0;top:56%;text-align:center;color:#e8dcc0;letter-spacing:.6em;opacity:0;transition:opacity 1.2s;pointer-events:none}
+</style>
+<div id="p"><canvas id="c"></canvas><div id="w">halfway</div></div>
+<script>
+(function(){
+var p=document.getElementById('p'),c=document.getElementById('c'),x=c.getContext('2d'),w=document.getElementById('w'),
+W,H,t=0,a=0,g=0,f=1,m=0;
+function R(){W=c.width=p.clientWidth;H=c.height=p.clientHeight}
+R();onresize=R;
+p.onmousemove=function(e){var r=p.getBoundingClientRect();g=((e.clientX-r.left)/W-.5)*.9;m=1};
+p.ontouchmove=function(e){g=(e.touches[0].clientX/W-.5)*.9;m=1};
+p.onclick=function(){f=-f};
+function L(){
+t+=.016;
+if(!m)g=Math.sin(t*.7)*.12;
+g*=.995;
+a+=(g-a)*.05;
+var k=Math.abs(a)<.015,
+ s=a*f,
+ u=.5+s*.6,
+ d=x.createLinearGradient(0,0,W,0);
+d.addColorStop(0,f>0?'#f2d9a0':'#14182b');
+d.addColorStop(Math.max(.02,Math.min(.98,u)),f>0?'#c9895a':'#3a2a4a');
+d.addColorStop(1,f>0?'#14182b':'#f2d9a0');
+x.fillStyle=d;x.fillRect(0,0,W,H);
+var cx=W/2,cy=H*.6,l=Math.min(W*.42,360);
+x.save();x.translate(cx,cy);
+x.fillStyle='#e8dcc0';
+x.beginPath();x.moveTo(0,0);x.lineTo(-18,60);x.lineTo(18,60);x.fill();
+x.rotate(a);
+x.strokeStyle='#e8dcc0';x.lineWidth=3;
+x.beginPath();x.moveTo(-l,0);x.lineTo(l,0);x.stroke();
+for(var i=-1;i<2;i+=2){
+ var n=Math.round(8+i*a*-14*f);
+ for(var j=0;j<n;j++){
+  var y=-8-j*7,o=Math.sin(t*2+j)*3;
+  x.fillStyle=i*f>0?'#14182b':'#f2d9a0';
+  x.beginPath();x.arc(i*(l-14)+o,y,3,0,7);x.fill();
+ }
+}
+x.restore();
+x.fillStyle='#e8dcc0';x.beginPath();x.arc(cx,cy,5+(k?3*Math.sin(t*4):0),0,7);x.fill();
+w.style.opacity=k?.9:0;
+requestAnimationFrame(L)}
+L();
+})();
+</script>
+</section>
