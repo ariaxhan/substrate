@@ -1,0 +1,40 @@
+<section data-date='2026-10-21' data-type='reflection'>
+<style>
+#n{position:relative;height:100vh;min-height:360px;overflow:hidden;background:radial-gradient(ellipse at 50% 120%,#2b1d4a,#0b0d24 55%,#03040c);font:italic 1.1rem Georgia,serif;color:#e8e2ff;cursor:crosshair}
+#n canvas{position:absolute;inset:0;width:100%;height:100%}
+#n p{position:absolute;bottom:7%;width:100%;text-align:center;margin:0;letter-spacing:.3em;opacity:.55;pointer-events:none;transition:opacity 3s}
+#n b{position:absolute;font-weight:400;pointer-events:none;animation:w 9s forwards;text-shadow:0 0 12px #b9a8ff}
+@keyframes w{0%{opacity:0;transform:translateY(8px)}20%{opacity:.9}100%{opacity:0;transform:translateY(-20px)}}
+</style>
+<div id="n"><canvas></canvas><p>the day is done. touch the dark.</p></div>
+<script>
+(function(){
+var n=document.getElementById('n'),c=n.firstChild,x=c.getContext('2d'),S=[],W,H,
+words=['rest','enough','held','soft','tomorrow','breathe','kept','still','home','slow'],t=0,m=null;
+function R(){W=c.width=n.clientWidth;H=c.height=n.clientHeight}
+R();addEventListener('resize',R);
+function add(a,b,big){S.push({x:a,y:b,r:big?2.4:Math.random()+.4,p:Math.random()*6,b:big?1:0})}
+for(var i=0;i<40;i++)add(Math.random()*W,Math.random()*H*.8);
+n.onclick=function(e){
+var r=n.getBoundingClientRect(),a=e.clientX-r.left,b=e.clientY-r.top;
+add(a,b,1);n.querySelector('p').style.opacity=0;
+var w=document.createElement('b');w.textContent=words[Math.random()*words.length|0];
+w.style.left=a+14+'px';w.style.top=b+'px';n.appendChild(w);
+setTimeout(function(){w.remove()},9000)};
+n.onmousemove=function(e){var r=n.getBoundingClientRect();m=[e.clientX-r.left,e.clientY-r.top]};
+n.onmouseleave=function(){m=null};
+(function f(){
+t+=.02;x.clearRect(0,0,W,H);
+S.forEach(function(s,i){
+var d=m?Math.hypot(s.x-m[0],s.y-m[1]):999,g=d<120?1-d/120:0,
+a=.35+.35*Math.sin(t+s.p)+g;
+if(g>0)S.forEach(function(o,j){
+if(j>i&&m&&Math.hypot(o.x-m[0],o.y-m[1])<120){
+x.strokeStyle='rgba(185,168,255,'+.35*g+')';x.beginPath();x.moveTo(s.x,s.y);x.lineTo(o.x,o.y);x.stroke()}});
+x.fillStyle='rgba(240,235,255,'+Math.min(a,1)+')';
+x.shadowBlur=s.b?14:6*g;x.shadowColor='#b9a8ff';
+x.beginPath();x.arc(s.x,s.y,s.r+g*2,0,7);x.fill()});
+requestAnimationFrame(f)})()
+})()
+</script>
+</section>
