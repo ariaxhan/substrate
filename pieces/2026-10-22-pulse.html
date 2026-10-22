@@ -1,0 +1,36 @@
+<section data-date='2026-10-22' data-type='pulse'>
+<style>
+#f{position:relative;height:100vh;background:#e9e4d8;overflow:hidden;font:italic 18px Georgia,serif;color:#222;cursor:crosshair}
+#f canvas{position:absolute;inset:0;width:100%;height:100%}
+#f p{position:absolute;left:0;right:0;bottom:8vh;text-align:center;margin:0;letter-spacing:.3em;transition:opacity 1.5s}
+</style>
+<div id="f"><canvas id="c"></canvas><p id="t">halfway</p></div>
+<script>
+(function(){
+var f=document.getElementById('f'),c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),
+W,H,tilt=0,aim=0,flip=1,p=[],words=['halfway','noon is a door','nothing falls','held','level'],wi=0;
+function rs(){W=c.width=f.clientWidth;H=c.height=f.clientHeight}
+rs();window.onresize=rs;
+for(var i=0;i<60;i++)p.push({a:Math.random(),s:Math.random()});
+f.onmousemove=function(e){aim=((e.clientX-f.getBoundingClientRect().left)/W-.5)*.5};
+f.onclick=function(){flip=-flip;t.textContent=words[++wi%words.length]};
+function d(n){
+ tilt+=(aim-tilt)*.05;
+ x.fillStyle='rgba(233,228,216,.25)';x.fillRect(0,0,W,H);
+ var cx=W/2,cy=H/2,L=W*.4,a=tilt+Math.sin(n/900)*.03;
+ x.save();x.translate(cx,cy);x.rotate(a);
+ x.strokeStyle='#222';x.lineWidth=2;x.beginPath();x.moveTo(-L,0);x.lineTo(L,0);x.stroke();
+ p.forEach(function(q){
+  var side=q.s<.5?-1:1,off=(q.a*L*.9)*side*flip,
+   y=-((n/20+q.a*400)%(H*.4))*(side*flip*Math.sign(a||1)>0?1:-1)*.5;
+  x.fillStyle=side>0?'#b3402a':'#2a4a6b';
+  x.beginPath();x.arc(off,-4+y*.1*Math.sin(n/300+q.a*9),2+q.s*3,0,7);x.fill()});
+ x.restore();
+ x.fillStyle='#222';x.beginPath();x.moveTo(cx,cy);x.lineTo(cx-14,cy+34);x.lineTo(cx+14,cy+34);x.fill();
+ var r=(Math.abs(a)<.01)?8+Math.sin(n/200)*4:0;
+ if(r){x.strokeStyle='#222';x.beginPath();x.arc(cx,cy,r+20,0,7);x.stroke();t.style.opacity=1}else t.style.opacity=.35;
+ requestAnimationFrame(d)}
+d(0);
+})();
+</script>
+</section>
