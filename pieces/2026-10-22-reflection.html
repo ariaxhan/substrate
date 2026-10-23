@@ -1,0 +1,41 @@
+<section data-date='2026-10-22' data-type='reflection'>
+<style>
+#n{margin:0;background:#07091a;overflow:hidden;position:relative;height:100vh;cursor:crosshair;font:italic 15px Georgia,serif}
+#n canvas{display:block;width:100%;height:100%}
+#n p{position:absolute;bottom:7%;width:100%;text-align:center;color:#8c93b8;letter-spacing:.4em;margin:0;transition:opacity 4s;pointer-events:none}
+</style>
+<div id="n"><canvas></canvas><p>the day is counted. touch the dark.</p></div>
+<script>
+(function(){
+var n=document.getElementById('n'),c=n.querySelector('canvas'),x=c.getContext('2d'),p=n.querySelector('p'),
+S=[],W=[],K=['rest','enough','kept','done','soft','still','held','begin'],k=0,w,h;
+function R(){w=c.width=c.offsetWidth;h=c.height=c.offsetHeight}
+R();onresize=R;
+function add(X,Y){
+ S.push({x:X,y:Y,t:0,r:1+Math.random()*1.5,f:Math.random()*6});
+ if(S.length%4==0)W.push({x:X,y:Y-18,s:K[k++%K.length],a:0});
+ p.style.opacity=0
+}
+n.onclick=function(e){var b=c.getBoundingClientRect();add(e.clientX-b.left,e.clientY-b.top)};
+n.onmousemove=function(e){var b=c.getBoundingClientRect();n.mx=e.clientX-b.left;n.my=e.clientY-b.top};
+setInterval(function(){add(Math.random()*w,Math.random()*h*.8)},5000);
+for(var i=0;i<6;i++)add(Math.random()*w,Math.random()*h*.8);
+(function f(T){
+ x.fillStyle='rgba(7,9,26,.25)';x.fillRect(0,0,w,h);
+ S.forEach(function(s,i){
+  s.t=Math.min(1,s.t+.01);
+  var g=s.t*(.6+.4*Math.sin(T/700+s.f));
+  S.forEach(function(o,j){
+   if(j<=i)return;
+   var d=Math.hypot(s.x-o.x,s.y-o.y),m=Math.hypot((s.x+o.x)/2-(n.mx||-999),(s.y+o.y)/2-(n.my||-999));
+   if(d<200&&m<160){x.strokeStyle='rgba(150,165,230,'+(1-m/160)*.5*(1-d/200)+')';x.beginPath();x.moveTo(s.x,s.y);x.lineTo(o.x,o.y);x.stroke()}
+  });
+  x.fillStyle='rgba(235,235,255,'+g+')';x.beginPath();x.arc(s.x,s.y,s.r*(1+s.t),0,7);x.fill();
+ });
+ x.font='italic 16px Georgia,serif';
+ W.forEach(function(q){q.a=Math.min(.7,q.a+.004);x.fillStyle='rgba(200,205,240,'+q.a+')';x.fillText(q.s,q.x,q.y)});
+ requestAnimationFrame(f)
+})(0)
+})()
+</script>
+</section>
