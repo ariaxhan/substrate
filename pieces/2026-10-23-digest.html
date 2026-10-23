@@ -1,0 +1,44 @@
+<section data-date='2026-10-23' data-type='digest'>
+<style>
+.k{position:relative;background:#efe9dc;height:100vh;margin:0;overflow:hidden;cursor:crosshair;font:italic 15px Georgia,serif;color:#3a342a}
+.k canvas{display:block;width:100%;height:100%}
+.k p{position:absolute;left:24px;bottom:18px;margin:0;pointer-events:none;letter-spacing:.04em}
+</style>
+<div class=k><canvas id=c></canvas><p id=t>dust, before anyone said anything</p></div>
+<script>
+(function(){
+var c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),W,H,G=48,
+P=[],D=[],m={x:-9,y:-9},L=['a fact','two facts','a pattern','a structure','a crystal','a world'];
+function R(){W=c.width=c.clientWidth;H=c.height=c.clientHeight}
+R();onresize=R;
+for(var i=0;i<90;i++)D.push({x:Math.random()*W,y:Math.random()*H,a:Math.random()*6.3});
+function add(px,py){P.push({x:px,y:py,s:0,r:0,n:0});
+t.textContent=L[Math.min(5,Math.floor(Math.log2(P.length+1)))]+' · '+P.length}
+c.onclick=function(e){add(e.offsetX,e.offsetY)};
+c.onmousemove=function(e){m.x=e.offsetX;m.y=e.offsetY;
+if(Math.random()<.3)D.push({x:m.x,y:m.y,a:Math.random()*6.3});if(D.length>260)D.shift()};
+function f(){
+x.fillStyle='rgba(239,233,220,.25)';x.fillRect(0,0,W,H);
+x.fillStyle='#8a7f6a';
+D.forEach(function(d){d.a+=.01;d.x+=Math.cos(d.a)*.3;d.y+=Math.sin(d.a)*.3;x.fillRect(d.x,d.y,1.5,1.5)});
+P.forEach(function(p){p.n=0});
+for(var i=0;i<P.length;i++)for(var j=i+1;j<P.length;j++){
+var a=P[i],b=P[j],d=Math.hypot(a.x-b.x,a.y-b.y);
+if(d<170){a.n++;b.n++;x.strokeStyle='rgba(40,60,90,'+(1-d/170)*.7+')';
+x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}}
+P.forEach(function(p){
+if(p.n>=2){p.s=Math.min(1,p.s+.01);
+p.x+=(Math.round(p.x/G)*G-p.x)*.04*p.s;p.y+=(Math.round(p.y/G)*G-p.y)*.04*p.s}
+var h=Math.hypot(p.x-m.x,p.y-m.y)<40;
+p.r+=((h?18:5+p.n*2)-p.r)*.1;
+x.strokeStyle=p.s>.8?'#a2412a':'#28405a';
+x.lineWidth=1;
+if(p.s>.5){x.strokeRect(p.x-p.r,p.y-p.r,p.r*2,p.r*2)}
+else{x.beginPath();x.arc(p.x,p.y,p.r,0,6.3);x.stroke()}
+if(h){x.fillStyle='#3a342a';x.font='italic 11px Georgia';
+x.fillText('links '+p.n+' · order '+(p.s*100|0)+'%',p.x+p.r+6,p.y+3)}});
+requestAnimationFrame(f)}
+f();
+})();
+</script>
+</section>
