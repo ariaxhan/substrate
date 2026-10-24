@@ -1,0 +1,38 @@
+<section data-date='2026-10-24' data-type='digest'>
+<style>
+.cv{margin:0;background:#f3ecdc;color:#2a2118;font:italic 15px Georgia,serif;text-align:center;padding:16px}
+.cv canvas{display:block;margin:0 auto;background:#f3ecdc;cursor:crosshair;max-width:100%}
+.cv p{margin:8px 0 0;opacity:.6;letter-spacing:.1em}
+</style>
+<div class="cv"><canvas id="c" width="560" height="360"></canvas><p id="t">click to remember</p></div>
+<script>
+(function(){
+var c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),
+P=[],W=560,H=360,m=null,
+w=['noise','note','pattern','link','thread','lattice','form','meaning'];
+function add(a,b){P.push({x:a,y:b,r:2,w:w[P.length%8]})}
+for(var i=0;i<14;i++)add(Math.random()*W,Math.random()*H);
+c.onclick=function(e){var r=c.getBoundingClientRect();
+add((e.clientX-r.left)*W/r.width,(e.clientY-r.top)*H/r.height);
+t.textContent=P.length+' fragments · '+Math.floor(P.length*1.6)+' bonds'};
+c.onmousemove=function(e){var r=c.getBoundingClientRect();
+m={x:(e.clientX-r.left)*W/r.width,y:(e.clientY-r.top)*H/r.height}};
+c.onmouseleave=function(){m=null};
+function f(){x.fillStyle='rgba(243,236,220,.25)';x.fillRect(0,0,W,H);
+P.forEach(function(p,i){
+p.x+=(Math.random()-.5)*.6;p.y+=(Math.random()-.5)*.6;
+if(m){var d=Math.hypot(m.x-p.x,m.y-p.y);if(d<90){p.x+=(m.x-p.x)*.02;p.y+=(m.y-p.y)*.02}}
+for(var j=i+1;j<P.length;j++){var q=P[j],d=Math.hypot(p.x-q.x,p.y-q.y);
+if(d<95){var a=1-d/95;
+p.r=Math.min(p.r+.004,5);
+x.strokeStyle='rgba(120,40,20,'+a*.5+')';x.lineWidth=a*1.4;
+x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke();
+for(var k=j+1;k<P.length;k++){var s=P[k];
+if(Math.hypot(p.x-s.x,p.y-s.y)<95&&Math.hypot(q.x-s.x,q.y-s.y)<95){
+x.fillStyle='rgba(120,40,20,.04)';x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.lineTo(s.x,s.y);x.fill()}}}}
+x.fillStyle='#2a2118';x.beginPath();x.arc(p.x,p.y,p.r,0,7);x.fill();
+if(m&&Math.hypot(m.x-p.x,m.y-p.y)<40){x.font='italic 13px Georgia';x.fillText(p.w,p.x+8,p.y-6)}});
+requestAnimationFrame(f)}
+f()})();
+</script>
+</section>
