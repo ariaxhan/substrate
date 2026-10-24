@@ -1,0 +1,39 @@
+<section data-date='2026-10-24' data-type='pulse'>
+<style>
+#h{position:relative;height:100vh;margin:0;background:#14121a;overflow:hidden;font:italic 15px Georgia,serif;color:#e8dcc4;cursor:crosshair}
+#h canvas{position:absolute;inset:0;width:100%;height:100%}
+#h p{position:absolute;bottom:9%;width:100%;text-align:center;margin:0;letter-spacing:.4em;opacity:0;transition:opacity 1.5s}
+</style>
+<div id="h"><canvas></canvas><p>exactly half</p></div>
+<script>
+(()=>{const h=document.getElementById('h'),c=h.firstChild,x=c.getContext('2d'),p=h.lastChild;
+let W,H,t=0,a=0,g=0,f=1,m=0,N=60,P=[];
+for(let i=0;i<N;i++)P.push({s:i%2?1:-1,u:Math.random(),v:Math.random()*6.28});
+const R=()=>{W=c.width=h.clientWidth;H=c.height=h.clientHeight};R();onresize=R;
+h.onmousemove=e=>{g=(e.clientX/W-.5)*.7};
+h.ontouchmove=e=>{g=(e.touches[0].clientX/W-.5)*.7};
+h.onclick=()=>{f=-f};
+(function L(){t+=.016;
+const drift=Math.sin(t*.3)*.04;
+a+=(g*f+drift-a)*.05;
+const L2=Math.min(W,H)*.42,cx=W/2,cy=H*.55,lv=Math.abs(a)<.025;
+m+=((lv?1:0)-m)*.04;
+x.fillStyle='rgba(20,18,26,.2)';x.fillRect(0,0,W,H);
+x.save();x.translate(cx,cy);x.rotate(a);
+x.strokeStyle='rgba(232,220,196,'+(.3+m*.7)+')';x.lineWidth=1;
+x.beginPath();x.moveTo(-L2,0);x.lineTo(L2,0);x.stroke();
+for(const q of P){
+const side=q.s*f,w=.5+.5*Math.sin(t*.8+q.v),
+off=q.u*L2*(1-m*.8)*q.s+Math.sin(t+q.v)*6,
+y=-6-w*8-(q.u*9)*(1-m);
+x.fillStyle=q.s<0?'rgba(255,170,90,'+(.4+w*.5)+')':'rgba(110,160,255,'+(.4+w*.5)+')';
+x.beginPath();x.arc(off,y,2+w*2.5+m*2,0,6.3);x.fill()}
+x.restore();
+x.fillStyle='rgba(232,220,196,'+(.5+m*.5)+')';
+x.beginPath();x.moveTo(cx,cy);x.lineTo(cx-14,cy+34);x.lineTo(cx+14,cy+34);x.fill();
+if(m>.02){x.strokeStyle='rgba(255,240,200,'+m*.3+')';
+for(let k=1;k<4;k++){x.beginPath();x.arc(cx,cy,(k*40+t*20%40)*m,0,6.3);x.stroke()}}
+p.style.opacity=m>.8?1:0;
+requestAnimationFrame(L)})()})();
+</script>
+</section>
