@@ -1,0 +1,28 @@
+<section data-date='2026-10-25' data-type='morning'>
+<style>
+.dw{position:relative;height:100vh;overflow:hidden;background:#12141f;font:italic 22px/1.7 Georgia,serif;cursor:crosshair;transition:background 2s;display:flex;align-items:center;justify-content:center;text-align:center}
+.dw p{max-width:30em;margin:0;padding:2em;color:#fff;user-select:none}
+.dw span{opacity:.06;transition:opacity 1.5s,color 1.5s;display:inline-block;white-space:pre}
+.dw i{position:absolute;width:40vmin;height:40vmin;border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);filter:blur(30px);mix-blend-mode:screen}
+</style>
+<div class="dw" id="dw"><i id="di"></i><p id="dp"></p></div>
+<script>
+(function(){
+var d=document.getElementById('dw'),s=document.getElementById('di'),p=document.getElementById('dp'),
+t="nothing has happened yet. the page is clean. whatever you say next will be the first thing said today. begin.",
+h=.1,x=innerWidth/2,y=innerHeight*.8;
+t.split('').forEach(function(c){var e=document.createElement('span');e.textContent=c;p.appendChild(e)});
+var L=p.children;
+function f(){
+var r=Math.round(18+h*230),g=Math.round(20+h*150),b=Math.round(31+h*60-h*h*20);
+d.style.background='linear-gradient(#'+[r*.5,g*.6,b+30].map(function(v){return('0'+Math.min(255,v|0).toString(16)).slice(-2)}).join('')+',rgb('+r+','+g+','+b+'))';
+s.style.left=x+'px';s.style.top=y+'px';
+s.style.background='radial-gradient(rgba(255,'+(170+h*60|0)+','+(90+h*100|0)+',.9),transparent 70%)';
+for(var i=0;i<L.length;i++){var q=L[i].getBoundingClientRect(),
+k=Math.hypot(q.left-x,q.top-y)/(innerHeight*.45),o=Math.max(.06,1-k+h*.3);
+L[i].style.opacity=Math.min(1,o);L[i].style.color=o>.5?'#ffd9a0':'#fff'}}
+d.onmousemove=function(e){x=e.clientX;y=e.clientY;f()};
+d.onclick=function(){h=h>.9?.1:h+.3;f()};
+f()})();
+</script>
+</section>
