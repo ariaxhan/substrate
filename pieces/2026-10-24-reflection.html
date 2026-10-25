@@ -1,0 +1,35 @@
+<section data-date='2026-10-24' data-type='reflection'>
+<style>
+#n{position:relative;width:100%;height:100vh;min-height:360px;overflow:hidden;background:linear-gradient(#05060f,#0d1230 70%,#2a1b3d);cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+#n canvas{position:absolute;inset:0;width:100%;height:100%}
+#w{position:absolute;left:0;right:0;bottom:9%;text-align:center;color:#e9e2ff;font-style:italic;letter-spacing:.3em;font-size:clamp(14px,2.4vw,22px);opacity:0;transition:opacity 3s;pointer-events:none}
+</style>
+<div id="n"><canvas id="c"></canvas><div id="w"></div></div>
+<script>
+(function(){
+var n=document.getElementById('n'),c=document.getElementById('c'),x=c.getContext('2d'),w=document.getElementById('w'),
+S=[],M={x:-9,y:-9},W,H,words=['rest','enough','done','soft','still','breathe','kept','tomorrow','here'],k=0,t=0;
+function R(){W=c.width=n.clientWidth;H=c.height=n.clientHeight}
+R();addEventListener('resize',R);
+function add(px,py){S.push({x:px,y:py,b:0,p:Math.random()*6.28,r:1+Math.random()*1.8})}
+for(var i=0;i<5;i++)add(Math.random()*W,Math.random()*H*.6);
+n.addEventListener('click',function(e){
+var r=n.getBoundingClientRect();add(e.clientX-r.left,e.clientY-r.top);
+w.style.transition='none';w.style.opacity=0;
+setTimeout(function(){w.textContent=words[k++%words.length];w.style.transition='opacity 3s';w.style.opacity=.85},30)});
+n.addEventListener('mousemove',function(e){var r=n.getBoundingClientRect();M.x=e.clientX-r.left;M.y=e.clientY-r.top});
+function f(){t+=.02;x.clearRect(0,0,W,H);
+S.forEach(function(s){
+var d=Math.hypot(s.x-M.x,s.y-M.y);
+s.b+=((d<140?1:.35)-s.b)*.05;
+var a=s.b*(.75+.25*Math.sin(t+s.p));
+x.fillStyle='rgba(235,228,255,'+a+')';x.shadowColor='#b9a8ff';x.shadowBlur=14*s.b;
+x.beginPath();x.arc(s.x,s.y,s.r*(1+s.b*.6),0,6.3);x.fill()});
+x.shadowBlur=0;
+for(var i=0;i<S.length;i++)for(var j=i+1;j<S.length;j++){
+var A=S[i],B=S[j],l=Math.hypot(A.x-B.x,A.y-B.y),v=Math.min(A.b,B.b)-.35;
+if(l<220&&v>0){x.strokeStyle='rgba(185,168,255,'+v*.6*(1-l/220)+')';x.beginPath();x.moveTo(A.x,A.y);x.lineTo(B.x,B.y);x.stroke()}}
+requestAnimationFrame(f)}
+f()})();
+</script>
+</section>
