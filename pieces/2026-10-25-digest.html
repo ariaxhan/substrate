@@ -1,0 +1,33 @@
+<section data-date='2026-10-25' data-type='digest'>
+<style>
+.k{position:relative;background:#efe8d8;height:100vh;overflow:hidden;font:italic 15px Georgia,serif;color:#2a2118;cursor:crosshair}
+.k canvas{position:absolute;inset:0}
+.k p{position:absolute;left:24px;bottom:18px;margin:0;opacity:.6;transition:opacity 2s}
+</style>
+<div class="k"><canvas></canvas><p>nothing yet. click.</p></div>
+<script>
+(()=>{
+const k=document.currentScript.previousElementSibling,c=k.firstChild,x=c.getContext('2d'),p=k.lastChild,
+W=['seen','twice','kept','linked','known','held','shaped','true'];
+let w,h,P=[],m={x:-9,y:-9},t=0;
+function S(){w=c.width=k.clientWidth;h=c.height=k.clientHeight}
+S();addEventListener('resize',S);
+k.onclick=e=>{const r=k.getBoundingClientRect();
+P.push({x:e.clientX-r.left,y:e.clientY-r.top,a:Math.random()*6,w:W[P.length%8]});
+p.textContent=P.length<3?'one is a point. two is a line.':P.length<7?'three is a surface.':P.length+' things, and now a shape.'};
+k.onmousemove=e=>{const r=k.getBoundingClientRect();m={x:e.clientX-r.left,y:e.clientY-r.top}};
+(function f(){t+=.01;x.clearRect(0,0,w,h);
+P.forEach(q=>{q.dx=Math.cos(t+q.a)*3;q.dy=Math.sin(t*1.3+q.a)*3});
+for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){
+const a=P[i],b=P[j],d=Math.hypot(a.x-b.x,a.y-b.y);
+if(d<190){x.strokeStyle=`rgba(42,33,24,${1-d/190})`;x.beginPath();x.moveTo(a.x+a.dx,a.y+a.dy);x.lineTo(b.x+b.dx,b.y+b.dy);x.stroke();
+for(let l=j+1;l<P.length;l++){const q=P[l];
+if(Math.hypot(a.x-q.x,a.y-q.y)<190&&Math.hypot(b.x-q.x,b.y-q.y)<190){
+x.fillStyle=`hsla(${15+i*23%40},70%,45%,.13)`;x.beginPath();x.moveTo(a.x+a.dx,a.y+a.dy);x.lineTo(b.x+b.dx,b.y+b.dy);x.lineTo(q.x+q.dx,q.y+q.dy);x.fill()}}}}
+P.forEach(q=>{const n=Math.hypot(q.x-m.x,q.y-m.y);
+x.fillStyle='#a8321c';x.beginPath();x.arc(q.x+q.dx,q.y+q.dy,n<80?5:3,0,7);x.fill();
+if(n<80){x.fillStyle='#2a2118';x.fillText(q.w,q.x+10,q.y-8)}});
+requestAnimationFrame(f)})()
+})()
+</script>
+</section>
