@@ -1,0 +1,37 @@
+<section data-date='2026-10-25' data-type='spark'>
+<style>
+.cl{background:#0b0a10;margin:0;position:relative;height:320px;overflow:hidden;cursor:crosshair;font:13px Georgia,serif}
+.cl canvas{display:block;width:100%;height:100%}
+.cl p{position:absolute;left:0;right:0;bottom:8px;margin:0;text-align:center;color:#8a8598;font-style:italic;letter-spacing:.1em;pointer-events:none}
+</style>
+<div class="cl"><canvas id="c"></canvas><p id="t">move between them</p></div>
+<script>
+(function(){
+var c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),
+W=c.width=640,H=c.height=320,m={x:W/2,y:H/2},P=[],hit=0,
+words=['i','you','sea','salt','iron','rain','ash','light','seam','we'];
+c.parentNode.onmousemove=function(e){var r=c.getBoundingClientRect();m.x=(e.clientX-r.left)*W/r.width;m.y=(e.clientY-r.top)*H/r.height};
+c.onclick=function(){hit=1;t.textContent=words[Math.random()*words.length|0]+' + '+words[Math.random()*words.length|0]+' = new'};
+function mk(s){return{x:s?60:W-60,y:H/2+(Math.random()-.5)*80,vx:s?1.2:-1.2,vy:0,h:s?200:330,s:s}}
+var A=mk(1),B=mk(0),K=[];
+function f(){
+x.fillStyle='rgba(11,10,16,.18)';x.fillRect(0,0,W,H);
+[A,B].forEach(function(p){
+var dx=m.x-p.x,dy=m.y-p.y,d=Math.hypot(dx,dy)+1;
+p.vx+=dx/d*.05;p.vy+=dy/d*.05;
+p.vx*=.995;p.vy*=.995;p.x+=p.vx;p.y+=p.vy;
+x.fillStyle='hsl('+p.h+',80%,60%)';x.beginPath();x.arc(p.x,p.y,7,0,7);x.fill()});
+var d=Math.hypot(A.x-B.x,A.y-B.y);
+if(d<90){x.strokeStyle='hsla(270,70%,70%,'+(1-d/90)+')';x.beginPath();x.moveTo(A.x,A.y);x.lineTo(B.x,B.y);x.stroke()}
+if(d<14||hit){
+var cx=(A.x+B.x)/2,cy=(A.y+B.y)/2;hit=0;
+for(var i=0;i<60;i++){var a=Math.random()*6.3,s=Math.random()*3;
+K.push({x:cx,y:cy,vx:Math.cos(a)*s,vy:Math.sin(a)*s,h:i%2?200:330,l:60})}
+t.textContent='collision → something third';
+A=mk(1);B=mk(0)}
+K=K.filter(function(k){k.x+=k.vx;k.y+=k.vy;k.vx*=.97;k.vy*=.97;k.l--;
+x.fillStyle='hsla('+(k.h+(60-k.l)*1.5)+',90%,70%,'+k.l/60+')';x.fillRect(k.x,k.y,2,2);return k.l>0});
+requestAnimationFrame(f)}
+f()})();
+</script>
+</section>
