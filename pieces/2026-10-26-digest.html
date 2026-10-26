@@ -1,0 +1,31 @@
+<section data-date='2026-10-26' data-type='digest'>
+<style>
+.cz{position:relative;background:#f1ebdd;font:italic 15px Georgia,serif;color:#3b3226;overflow:hidden;height:420px;cursor:crosshair}
+.cz canvas{display:block;width:100%;height:100%}
+.cz p{position:absolute;left:20px;bottom:14px;margin:0;pointer-events:none;letter-spacing:.04em;transition:opacity 2s}
+</style>
+<div class="cz"><canvas></canvas><p>click anywhere. let it settle.</p></div>
+<script>
+(()=>{const z=document.currentScript.previousElementSibling,c=z.firstChild,x=c.getContext('2d'),t=z.lastChild;
+let W,H,S=[],P=[],G=30,n=0;
+const R=()=>{W=c.width=z.clientWidth;H=c.height=420};R();onresize=R;
+for(let i=0;i<260;i++)P.push({x:Math.random()*W,y:Math.random()*H,vx:0,vy:0,s:null});
+c.onclick=e=>{const r=c.getBoundingClientRect();S.push({x:e.clientX-r.left,y:e.clientY-r.top,a:Math.random()*1.0});
+t.style.opacity=n++>2?0:1;if(n>2)t.textContent=''};
+(function f(){x.fillStyle='rgba(241,235,221,.35)';x.fillRect(0,0,W,H);
+for(const p of P){p.s=null;let d=170;
+for(const s of S){const q=Math.hypot(p.x-s.x,p.y-s.y);if(q<d){d=q;p.s=s}}
+if(p.s){const s=p.s,u=Math.cos(s.a),v=Math.sin(s.a),dx=p.x-s.x,dy=p.y-s.y,
+a=dx*u+dy*v,b=-dx*v+dy*u,ga=Math.round(a/G)*G,gb=Math.round(b/G)*G;
+p.x+=((s.x+ga*u-gb*v)-p.x)*.05;p.y+=((s.y+ga*v+gb*u)-p.y)*.05;p.vx=p.vy=0}
+else{p.vx+=(Math.random()-.5)*.3;p.vy+=(Math.random()-.5)*.3;p.vx*=.95;p.vy*=.95;
+p.x=(p.x+p.vx+W)%W;p.y=(p.y+p.vy+H)%H}}
+x.lineWidth=1;
+for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){const a=P[i],b=P[j];
+if(a.s&&a.s==b.s){const d=Math.hypot(a.x-b.x,a.y-b.y);
+if(d<G*1.1){x.strokeStyle=`rgba(120,60,30,${.75-d/G*.5})`;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}}}
+for(const p of P){x.fillStyle=p.s?'#8a3b1c':'#9a917f';x.fillRect(p.x-1.5,p.y-1.5,3,3)}
+for(const s of S){x.strokeStyle='#8a3b1c';x.beginPath();x.arc(s.x,s.y,6,0,7);x.stroke()}
+requestAnimationFrame(f)})()})()
+</script>
+</section>
