@@ -1,0 +1,42 @@
+<section data-date='2026-10-26' data-type='pulse'>
+<style>
+#h{position:relative;height:100vh;margin:0;overflow:hidden;background:#efe8da;font:italic 14px Georgia,serif}
+#h canvas{display:block;width:100%;height:100%;cursor:crosshair}
+</style>
+<div id=h><canvas id=c></canvas></div>
+<script>
+(function(){
+var c=document.getElementById('c'),x=c.getContext('2d'),W,H,m=.5,a=0,f=0,F=0,t=0;
+function R(){W=c.width=c.clientWidth;H=c.height=c.clientHeight}
+R();onresize=R;
+c.onmousemove=function(e){m=e.offsetX/W};
+c.ontouchmove=function(e){m=e.touches[0].clientX/W};
+c.onclick=function(){f=1-f};
+function L(){
+t+=.01;F+=(f-F)*.05;
+var g=x.createLinearGradient(0,0,W,0),p=F?['#1b2440','#f4c27a']:['#f4c27a','#1b2440'];
+g.addColorStop(0,p[0]);g.addColorStop(1,p[1]);
+x.fillStyle=g;x.fillRect(0,0,W,H);
+var d=(m-.5)*.7+Math.sin(t)*.03,eq=Math.abs(m-.5)<.025;
+a+=(d-a)*.06;
+var cx=W/2,cy=H*.62,l=W*.38;
+x.save();x.translate(cx,cy);x.rotate(a);
+x.fillStyle='#fff';x.globalAlpha=.9;x.fillRect(-l,-2,2*l,4);
+for(var i=0;i<24;i++){
+var s=i<12?-1:1,k=(i%12+1)/12,sl=Math.sin(a)*s*0,u=s*(k*l*.9),
+w=Math.sin(a)*(k*3);
+x.globalAlpha=.8;x.fillStyle=s<0?'#1b2440':'#f4c27a';
+if((F>.5)==(s<0))x.fillStyle=s<0?'#f4c27a':'#1b2440';
+x.beginPath();x.arc(u,-8-Math.abs(Math.sin(t*2+i))*(eq?14:2),3+k*3,0,7);x.fill()}
+x.restore();
+x.globalAlpha=1;x.fillStyle='#fff';
+x.beginPath();x.moveTo(cx,cy);x.lineTo(cx-22,H);x.lineTo(cx+22,H);x.fill();
+x.fillStyle=eq?'#fff':'rgba(255,255,255,.0)';
+x.textAlign='center';x.font='italic '+W/12+'px Georgia';
+x.globalAlpha=eq?1:0;x.fillText('halfway',cx,H*.3);
+x.globalAlpha=.5;x.font='13px Georgia';x.fillStyle='#fff';
+x.fillText(eq?'noon holds its breath':'find where it rests · click to turn the day over',cx,H-14);
+requestAnimationFrame(L)}
+L()})();
+</script>
+</section>
