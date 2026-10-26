@@ -1,0 +1,22 @@
+<section data-date='2026-10-26' data-type='morning'>
+<style>
+#d{position:relative;height:100vh;min-height:320px;overflow:hidden;cursor:crosshair;font-family:Georgia,serif;color:#fff;
+background:linear-gradient(#0b1026,hsl(var(--a),60%,calc(14% + var(--h)*50%)) 70%,hsl(var(--a),90%,calc(20% + var(--h)*55%)));--h:0;--a:230}
+#s{position:absolute;left:calc(var(--x)*100%);bottom:calc(var(--h)*60% - 8%);width:90px;height:90px;margin:0 -45px;border-radius:50%;
+background:#ffe9a8;box-shadow:0 0 calc(30px + var(--h)*160px) calc(var(--h)*60px) rgba(255,190,110,.6)}
+#g{position:absolute;left:0;right:0;bottom:0;height:22%;background:#05060d}
+#t{position:absolute;left:0;right:0;top:30%;text-align:center;font-size:clamp(28px,6vw,64px);font-style:italic;letter-spacing:.06em;opacity:calc(.25 + var(--h));transition:opacity .4s}
+#t small{display:block;font:11px monospace;letter-spacing:.4em;margin-top:2em;opacity:.5}
+</style>
+<div id=d style="--x:.5"><div id=s></div><div id=t>nothing yet<small>move up · click</small></div><div id=g></div></div>
+<script>
+(function(){var d=document.getElementById('d'),t=document.getElementById('t'),
+w=['nothing yet','a little gold','the day is a blank line','begin','you are the first sentence','yet'],i=0;
+d.onmousemove=function(e){var r=d.getBoundingClientRect();
+d.style.setProperty('--h',Math.max(0,Math.min(1,1-(e.clientY-r.top)/r.height)));
+d.style.setProperty('--x',(e.clientX-r.left)/r.width);
+d.style.setProperty('--a',230-((e.clientX-r.left)/r.width)*200)};
+d.onclick=function(){i=(i+1)%w.length;t.firstChild.nodeValue=w[i]};
+})();
+</script>
+</section>
