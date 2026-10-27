@@ -1,0 +1,45 @@
+<section data-date='2026-10-27' data-type='morning'>
+<style>
+#d{position:relative;width:100%;height:100vh;overflow:hidden;cursor:text;font:italic 22px Georgia,serif;color:#2a1a24;background:#0b0d1a;user-select:none}
+#d canvas{position:absolute;inset:0;width:100%;height:100%}
+#d i{position:absolute;transform:translate(-50%,-50%);opacity:0;animation:w 6s forwards;white-space:nowrap;pointer-events:none}
+@keyframes w{10%{opacity:1}100%{opacity:0;transform:translate(-50%,-300%)}}
+#h{position:absolute;bottom:6%;width:100%;text-align:center;font:12px monospace;letter-spacing:.4em;color:#fff8;transition:opacity 2s}
+</style>
+<div id=d><canvas id=c></canvas><div id=h>THE DAY IS BLANK — WRITE ON IT</div></div>
+<script>
+(function(){
+var d=document.getElementById('d'),c=document.getElementById('c'),x=c.getContext('2d'),h=document.getElementById('h'),
+W,H,m=.5,t=0,s=0,
+words='yet,begin,not-yet,oh,light,maybe,again,now,open,a name,breath,first,you,soft,here'.split(',');
+function r(){W=c.width=innerWidth;H=c.height=innerHeight}r();onresize=r;
+d.onmousemove=function(e){m=1-e.clientY/H};
+d.onclick=function(e){
+ s=Math.min(1,s+.12);h.style.opacity=0;
+ var i=document.createElement('i'),k=words[Math.random()*words.length|0];
+ i.textContent=k;i.style.left=e.clientX+'px';i.style.top=e.clientY+'px';
+ i.style.color=s>.5?'#3a1d2c':'#ffe9c4';
+ d.appendChild(i);setTimeout(function(){i.remove()},6000)};
+function L(a,b,p){return a+(b-a)*p}
+function f(){
+ t+=.01;var p=Math.min(1,m*.6+s*.5+Math.min(t/40,.15)),g=x.createLinearGradient(0,0,0,H);
+ g.addColorStop(0,'rgb('+[L(11,90,p)|0,L(13,120,p)|0,L(26,190,p)|0]+')');
+ g.addColorStop(.6,'rgb('+[L(20,250,p)|0,L(18,170,p)|0,L(40,130,p)|0]+')');
+ g.addColorStop(1,'rgb('+[L(30,255,p)|0,L(20,215,p)|0,L(30,150,p)|0]+')');
+ x.fillStyle=g;x.fillRect(0,0,W,H);
+ var y=H*(1.05-p*.35),R=H*(.08+p*.1);
+ var q=x.createRadialGradient(W/2,y,0,W/2,y,R*5);
+ q.addColorStop(0,'rgba(255,240,200,'+(.9*p+.1)+')');q.addColorStop(1,'rgba(255,200,150,0)');
+ x.fillStyle=q;x.fillRect(0,0,W,H);
+ x.fillStyle='#fff';
+ for(var i=0;i<90;i++){var a=(i*97%W),b=(i*53%(H*.6));
+  x.globalAlpha=Math.max(0,(1-p*1.6))*(.5+.5*Math.sin(t*3+i));x.fillRect(a,b,1.5,1.5)}
+ x.globalAlpha=1;
+ x.fillStyle='#0b0d1a';x.beginPath();x.moveTo(0,H);
+ for(var j=0;j<=W;j+=20)x.lineTo(j,H*.93-Math.sin(j*.01)*H*.025-Math.sin(j*.037)*H*.012);
+ x.lineTo(W,H);x.fill();
+ requestAnimationFrame(f)}
+f();
+})();
+</script>
+</section>
