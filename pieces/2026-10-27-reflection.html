@@ -1,0 +1,21 @@
+<section data-date='2026-10-27' data-type='reflection'>
+<style>
+.nt{position:relative;height:100vh;overflow:hidden;cursor:crosshair;background:radial-gradient(ellipse at 50% 120%,#2b2350,#0b0d24 55%,#03040c);font:italic 1.1rem Georgia,serif;color:#cfd3ff}
+.nt i{position:absolute;border-radius:50%;background:#fff;box-shadow:0 0 8px 2px #aab4ff;animation:tw 4s ease-in-out infinite;transition:box-shadow .6s,transform .6s}
+.nt i:hover{box-shadow:0 0 28px 12px #ffe9b8;transform:scale(2.2)}
+.nt b{position:absolute;font-weight:400;letter-spacing:.2em;opacity:0;transform:translate(-50%,14px);animation:rise 6s forwards;pointer-events:none;white-space:nowrap}
+.nt p{position:absolute;bottom:6%;width:100%;text-align:center;margin:0;opacity:.35;font-size:.8rem;letter-spacing:.4em}
+@keyframes tw{50%{opacity:.4}}
+@keyframes rise{20%,60%{opacity:.9}to{opacity:0;transform:translate(-50%,-20px)}}
+</style>
+<div class="nt" id="nt"><p>the day is complete</p></div>
+<script>
+(function(){
+var n=document.getElementById('nt'),w=['rest','enough','held','soft','done','still','dark is kind','tomorrow waits','breathe','lights out, slowly'],k=0;
+function s(x,y,r){var e=document.createElement('i');e.style.cssText='left:'+x+'px;top:'+y+'px;width:'+r+'px;height:'+r+'px;animation-delay:-'+Math.random()*4+'s';n.appendChild(e)}
+for(var j=0;j<40;j++)s(Math.random()*innerWidth,Math.random()*innerHeight*.8,1+Math.random()*2);
+n.onclick=function(e){if(e.target.tagName=='I')return;var r=n.getBoundingClientRect();s(e.clientX-r.left,e.clientY-r.top,4);
+var b=document.createElement('b');b.textContent=w[k++%w.length];b.style.left=e.clientX-r.left+'px';b.style.top=e.clientY-r.top+18+'px';n.appendChild(b);setTimeout(function(){b.remove()},6000)}
+})();
+</script>
+</section>
