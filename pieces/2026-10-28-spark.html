@@ -1,0 +1,37 @@
+<section data-date='2026-10-28' data-type='spark'>
+<style>
+.sp{background:#0b0710;margin:0;position:relative;height:360px;overflow:hidden;font:12px Georgia,serif;color:#e8d9c4;cursor:crosshair}
+.sp canvas{display:block;width:100%;height:100%}
+.sp p{position:absolute;left:14px;bottom:8px;margin:0;font-style:italic;opacity:.7;pointer-events:none}
+</style>
+<div class="sp"><canvas id="sc"></canvas><p id="sm">two things, apart. move to bring them closer.</p></div>
+<script>
+(function(){
+var c=document.getElementById('sc'),x=c.getContext('2d'),m=document.getElementById('sm'),
+W=c.width=600,H=c.height=360,mx=W/2,my=H/2,t=0,ps=[],
+A={x:90,y:180,vx:0,vy:0,h:200},B={x:510,y:180,vx:0,vy:0,h:20},fused=0,
+W2=['meet','merge','spark','both','new','more'];
+c.onmousemove=function(e){var r=c.getBoundingClientRect();mx=(e.clientX-r.left)*W/r.width;my=(e.clientY-r.top)*H/r.height};
+c.onclick=function(){fused=0;A.x=90;B.x=510;A.y=B.y=180;A.vx=A.vy=B.vx=B.vy=0;m.textContent='again, from apart.'};
+function boom(px,py){for(var i=0;i<90;i++){var a=Math.random()*6.28,s=Math.random()*4+.5;
+ps.push({x:px,y:py,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:1,h:i%2?200:20})}
+m.textContent=W2[Math.floor(Math.random()*W2.length)]+' — '+(++fused)+' collision'+(fused>1?'s':'')}
+function pull(o,tx,ty,k){o.vx+=(tx-o.x)*k;o.vy+=(ty-o.y)*k;o.vx*=.96;o.vy*=.96;o.x+=o.vx;o.y+=o.vy}
+function orb(o){var g=x.createRadialGradient(o.x,o.y,0,o.x,o.y,28);
+g.addColorStop(0,'hsla('+o.h+',90%,70%,1)');g.addColorStop(1,'hsla('+o.h+',90%,50%,0)');
+x.fillStyle=g;x.beginPath();x.arc(o.x,o.y,28,0,6.28);x.fill()}
+function f(){t++;x.globalCompositeOperation='source-over';x.fillStyle='rgba(11,7,16,.18)';x.fillRect(0,0,W,H);
+x.globalCompositeOperation='lighter';
+pull(A,mx-20,my,.0012*(1+t%1));pull(B,mx+20,my,.0012);
+var dx=B.x-A.x,dy=B.y-A.y,d=Math.sqrt(dx*dx+dy*dy);
+if(d<70){x.strokeStyle='hsla('+(20+d*3)+',90%,70%,'+(1-d/70)+')';x.lineWidth=1.5;x.beginPath();
+for(var i=0;i<=20;i++){var u=i/20;x.lineTo(A.x+dx*u+Math.sin(t*.5+i)*(70-d)/4*Math.sin(u*3.14),A.y+dy*u+Math.cos(t*.4+i)*(70-d)/4*Math.sin(u*3.14))}x.stroke()}
+if(d<30){boom((A.x+B.x)/2,(A.y+B.y)/2);A.vx=-6*dx/d;A.vy=-6*dy/d||-2;B.vx=6*dx/d;B.vy=6*dy/d||2;A.x-=8;B.x+=8}
+orb(A);orb(B);
+for(var i=ps.length;i--;){var p=ps[i];p.x+=p.vx;p.y+=p.vy;p.vx*=.97;p.vy*=.97;p.l-=.012;
+if(p.l<=0){ps.splice(i,1);continue}
+x.fillStyle='hsla('+(p.h+(1-p.l)*(p.h<100?-0:0)+(1-p.l)*80)+',90%,65%,'+p.l+')';x.fillRect(p.x,p.y,2,2)}
+requestAnimationFrame(f)}
+f()})();
+</script>
+</section>
