@@ -1,0 +1,37 @@
+<section data-date='2026-10-28' data-type='morning'>
+<style>
+.d{position:relative;height:100vh;overflow:hidden;cursor:crosshair;font:italic 300 clamp(18px,3vw,34px)/1.6 Georgia,serif;color:#fff;background:#0b0d1c}
+.d canvas{position:absolute;inset:0;width:100%;height:100%}
+.d p{position:absolute;left:0;right:0;bottom:12%;margin:0;text-align:center;letter-spacing:.2em;mix-blend-mode:difference;transition:opacity 2s}
+.d small{position:absolute;top:5%;width:100%;text-align:center;font:10px monospace;letter-spacing:.5em;opacity:.4}
+</style>
+<div class="d" id="dw"><canvas id="c"></canvas><small>BEFORE ANYTHING</small><p id="t">the day is blank</p></div>
+<script>
+(function(){
+var c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),
+W,H,h=0,g=0,w=['begin','yes','light','here','again','now','open','you'],n=0,s=[];
+function R(){W=c.width=innerWidth;H=c.height=innerHeight}
+R();onresize=R;
+for(var i=0;i<90;i++)s.push([Math.random(),Math.random()*.6,Math.random()]);
+dw.onmousemove=function(e){g=1-e.clientY/H};
+dw.onclick=function(e){t.style.opacity=0;setTimeout(function(){t.textContent=w[n++%w.length];t.style.opacity=1},600);g=Math.min(1,g+.3)};
+function f(k){
+h+=(g-h)*.03;
+var b=x.createLinearGradient(0,0,0,H);
+b.addColorStop(0,'hsl('+(230-h*20)+',45%,'+(6+h*30)+'%)');
+b.addColorStop(.7,'hsl('+(280+h*80)+',60%,'+(12+h*45)+'%)');
+b.addColorStop(1,'hsl('+(20+h*20)+',90%,'+(15+h*60)+'%)');
+x.fillStyle=b;x.fillRect(0,0,W,H);
+s.forEach(function(p){x.fillStyle='rgba(255,255,255,'+(1-h)*p[2]*(.5+.5*Math.sin(k/500+p[0]*40))+')';x.fillRect(p[0]*W,p[1]*H,1.5,1.5)});
+var y=H*(1.05-h*.5),r=H*.09;
+var q=x.createRadialGradient(W/2,y,0,W/2,y,r*6);
+q.addColorStop(0,'rgba(255,230,170,.9)');q.addColorStop(.15,'rgba(255,150,90,.4)');q.addColorStop(1,'rgba(255,100,80,0)');
+x.fillStyle=q;x.fillRect(0,0,W,H);
+x.fillStyle='#fff6d8';x.beginPath();x.arc(W/2,y,r,0,7);x.fill();
+x.fillStyle='#07080f';x.beginPath();x.moveTo(0,H);
+for(var i=0;i<=W;i+=10)x.lineTo(i,H*.88-Math.sin(i/130)*H*.03-Math.sin(i/37)*H*.01);
+x.lineTo(W,H);x.fill();
+requestAnimationFrame(f)}
+f(0)})();
+</script>
+</section>
