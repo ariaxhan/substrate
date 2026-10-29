@@ -1,0 +1,41 @@
+<section data-date='2026-10-29' data-type='pulse'>
+<style>
+.fx{position:relative;height:100vh;background:#efe8d8;overflow:hidden;font:italic 18px Georgia,serif;color:#2a2622;cursor:crosshair}
+.fx canvas{display:block;width:100%;height:100%}
+.fx p{position:absolute;left:0;right:0;bottom:12%;margin:0;text-align:center;letter-spacing:.4em;opacity:0;transition:opacity 2s}
+</style>
+<div class="fx"><canvas></canvas><p>halfway</p></div>
+<script>
+(()=>{
+const w=document.currentScript.previousElementSibling,c=w.firstChild,x=c.getContext('2d'),p=w.lastChild;
+let W,H,a=0,v=0,t=0,m=0,still=0,flip=1;
+const N=40,d=[...Array(N)].map((_,i)=>({s:i%2?1:-1,u:Math.random(),r:2+Math.random()*4}));
+const size=()=>{W=c.width=w.clientWidth;H=c.height=w.clientHeight};size();addEventListener('resize',size);
+w.onmousemove=e=>{m=(e.clientX/W-.5)*.6;still=0};
+w.onclick=()=>{flip=-flip;d.forEach(o=>o.s*=-1)};
+function f(){
+t+=.01;still++;
+const h=new Date(),dayPos=((h.getHours()+h.getMinutes()/60)-12)/12*.05;
+const target=m*Math.min(1,1-still/400)+dayPos*flip;
+v+=(target-a)*.02;v*=.93;a+=v;
+const L=Math.min(W,H)*.42,cx=W/2,cy=H*.58;
+x.fillStyle='rgba(239,232,216,.25)';x.fillRect(0,0,W,H);
+x.save();x.translate(cx,cy);
+x.strokeStyle='#2a2622';x.lineWidth=1;
+x.beginPath();x.moveTo(0,0);x.lineTo(-18,40);x.lineTo(18,40);x.closePath();x.stroke();
+x.rotate(a);
+x.beginPath();x.moveTo(-L,0);x.lineTo(L,0);x.stroke();
+d.forEach((o,i)=>{
+ const side=o.s,slide=Math.max(0,Math.min(1,.5+(side*Math.sin(a)*2.5)*-1+Math.sin(t+i)*.02));
+ const px=side*(L*(.1+.88*o.u)),py=-o.r-Math.abs(Math.sin(t*2+i))*Math.max(0,6-Math.abs(a)*120);
+ x.fillStyle=side<0?'#c2552b':'#27496d';
+ x.beginPath();x.arc(px,py,o.r,0,7);x.fill();
+});
+x.restore();
+x.fillStyle='#2a2622';x.beginPath();x.arc(cx,cy,3,0,7);x.fill();
+if(Math.abs(a)<.012){p.style.opacity=1}else p.style.opacity=0;
+requestAnimationFrame(f)}
+f();
+})();
+</script>
+</section>
