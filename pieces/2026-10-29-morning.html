@@ -1,0 +1,22 @@
+<section data-date='2026-10-29' data-type='morning'>
+<style>
+#d{position:relative;height:100vh;overflow:hidden;cursor:crosshair;--x:50%;--y:85%;--h:30;
+background:radial-gradient(circle at var(--x) var(--y),hsl(var(--h) 90% 88%),hsl(calc(var(--h) + 180) 30% 22%) 120%);
+font:italic 22px/2.2 Georgia,serif;color:#fff;transition:background .2s}
+#d p{margin:0;padding:0 12vw;position:absolute;top:12vh;width:76vw;color:transparent;
+background:radial-gradient(circle 160px at var(--x) var(--y),#3a2a20,transparent);-webkit-background-clip:text;background-clip:text;
+border-bottom:1px solid #fff2}
+#d i{position:absolute;font-size:18px;color:#2a1c14;opacity:0;animation:r 3s forwards;transform:translate(-50%,-50%);pointer-events:none}
+@keyframes r{to{opacity:.85}}
+#s{position:absolute;left:var(--x);top:var(--y);width:44px;height:44px;margin:-22px;border-radius:50%;background:#fff;box-shadow:0 0 90px 40px #ffe2a8aa;pointer-events:none}
+</style>
+<div id=d><p>nothing has happened yet. the page is still warm from sleeping. every line here is waiting for a verb. you are the first thing the light touches. begin anywhere. nothing has happened yet.</p><div id=s></div></div>
+<script>
+var d=document.getElementById('d'),w='rise open begin say kindle first yes wake'.split(' '),n=0;
+d.onmousemove=function(e){var y=e.clientY/innerHeight;
+d.style.setProperty('--x',e.clientX+'px');d.style.setProperty('--y',e.clientY+'px');
+d.style.setProperty('--h',20+40*(1-y))};
+d.onclick=function(e){var t=document.createElement('i');t.textContent=w[n++%w.length];
+t.style.left=e.clientX+'px';t.style.top=e.clientY+'px';d.appendChild(t)};
+</script>
+</section>
