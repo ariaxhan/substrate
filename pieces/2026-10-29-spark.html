@@ -1,0 +1,58 @@
+<section data-date='2026-10-29' data-type='spark'>
+<style>
+#c9{position:relative;background:#0b0a10;height:100vh;overflow:hidden;cursor:crosshair;font:12px/1 Georgia,serif;color:#cfc8b8}
+#c9 canvas{display:block;width:100%;height:100%}
+#c9 p{position:absolute;left:0;right:0;bottom:6%;margin:0;text-align:center;letter-spacing:.4em;transition:opacity 1.5s;opacity:.5}
+</style>
+<div id="c9"><canvas></canvas><p id="t9">move toward it</p>
+<script>
+(function(){
+var d=document.getElementById('c9'),c=d.querySelector('canvas'),x=c.getContext('2d'),t=document.getElementById('t9');
+var W,H,m={x:0,y:0},P=[],f=0,mg=0;
+function rs(){W=c.width=d.clientWidth;H=c.height=d.clientHeight;m.x=W*.8;m.y=H*.5}
+rs();addEventListener('resize',rs);
+var A={x:W*.2,y:H*.5,vx:0,vy:0,r:26,h:20},B={x:m.x,y:m.y,vx:0,vy:0,r:26,h:200};
+function go(e){var q=c.getBoundingClientRect();m.x=e.clientX-q.left;m.y=e.clientY-q.top}
+d.addEventListener('mousemove',go);
+d.addEventListener('click',function(e){go(e);
+ A.x=Math.random()*W;A.y=Math.random()*H;mg=0;t.textContent='again';t.style.opacity=.5});
+function burst(px,py){
+ for(var i=0;i<120;i++){var a=Math.random()*6.283,s=Math.random()*5+1;
+  P.push({x:px,y:py,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:1,h:i%2?20:200,g:i%5==0})}
+}
+function step(){
+ f++;
+ x.fillStyle='rgba(11,10,16,.18)';x.fillRect(0,0,W,H);
+ var dx,dy,D;
+ // B follows pointer, A orbits drifting toward B
+ B.vx+=(m.x-B.x)*.01;B.vy+=(m.y-B.y)*.01;B.vx*=.88;B.vy*=.88;B.x+=B.vx;B.y+=B.vy;
+ dx=B.x-A.x;dy=B.y-A.y;D=Math.hypot(dx,dy)||1;
+ if(!mg){A.vx+=dx/D*.12+Math.sin(f*.03)*.05;A.vy+=dy/D*.12+Math.cos(f*.03)*.05;
+  A.vx*=.97;A.vy*=.97;A.x+=A.vx;A.y+=A.vy}
+ if(!mg){
+  // filaments reach out as they approach
+  if(D<260){var n=Math.floor((260-D)/20)+1;
+   for(var i=0;i<n;i++){var k=i/n;
+    x.strokeStyle='hsla('+(20+180*k)+',80%,65%,'+(1-D/260)*.6+')';
+    x.beginPath();x.moveTo(A.x,A.y);
+    x.quadraticCurveTo((A.x+B.x)/2+Math.sin(f*.1+i)*30*(k+.3),(A.y+B.y)/2+Math.cos(f*.1+i)*30*(k+.3),B.x,B.y);x.stroke()}}
+  [A,B].forEach(function(o){x.fillStyle='hsl('+o.h+',85%,60%)';x.beginPath();x.arc(o.x,o.y,o.r,0,6.283);x.fill()});
+  if(D<A.r+B.r){mg=f;burst((A.x+B.x)/2,(A.y+B.y)/2);t.textContent='synthesis';t.style.opacity=1}
+ }else{
+  // merged: a third hue made of both, pulsing at the collision site
+  var cx=(A.x+B.x)/2,cy=(A.y+B.y)/2,p=Math.sin((f-mg)*.08);
+  x.fillStyle='hsl('+(110+p*50)+',70%,'+(60+p*8)+'%)';
+  x.beginPath();x.arc(cx,cy,34+p*5,0,6.283);x.fill();
+  A.x=B.x-34;A.y=B.y;B.x+=0;
+  if(f-mg>400){mg=0;A.x=Math.random()<.5?0:W;A.y=Math.random()*H;A.vx=A.vy=0;t.textContent='move toward it'}
+ }
+ P.forEach(function(q){q.x+=q.vx;q.y+=q.vy;q.vx*=.96;q.vy*=.96;q.l-=.012;
+  x.fillStyle='hsla('+(q.g?110:q.h)+',90%,65%,'+Math.max(q.l,0)+')';x.fillRect(q.x,q.y,2,2)});
+ P=P.filter(function(q){return q.l>0});
+ requestAnimationFrame(step)
+}
+step();
+})();
+</script>
+</div>
+</section>
