@@ -1,0 +1,24 @@
+<section data-date='2026-10-28' data-type='reflection'>
+<style>
+.nt{position:relative;height:100vh;background:linear-gradient(#05060f,#10142b 70%,#1d1a33);overflow:hidden;cursor:crosshair;font:italic 1.1rem Georgia,serif;color:#cfd6ff}
+.nt canvas{position:absolute;inset:0}
+.nt p{position:absolute;bottom:8%;width:100%;text-align:center;margin:0;opacity:.5;letter-spacing:.3em;pointer-events:none;transition:opacity 3s}
+</style>
+<div class="nt"><canvas id="c"></canvas><p id="t">the day is done. touch the dark.</p></div>
+<script>
+(()=>{const c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t');
+let W,H,S=[],M=[0,0],W8=['rest','enough','held','soft','tomorrow','breathe','kept','still','slow'];
+const R=()=>{W=c.width=c.offsetWidth;H=c.height=c.offsetHeight};R();onresize=R;
+const add=(a,b,w)=>S.push({a,b,r:1+Math.random()*2,p:Math.random()*6,w,t:0});
+for(let i=0;i<30;i++)add(Math.random()*W,Math.random()*H*.8);
+c.onclick=e=>{const r=c.getBoundingClientRect();add(e.clientX-r.left,e.clientY-r.top,W8[S.length%9]);t.style.opacity=0};
+c.onmousemove=e=>{const r=c.getBoundingClientRect();M=[e.clientX-r.left,e.clientY-r.top]};
+(function f(k){x.clearRect(0,0,W,H);x.font='italic 15px Georgia';
+S.forEach((s,i)=>{s.t=Math.min(1,s.t+.01);const d=Math.hypot(s.a-M[0],s.b-M[1]),g=Math.max(0,1-d/160),
+al=(.4+.3*Math.sin(k/700+s.p))*(s.w?1:.7)+g;
+x.fillStyle=`rgba(220,225,255,${Math.min(1,al*s.t)})`;x.beginPath();x.arc(s.a,s.b,s.r*(1+g*2),0,7);x.fill();
+if(s.w){x.fillStyle=`rgba(255,220,180,${s.t*.8})`;x.fillText(s.w,s.a+8,s.b-8)}
+S.forEach((o,j)=>{if(j<i&&g>0){const h=Math.hypot(s.a-o.a,s.b-o.b);if(h<140){x.strokeStyle=`rgba(200,210,255,${g*(1-h/140)*.5})`;x.beginPath();x.moveTo(s.a,s.b);x.lineTo(o.a,o.b);x.stroke()}}})});
+requestAnimationFrame(f)})(0)})()
+</script>
+</section>
