@@ -1,0 +1,41 @@
+<section data-date='2026-10-30' data-type='spark'>
+<style>
+.cv{position:relative;background:#0b0a10;height:360px;overflow:hidden;cursor:crosshair;font:15px Georgia,serif;color:#ddd}
+.cv b{position:absolute;font-weight:400;white-space:nowrap;transform:translate(-50%,-50%);transition:color .3s;will-change:left,top}
+.cv i{position:absolute;bottom:8px;left:12px;font:11px monospace;color:#665;font-style:normal}
+</style>
+<div class="cv" id="cv"><i>move — let the two meet</i></div>
+<script>
+(function(){
+var c=document.getElementById('cv'),
+A=['I','was','a','river','going','east','alone'],
+B=['you','were','a','stone','holding','still','always'],
+S=['we','became','a','delta','braiding','slow','silt'],
+W=[],mx=-1,my=-1;
+function mk(t,x,y,col,s){var e=document.createElement('b');e.textContent=t;e.style.color=col;c.appendChild(e);
+return{e:e,x:x,y:y,vx:(Math.random()-.5)*2,vy:(Math.random()-.5)*2,col:col,s:s,m:0}}
+A.forEach(function(t,i){W.push(mk(t,40+i*20,60+i*30,'#e8845c',S[i]))});
+B.forEach(function(t,i){W.push(mk(t,400-i*20,300-i*30,'#5cb8e8',S[i]))});
+c.onmousemove=function(e){var r=c.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top};
+c.onclick=function(){W.forEach(function(w){w.vx=(Math.random()-.5)*8;w.vy=(Math.random()-.5)*8;if(w.m){w.m=0;w.e.textContent=w.o;w.e.style.color=w.col}})};
+function f(){var w=c.clientWidth,h=c.clientHeight;
+W.forEach(function(a){
+var dx=a.x-mx,dy=a.y-my,d=Math.hypot(dx,dy);
+if(d<90&&d>1){a.vx+=dx/d*.15;a.vy+=dy/d*.15}
+a.vx+=(w/2-a.x)*.0002;a.vy+=(h/2-a.y)*.0002;
+a.x+=a.vx;a.y+=a.vy;
+if(a.x<10||a.x>w-10)a.vx*=-1;if(a.y<10||a.y>h-10)a.vy*=-1;
+a.vx*=.995;a.vy*=.995;
+a.e.style.left=a.x+'px';a.e.style.top=a.y+'px'});
+for(var i=0;i<7;i++)for(var j=7;j<14;j++){var p=W[i],q=W[j];
+if(!p.m&&!q.m&&Math.hypot(p.x-q.x,p.y-q.y)<28){
+p.o=p.e.textContent;q.o=q.e.textContent;
+var k=i,n=j;p.m=q.m=1;
+p.e.textContent=q.e.textContent=p.s;
+p.e.style.color=q.e.style.color='#f2e6a0';
+q.x=p.x=(p.x+q.x)/2;q.y=p.y=(p.y+q.y)/2;
+p.vx=q.vx=(p.vx+q.vx)/2;p.vy=q.vy=(p.vy+q.vy)/2}}
+requestAnimationFrame(f)}
+f()})();
+</script>
+</section>
