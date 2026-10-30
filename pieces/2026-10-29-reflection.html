@@ -1,0 +1,39 @@
+<section data-date='2026-10-29' data-type='reflection'>
+<style>
+#n{position:relative;height:100vh;margin:0;overflow:hidden;background:linear-gradient(#05060f,#101636 70%,#3a2a4a);font:italic 18px Georgia,serif;cursor:crosshair}
+#n canvas{position:absolute;inset:0;width:100%;height:100%}
+#h{position:absolute;bottom:9%;width:100%;text-align:center;color:#cdd3ff;letter-spacing:.3em;transition:opacity 4s;opacity:.7}
+</style>
+<div id="n"><canvas id="c"></canvas><div id="h">the day is done. touch the dark.</div></div>
+<script>
+(function(){
+var n=document.getElementById('n'),c=document.getElementById('c'),x=c.getContext('2d'),
+W,H,S=[],m={x:-9,y:-9},T=0,
+words=['rest','enough','held','soft','kept','still','slept','here','whole','let go','breathe','tomorrow'];
+function R(){W=c.width=n.clientWidth;H=c.height=n.clientHeight}
+R();window.onresize=R;
+function add(px,py,w){S.push({x:px,y:py,t:T,p:Math.random()*6,w:w||words[S.length%words.length]})}
+for(var i=0;i<40;i++)add(Math.random()*W,Math.random()*H*.8,'')
+n.onclick=function(e){var r=n.getBoundingClientRect();add(e.clientX-r.left,e.clientY-r.top);
+document.getElementById('h').style.opacity=0}
+n.onmousemove=function(e){var r=n.getBoundingClientRect();m.x=e.clientX-r.left;m.y=e.clientY-r.top}
+function f(){
+T++;x.clearRect(0,0,W,H);x.textAlign='center';x.font='italic 16px Georgia';
+var near=[];
+S.forEach(function(s){
+var a=Math.min(1,(T-s.t)/90),tw=.6+.4*Math.sin(T/40+s.p),
+d=Math.hypot(s.x-m.x,s.y-m.y),g=d<140?1-d/140:0;
+if(d<140)near.push(s);
+x.fillStyle='rgba(235,238,255,'+a*tw+')';
+x.shadowBlur=6+g*24;x.shadowColor='#aab4ff';
+x.beginPath();x.arc(s.x,s.y,(s.w?2.4:1.2)*a+g*2,0,7);x.fill();
+if(s.w){x.shadowBlur=0;x.fillStyle='rgba(255,230,200,'+a*.8+')';x.fillText(s.w,s.x,s.y-12-8*(1-a))}
+});
+x.shadowBlur=0;x.lineWidth=.6;
+for(var i=0;i<near.length;i++)for(var j=i+1;j<near.length;j++){
+var p=near[i],q=near[j],l=Math.hypot(p.x-q.x,p.y-q.y);
+if(l<200){x.strokeStyle='rgba(170,180,255,'+(1-l/200)*.5+')';x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke()}}
+requestAnimationFrame(f)}
+f()})();
+</script>
+</section>
