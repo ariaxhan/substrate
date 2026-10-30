@@ -1,0 +1,51 @@
+<section data-date='2026-10-30' data-type='digest'>
+<style>
+#k{position:relative;height:100vh;background:#efe8d8;overflow:hidden;cursor:crosshair;font:italic 15px Georgia,serif;color:#2b2a26}
+#k canvas{position:absolute;inset:0;width:100%;height:100%}
+#k p{position:absolute;left:24px;bottom:18px;margin:0;letter-spacing:.04em;opacity:.7;pointer-events:none}
+</style>
+<div id="k"><canvas></canvas><p id="t">scattered. click to remember.</p></div>
+<script>
+(()=>{
+const k=document.getElementById('k'),c=k.querySelector('canvas'),x=c.getContext('2d'),t=document.getElementById('t');
+let W,H,N=[],G=60,mx=-9,my=-9,tick=0;
+const L=['scattered.','a thread.','two things agree.','a lattice.','it holds weight.','structure remembers.'];
+function rs(){W=c.width=k.clientWidth;H=c.height=k.clientHeight}
+rs();addEventListener('resize',rs);
+function add(px,py){N.push({x:px,y:py,vx:Math.random()-.5,vy:Math.random()-.5,s:0,d:0})}
+for(let i=0;i<40;i++)add(Math.random()*W,Math.random()*H);
+k.onclick=e=>{for(let i=0;i<5;i++)add(e.offsetX+(Math.random()-.5)*50,e.offsetY+(Math.random()-.5)*50)};
+k.onmousemove=e=>{mx=e.offsetX;my=e.offsetY};
+(function f(){
+x.fillStyle='rgba(239,232,216,.35)';x.fillRect(0,0,W,H);
+let cr=0;
+for(const a of N){
+a.d=0;
+for(const b of N)if(a!=b&&Math.hypot(a.x-b.x,a.y-b.y)<110)a.d++;
+if(a.d>=3)a.s=Math.min(1,a.s+.01);
+const gx=Math.round(a.x/G)*G,gy=Math.round(a.y/G)*G;
+a.x+=a.vx*(1-a.s)+(gx-a.x)*a.s*.04;
+a.y+=a.vy*(1-a.s)+(gy-a.y)*a.s*.04;
+if(a.x<0||a.x>W)a.vx*=-1;if(a.y<0||a.y>H)a.vy*=-1;
+if(a.s>.9)cr++;
+}
+for(let i=0;i<N.length;i++)for(let j=i+1;j<N.length;j++){
+const a=N[i],b=N[j],d=Math.hypot(a.x-b.x,a.y-b.y);
+if(d<110){
+const s=(a.s+b.s)/2,h=Math.hypot((a.x+b.x)/2-mx,(a.y+b.y)/2-my)<90;
+x.strokeStyle=h?'#b5472b':`rgba(43,42,38,${.15+s*.6})`;
+x.lineWidth=h?1.6:.5+s;
+x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();
+if(h){x.fillStyle='#b5472b';x.font='10px monospace';x.fillText(d.toFixed(0),(a.x+b.x)/2,(a.y+b.y)/2)}
+}}
+for(const a of N){
+x.fillStyle=a.s>.9?'#b5472b':'#2b2a26';
+const r=2+a.s*3;
+if(a.s>.9)x.fillRect(a.x-r,a.y-r,r*2,r*2);else{x.beginPath();x.arc(a.x,a.y,r,0,7);x.fill()}
+}
+if(++tick%20==0)t.textContent=L[Math.min(5,Math.floor(cr/Math.max(6,N.length/6)))]+'  '+cr+'/'+N.length;
+requestAnimationFrame(f)
+})();
+})();
+</script>
+</section>
