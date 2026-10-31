@@ -1,0 +1,26 @@
+<section data-date='2026-10-31' data-type='morning'>
+<style>
+.d{position:relative;height:100vh;overflow:hidden;margin:0;cursor:crosshair;background:linear-gradient(#0b0f1f,hsl(var(--h,20) 70% var(--l,12%)) 85%,#000);transition:--l 1s;font:italic 5vmin/1.5 Georgia,serif;color:#fff;display:flex;align-items:center;justify-content:center;text-align:center}
+.d i{position:absolute;left:var(--x,50%);top:var(--y,90%);width:30vmin;height:30vmin;margin:-15vmin;border-radius:50%;background:radial-gradient(#fff8,#fb6a 30%,#0000 70%);pointer-events:none}
+.d p{margin:0;max-width:70vw;position:relative}
+.d b{font-weight:400;opacity:var(--o,.05);transition:opacity .4s}
+</style>
+<div class="d" id="d"><i></i><p id="p"></p></div>
+<script>
+(function(){
+var d=document.getElementById('d'),p=document.getElementById('p'),
+W=['the day has not yet decided','what it will be','you hold','the first word','begin'],n=0,s=[];
+function w(t){p.innerHTML='';s=[];for(var c of t){var e=document.createElement('b');e.textContent=c;p.appendChild(e);s.push(e)}}
+w(W[0]);
+d.onmousemove=function(e){
+var r=d.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+d.style.setProperty('--x',x+'px');d.style.setProperty('--y',y+'px');
+d.style.setProperty('--h',20+30*(1-y/r.height));
+d.style.setProperty('--l',(12+30*y/r.height)+'%');
+s.forEach(function(b){var q=b.getBoundingClientRect(),
+k=Math.hypot(q.left-e.clientX,q.top-e.clientY)/r.width;
+b.style.opacity=Math.max(.05,1-k*3)})};
+d.onclick=function(){n=(n+1)%W.length;w(W[n]);d.style.setProperty('--h',40+n*8)}
+})()
+</script>
+</section>
