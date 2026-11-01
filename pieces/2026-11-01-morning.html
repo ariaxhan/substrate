@@ -1,0 +1,22 @@
+<section data-date='2026-11-01' data-type='morning'>
+<style>
+#d{position:relative;height:100vh;overflow:hidden;cursor:crosshair;font:italic 1.3rem Georgia,serif;background:#0b0d1a;transition:background 2s}
+#d i{position:absolute;left:0;right:0;bottom:0;height:var(--h,10%);background:linear-gradient(#f7b267,#e4572e 60%,#1b1030);filter:blur(30px);transition:height .6s}
+#d p{position:absolute;margin:0;left:50%;top:38%;transform:translateX(-50%);color:#fff;opacity:var(--o,.1);letter-spacing:.4em;transition:opacity .6s;text-align:center}
+#d:hover p{letter-spacing:.7em}
+</style>
+<div id=d><i></i><p id=t>not yet</p></div>
+<script>
+(function(){
+var d=document.getElementById('d'),t=document.getElementById('t'),
+w=['not yet','almost','a line','a door','a breath','begin'],n=0;
+d.onmousemove=function(e){
+var y=1-e.clientY/innerHeight;
+d.style.setProperty('--h',(10+y*80)+'%');
+d.style.setProperty('--o',.1+y*.9);
+d.style.background='hsl('+(230-y*190)+',45%,'+(7+y*35)+'%)';
+};
+d.onclick=function(){n=(n+1)%w.length;t.textContent=w[n]};
+})();
+</script>
+</section>
