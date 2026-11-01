@@ -1,0 +1,36 @@
+<section data-date='2026-10-31' data-type='reflection'>
+<style>
+#n{position:relative;height:100vh;min-height:360px;background:radial-gradient(ellipse at 50% 120%,#1b2440,#07091a 70%);overflow:hidden;cursor:crosshair;font:italic 300 1.1rem Georgia,serif;color:#c9d2f0}
+#n canvas{position:absolute;inset:0;width:100%;height:100%}
+#n p{position:absolute;bottom:8%;width:100%;text-align:center;margin:0;letter-spacing:.4em;opacity:.45;transition:opacity 3s;pointer-events:none}
+</style>
+<div id="n"><canvas></canvas><p>the day is done. touch the dark.</p></div>
+<script>
+(function(){
+var n=document.getElementById('n'),c=n.firstChild,x=c.getContext('2d'),S=[],W=['rest','enough','held','softly','begun','breathe','kept','still','tomorrow','let go','warm','whole'],w,h;
+function z(){w=c.width=n.clientWidth;h=c.height=n.clientHeight}
+z();onresize=z;
+function add(px,py,t){S.push({x:px,y:py,t:t||0,w:Math.random()<.5?W[S.length%W.length]:'',p:Math.random()*6,s:1+Math.random()*2})}
+for(var i=0;i<30;i++)add(Math.random()*w,Math.random()*h*.8,-1);
+n.onclick=function(e){var r=n.getBoundingClientRect();add(e.clientX-r.left,e.clientY-r.top,1);n.lastChild.style.opacity=0};
+var mx=-1e3,my=-1e3;
+n.onmousemove=function(e){var r=n.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top};
+function f(T){
+x.clearRect(0,0,w,h);x.font='italic 15px Georgia';x.textAlign='center';
+S.forEach(function(a,i){
+var d=Math.hypot(a.x-mx,a.y-my),g=d<120?1-d/120:0,tw=.5+.5*Math.sin(T/900+a.p);
+if(a.t>0&&a.t<1)a.t+=.02;
+var k=a.t<0?.35:a.t>=1?1:a.t;
+x.globalAlpha=Math.min(1,(.25+.5*tw)*k+g);
+x.fillStyle='#fff';x.beginPath();x.arc(a.x,a.y,a.s*(1+g*2),0,7);x.fill();
+if(g>0||a.t>0){
+S.forEach(function(b,j){
+if(j>i){var q=Math.hypot(a.x-b.x,a.y-b.y);
+if(q<150&&(a.t>0||b.t>0||g>.3)){x.globalAlpha=(1-q/150)*.35*Math.max(g,k*.6);
+x.strokeStyle='#8fa6ff';x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}}})}
+if(a.w&&(g>.4||a.t>0)){x.globalAlpha=Math.max(g,.5*k);x.fillStyle='#dfe6ff';x.fillText(a.w,a.x,a.y-12)}
+});
+requestAnimationFrame(f)}
+f(0)})();
+</script>
+</section>
