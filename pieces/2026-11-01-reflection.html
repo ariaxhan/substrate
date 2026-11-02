@@ -1,0 +1,39 @@
+<section data-date='2026-11-01' data-type='reflection'>
+<style>
+section{margin:0;height:100vh;background:radial-gradient(ellipse at 50% 120%,#2a2350,#0a0b1c 60%,#020208);overflow:hidden;position:relative;cursor:crosshair;font-family:Georgia,serif}
+canvas{position:absolute;inset:0;width:100%;height:100%}
+p{position:absolute;bottom:6vh;width:100%;text-align:center;color:#8a86b8;font-style:italic;letter-spacing:.3em;font-size:14px;margin:0;transition:opacity 4s;pointer-events:none}
+</style>
+<canvas id="c"></canvas>
+<p id="t">the day is complete</p>
+<script>
+(function(){
+var c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),
+S=[],W,H,m={x:-9,y:-9},
+words='rest still enough soft here later slow breathe held kept done again'.split(' ');
+function r(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight}
+r();onresize=r;
+function add(a,b,w){S.push({x:a,y:b,w:w,t:0,p:Math.random()*6})}
+for(var i=0;i<30;i++)add(Math.random()*W,Math.random()*H*.8,'');
+c.parentNode.onclick=function(e){
+add(e.clientX,e.clientY,words[S.length%words.length]);t.style.opacity=0};
+onmousemove=function(e){m.x=e.clientX;m.y=e.clientY};
+function f(){
+x.clearRect(0,0,W,H);x.font='italic 16px Georgia';x.textAlign='center';
+S.forEach(function(s,i){
+s.t+=.01;s.p+=.03;
+var d=Math.hypot(s.x-m.x,s.y-m.y),g=Math.max(0,1-d/160),
+a=Math.min(1,s.t)*(.45+.2*Math.sin(s.p))+g;
+x.fillStyle='rgba(255,246,220,'+a+')';
+x.beginPath();x.arc(s.x,s.y,1+g*2+(s.w?1.5:0),0,7);x.fill();
+if(s.w){x.fillStyle='rgba(200,190,255,'+Math.min(.8,s.t*.3)+')';x.fillText(s.w,s.x,s.y-12)}
+for(var j=i+1;j<S.length;j++){
+var o=S[j],e=Math.hypot(s.x-o.x,s.y-o.y);
+if(e<130&&g>0){x.strokeStyle='rgba(180,170,255,'+g*(1-e/130)*.6+')';
+x.beginPath();x.moveTo(s.x,s.y);x.lineTo(o.x,o.y);x.stroke()}}
+});
+requestAnimationFrame(f)}
+f();
+})();
+</script>
+</section>
