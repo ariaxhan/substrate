@@ -1,0 +1,41 @@
+<section data-date='2026-11-02' data-type='spark'>
+<style>
+.cv{background:#0b0a10;margin:0;position:relative;overflow:hidden;font:12px Georgia,serif;color:#ddd;height:360px;cursor:crosshair}
+.cv canvas{display:block;width:100%;height:100%}
+.cv p{position:absolute;left:12px;bottom:8px;margin:0;font-style:italic;color:#9a8fb5;pointer-events:none;letter-spacing:.08em}
+</style>
+<div class="cv"><canvas id="c"></canvas><p id="t">two things, apart. move between them.</p></div>
+<script>
+(function(){
+var c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),W,H,m={x:-9,y:-9},
+A=[],B=[],S=[],words=['rust','ember','salt','glass','tide','static','moss','wire'],syn=0;
+function rs(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight}
+rs();
+for(var i=0;i<24;i++){A.push({x:Math.random()*W*.4,y:Math.random()*H,vx:Math.random()-.5,vy:Math.random()-.5});
+B.push({x:W*.6+Math.random()*W*.4,y:Math.random()*H,vx:Math.random()-.5,vy:Math.random()-.5})}
+c.onmousemove=function(e){var r=c.getBoundingClientRect();m.x=e.clientX-r.left;m.y=e.clientY-r.top};
+c.onclick=function(){for(var i=0;i<A.length;i++){A[i].x=m.x-60-Math.random()*40;B[i].x=m.x+60+Math.random()*40;A[i].y=B[i].y=m.y+(Math.random()-.5)*80;A[i].vx=2;B[i].vx=-2}};
+function mv(p,k){
+var dx=m.x-p.x,dy=m.y-p.y,d=Math.hypot(dx,dy)+1;
+p.vx+=dx/d*.04*k;p.vy+=dy/d*.04*k;
+if(d<90){p.vx-=dx/d*.1;p.vy-=dy/d*.1}
+p.vx*=.99;p.vy*=.99;p.x+=p.vx;p.y+=p.vy;
+if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1}
+function f(){
+x.fillStyle='rgba(11,10,16,.18)';x.fillRect(0,0,W,H);
+A.forEach(function(p){mv(p,1)});B.forEach(function(p){mv(p,1)});
+A.forEach(function(a){B.forEach(function(b){
+var d=Math.hypot(a.x-b.x,a.y-b.y);
+if(d<14){S.push({x:(a.x+b.x)/2,y:(a.y+b.y)/2,l:1,w:words[S.length%8]});
+var vx=(a.vx+b.vx)/2,vy=(a.vy+b.vy)/2;a.vx=-vy*2;a.vy=vx*2;b.vx=vy*2;b.vy=-vx*2;syn++;}
+else if(d<70){x.strokeStyle='rgba(255,190,110,'+(1-d/70)*.5+')';x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}
+})});
+A.forEach(function(p){x.fillStyle='#4fd0e8';x.fillRect(p.x-2,p.y-2,4,4)});
+B.forEach(function(p){x.fillStyle='#ff5e8a';x.fillRect(p.x-2,p.y-2,4,4)});
+S=S.filter(function(s){s.l-=.012;s.y-=.3;x.fillStyle='rgba(255,230,170,'+s.l+')';x.fillText(s.w,s.x,s.y);return s.l>0});
+if(S.length>200)S.length=200;
+if(syn>0)t.textContent=syn+' meetings. neither one is what it was.';
+requestAnimationFrame(f)}
+f()})();
+</script>
+</section>
