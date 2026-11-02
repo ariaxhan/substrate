@@ -1,0 +1,50 @@
+<section data-date='2026-11-02' data-type='pulse'>
+<style>
+#h{position:relative;margin:0;height:100vh;background:#efe8d8;overflow:hidden;font:italic 15px Georgia,serif;color:#2a2540;cursor:crosshair}
+#h canvas{display:block;width:100%;height:100%}
+#h p{position:absolute;left:0;right:0;bottom:7vh;text-align:center;margin:0;letter-spacing:.3em;transition:opacity 1.5s}
+</style>
+<div id="h"><canvas id="c"></canvas><p id="t">hold still</p></div>
+<script>
+(function(){
+var c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),
+W,H,a=0,v=0,g=0,s=1,calm=0,N=24,r=[],pu=0;
+function z(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight}z();onresize=z;
+for(var i=0;i<N;i++)r.push(Math.random());
+var h=document.getElementById('h');
+h.onmousemove=function(e){g=(e.clientX/W-.5)*.6*s;calm=0};
+h.onclick=function(e){s=-s;v+=.15*s;pu=1;t.textContent=s>0?'morning leans':'evening leans'};
+function L(k,col){x.fillStyle=col;x.beginPath();x.arc(k[0],k[1],k[2],0,7);x.fill()}
+function f(T){
+x.clearRect(0,0,W,H);
+calm++;if(calm>90)g*=.97;
+v+=(g-a)*.02;v*=.93;a+=v;
+var q=Math.abs(a)<.012;
+t.style.opacity=q?1:.35;if(q&&!pu)t.textContent='twelve';if(!q&&!pu)t.textContent='hold still';
+if(calm<2)pu=0;
+var cx=W/2,cy=H*.55,L2=Math.min(W*.4,380);
+// ripple from fulcrum
+x.strokeStyle='#2a2540';
+for(var i=0;i<5;i++){var p=((T/2400+i/5)%1);x.globalAlpha=(1-p)*(q?.35:.08);x.beginPath();x.arc(cx,cy,10+p*L2,0,7);x.stroke()}
+x.globalAlpha=1;
+// fulcrum
+x.fillStyle='#2a2540';x.beginPath();x.moveTo(cx,cy);x.lineTo(cx-18,cy+H*.25);x.lineTo(cx+18,cy+H*.25);x.fill();
+x.save();x.translate(cx,cy);x.rotate(a);
+x.fillRect(-L2,-2,L2*2,4);
+for(var side=-1;side<=1;side+=2){
+var col=(side*s<0)?'#d9923a':'#3c3a78';
+for(var i=0;i<N;i++){
+var ph=r[i]*6.28+T/1800*(side),R=8+r[i]*60;
+var px=side*(L2-30)+Math.cos(ph)*R*.6*side,py=-20-Math.abs(Math.sin(ph))*R;
+// weight settles by tilt: heavier side sinks
+x.globalAlpha=.75;x.fillStyle=col;x.beginPath();x.arc(px,py,2+r[i]*3,0,7);x.fill();
+}
+x.globalAlpha=1;x.fillStyle=col;x.beginPath();x.arc(side*L2,0,7,0,7);x.fill();
+}
+x.restore();
+x.fillStyle='#efe8d8';x.beginPath();x.arc(cx,cy,5,0,7);x.fill();
+requestAnimationFrame(f)}
+requestAnimationFrame(f)
+})();
+</script>
+</section>
