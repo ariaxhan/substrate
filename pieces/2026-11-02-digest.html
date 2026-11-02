@@ -1,0 +1,54 @@
+<section data-date='2026-11-02' data-type='digest'>
+<style>
+.cx{margin:0;background:#0e0c0a;position:relative;height:100vh;overflow:hidden;font:italic 15px Georgia,serif;color:#c9b58a}
+.cx canvas{display:block;width:100%;height:100%;cursor:crosshair}
+.cx p{position:absolute;left:22px;bottom:16px;margin:0;opacity:.55;letter-spacing:.08em;pointer-events:none}
+</style>
+<div class="cx"><canvas id="cv"></canvas><p id="t">a scatter of facts. touch one.</p></div>
+<script>
+(()=>{
+const c=document.getElementById('cv'),x=c.getContext('2d'),t=document.getElementById('t');
+let W,H,P=[],m=null,G=70;
+const words=['seen','noted','twice','linked','kept','known','held','sure'];
+function rs(){W=c.width=c.clientWidth;H=c.height=c.clientHeight}
+rs();addEventListener('resize',rs);
+function add(px,py){P.push({x:px,y:py,vx:0,vy:0,a:0,w:words[P.length%8]});
+ t.textContent=P.length+(P.length<12?' facts. they want to be near.':' facts. a shape is remembering itself.')}
+for(let i=0;i<14;i++)add(Math.random()*W,Math.random()*H);
+c.onclick=e=>add(e.offsetX,e.offsetY);
+c.onmousemove=e=>m={x:e.offsetX,y:e.offsetY};
+c.onmouseleave=()=>m=null;
+function f(){
+ x.fillStyle='rgba(14,12,10,.22)';x.fillRect(0,0,W,H);
+ for(const p of P){
+  // snap toward nearest lattice point: noise settles into order
+  const gx=Math.round(p.x/G)*G,gy=Math.round(p.y/G)*G;
+  p.vx+=(gx-p.x)*.0009+(Math.random()-.5)*.05;p.vy+=(gy-p.y)*.0009+(Math.random()-.5)*.05;
+  p.vx*=.96;p.vy*=.96;p.x+=p.vx;p.y+=p.vy;
+ }
+ for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){
+  const a=P[i],b=P[j],d=Math.hypot(a.x-b.x,a.y-b.y);
+  if(d<G*1.5){
+   const s=1-d/(G*1.5);
+   x.strokeStyle=`rgba(214,176,106,${s*.7})`;x.lineWidth=.6+s;
+   x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();
+   for(let k=j+1;k<P.length;k++){
+    const q=P[k];
+    if(Math.hypot(a.x-q.x,a.y-q.y)<G*1.5&&Math.hypot(b.x-q.x,b.y-q.y)<G*1.5){
+     x.fillStyle='rgba(190,120,70,.07)';
+     x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.lineTo(q.x,q.y);x.fill()}
+   }
+  }
+ }
+ for(const p of P){
+  const near=m&&Math.hypot(p.x-m.x,p.y-m.y)<45;
+  p.a+=((near?1:0)-p.a)*.1;
+  x.fillStyle=`rgb(${230},${190+p.a*40|0},${120+p.a*100|0})`;
+  x.beginPath();x.arc(p.x,p.y,2.5+p.a*3,0,7);x.fill();
+  if(p.a>.05){x.globalAlpha=p.a;x.font='italic 13px Georgia';x.fillText(p.w,p.x+12,p.y-8);x.globalAlpha=1}
+ }
+ requestAnimationFrame(f)}
+f();
+})();
+</script>
+</section>
