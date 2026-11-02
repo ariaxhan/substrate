@@ -1,0 +1,38 @@
+<section data-date='2026-11-02' data-type='morning'>
+<style>
+.dw{position:relative;height:100vh;overflow:hidden;cursor:pointer;background:#0b0d1a;font:italic 300 clamp(18px,3vw,32px)/1.6 Georgia,serif;color:#fff;transition:background 2s}
+.dw canvas{position:absolute;inset:0;width:100%;height:100%}
+.dw p{position:absolute;left:0;right:0;bottom:16%;text-align:center;margin:0;mix-blend-mode:difference;letter-spacing:.2em;transition:opacity 1.5s}
+.dw span{opacity:0;transition:opacity 2s}
+.dw span.on{opacity:1}
+</style>
+<div class="dw" id="dw"><canvas id="dc"></canvas><p id="dp"><span>nothing</span> <span>is</span> <span>written</span> <span>yet</span></p></div>
+<script>
+(()=>{
+const d=document.getElementById('dw'),c=document.getElementById('dc'),x=c.getContext('2d'),s=[...document.querySelectorAll('#dp span')];
+let W,H,t=0,sun=0,tgt=0,mx=.5;
+const R=()=>{W=c.width=d.clientWidth;H=c.height=d.clientHeight};R();addEventListener('resize',R);
+d.onmousemove=e=>{mx=e.offsetX/W};
+d.onclick=()=>{tgt=tgt?0:1;s.forEach((e,i)=>setTimeout(()=>e.classList.toggle('on',!!tgt),i*500))};
+const L=(a,b,k)=>a+(b-a)*k;
+(function f(){
+t+=.01;sun=L(sun,tgt,.015);
+const y=H*(1.05-.5*sun),px=W*(.3+.4*mx);
+const g=x.createLinearGradient(0,0,0,H);
+g.addColorStop(0,`rgb(${L(11,70,sun)},${L(13,90,sun)},${L(26,170,sun)})`);
+g.addColorStop(.7,`rgb(${L(20,250,sun)},${L(20,150,sun)},${L(50,120,sun)})`);
+g.addColorStop(1,`rgb(${L(10,255,sun)},${L(10,220,sun)},${L(20,160,sun)})`);
+x.fillStyle=g;x.fillRect(0,0,W,H);
+const r=x.createRadialGradient(px,y,0,px,y,H*(.15+.5*sun));
+r.addColorStop(0,`rgba(255,240,200,${.4+.6*sun})`);r.addColorStop(1,'rgba(255,200,150,0)');
+x.fillStyle=r;x.fillRect(0,0,W,H);
+for(let i=0;i<60;i++){const a=(i*97.3)%W,b=(i*53.7)%(H*.6);
+x.fillStyle=`rgba(255,255,255,${(1-sun)*(.3+.3*Math.sin(t*3+i))})`;x.fillRect(a,b,1.5,1.5)}
+x.fillStyle=`rgb(${L(5,40,sun)},${L(6,30,sun)},${L(12,50,sun)})`;
+x.beginPath();x.moveTo(0,H);
+for(let i=0;i<=W;i+=8)x.lineTo(i,H*.88-20*Math.sin(i*.006+1)-12*Math.sin(i*.017)-sun*8);
+x.lineTo(W,H);x.fill();
+requestAnimationFrame(f)})();
+})();
+</script>
+</section>
