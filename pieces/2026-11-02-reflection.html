@@ -1,0 +1,35 @@
+<section data-date='2026-11-02' data-type='reflection'>
+<style>
+#n{margin:0;background:radial-gradient(ellipse at 50% 120%,#1b1a3a,#06060f 70%);height:100vh;overflow:hidden;position:relative;cursor:crosshair;font:italic 1.1rem Georgia,serif;color:#cfd4ff}
+#n canvas{position:absolute;inset:0}
+#n p{position:absolute;bottom:6%;width:100%;text-align:center;margin:0;letter-spacing:.3em;opacity:.35;pointer-events:none}
+</style>
+<div id="n"><canvas></canvas><p>the day is complete</p></div>
+<script>
+(()=>{
+const n=document.getElementById('n'),c=n.firstChild,x=c.getContext('2d'),W=c.width=innerWidth,H=c.height=innerHeight;
+const W8=["rest","enough","soft","still","held","kept","slow","here","done","begin"];
+let s=[],m=null;
+function add(px,py,w){s.push({x:px,y:py,t:0,r:1+Math.random()*2,w:w,p:Math.random()*6})}
+for(let i=0;i<30;i++)add(Math.random()*W,Math.random()*H*.8);
+n.onclick=e=>add(e.offsetX,e.offsetY,W8[s.length%10]);
+n.onmousemove=e=>m=[e.offsetX,e.offsetY];
+(function f(t){
+x.clearRect(0,0,W,H);
+for(const a of s){
+a.t=Math.min(1,a.t+.01);
+const d=m?Math.hypot(a.x-m[0],a.y-m[1]):999,g=d<140?1-d/140:0,
+b=a.t*(.5+.3*Math.sin(t/900+a.p))+g;
+x.fillStyle=`rgba(220,225,255,${Math.min(1,b)})`;
+x.shadowColor='#aab';x.shadowBlur=6+g*20;
+x.beginPath();x.arc(a.x,a.y,a.r+g*2,0,7);x.fill();
+if(a.w){x.shadowBlur=0;x.font='italic 14px Georgia';x.fillStyle=`rgba(255,240,200,${a.t})`;x.fillText(a.w,a.x+8,a.y+4)}
+}
+x.shadowBlur=0;x.lineWidth=.6;
+if(m)for(const a of s)for(const b of s){
+if(a<b&&Math.hypot(a.x-m[0],a.y-m[1])<140&&Math.hypot(b.x-m[0],b.y-m[1])<140){
+x.strokeStyle='rgba(180,190,255,.35)';x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}}
+requestAnimationFrame(f)})(0);
+})();
+</script>
+</section>
