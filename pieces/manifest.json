@@ -829,7 +829,6 @@
     {"file": "2026-10-28-pulse.html", "date": "2026-10-28", "type": "pulse", "timestamp": 1793214271},
     {"file": "2026-10-28-reflection.html", "date": "2026-10-28", "type": "reflection", "timestamp": 1793239959},
     {"file": "2026-10-28-spark.html", "date": "2026-10-28", "type": "spark", "timestamp": 1793203428},
-    {"file": "2026-10-29-digest.html", "date": "2026-10-29", "type": "digest", "timestamp": 1793311486},
     {"file": "2026-10-29-morning.html", "date": "2026-10-29", "type": "morning", "timestamp": 1793282807},
     {"file": "2026-10-29-pulse.html", "date": "2026-10-29", "type": "pulse", "timestamp": 1793300704},
     {"file": "2026-10-29-reflection.html", "date": "2026-10-29", "type": "reflection", "timestamp": 1793326280},
@@ -858,6 +857,7 @@
     {"file": "2026-11-03-pulse.html", "date": "2026-11-03", "type": "pulse", "timestamp": 1793736355},
     {"file": "2026-11-03-reflection.html", "date": "2026-11-03", "type": "reflection", "timestamp": 1793768517},
     {"file": "2026-11-03-spark.html", "date": "2026-11-03", "type": "spark", "timestamp": 1793725526},
+    {"file": "2026-11-04-digest.html", "date": "2026-11-04", "type": "digest", "timestamp": 1793833397},
     {"file": "2026-11-04-morning.html", "date": "2026-11-04", "type": "morning", "timestamp": 1793804632},
     {"file": "2026-11-04-pulse.html", "date": "2026-11-04", "type": "pulse", "timestamp": 1793822554},
     {"file": "2026-11-04-spark.html", "date": "2026-11-04", "type": "spark", "timestamp": 1793811738}

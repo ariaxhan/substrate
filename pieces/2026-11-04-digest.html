@@ -1,0 +1,34 @@
+<section data-date='2026-11-04' data-type='digest'>
+<style>
+#k{position:relative;background:#efe9dc;height:100vh;overflow:hidden;font-family:Georgia,serif;cursor:crosshair}
+#k canvas{position:absolute;inset:0;width:100%;height:100%}
+#k p{position:absolute;left:5vw;bottom:4vh;margin:0;color:#3a3226;font-style:italic;font-size:15px;letter-spacing:.04em;pointer-events:none;transition:opacity 2s}
+</style>
+<div id='k'><canvas></canvas><p>drift through the dust. what you touch remembers.</p></div>
+<script>
+(function(){
+var k=document.getElementById('k'),c=k.firstChild,x=c.getContext('2d'),W,H,P=[],E={},T=[],n=0,p=k.lastChild;
+function R(){W=c.width=k.clientWidth;H=c.height=k.clientHeight}
+R();onresize=R;
+function add(a,b){P.push({x:a,y:b,vx:0,vy:0,h:0,t:Math.random()*6})}
+for(var i=0;i<70;i++)add(Math.random()*W,Math.random()*H);
+function link(i,j){var K=i<j?i+'_'+j:j+'_'+i;if(!E[K]){E[K]=[i,j,0];n++;
+ // crystallize: a triangle forms when two links share a third
+ for(var m=0;m<P.length;m++)if(m!=i&&m!=j&&E[i<m?i+'_'+m:m+'_'+i]&&E[j<m?j+'_'+m:m+'_'+j])T.push([i,j,m,0])}}
+function near(a,b,r){var o=[];for(var i=0;i<P.length;i++){var d=Math.hypot(P[i].x-a,P[i].y-b);if(d<r)o.push(i)}return o}
+k.onmousemove=function(e){var a=e.offsetX,b=e.offsetY,o=near(a,b,110);
+ o.forEach(function(i){P[i].h=1;P[i].vx+=(a-P[i].x)*.0008;P[i].vy+=(b-P[i].y)*.0008});
+ for(var i=0;i<o.length;i++)for(var j=i+1;j<o.length;j++)link(o[i],o[j]);
+ p.style.opacity=n>12?0:1};
+k.onclick=function(e){add(e.offsetX,e.offsetY);var i=P.length-1;near(e.offsetX,e.offsetY,200).forEach(function(j){if(j!=i)link(i,j)})};
+function f(t){x.fillStyle='rgba(239,233,220,.25)';x.fillRect(0,0,W,H);
+ T.forEach(function(q){q[3]=Math.min(1,q[3]+.004);x.fillStyle='rgba(140,60,30,'+q[3]*.14+')';x.beginPath();
+  x.moveTo(P[q[0]].x,P[q[0]].y);x.lineTo(P[q[1]].x,P[q[1]].y);x.lineTo(P[q[2]].x,P[q[2]].y);x.fill()});
+ for(var K in E){var e=E[K],a=P[e[0]],b=P[e[1]];e[2]=Math.min(1,e[2]+.02);
+  x.strokeStyle='rgba(58,50,38,'+e[2]*.5+')';x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}
+ P.forEach(function(d){d.x+=d.vx+Math.sin(t/2000+d.t)*.15;d.y+=d.vy+Math.cos(t/2300+d.t)*.15;d.vx*=.95;d.vy*=.95;d.h*=.97;
+  x.fillStyle=d.h>.1?'#8c3c1e':'#3a3226';x.beginPath();x.arc(d.x,d.y,1.5+d.h*3,0,7);x.fill()});
+ requestAnimationFrame(f)}
+f(0)})();
+</script>
+</section>
