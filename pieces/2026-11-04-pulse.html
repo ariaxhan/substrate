@@ -1,0 +1,46 @@
+<section data-date='2026-11-04' data-type='pulse'>
+<style>
+#h{position:relative;height:100vh;margin:0;background:#000;overflow:hidden;cursor:crosshair}
+#h canvas{display:block;width:100%;height:100%}
+#h i{position:absolute;left:0;right:0;bottom:6vh;text-align:center;font:italic 14px Georgia,serif;color:#888;letter-spacing:.3em;transition:opacity 2s}
+</style>
+<div id="h"><canvas id="c"></canvas><i id="t">hold the middle</i></div>
+<script>
+(()=>{
+const c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t');
+let W,H,a=.5,g=0,s=1,k=0,m=null,f=0;
+const R=()=>{W=c.width=innerWidth;H=c.height=innerHeight};R();onresize=R;
+c.onmousemove=e=>m=(e.offsetX/W-.5);
+c.onclick=()=>{s=-s;k=1;t.style.opacity=0};
+const L='#f4e2bd',D='#10142a';
+(function d(n){
+ g=m==null?Math.sin(n/1500)*.3:m*.8;
+ a+=(g*s-a)*.06;
+ const e=Math.abs(a)<.012;
+ if(e)k=Math.min(k+.02,1);else k*=.97;
+ x.setTransform(1,0,0,1,0,0);
+ x.fillStyle=s>0?D:L;x.fillRect(0,0,W,H);
+ x.translate(W/2,H/2);x.rotate(a);
+ x.fillStyle=s>0?L:D;x.fillRect(-W*2,-H*2,W*2,H*4);
+ const r=Math.min(W,H)*.4;
+ for(let i=0;i<12;i++){
+  const u=(i+.5)/12,y=(u-.5)*H*.8,q=7+i%3*3;
+  x.fillStyle=s>0?D:L;x.beginPath();x.arc(-W*.25,y,q,0,7);x.fill();
+  x.fillStyle=s>0?L:D;x.beginPath();x.arc(W*.25,y,q,0,7);x.fill();
+ }
+ x.setTransform(1,0,0,1,0,0);x.translate(W/2,H/2);
+ if(k>.01){for(let j=0;j<5;j++){
+  const p=((n/2000+j/5)%1);
+  x.strokeStyle=`rgba(200,120,80,${(1-p)*k})`;x.lineWidth=2;
+  x.beginPath();x.arc(0,0,p*r*2,0,7);x.stroke();}}
+ x.fillStyle=e?'#c87850':'#888';
+ x.beginPath();x.moveTo(0,-18);x.lineTo(14,12);x.lineTo(-14,12);x.fill();
+ x.font='italic 28px Georgia,serif';x.textAlign='center';
+ x.fillStyle=e?'#c87850':'#888';
+ x.fillText(e?'noon':'',0,-34);
+ if(e&&!f){f=1;t.textContent='click: let the day turn over';t.style.opacity=1}
+ requestAnimationFrame(d)
+})(0)
+})()
+</script>
+</section>
