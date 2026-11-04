@@ -1,0 +1,23 @@
+<section data-date='2026-11-04' data-type='morning'>
+<style>
+#d{position:relative;height:100vh;overflow:hidden;cursor:crosshair;font:italic 300 clamp(18px,3vw,34px)/1.2 Georgia,'Times New Roman',serif;color:#fff;
+background:radial-gradient(circle at var(--x,50%) var(--y,100%),rgba(255,190,110,var(--a,.5)),rgba(190,90,100,calc(var(--a,.5)*.6)) 25%,transparent 60%),linear-gradient(#0a0d1f,#1b1a3a 60%,#3a2a4a)}
+#d i{position:absolute;opacity:0;transition:opacity 2s,letter-spacing 4s;letter-spacing:0;pointer-events:none;white-space:nowrap}
+#d i.w{opacity:.9;letter-spacing:.2em}
+#h{position:absolute;bottom:0;width:100%;height:12%;background:#05060f}
+</style>
+<div id="d"><div id="h"></div></div>
+<script>
+const d=document.getElementById('d'),W='not yet|a blank page|nothing is decided|begin|the first word|you could|light|still unwritten|now|here'.split('|'),L=[];
+W.forEach((t,k)=>{const e=document.createElement('i');e.textContent=t;e.style.left=8+Math.random()*70+'%';e.style.top=8+k*7.5+'%';d.append(e);L.push(e)});
+let mx=.5,my=1;
+d.onmousemove=e=>{mx=e.clientX/innerWidth;my=e.clientY/innerHeight;
+d.style.setProperty('--x',mx*100+'%');d.style.setProperty('--y',my*100+'%');d.style.setProperty('--a',.3+.6*(1-my));
+L.forEach(l=>{if(l.className=='w')return;const r=l.getBoundingClientRect(),
+q=Math.hypot(e.clientX-r.left-r.width/2,e.clientY-r.top-r.height/2);l.style.opacity=Math.max(0,.8-q/260)})};
+d.onclick=e=>{const i=document.createElement('i'),p=['and so','this','begins','open','today','yes'];
+i.textContent=p[Math.random()*p.length|0];i.style.left=e.clientX+'px';i.style.top=e.clientY+'px';d.append(i);
+requestAnimationFrame(()=>i.className='w');
+L.forEach(l=>{if(Math.random()<.3){l.className='w'}})};
+</script>
+</section>
