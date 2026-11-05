@@ -1,0 +1,28 @@
+<section data-date='2026-11-05' data-type='digest'>
+<style>
+.k{position:relative;height:100vh;margin:0;background:#efe9db;overflow:hidden;cursor:crosshair;font:italic 15px Georgia,serif;color:#3b2f2a}
+.k canvas{display:block;width:100%;height:100%}
+.k p{position:absolute;left:24px;bottom:18px;margin:0;letter-spacing:.04em;transition:opacity 2s}
+</style>
+<div class="k"><canvas></canvas><p>scattered, until one thing is placed.</p></div>
+<script>
+(()=>{const k=document.currentScript.previousElementSibling,c=k.querySelector('canvas'),x=c.getContext('2d'),t=k.querySelector('p');
+let W,H,S=[],n=0,s=34,P=[];
+const R=()=>{W=c.width=k.clientWidth;H=c.height=k.clientHeight};R();onresize=R;
+for(let i=0;i<260;i++)P.push({x:Math.random()*W,y:Math.random()*H,vx:Math.random()-.5,vy:Math.random()-.5,g:0});
+const words=['scattered, until one thing is placed.','a pattern asks to be repeated.','every fact leans toward its neighbor.','structure is memory with edges.','now it holds.'];
+k.onclick=e=>{const r=k.getBoundingClientRect(),q={x:e.clientX-r.left,y:e.clientY-r.top};S.push(q);
+P.forEach(p=>{if(p.g)return;let d=Math.hypot(p.x-q.x,p.y-q.y);if(d>300)return;
+let dx=p.x-q.x,dy=p.y-q.y,b=dy/(s*.866),a=Math.round(dx/s-b/2);b=Math.round(b);
+p.tx=q.x+(a+b/2)*s;p.ty=q.y+b*s*.866;p.g=1});
+t.textContent=words[Math.min(++n,4)]};
+const f=()=>{x.fillStyle='rgba(239,233,219,.35)';x.fillRect(0,0,W,H);
+P.forEach(p=>{if(p.g){p.x+=(p.tx-p.x)*.05;p.y+=(p.ty-p.y)*.05}else{p.x=(p.x+p.vx+W)%W;p.y=(p.y+p.vy+H)%H}});
+x.lineWidth=1;
+for(let i=0;i<P.length;i++){const a=P[i];for(let j=i+1;j<P.length;j++){const b=P[j];
+if(a.g&&b.g){const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<s*1.2){x.strokeStyle=`rgba(150,50,30,${1-d/(s*1.2)})`;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}}}
+x.fillStyle=a.g?'#962f1e':'#8a8070';x.beginPath();x.arc(a.x,a.y,a.g?3:1.5,0,7);x.fill()}
+S.forEach(q=>{x.strokeStyle='#3b2f2a';x.strokeRect(q.x-5,q.y-5,10,10)});
+requestAnimationFrame(f)};f()})()
+</script>
+</section>
