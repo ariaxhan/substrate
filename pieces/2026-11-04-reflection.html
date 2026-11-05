@@ -1,0 +1,34 @@
+<section data-date='2026-11-04' data-type='reflection'>
+<style>
+#nt{position:relative;height:100vh;min-height:360px;background:linear-gradient(#05070f,#101a33 70%,#2a2547);overflow:hidden;cursor:crosshair;font:italic 18px Georgia,serif;color:#cfd6f5}
+#nt canvas{position:absolute;inset:0;width:100%;height:100%}
+#nt p{position:absolute;left:0;right:0;bottom:9%;margin:0;text-align:center;letter-spacing:.3em;opacity:.35;pointer-events:none;transition:opacity 3s}
+</style>
+<div id="nt"><canvas></canvas><p>the day is done. touch the dark.</p></div>
+<script>
+(()=>{
+const w=document.getElementById('nt'),c=w.querySelector('canvas'),x=c.getContext('2d'),p=w.querySelector('p');
+let W,H,S=[],T=[],m={x:-9,y:-9},words=['rest','enough','held','soft','still','kept','again','sleep'],k=0;
+const R=()=>{W=c.width=w.clientWidth;H=c.height=w.clientHeight};R();onresize=R;
+const add=(a,b,d)=>S.push({x:a,y:b,r:Math.random()*2+1,p:Math.random()*6,b:d||1});
+for(let i=0;i<14;i++)add(Math.random()*W,Math.random()*H*.8,.3);
+w.onclick=e=>{const r=w.getBoundingClientRect(),a=e.clientX-r.left,b=e.clientY-r.top;
+add(a,b,0);p.style.opacity=0;
+if(S.length%3==0)T.push({t:words[k++%8],x:a,y:b-14,l:1})};
+w.onmousemove=e=>{const r=w.getBoundingClientRect();m={x:e.clientX-r.left,y:e.clientY-r.top}};
+(function f(t){x.clearRect(0,0,W,H);
+S.forEach(s=>{s.b<1&&s.b>0&&(s.b=Math.min(1,s.b+.02));if(s.b==0)s.b=.01;});
+S.forEach(s=>{s.b=Math.min(1,s.b||.02);});
+for(let i=0;i<S.length;i++)for(let j=i+1;j<S.length;j++){
+const a=S[i],b=S[j],d=Math.hypot(a.x-b.x,a.y-b.y),q=Math.hypot((a.x+b.x)/2-m.x,(a.y+b.y)/2-m.y);
+if(d<170&&q<150){x.strokeStyle='rgba(180,200,255,'+.5*(1-q/150)*(1-d/170)+')';x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}}
+S.forEach(s=>{const g=(.5+.5*Math.sin(t/900+s.p))*s.b,h=Math.hypot(s.x-m.x,s.y-m.y)<40?1.8:1;
+x.fillStyle='rgba(235,240,255,'+(.2+.8*g)+')';x.shadowBlur=8*h;x.shadowColor='#9bb0ff';
+x.beginPath();x.arc(s.x,s.y,s.r*h,0,7);x.fill()});
+x.shadowBlur=0;x.textAlign='center';x.font='italic 20px Georgia';
+T.forEach(o=>{o.l-=.003;o.y-=.05;x.fillStyle='rgba(255,236,200,'+Math.max(0,o.l)+')';x.fillText(o.t,o.x,o.y)});
+T=T.filter(o=>o.l>0);
+requestAnimationFrame(f)})(0);
+})();
+</script>
+</section>
