@@ -1,0 +1,17 @@
+<section data-date='2026-11-06' data-type='morning'>
+<style>
+#d{margin:0;height:100vh;overflow:hidden;position:relative;cursor:pointer;background:linear-gradient(0deg,var(--a,#f4c58a) 0%,var(--b,#7a5a8c) 45%,#14122a 100%);font:italic 300 clamp(18px,3.2vw,34px)/1.6 Georgia,serif;color:#fff8;transition:--x 1s}
+#d i{position:absolute;left:50%;bottom:var(--h,-14vmin);width:28vmin;height:28vmin;margin-left:-14vmin;border-radius:50%;background:radial-gradient(#fff,#ffd9a0 40%,#ffb06600 70%);transition:bottom 3s cubic-bezier(.2,.7,.2,1)}
+#d p{position:absolute;top:12vh;width:100%;text-align:center;margin:0;letter-spacing:.2em}
+#d b{font-weight:300;opacity:0;transition:opacity 2s;display:block}
+#d.u b{opacity:1}
+#d.u b:nth-child(2){transition-delay:1s}#d.u b:nth-child(3){transition-delay:2s}#d.u b:nth-child(4){transition-delay:3s}
+#d span{position:absolute;inset:0;background:#000;opacity:.0;pointer-events:none}
+</style>
+<div id=d><i id=s></i><p><b>nothing is written yet</b><b>the page is only light</b><b>you are the first mark</b><b>begin</b></p></div>
+<script>
+const d=document.getElementById('d'),s=document.getElementById('s');
+d.onmousemove=e=>{if(d.className)return;d.style.setProperty('--h',(-14+e.clientY/innerHeight*-0+ (1-e.clientY/innerHeight)*12)+'vmin');s.style.marginLeft='calc(-14vmin + '+(e.clientX/innerWidth*100-50)*.6+'vw)'};
+d.onclick=()=>{d.classList.add('u');s.style.bottom='38vh';d.style.setProperty('--a','#ffe3b0');d.style.setProperty('--b','#e98f7a')};
+</script>
+</section>
