@@ -1,0 +1,49 @@
+<section data-date='2026-11-06' data-type='spark'>
+<style>
+#m{background:#0b0a12;margin:0;position:relative;overflow:hidden;height:360px;cursor:crosshair;font:12px Georgia,serif;color:#eee}
+#m canvas{display:block;width:100%;height:100%}
+#m i{position:absolute;left:10px;bottom:8px;font-style:italic;color:#8a86a8;letter-spacing:.1em}
+</style>
+<div id="m"><canvas id="c"></canvas><i id="t">move: two words drift toward each other</i></div>
+<script>
+(function(){
+var c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),
+W=c.width=600,H=c.height=360,mx=W/2,my=H/2,P=[],done=0,
+A=['spark','salt','tide','stone','ember','wire'],B=['dust','sweet','moon','root','frost','glass'],
+S=['sparkdust','saltsweet','tidemoon','stoneroot','emberfrost','wireglass'];
+c.onmousemove=function(e){var r=c.getBoundingClientRect();mx=(e.clientX-r.left)*W/r.width;my=(e.clientY-r.top)*H/r.height};
+var a={x:90,y:180,vx:0,vy:0,w:A[0]},b={x:510,y:180,vx:0,vy:0,w:B[0]},n=0,fuse=0,msg='';
+function boom(px,py){
+ for(var i=0;i<90;i++){var q=Math.random()*6.28,s=Math.random()*3+.5;P.push({x:px,y:py,vx:Math.cos(q)*s,vy:Math.sin(q)*s,l:1,h:20+Math.random()*50})}
+ msg=S[n%6];fuse=140;t.textContent=msg;
+}
+function loop(){
+ x.fillStyle='rgba(11,10,18,.22)';x.fillRect(0,0,W,H);
+ if(!fuse){
+  // a is pulled toward cursor, b mirrored across center
+  a.vx+=(mx-a.x)*.002;a.vy+=(my-a.y)*.002;
+  b.vx+=((W-mx)-b.x)*.002;b.vy+=((H-my)-b.y)*.002;
+  a.vx*=.96;a.vy*=.96;b.vx*=.96;b.vy*=.96;
+  a.x+=a.vx;a.y+=a.vy;b.x+=b.vx;b.y+=b.vy;
+  var d=Math.hypot(a.x-b.x,a.y-b.y);
+  if(d<36){boom((a.x+b.x)/2,(a.y+b.y)/2)}
+  else{x.strokeStyle='rgba(255,170,90,'+Math.max(0,.6-d/700)+')';x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}
+  x.font='20px Georgia';x.textAlign='center';
+  x.fillStyle='#ff9a5a';x.fillText(a.w,a.x,a.y);
+  x.fillStyle='#6ad0e8';x.fillText(b.w,b.x,b.y);
+ }else{
+  fuse--;
+  var g=Math.min(1,(140-fuse)/30);
+  x.font=(18+g*18)+'px Georgia';x.textAlign='center';
+  x.fillStyle='hsl('+(30+g*150)+',80%,70%)';
+  x.fillText(msg,(a.x+b.x)/2,(a.y+b.y)/2);
+  if(!fuse){n++;a.w=A[n%6];b.w=B[n%6];a.x=90;a.y=180;b.x=510;b.y=180;a.vx=a.vy=b.vx=b.vy=0;t.textContent='meet again'}
+ }
+ for(var i=P.length-1;i>=0;i--){var p=P[i];p.x+=p.vx;p.y+=p.vy;p.vx*=.97;p.vy*=.97;p.l-=.012;
+  if(p.l<=0){P.splice(i,1);continue}
+  x.fillStyle='hsla('+p.h+',90%,65%,'+p.l+')';x.fillRect(p.x,p.y,2,2)}
+ requestAnimationFrame(loop)}
+loop();
+})();
+</script>
+</section>
