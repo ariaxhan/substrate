@@ -1,0 +1,31 @@
+<section data-date='2026-11-06' data-type='pulse'>
+<style>
+.hw{position:relative;height:100vh;margin:0;background:#efe6d2;overflow:hidden;font:italic 15px Georgia,serif;color:#2a2118;cursor:crosshair}
+.hw canvas{position:absolute;inset:0;width:100%;height:100%}
+.hw p{position:absolute;left:0;right:0;bottom:7%;text-align:center;margin:0;letter-spacing:.3em;transition:opacity 1.5s}
+</style>
+<div class="hw"><canvas id="c"></canvas><p id="t">halfway</p></div>
+<script>
+(()=>{const c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t');
+let W,H,tilt=0,aim=0,flip=1,rip=[],N=60,f=0;
+const rs=()=>{W=c.width=innerWidth;H=c.height=innerHeight};rs();onresize=rs;
+const d=new Date,h=d.getHours()+d.getMinutes()/60;
+aim=tilt=(h-12)/12*.5;
+onmousemove=e=>{aim=(e.clientX/W-.5)*.7;
+ if(Math.hypot(e.clientX-W/2,e.clientY-H*.6)<40&&f%6==0)rip.push(0)};
+onclick=()=>{flip=-flip;t.textContent=flip>0?"halfway":"yawflah";rip.push(0)};
+(function L(){f++;tilt+=(aim-tilt)*.05;
+x.fillStyle='rgba(239,230,210,.25)';x.fillRect(0,0,W,H);
+const cx=W/2,cy=H*.6,R=Math.min(W*.4,380),a=tilt*flip;
+x.save();x.translate(cx,cy);x.rotate(a);
+for(let i=-N;i<=N;i++){const u=i/N,px=u*R,m=Math.abs(u),s=Math.sin(f/40+i*.3);
+ x.fillStyle=u<0?`hsl(${40-m*30},80%,${55-m*10}%)`:`hsl(${230+m*20},45%,${35+m*10}%)`;
+ const r=2+m*5+s*1.5;x.beginPath();x.arc(px,-m*m*20*Math.sign(a*u)*3+s*2,r,0,7);x.fill()}
+x.fillStyle='#2a2118';x.fillRect(-R,-1,2*R,2);x.restore();
+x.beginPath();x.moveTo(cx,cy);x.lineTo(cx-22,cy+46);x.lineTo(cx+22,cy+46);x.fill();
+rip=rip.filter(r=>r<1);rip=rip.map(r=>{x.strokeStyle=`rgba(42,33,24,${1-r})`;x.beginPath();x.arc(cx,cy,r*Math.max(W,H)*.5,0,7);x.stroke();return r+.012});
+const b=Math.abs(tilt)<.02;t.style.opacity=b?1:.35;if(b)t.textContent=flip>0?"noon":"noon";
+requestAnimationFrame(L)})();
+})();
+</script>
+</section>
