@@ -1,0 +1,48 @@
+<section data-date='2026-11-05' data-type='reflection'>
+<style>
+#n{margin:0;height:100vh;background:radial-gradient(ellipse at 50% 120%,#2a2350,#0b0d1f 55%,#04050c);overflow:hidden;cursor:crosshair;position:relative;font:italic 18px Georgia,serif;color:#e8e2c8}
+#n canvas{position:absolute;inset:0}
+#n p{position:absolute;bottom:6vh;width:100%;text-align:center;margin:0;letter-spacing:.4em;font-size:13px;opacity:.5;transition:opacity 3s;pointer-events:none}
+#n b{position:absolute;font-weight:400;opacity:0;animation:w 7s ease-out forwards;pointer-events:none;transform:translate(-50%,-30px)}
+@keyframes w{15%{opacity:.9}100%{opacity:0;transform:translate(-50%,-60px)}}
+</style>
+<div id=n><canvas id=c></canvas><p id=t>the day is done</p></div>
+<script>
+(function(){
+var n=document.getElementById('n'),c=document.getElementById('c'),x=c.getContext('2d'),
+W,H,S=[],m={x:-999,y:-999},T=document.getElementById('t'),
+words='rest,enough,still,held,soft,again,slow,kept,here,breathe,hush,whole'.split(',');
+function R(){W=c.width=innerWidth;H=c.height=innerHeight}
+R();onresize=R;
+function add(px,py,b){S.push({x:px,y:py,r:b?2.5:Math.random()*1.2+.3,p:Math.random()*6,a:b?1:0})}
+for(var i=0;i<40;i++)add(Math.random()*W,Math.random()*H*.8);
+n.onmousemove=function(e){m.x=e.clientX;m.y=e.clientY};
+n.onclick=function(e){
+add(e.clientX,e.clientY,1);
+var w=document.createElement('b');
+w.textContent=words[S.length%words.length];
+w.style.left=e.clientX+'px';w.style.top=e.clientY+'px';
+n.appendChild(w);setTimeout(function(){w.remove()},7000);
+T.style.opacity=0;
+};
+function f(t){
+x.clearRect(0,0,W,H);
+S.forEach(function(s){
+s.a=Math.min(1,s.a+.02);
+var g=.5+.5*Math.sin(t/900+s.p);
+x.fillStyle='rgba(255,246,210,'+(s.a*(.35+.5*g))+')';
+x.beginPath();x.arc(s.x,s.y,s.r*(1+g*.3),0,7);x.fill();
+});
+for(var i=0;i<S.length;i++)for(var j=i+1;j<S.length;j++){
+var a=S[i],b=S[j],d=Math.hypot(a.x-b.x,a.y-b.y);
+if(d<150){
+var k=Math.min(Math.hypot(a.x-m.x,a.y-m.y),Math.hypot(b.x-m.x,b.y-m.y));
+if(k<170){
+x.strokeStyle='rgba(180,170,255,'+(.5*(1-k/170)*(1-d/150))+')';
+x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();
+}}}
+requestAnimationFrame(f)}
+f(0);
+})();
+</script>
+</section>
