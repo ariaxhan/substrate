@@ -1,0 +1,29 @@
+<section data-date='2026-11-06' data-type='digest'>
+<style>
+#k{background:#f1ebdd;margin:0;position:relative;height:100vh;overflow:hidden;font:italic 15px Georgia,serif;color:#2a2622;cursor:crosshair}
+#k canvas{position:absolute;inset:0;width:100%;height:100%}
+#k p{position:absolute;left:24px;bottom:18px;margin:0;letter-spacing:.08em;transition:opacity 2s}
+</style>
+<div id="k"><canvas></canvas><p>scattered. touch anything.</p></div>
+<script>
+(()=>{const k=document.getElementById('k'),c=k.querySelector('canvas'),x=c.getContext('2d'),t=k.querySelector('p');
+let W,H,P=[],E=[],n=0;
+const W_=['dust','note','trace','link','thread','shape','known','whole'];
+function R(){W=c.width=k.clientWidth;H=c.height=k.clientHeight}
+R();onresize=R;
+for(let i=0;i<70;i++)P.push({x:Math.random()*W,y:Math.random()*H,vx:Math.random()-.5,vy:Math.random()-.5,m:0});
+function add(a,b){P.push({x:a,y:b,vx:0,vy:0,m:1});n++;
+t.textContent=W_[Math.min(n>>2,7)]+' · '+P.length;}
+k.onclick=e=>{const r=k.getBoundingClientRect();add(e.clientX-r.left,e.clientY-r.top)};
+k.onmousemove=e=>{const r=k.getBoundingClientRect(),a=e.clientX-r.left,b=e.clientY-r.top;
+P.forEach(p=>{const d=Math.hypot(p.x-a,p.y-b);if(d<90)p.m=Math.min(1,p.m+.04)})};
+function f(){x.fillStyle='rgba(241,235,221,.25)';x.fillRect(0,0,W,H);
+P.forEach(p=>{p.x+=p.vx*(1-p.m*.9);p.y+=p.vy*(1-p.m*.9);
+if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1});
+for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){const a=P[i],b=P[j],d=Math.hypot(a.x-b.x,a.y-b.y),s=(a.m+b.m)/2;
+if(d<40+s*90){x.strokeStyle=`rgba(${60+s*150|0},${40+s*20|0},${30},${.1+s*.5})`;x.lineWidth=.5+s;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}}
+P.forEach(p=>{x.fillStyle=p.m>.6?'#b3452c':'#2a2622';x.beginPath();x.arc(p.x,p.y,1.5+p.m*3,0,7);x.fill()});
+requestAnimationFrame(f)}
+f()})()
+</script>
+</section>
