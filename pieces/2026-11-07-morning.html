@@ -1,0 +1,31 @@
+<section data-date='2026-11-07' data-type='morning'>
+<style>
+.fl{position:relative;height:100vh;overflow:hidden;cursor:crosshair;background:#0b0d1a;font:italic 22px/1.6 Georgia,serif;color:#fff;transition:background 2s}
+.fl canvas{position:absolute;inset:0;width:100%;height:100%}
+.fl p{position:absolute;left:0;right:0;bottom:12vh;text-align:center;margin:0;letter-spacing:.3em;opacity:.0;transition:opacity 3s;mix-blend-mode:difference}
+</style>
+<div class="fl"><canvas></canvas><p>nothing is written yet</p></div>
+<script>
+(()=>{const f=document.currentScript.previousElementSibling,c=f.querySelector('canvas'),x=c.getContext('2d'),p=f.querySelector('p');
+let w,h,s=0,m=.5,t=0;
+const R=()=>{w=c.width=innerWidth;h=c.height=innerHeight};R();onresize=R;
+f.onmousemove=e=>{m=e.clientX/w};
+f.onclick=()=>{s=Math.min(1,s+.25);p.style.opacity=s>.2?.8:0;p.textContent=['nothing is written yet','a pen, a horizon','you are the first word','begin'][Math.min(3,s*4|0)]};
+(function L(){t+=.01;s=Math.max(0,s-.0004);
+const g=x.createLinearGradient(0,0,0,h),k=Math.min(1,s+.15);
+g.addColorStop(0,`hsl(${230-k*190},50%,${8+k*30}%)`);
+g.addColorStop(.7,`hsl(${340-k*300},70%,${12+k*50}%)`);
+g.addColorStop(1,`hsl(${30},90%,${15+k*55}%)`);
+x.fillStyle=g;x.fillRect(0,0,w,h);
+const hx=w*m,hy=h*(.95-k*.35);
+for(let i=0;i<40;i++){const a=i/40*Math.PI*2+t*.2,r=h*(.15+k*.5);
+x.strokeStyle=`rgba(255,${200+i}, 140,${.03+k*.05})`;x.beginPath();x.moveTo(hx,hy);x.lineTo(hx+Math.cos(a)*r*3,hy+Math.sin(a)*r*3);x.lineWidth=6;x.stroke()}
+const d=x.createRadialGradient(hx,hy,0,hx,hy,h*(.1+k*.3));
+d.addColorStop(0,'rgba(255,240,200,.9)');d.addColorStop(1,'rgba(255,150,60,0)');
+x.fillStyle=d;x.fillRect(0,0,w,h);
+x.fillStyle='#06070f';x.beginPath();x.moveTo(0,h);
+for(let i=0;i<=w;i+=8)x.lineTo(i,h*.93-Math.sin(i*.004+1)*h*.03-Math.sin(i*.013)*h*.012);
+x.lineTo(w,h);x.fill();
+requestAnimationFrame(L)})()})();
+</script>
+</section>
