@@ -1,0 +1,50 @@
+<section data-date='2026-11-07' data-type='spark'>
+<style>
+.cw{background:#0b0a10;margin:0;position:relative;font:12px Georgia,serif;color:#e8dcc8}
+.cw canvas{display:block;width:100%;height:360px;cursor:crosshair}
+.cw p{position:absolute;left:12px;bottom:8px;margin:0;opacity:.6;font-style:italic}
+</style>
+<div class="cw"><canvas id="c" width="640" height="360"></canvas><p id="t">two things, apart. move between them.</p></div>
+<script>
+(function(){
+var c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),
+W=640,H=360,m={x:320,y:180},P=[],S=[],done=0;
+var A=['i','am','the','one','who','waits'],B=['you','are','the','other','who','comes'];
+function mk(w,px,col,d){return{w:w,x:px,y:60+Math.random()*240,vx:d*(.4+Math.random()*.4),vy:0,c:col,l:1}}
+function init(){P=[];S=[];done=0;
+A.forEach(function(w){P.push(mk(w,Math.random()*90,'#ff7a3d',1))});
+B.forEach(function(w){P.push(mk(w,550+Math.random()*90,'#3dc8ff',-1))})}
+init();
+c.onmousemove=function(e){var r=c.getBoundingClientRect();m.x=(e.clientX-r.left)*W/r.width;m.y=(e.clientY-r.top)*H/r.height};
+c.onclick=init;
+function loop(){
+x.fillStyle='rgba(11,10,16,.18)';x.fillRect(0,0,W,H);
+P.forEach(function(p){
+ if(p.l<1)return;
+ var dx=m.x-p.x,dy=m.y-p.y,d=Math.hypot(dx,dy)+1;
+ p.vx+=dx/d*.03;p.vy+=dy/d*.03;
+ p.x+=p.vx;p.y+=p.vy;p.vx*=.99;p.vy*=.99;
+ x.fillStyle=p.c;x.font='italic 16px Georgia';x.fillText(p.w,p.x,p.y);
+});
+for(var i=0;i<6;i++)for(var j=6;j<12;j++){
+ var a=P[i],b=P[j];
+ if(a.l&&b.l&&Math.hypot(a.x-b.x,a.y-b.y)<28){
+  a.l=b.l=0;done++;
+  var mx=(a.x+b.x)/2,my=(a.y+b.y)/2,w=a.w+'+'+b.w;
+  for(var k=0;k<24;k++){var g=Math.random()*6.28,s=Math.random()*2.5;
+   S.push({x:mx,y:my,vx:Math.cos(g)*s,vy:Math.sin(g)*s,a:1,c:k%2?'#ff7a3d':'#3dc8ff'})}
+  S.push({x:mx,y:my,vx:0,vy:-.3,a:1.6,w:w,c:'#fff3c4'});
+  t.textContent=done<6?'collision '+done+'/6':'synthesis. click to begin again.';
+ }}
+S=S.filter(function(s){return s.a>0});
+S.forEach(function(s){
+ s.x+=s.vx;s.y+=s.vy;s.a-=s.w?.004:.015;
+ x.globalAlpha=Math.max(0,Math.min(1,s.a));x.fillStyle=s.c;
+ if(s.w){x.font='14px Georgia';x.fillText(s.w,s.x-30,s.y)}else x.fillRect(s.x,s.y,2,2);
+});
+x.globalAlpha=1;
+requestAnimationFrame(loop)}
+loop();
+})();
+</script>
+</section>
