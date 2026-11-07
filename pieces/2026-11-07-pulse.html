@@ -1,0 +1,35 @@
+<section data-date='2026-11-07' data-type='pulse'>
+<style>
+.fu{position:relative;height:100vh;background:#efe8d8;overflow:hidden;font:italic 15px Georgia,serif;color:#2a2622;cursor:crosshair}
+.fu canvas{position:absolute;inset:0;width:100%;height:100%}
+.fu p{position:absolute;left:0;right:0;bottom:7vh;text-align:center;margin:0;letter-spacing:.2em;transition:opacity 1s}
+</style>
+<div class="fu"><canvas></canvas><p>halfway</p></div>
+<script>
+(()=>{const c=document.currentScript.previousElementSibling.querySelector('canvas'),x=c.getContext('2d'),p=c.nextSibling,W=()=>c.width=c.clientWidth,H=()=>c.height=c.clientHeight;
+let w,h,t=0,a=0,tg=0,flip=1,f=.5,hit=0;
+const rs=()=>{w=W();h=H()};rs();addEventListener('resize',rs);
+const d=new Date,day=(d.getHours()*60+d.getMinutes())/1440;
+c.onmousemove=e=>{tg=(e.offsetX/w-.5)*.6;f=e.offsetX/w*.4+.3};
+c.onclick=e=>{flip=-flip;hit=1;p.textContent=flip>0?'halfway':'yaw flah';p.style.opacity=.9};
+c.onmouseleave=()=>{tg=0;f=.5};
+(function L(){t+=.02;a+=(tg-a)*.06;hit*=.96;
+x.fillStyle='#efe8d8';x.fillRect(0,0,w,h);
+const cx=w/2,cy=h*.6,len=Math.min(w*.4,h*.5);
+x.save();x.translate(cx,cy);
+// ripples from fulcrum
+for(let i=0;i<6;i++){const r=((t*30+i*60)%360)*(1+hit*2);x.strokeStyle=`rgba(42,38,34,${.12*(1-r/360/(1+hit*2))})`;x.beginPath();x.arc(0,0,r,0,7);x.stroke()}
+// fulcrum
+x.fillStyle='#2a2622';x.beginPath();x.moveTo(0,0);x.lineTo(-18,60);x.lineTo(18,60);x.fill();
+x.rotate(a*flip+Math.sin(t)*.01);
+x.fillRect(-len,-2,len*2,4);
+// pans: morning (warm) and evening (cool); weights follow time of day & pointer
+for(const s of[-1,1]){const m=s<0,q=m?1-day:day,wt=(m?1-f:f)*10+q*6;
+const px=s*len;x.fillStyle=m?'#d9822b':'#3a5a8c';
+x.save();x.translate(px,0);x.rotate(-a*flip-Math.sin(t)*.01);
+x.fillRect(-1,0,2,40);
+for(let k=0;k<wt;k++){const g=k/wt*6.28+t*(m?1:-1);x.globalAlpha=.8;x.beginPath();x.arc(Math.cos(g)*(8+k*1.5),50+Math.sin(g)*(8+k*1.5)*.5,3,0,7);x.fill()}
+x.restore()}
+x.restore();requestAnimationFrame(L)})()})();
+</script>
+</section>
