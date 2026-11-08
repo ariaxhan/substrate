@@ -1,0 +1,45 @@
+<section data-date='2026-11-08' data-type='spark'>
+<style>
+.m{background:#0b0a10;margin:0;position:relative;height:360px;overflow:hidden;cursor:crosshair;font:12px Georgia,serif}
+.m canvas{display:block;width:100%;height:100%}
+.m p{position:absolute;bottom:8px;left:12px;margin:0;color:#8a84a8;letter-spacing:.2em;pointer-events:none}
+</style>
+<div class="m"><canvas id="c"></canvas><p id="t">two drift. move between them.</p></div>
+<script>
+(function(){
+var c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),
+W=c.width=600,H=c.height=360,mx=-9,my=-9,fx=[],
+A={x:100,y:100,vx:.7,vy:.4,h:20,w:'ember'},B={x:500,y:260,vx:-.6,vy:-.5,h:210,w:'tide'},
+words=['salt','glass','steam','spark','dusk','seam','ash','bloom'];
+c.onmousemove=function(e){var r=c.getBoundingClientRect();mx=(e.clientX-r.left)*W/r.width;my=(e.clientY-r.top)*H/r.height};
+c.onclick=function(e){mx=(e.clientX-c.getBoundingClientRect().left)*W/c.getBoundingClientRect().width;
+A.x=mx-60;B.x=mx+60;A.y=B.y=my;A.vx=1.5;B.vx=-1.5;A.vy=B.vy=0};
+function mv(o){
+var dx=mx-o.x,dy=my-o.y,d=Math.hypot(dx,dy)+1;
+if(d<150){o.vx+=dx/d*.04;o.vy+=dy/d*.04}
+o.x+=o.vx;o.y+=o.vy;
+if(o.x<0||o.x>W)o.vx*=-1;if(o.y<0||o.y>H)o.vy*=-1}
+function boom(){
+var h=(A.h+B.h)/2+140,m=(A.x+B.x)/2,n=(A.y+B.y)/2;
+for(var i=0;i<40;i++){var a=i/40*6.283,s=1+Math.random()*3;
+fx.push({x:m,y:n,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:90,h:h+Math.random()*60})}
+fx.push({x:m,y:n,vx:0,vy:-.3,l:120,h:h,w:words[Math.random()*8|0]});
+t.textContent='ember + tide = '+fx[fx.length-1].w;
+var tv=A.vx;A.vx=-B.vx;B.vx=-tv}
+function dot(o){var g=x.createRadialGradient(o.x,o.y,0,o.x,o.y,26);
+g.addColorStop(0,'hsl('+o.h+',90%,65%)');g.addColorStop(1,'transparent');
+x.fillStyle=g;x.fillRect(o.x-26,o.y-26,52,52)}
+function f(){
+x.fillStyle='rgba(11,10,16,.18)';x.fillRect(0,0,W,H);
+mv(A);mv(B);
+if(Math.hypot(A.x-B.x,A.y-B.y)<28){boom();A.x-=40;B.x+=40}
+x.strokeStyle='rgba(200,190,255,.12)';x.beginPath();x.moveTo(A.x,A.y);x.lineTo(B.x,B.y);x.stroke();
+dot(A);dot(B);
+for(var i=fx.length;i--;){var p=fx[i];p.x+=p.vx;p.y+=p.vy;p.vx*=.97;p.vy*=.97;
+if(--p.l<0){fx.splice(i,1);continue}
+x.fillStyle='hsla('+p.h+',90%,70%,'+p.l/120+')';
+if(p.w){x.font='16px Georgia';x.fillText(p.w,p.x-14,p.y)}else x.fillRect(p.x,p.y,2,2)}
+requestAnimationFrame(f)}
+f()})();
+</script>
+</section>
