@@ -1,0 +1,36 @@
+<section data-date='2026-11-08' data-type='digest'>
+<style>
+#c{background:#f1ebdd;display:block;width:100%;height:100vh;cursor:crosshair}
+#t{position:fixed;left:5vw;bottom:5vh;font:italic 15px Georgia,serif;color:#3a2f26;letter-spacing:.04em;pointer-events:none;transition:opacity 1s}
+</style>
+<canvas id="c"></canvas><div id="t">drift, until something holds</div>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t');
+let W,H,G=64,P=[],m={x:-9,y:-9},k=0;
+const words=['signal','pattern','edge','lattice','memory','form','held','known'];
+function R(){W=c.width=innerWidth;H=c.height=innerHeight}
+R();onresize=R;
+function add(px,py){P.push({x:px,y:py,vx:Math.random()-.5,vy:Math.random()-.5,s:0,w:words[P.length%8]})}
+for(let i=0;i<90;i++)add(Math.random()*W,Math.random()*H);
+onmousemove=e=>{m.x=e.clientX;m.y=e.clientY};
+onclick=e=>{add(e.clientX,e.clientY);P[P.length-1].s=1;t.style.opacity=.3};
+(function f(){
+x.fillStyle='rgba(241,235,221,.3)';x.fillRect(0,0,W,H);
+for(const p of P){
+const d=Math.hypot(p.x-m.x,p.y-m.y);
+if(d<140)p.s=Math.min(1,p.s+.02);else p.s=Math.max(0,p.s-.0015);
+const gx=Math.round(p.x/G)*G,gy=Math.round(p.y/G)*G;
+p.vx+=(Math.random()-.5)*.1;p.vy+=(Math.random()-.5)*.1;
+p.vx=p.vx*.96+(gx-p.x)*.012*p.s;p.vy=p.vy*.96+(gy-p.y)*.012*p.s;
+p.x=(p.x+p.vx+W)%W;p.y=(p.y+p.vy+H)%H}
+k=0;
+for(let i=0;i<P.length;i++){const a=P[i];
+for(let j=i+1;j<P.length;j++){const b=P[j];
+const d=Math.hypot(a.x-b.x,a.y-b.y),s=Math.min(a.s,b.s);
+if(d<G*1.1&&s>.3){k++;x.strokeStyle=`rgba(58,47,38,${s*.7})`;x.lineWidth=1;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}}
+x.fillStyle=`rgb(${200-a.s*150|0},${90-a.s*45|0},${60-a.s*20|0})`;
+x.beginPath();x.arc(a.x,a.y,2+a.s*2.5,0,7);x.fill();
+if(a.s>.9&&Math.hypot(a.x-m.x,a.y-m.y)<40){x.fillStyle='#3a2f26';x.font='italic 12px Georgia';x.fillText(a.w,a.x+8,a.y-8)}}
+requestAnimationFrame(f)})();
+</script>
+</section>
