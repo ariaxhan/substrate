@@ -1,0 +1,22 @@
+<section data-date='2026-11-08' data-type='morning'>
+<style>
+#d{--t:.1;position:relative;height:100vh;overflow:hidden;cursor:crosshair;font-family:Georgia,'Times New Roman',serif;
+background:linear-gradient(#0b0d1f,hsl(calc(250 - var(--t)*215),calc(30% + var(--t)*60%),calc(8% + var(--t)*62%)) 70%,hsl(calc(20 + var(--t)*25),90%,calc(15% + var(--t)*60%)))}
+#s{position:absolute;left:50%;bottom:calc(var(--t)*55% - 12%);width:18vmin;height:18vmin;margin-left:-9vmin;border-radius:50%;
+background:#fff3c4;box-shadow:0 0 calc(var(--t)*18vmin) calc(var(--t)*7vmin) rgba(255,190,90,.6)}
+#g{position:absolute;left:0;right:0;bottom:0;height:22%;background:#05060d}
+#w{position:absolute;left:0;right:0;top:18%;text-align:center;color:#fff;font-size:5vmin;letter-spacing:.3em;font-style:italic}
+#w span{opacity:0;transition:opacity 2s,letter-spacing 3s;display:inline-block;margin:0 .4em}
+#w span.on{opacity:.9;letter-spacing:.05em}
+#h{position:absolute;bottom:6%;width:100%;text-align:center;color:#888;font:12px monospace;letter-spacing:.4em;transition:opacity 1s}
+#d:hover #h{opacity:.2}
+</style>
+<div id=d><div id=s></div><div id=g></div><div id=w></div><div id=h>RISE · CLICK</div></div>
+<script>
+(function(){var d=document.getElementById('d'),w=document.getElementById('w'),
+L='nothing yet is spoken . the page is whole . begin'.split(' '),i=0;
+L.forEach(function(x){var s=document.createElement('span');s.textContent=x;w.appendChild(s)});
+d.onmousemove=function(e){var r=d.getBoundingClientRect();d.style.setProperty('--t',Math.max(0,Math.min(1,1-(e.clientY-r.top)/r.height)).toFixed(3))};
+d.onclick=function(){var c=w.children;if(i<c.length)c[i++].className='on';else{i=0;[].forEach.call(c,function(s){s.className=''})}}})();
+</script>
+</section>
