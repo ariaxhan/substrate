@@ -1,0 +1,36 @@
+<section data-date='2026-11-09' data-type='morning'>
+<style>
+#d{position:relative;height:100vh;overflow:hidden;cursor:pointer;font:italic 1.5rem/2 Georgia,serif;color:#fff;text-align:center;background:#0b0d1c;transition:background .6s}
+#d p{position:absolute;left:0;right:0;top:18%;margin:0;mix-blend-mode:difference;letter-spacing:.1em;pointer-events:none}
+#d i{display:block;opacity:0;transform:translateY(12px);transition:all 1.6s;font-style:normal}
+#d i.on{opacity:1;transform:none}
+#s{position:absolute;left:50%;width:120px;height:120px;margin:-60px;border-radius:50%;background:#ffd9a0;filter:blur(2px);box-shadow:0 0 120px 60px #ff9a5a99;pointer-events:none}
+#h{position:absolute;bottom:0;left:0;right:0;height:22%;background:#05060d}
+#t{position:absolute;bottom:26%;width:100%;font:10px monospace;letter-spacing:.4em;opacity:.4}
+</style>
+<div id=d>
+<div id=s></div>
+<p id=p></p>
+<div id=t>MOVE · CLICK</div>
+<div id=h></div>
+</div>
+<script>
+(function(){
+var d=document.getElementById('d'),s=document.getElementById('s'),p=document.getElementById('p'),
+L=['nothing is written yet','only the edge of something','a line of light','and you, holding the pen','begin'],n=0,y=.9;
+function f(){
+var a=Math.min(1,y),b=1-a;
+s.style.top=(78-b*50-n*4)+'%';
+d.style.background='linear-gradient(#'+[hx(11+b*60),hx(13+b*70),hx(28+b*110)].join('')+','+'#'+[hx(40+b*215),hx(30+b*120),hx(50+b*40)].join('')+' 78%)';
+}
+function hx(v){v=Math.max(0,Math.min(255,v|0));return(v<16?'0':'')+v.toString(16)}
+d.onmousemove=function(e){y=e.clientY/d.offsetHeight;s.style.left=e.clientX+'px';f()};
+d.onclick=function(){
+if(n<L.length){var i=document.createElement('i');i.textContent=L[n++];p.appendChild(i);
+setTimeout(function(){i.className='on'},30);document.getElementById('t').style.opacity=0}
+else{p.innerHTML='';n=0}
+f()};
+f();
+})();
+</script>
+</section>
