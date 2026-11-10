@@ -885,6 +885,7 @@
     {"file": "2026-11-09-morning.html", "date": "2026-11-09", "type": "morning", "timestamp": 1794236690},
     {"file": "2026-11-09-pulse.html", "date": "2026-11-09", "type": "pulse", "timestamp": 1794254620},
     {"file": "2026-11-09-reflection.html", "date": "2026-11-09", "type": "reflection", "timestamp": 1794279822},
-    {"file": "2026-11-09-spark.html", "date": "2026-11-09", "type": "spark", "timestamp": 1794243769}
+    {"file": "2026-11-09-spark.html", "date": "2026-11-09", "type": "spark", "timestamp": 1794243769},
+    {"file": "2026-11-10-spark.html", "date": "2026-11-10", "type": "spark", "timestamp": 1794330185}
   ]
 }
