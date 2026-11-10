@@ -1,0 +1,36 @@
+<section data-date='2026-11-10' data-type='digest'>
+<style>
+#c{background:#f3ecdc;margin:0;padding:0;position:relative;height:100vh;overflow:hidden;font:italic 15px Georgia,serif;color:#2a2118;cursor:crosshair}
+#c canvas{position:absolute;inset:0}
+#c p{position:absolute;bottom:14px;left:18px;margin:0;letter-spacing:.08em;opacity:.6}
+</style>
+<div id="c"><canvas></canvas><p id="t">scatter. then touch.</p></div>
+<script>
+(()=>{
+const w=document.getElementById('c'),k=w.firstChild,x=k.getContext('2d'),t=document.getElementById('t');
+let W,H,P=[],E=[];
+const R=()=>{W=k.width=w.clientWidth;H=k.height=w.clientHeight};R();onresize=R;
+const words=['noise','signal','trace','pattern','lattice','memory','form','proof'];
+const add=(a,b)=>P.push({x:a,y:b,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,n:0,s:words[P.length%8]});
+for(let i=0;i<40;i++)add(Math.random()*W,Math.random()*H);
+w.onmousemove=e=>{const r=k.getBoundingClientRect(),a=e.clientX-r.left,b=e.clientY-r.top;
+P.forEach(p=>{if(Math.hypot(p.x-a,p.y-b)<90)p.n=Math.min(p.n+.04,1)})};
+w.onclick=e=>{const r=k.getBoundingClientRect();add(e.clientX-r.left,e.clientY-r.top);P[P.length-1].n=1;
+t.textContent=P.length+' points. '+E.length+' bonds.'};
+(function f(){
+x.fillStyle='rgba(243,236,220,.25)';x.fillRect(0,0,W,H);
+E=[];
+P.forEach(p=>{p.x+=p.vx*(1-p.n);p.y+=p.vy*(1-p.n);
+if(p.x<0||p.x>W)p.vx*=-1;if(p.y<0||p.y>H)p.vy*=-1});
+for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){
+const a=P[i],b=P[j],d=Math.hypot(a.x-b.x,a.y-b.y),m=Math.min(a.n,b.n);
+if(d<150*(.3+m)&&m>.1){E.push(1);
+x.strokeStyle=`rgba(${120-m*80},${40+m*30},${30},${m*.6})`;x.lineWidth=.5+m;
+x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}}
+P.forEach(p=>{x.fillStyle=`rgba(42,33,24,${.25+p.n*.75})`;
+const s=p.n>.8?4:2;x.fillRect(p.x-s/2,p.y-s/2,s,s);
+if(p.n>.95){x.font='italic 11px Georgia';x.fillText(p.s,p.x+6,p.y-4)}});
+requestAnimationFrame(f)})();
+})();
+</script>
+</section>
