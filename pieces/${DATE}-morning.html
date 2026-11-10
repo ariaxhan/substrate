@@ -1,23 +1,24 @@
-<section data-date='2026-09-20' data-type='morning'>
+<section data-date='2026-11-10' data-type='morning'>
 <style>
-#d{position:relative;height:100vh;margin:0;overflow:hidden;cursor:crosshair;background:linear-gradient(0deg,var(--a,#1a1030),var(--b,#05060f));font:italic 300 clamp(1.2rem,4vw,2.4rem)/1.4 Georgia,serif;color:#fff;transition:background 2s}
-#d i{position:absolute;left:50%;bottom:var(--h,-30vh);width:60vmin;height:60vmin;margin-left:-30vmin;border-radius:50%;background:radial-gradient(#ffe9a8,#ff9a5c 45%,transparent 70%);transition:bottom 3s cubic-bezier(.2,.8,.2,1);filter:blur(4px)}
-#d p{position:absolute;top:18%;width:100%;text-align:center;margin:0;opacity:0;transition:opacity 2.5s}
-#d p.on{opacity:.9}
-#d small{position:absolute;bottom:1rem;width:100%;text-align:center;opacity:.4;font:12px monospace}
+#d{position:relative;height:100vh;overflow:hidden;cursor:pointer;font:italic 300 clamp(20px,4vw,38px)/1.5 Georgia,'Times New Roman',serif;color:#f4e9dc;background:linear-gradient(#0b1026 calc(100% - var(--h)*1%),#e8806a 100%);transition:background .2s}
+#d:before{content:'';position:absolute;left:calc(var(--x)*1%);top:calc(100% - var(--h)*1%);width:30vmin;height:30vmin;border-radius:50%;transform:translate(-50%,-50%);background:radial-gradient(#fff6d8,#ffc46b 40%,#ff9a5a00 70%);filter:blur(2px);opacity:calc(.2 + var(--h)/80)}
+#d:after{content:'';position:absolute;left:0;right:0;bottom:0;height:22%;background:#0b1026;clip-path:polygon(0 60%,15% 30%,34% 55%,55% 20%,78% 50%,100% 25%,100% 100%,0 100%)}
+#t{position:absolute;left:8%;right:8%;top:14%;z-index:2;mix-blend-mode:difference;letter-spacing:.04em}
+#t i{display:block;opacity:0;animation:f 3s forwards}
+#t b{font-weight:400;transition:letter-spacing .6s,opacity .6s;opacity:.5}
+#t b:hover{letter-spacing:.3em;opacity:1}
+@keyframes f{to{opacity:1}}
+small{position:absolute;bottom:4%;left:0;right:0;text-align:center;z-index:3;font:11px monospace;letter-spacing:.3em;color:#e8806a;opacity:.7}
 </style>
-<div id="d"><i></i><p></p><small>touch the dark</small></div>
+<div id=d style="--h:8;--x:50">
+<div id=t><i>nothing is written yet.</i></div>
+<small>move · click</small>
+</div>
 <script>
-(()=>{const d=document.getElementById('d'),s=d.querySelector('i'),p=d.querySelector('p'),
-L=['nothing is written yet','the horizon is a held breath','light arrives before the word','you may begin'];
-let n=0;d.onclick=()=>{
-if(n<4){p.className='';setTimeout(()=>{p.textContent=L[n]
-;p.className='on'},400);
-s.style.setProperty('--h',(-30+n*18)+'vh');
-d.style.setProperty('--a',['#1a1030','#7a3b6e','#ff9a5c','#ffd9a0'][n]);
-d.style.setProperty('--b',['#05060f','#1b1f4a','#4a6fa5','#8fc1e8'][n]);
-d.style.setProperty('--h',(-30+n*18)+'vh');d.firstChild.style.bottom=(-30+n*18)+'vh'}
-n=(n+1)%5;if(!n){d.firstChild.style.bottom='-30vh';p.className=''}};
-d.onmousemove=e=>{s.style.marginLeft=(e.clientX/innerWidth-.5)*20-30+'vmin'}})()
+var d=document.getElementById('d'),t=document.getElementById('t'),n=0,
+L=['the <b>sky</b> is deciding.','a <b>window</b> remembers how to be bright.','somewhere, a kettle begins.','you have not <b>yet</b> been wrong today.','every <b>shadow</b> is only light, delayed.','<b>begin</b>.'];
+d.onmousemove=function(e){d.style.setProperty('--h',8+(1-e.clientY/innerHeight)*70);d.style.setProperty('--x',e.clientX/innerWidth*100)};
+d.onclick=function(){var i=document.createElement('i');i.innerHTML=L[n++%L.length];t.appendChild(i);
+if(t.children.length>5)t.removeChild(t.children[0])};
 </script>
 </section>
