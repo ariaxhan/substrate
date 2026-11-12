@@ -1,0 +1,56 @@
+<section data-date='2026-11-12' data-type='pulse'>
+<style>
+#h{position:relative;width:100%;height:100vh;margin:0;overflow:hidden;background:#111;cursor:crosshair;font:italic 15px Georgia,serif}
+#h canvas{display:block;width:100%;height:100%}
+</style>
+<div id=h><canvas id=c></canvas></div>
+<script>
+(()=>{
+const c=document.getElementById('c'),x=c.getContext('2d');
+let W,H,f=.5,t=0,a=0,m=0,rip=[],flip=1,T=0;
+const R=()=>{W=c.width=innerWidth;H=c.height=innerHeight};R();onresize=R;
+const d=new Date,now=(d.getHours()*60+d.getMinutes())/1440;
+onmousemove=e=>{m=(e.clientX/W-.5)*.5};
+onclick=e=>{
+ let X=e.clientX/W,dy=Math.abs(e.clientY-H/2);
+ if(Math.abs(X-f)<.04&&dy<60){flip=-flip;rip.push(0)}
+ else f=X};
+function L(p,q,k){return p+(q-p)*k}
+function draw(){
+ T+=.016;
+ let target=(.5-f)*.9+m*flip+Math.sin(T*.8)*.01;
+ a=L(a,target,.05);
+ let g=x.createLinearGradient(0,0,W,0);
+ g.addColorStop(0,'#f4e9d0');g.addColorStop(f,'#c9a86a');
+ g.addColorStop(Math.min(1,f+.001),'#2a2340');g.addColorStop(1,'#0b0a14');
+ x.fillStyle=g;x.fillRect(0,0,W,H);
+ let cx=f*W,cy=H*.55,len=W*.46;
+ // sun and moon ride the beam ends
+ x.save();x.translate(cx,cy);x.rotate(a*flip);
+ x.strokeStyle='#e9e2d0';x.lineWidth=2;
+ x.beginPath();x.moveTo(-len,0);x.lineTo(len,0);x.stroke();
+ for(let s=-1;s<2;s+=2){
+  let px=s*len,r=26+10*Math.sin(T*2+s);
+  x.beginPath();x.arc(px,-r-4,r,0,7);
+  x.fillStyle=s<0?'#ffcf5a':'#dfe4ff';x.fill();
+  if(s>0){x.beginPath();x.arc(px+r*.4,-r-8,r*.9,0,7);x.fillStyle='#2a2340';x.fill()}
+ }
+ x.restore();
+ // fulcrum
+ x.fillStyle='#e9e2d0';x.beginPath();x.moveTo(cx,cy);x.lineTo(cx-22,H);x.lineTo(cx+22,H);x.fill();
+ // pulse at the pivot, beating with the time of day
+ let beat=1+.25*Math.sin(T*(2+now*4));
+ x.beginPath();x.arc(cx,cy,7*beat,0,7);x.fillStyle=Math.abs(a)<.03?'#fff':'#c33';x.fill();
+ rip=rip.map(r=>r+3).filter(r=>r<Math.max(W,H));
+ rip.forEach(r=>{x.beginPath();x.arc(cx,cy,r,0,7);x.strokeStyle='rgba(255,255,255,'+(1-r/Math.max(W,H))+')';x.lineWidth=1;x.stroke()});
+ // words appear only when level
+ let lv=Math.abs(a)<.03;
+ x.font='italic 18px Georgia,serif';x.textAlign='center';
+ x.fillStyle=lv?'#fff':'rgba(255,255,255,.25)';
+ x.fillText(lv?'noon is not a time. it is a held breath.':'halfway is something you hold, not reach',W/2,H*.12);
+ x.font='12px Georgia,serif';x.fillStyle='rgba(255,255,255,.35)';
+ x.fillText('move to lean · click to move the fulcrum · click the pulse to turn the world',W/2,H-18);
+ requestAnimationFrame(draw)}
+draw()})();
+</script>
+</section>
