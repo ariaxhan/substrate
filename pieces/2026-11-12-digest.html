@@ -1,0 +1,50 @@
+<section data-date='2026-11-12' data-type='digest'>
+<style>
+.cx{background:#f1ead9;margin:0;position:relative;font:italic 15px Georgia,serif;color:#3b2f22;height:420px;overflow:hidden;cursor:crosshair}
+.cx canvas{display:block;width:100%;height:100%}
+.cx p{position:absolute;left:18px;bottom:12px;margin:0;pointer-events:none;letter-spacing:.05em;transition:opacity 1s}
+</style>
+<div class="cx"><canvas id="c"></canvas><p id="t">scatter. then touch.</p></div>
+<script>
+(function(){
+var c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),W,H,P=[],G=40,n=0,
+W_=['noise','note','pattern','proof','lattice','law','crystal','this'];
+function R(){W=c.width=c.clientWidth;H=c.height=c.clientHeight}
+R();
+function add(px,py,s){
+  if(s){px=Math.round(px/G)*G+G/2;py=Math.round(py/G)*G+G/2}
+  P.push({x:px,y:py,a:0,w:W_[n++%8],g:s});
+}
+for(var i=0;i<30;i++)add(Math.random()*W,Math.random()*H,0);
+c.parentNode.onclick=function(e){
+  var r=c.getBoundingClientRect();add(e.clientX-r.left,e.clientY-r.top,1);
+  t.textContent=P.filter(function(p){return p.g}).length+' fixed';
+};
+var mx=-9,my=-9;
+c.onmousemove=function(e){var r=c.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top};
+(function f(){
+  x.fillStyle='rgba(241,234,217,.25)';x.fillRect(0,0,W,H);
+  P.forEach(function(p,i){
+    if(!p.g){
+      p.x+=Math.sin(i+p.a)*.4;p.y+=Math.cos(i*2+p.a)*.4;
+      /* drift toward nearest grid cell if any crystal nearby */
+      P.forEach(function(q){if(q.g){var d=Math.hypot(q.x-p.x,q.y-p.y);if(d<90){p.x+=(q.x-p.x)*.01;p.y+=(q.y-p.y)*.01;if(d<6)p.g=1}}});
+    }
+    p.a+=.01;
+    x.fillStyle=p.g?'#a4432b':'#3b2f22';
+    x.beginPath();x.arc(p.x,p.y,p.g?3.5:1.5,0,7);x.fill();
+    P.forEach(function(q,j){
+      if(j<=i)return;
+      var d=Math.hypot(q.x-p.x,q.y-p.y);
+      if(d<(p.g&&q.g?G*1.5:50)){
+        x.strokeStyle=p.g&&q.g?'rgba(164,67,43,.7)':'rgba(59,47,34,.12)';
+        x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke();
+      }
+    });
+    if(Math.hypot(mx-p.x,my-p.y)<28){x.fillStyle='#3b2f22';x.font='italic 13px Georgia';x.fillText(p.w,p.x+8,p.y-6)}
+  });
+  requestAnimationFrame(f);
+})();
+})();
+</script>
+</section>
