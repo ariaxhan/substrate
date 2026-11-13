@@ -1,0 +1,27 @@
+<section data-date='2026-11-12' data-type='reflection'>
+<style>
+#nt{position:relative;height:100vh;min-height:360px;overflow:hidden;background:linear-gradient(#0b1030,#1a1440 60%,#3a2150);font:italic 20px Georgia,serif;cursor:crosshair}
+#nt canvas{position:absolute;inset:0}
+#nt p{position:absolute;inset:0;margin:0;display:flex;align-items:center;justify-content:center;color:#d9d2ee;letter-spacing:.2em;text-align:center;transition:opacity 4s;pointer-events:none}
+</style>
+<div id="nt"><canvas></canvas><p>the day, complete.<br>touch the dark.</p></div>
+<script>
+(()=>{
+const r=document.getElementById('nt'),c=r.querySelector('canvas'),x=c.getContext('2d'),p=r.querySelector('p');
+const W=['rest','enough','done','soft','still','kept','held','later','sleep','begin'];
+let w,h,S=[],m={x:-999,y:-999},t=0;
+const rs=()=>{w=c.width=r.clientWidth;h=c.height=r.clientHeight};rs();onresize=rs;
+for(let i=0;i<60;i++)S.push({x:Math.random()*w,y:Math.random()*h*.8,s:Math.random()*1.2+.3,p:Math.random()*6,a:1});
+r.onmousemove=e=>{const b=r.getBoundingClientRect();m={x:e.clientX-b.left,y:e.clientY-b.top}};
+r.onclick=e=>{const b=r.getBoundingClientRect();
+S.push({x:e.clientX-b.left,y:e.clientY-b.top,s:2.6,p:0,a:1,w:W[S.length%10],b:t});p.style.opacity=0};
+(function f(){t++;x.clearRect(0,0,w,h);
+S.forEach(a=>{const tw=.5+.5*Math.sin(t/40+a.p);
+x.fillStyle=`rgba(255,246,220,${.35+.5*tw})`;x.beginPath();x.arc(a.x,a.y,a.s,0,7);x.fill();
+if(a.w){const k=Math.min(1,(t-a.b)/90);x.globalAlpha=k;x.fillStyle='#f3e9d0';x.font='italic 15px Georgia';x.fillText(a.w,a.x+10,a.y+4);x.globalAlpha=1}
+S.forEach(o=>{if(o==a)return;const d=Math.hypot(a.x-o.x,a.y-o.y),q=Math.hypot(a.x-m.x,a.y-m.y);
+if(d<130&&q<150){x.strokeStyle=`rgba(200,190,255,${.4*(1-d/130)*(1-q/150)})`;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(o.x,o.y);x.stroke()}})});
+requestAnimationFrame(f)})();
+})();
+</script>
+</section>
