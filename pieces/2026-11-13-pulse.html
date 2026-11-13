@@ -1,0 +1,43 @@
+<section data-date='2026-11-13' data-type='pulse'>
+<style>
+#h{position:relative;width:100%;height:100vh;background:#efe6d2;overflow:hidden;font:italic 20px Georgia,serif;color:#2a2118;cursor:ew-resize}
+#h canvas{display:block;width:100%;height:100%}
+#h i{position:absolute;left:0;right:0;top:12%;text-align:center;transition:opacity 2s;opacity:0;letter-spacing:.6em}
+</style>
+<div id=h><canvas></canvas><i>halfway</i></div>
+<script>
+(()=>{
+const h=document.getElementById('h'),c=h.querySelector('canvas'),x=c.getContext('2d'),w=h.querySelector('i');
+let W,H,t=0,a=0,m=null,f=.5,seen=0;
+const rs=()=>{W=c.width=h.clientWidth;H=c.height=h.clientHeight};rs();addEventListener('resize',rs);
+h.onmousemove=e=>{m=e.offsetX/W};
+h.ontouchmove=e=>{m=(e.touches[0].clientX-h.getBoundingClientRect().left)/W};
+h.onclick=e=>{f=Math.min(.8,Math.max(.2,e.offsetX/W))};
+const d=new Date,day=(d.getHours()*60+d.getMinutes())/1440;
+(function L(){
+t+=.02;
+let g=m==null?(day-.5)*.6+Math.sin(t)*.03:(m-f)*.9;
+a+=(g-a)*.05;
+x.fillStyle='#efe6d2';x.fillRect(0,0,W,H);
+const cx=W*f,cy=H*.6,R=Math.min(W,H)*.42;
+x.strokeStyle=x.fillStyle='#2a2118';
+x.beginPath();x.moveTo(cx,cy);x.lineTo(cx-18,H);x.lineTo(cx+18,H);x.fill();
+x.save();x.translate(cx,cy);x.rotate(a);
+x.lineWidth=2;x.beginPath();x.moveTo(-R*1.1,0);x.lineTo(R*1.1,0);x.stroke();
+for(let s=-1;s<2;s+=2)for(let i=1;i<=24;i++){
+ const px=s*i*R/22,lit=(s<0)==(Math.sin(a)*s*-1>=0)||0;
+ const q=Math.abs(a)<.02?1:0;
+ x.fillStyle=s<0?'#c9722b':'#2f4a63';
+ const hh=(8+10*Math.abs(Math.sin(t*2+i*.5+s)))*(1+q);
+ x.globalAlpha=.35+.65*(i/24);
+ x.fillRect(px-2,-hh,4,hh);
+}
+x.restore();x.globalAlpha=1;
+x.fillStyle='#2a2118';x.beginPath();x.arc(cx,cy,5,0,7);x.fill();
+const lv=Math.abs(a)<.02&&m!=null;
+if(lv)seen=1;
+w.style.opacity=lv?1:seen?.15:0;
+requestAnimationFrame(L)})();
+})();
+</script>
+</section>
