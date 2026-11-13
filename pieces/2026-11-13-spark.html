@@ -1,0 +1,45 @@
+<section data-date='2026-11-13' data-type='spark'>
+<style>
+#sp{position:relative;background:#07060d;height:360px;overflow:hidden;cursor:crosshair;font:12px Georgia,serif;color:#cbb;border-radius:4px}
+#sp canvas{width:100%;height:100%;display:block}
+#sp p{position:absolute;left:12px;bottom:8px;margin:0;letter-spacing:.2em;opacity:.7;pointer-events:none;transition:opacity .4s}
+</style>
+<div id="sp"><canvas></canvas><p id="t">two drift. touch them.</p></div>
+<script>
+(function(){
+var w=document.getElementById('sp'),c=w.querySelector('canvas'),x=c.getContext('2d'),t=document.getElementById('t');
+var W=c.width=640,H=c.height=360,m={x:-9,y:-9},P=[],S=[],words=['you','me','us','spark','fuse','both'],n=0;
+function mk(h,px){return{x:px,y:H/2+(Math.random()-.5)*200,vx:(h?1:-1)*(.6+Math.random()),vy:(Math.random()-.5)*.8,h:h,s:0}}
+function init(){P=[mk(20,40),mk(300,600)]}
+init();
+c.onmousemove=function(e){var r=c.getBoundingClientRect();m.x=(e.clientX-r.left)*W/r.width;m.y=(e.clientY-r.top)*H/r.height};
+c.onclick=function(){burst(m.x,m.y,30,Math.random()*360)};
+function burst(X,Y,k,h){for(var i=0;i<k;i++){var a=Math.random()*6.283,v=1+Math.random()*3;S.push({x:X,y:Y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:1,h:h+Math.random()*60})}}
+function f(){
+x.fillStyle='rgba(7,6,13,.18)';x.fillRect(0,0,W,H);
+P.forEach(function(p){
+var dx=m.x-p.x,dy=m.y-p.y,d=Math.hypot(dx,dy)||1;
+if(d<150){p.vx+=dx/d*.08;p.vy+=dy/d*.08}
+p.x+=p.vx;p.y+=p.vy;
+if(p.y<10||p.y>H-10)p.vy*=-1;
+if(p.x<10||p.x>W-10)p.vx*=-1;
+x.fillStyle='hsl('+p.h+',90%,65%)';x.beginPath();x.arc(p.x,p.y,8,0,7);x.fill();
+});
+var a=P[0],b=P[1],d=Math.hypot(a.x-b.x,a.y-b.y);
+if(d<150){x.strokeStyle='hsla(50,100%,70%,'+(1-d/150)+')';x.beginPath();x.moveTo(a.x,a.y);
+for(var i=1;i<8;i++)x.lineTo(a.x+(b.x-a.x)*i/8+(Math.random()-.5)*14*(1-d/150),a.y+(b.y-a.y)*i/8+(Math.random()-.5)*14*(1-d/150));
+x.lineTo(b.x,b.y);x.stroke()}
+if(d<16){
+burst((a.x+b.x)/2,(a.y+b.y)/2,80,(a.h+b.h)/2);
+var nh=((a.h+b.h)/2+180)%360;
+x.fillStyle='#fff';x.font='20px Georgia';x.fillText(words[n++%6],(a.x+b.x)/2,(a.y+b.y)/2-14);
+t.textContent='synthesis: hue '+(nh|0);
+P=[mk(nh,40),mk((nh+120)%360,600)];
+}
+S=S.filter(function(s){s.x+=s.vx;s.y+=s.vy;s.vx*=.97;s.vy*=.97;s.l-=.015;
+x.fillStyle='hsla('+s.h+',100%,65%,'+Math.max(s.l,0)+')';x.fillRect(s.x,s.y,2,2);return s.l>0});
+requestAnimationFrame(f)}
+f();
+})();
+</script>
+</section>
