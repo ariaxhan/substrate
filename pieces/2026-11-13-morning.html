@@ -1,0 +1,23 @@
+<section data-date='2026-11-13' data-type='morning'>
+<style>
+#d{position:relative;height:100vh;overflow:hidden;margin:0;cursor:crosshair;font-family:Georgia,'Times New Roman',serif;color:#fff;background:linear-gradient(#0b1030,#2a1f4f 55%,#c8553d 85%,#f4b860);background-size:100% 220%;background-position:0 var(--p,100%);transition:background-position .6s}
+#d i{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;transition:opacity 1s}
+#s{position:absolute;left:50%;bottom:-60px;width:120px;height:120px;border-radius:50%;background:#fff6d0;box-shadow:0 0 90px 40px #ffd27a99;transform:translate(-50%,calc(var(--y,0)*-1px))}
+#t{position:absolute;top:12%;width:100%;text-align:center;font-style:italic;font-size:clamp(20px,4vw,38px);letter-spacing:.08em;opacity:.85;mix-blend-mode:difference}
+#d b{position:absolute;font-weight:400;font-size:28px;animation:u 3s forwards;pointer-events:none;transform:translate(-50%,-50%)}
+@keyframes u{from{opacity:0;letter-spacing:.8em}to{opacity:1;letter-spacing:.05em}}
+</style>
+<div id=d><div id=t>the day is not yet written</div><div id=s></div></div>
+<script>
+(function(){
+var d=document.getElementById('d'),t=document.getElementById('t'),W='begin again light maybe now open here yes'.split(' '),n=0,k=0;
+for(var j=0;j<70;j++){var s=document.createElement('i');s.style.left=Math.random()*100+'%';s.style.top=Math.random()*60+'%';s.dataset.y=s.style.top;d.appendChild(s)}
+function set(f){f=Math.max(0,Math.min(1,f));d.style.setProperty('--p',(100-f*100)+'%');d.style.setProperty('--y',f*window.innerHeight*.55);
+var st=d.querySelectorAll('i');for(var q=0;q<st.length;q++)st[q].style.opacity=Math.max(0,1-f*1.6)*(q%3?1:.5);
+t.textContent=f>.8?'the day is yours to write':f>.4?'something is beginning':'the day is not yet written'}
+d.onmousemove=function(e){set(1-e.clientY/innerHeight)};
+d.onclick=function(e){var b=document.createElement('b');b.textContent=W[n++%W.length];b.style.left=e.clientX+'px';b.style.top=e.clientY+'px';d.appendChild(b)};
+set(.05);
+})();
+</script>
+</section>
