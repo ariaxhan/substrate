@@ -1,25 +1,23 @@
-<section data-date='2026-10-23' data-type='reflection'>
+<section data-date='2026-11-13' data-type='reflection'>
 <style>
-#n{background:radial-gradient(ellipse at 50% 120%,#1b2440,#070912 70%);height:100vh;margin:0;position:relative;overflow:hidden;cursor:crosshair;font:italic 1.1rem Georgia,serif;color:#c9d2ef}
-#n i{position:absolute;border-radius:50%;background:#fff;box-shadow:0 0 8px 2px #9fb4ff;animation:t 5s infinite alternate}
-#n b{position:absolute;font-weight:400;letter-spacing:.2em;opacity:0;transition:opacity 2s;transform:translate(-50%,-150%);white-space:nowrap;font-size:.8rem}
-#n p{position:absolute;bottom:6%;width:100%;text-align:center;margin:0;opacity:.5}
-@keyframes t{to{opacity:.3}}
+#nt{position:relative;height:100vh;background:linear-gradient(#0a0e24,#030409);overflow:hidden;cursor:crosshair;font:italic 18px Georgia,serif;color:#cfd8ff}
+#nt canvas{position:absolute;inset:0;width:100%;height:100%}
+#nt p{position:absolute;bottom:8%;width:100%;text-align:center;margin:0;letter-spacing:.3em;opacity:.5;pointer-events:none;transition:opacity 3s}
 </style>
-<div id="n"><p>the day is done. touch the dark.</p></div>
+<div id="nt"><canvas></canvas><p>the day is done. touch the dark.</p></div>
 <script>
-(function(){
-var n=document.getElementById('n'),W=['rest','enough','held','soft','still','again','tomorrow','breathe','here','kept'],k=0,L;
-function s(x,y,w){var i=document.createElement('i'),r=1+Math.random()*2;
-i.style.cssText='left:'+x+'px;top:'+y+'px;width:'+r+'px;height:'+r+'px;animation-delay:-'+Math.random()*5+'s';
-n.appendChild(i);return i}
-for(var j=0;j<60;j++)s(Math.random()*innerWidth,Math.random()*innerHeight*.9);
-n.onclick=function(e){
-var s1=s(e.clientX,e.clientY),b=document.createElement('b');
-b.textContent=W[k++%W.length];b.style.left=e.clientX+'px';b.style.top=e.clientY+'px';
-n.appendChild(b);setTimeout(function(){b.style.opacity=.9},30);
-setTimeout(function(){b.style.opacity=0},4000);
-setTimeout(function(){b.remove()},6000)};
-})();
+(()=>{const r=document.getElementById('nt'),c=r.querySelector('canvas'),x=c.getContext('2d'),p=r.querySelector('p');
+const W=['rest','breathe','enough','held','soft','tomorrow','still','home','slow','kept'];
+let S=[],n=0,w,h;
+function rs(){w=c.width=r.clientWidth;h=c.height=r.clientHeight}rs();onresize=rs;
+function add(a,b,t){S.push({x:a,y:b,t:performance.now(),p:Math.random()*6,w:t?W[n++%W.length]:0})}
+for(let i=0;i<40;i++)add(Math.random()*w,Math.random()*h*.8);
+r.onclick=e=>{const q=r.getBoundingClientRect();add(e.clientX-q.left,e.clientY-q.top,1);p.style.opacity=0};
+(function f(t){x.clearRect(0,0,w,h);
+S.forEach(s=>{const a=Math.min(1,(t-s.t)/1500),g=.6+.4*Math.sin(t/900+s.p);
+x.fillStyle=`rgba(220,230,255,${a*g})`;x.shadowBlur=12;x.shadowColor='#9bb0ff';
+x.beginPath();x.arc(s.x,s.y,1.5+a*(s.w?1.5:.5),0,7);x.fill();
+if(s.w){x.shadowBlur=0;x.font='italic 15px Georgia';x.fillStyle=`rgba(200,215,255,${a*.8})`;x.fillText(s.w,s.x+8,s.y+4)}});
+requestAnimationFrame(f)})(0)})();
 </script>
 </section>
