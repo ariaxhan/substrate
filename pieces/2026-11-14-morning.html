@@ -1,0 +1,41 @@
+<section data-date='2026-11-14' data-type='morning'>
+<style>
+#d{position:relative;height:100vh;overflow:hidden;cursor:crosshair;font:italic 1.4rem Georgia,serif;background:#0b0d1a;color:#fff}
+#d canvas{position:absolute;inset:0;width:100%;height:100%}
+#d p{position:absolute;left:0;right:0;bottom:12%;text-align:center;margin:0;letter-spacing:.3em;opacity:.8;mix-blend-mode:difference;pointer-events:none}
+#d b{position:absolute;font-weight:400;pointer-events:none;animation:u 5s forwards;mix-blend-mode:difference}
+@keyframes u{from{opacity:0;transform:translateY(20px)}20%{opacity:1}to{opacity:0;transform:translateY(-60px)}}
+</style>
+<div id="d"><canvas id="c"></canvas><p id="t">nothing is written yet</p></div>
+<script>
+(function(){
+var d=document.getElementById('d'),c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),
+w,h,my=0,s=0,n=0,W=['begin','again','light','not yet','now','open','unwritten','warm','you'];
+function r(){w=c.width=d.clientWidth;h=c.height=d.clientHeight}
+r();onresize=r;
+d.onmousemove=function(e){my=e.clientY/h};
+d.onclick=function(e){
+ var q=d.getBoundingClientRect(),b=document.createElement('b');
+ b.textContent=W[n++%W.length];b.style.left=e.clientX-q.left+'px';b.style.top=e.clientY-q.top+'px';
+ d.appendChild(b);setTimeout(function(){b.remove()},5000);
+ s=Math.min(1,s+.12);
+ t.textContent=n>8?'this is the day':n>3?'something is being written':'a first word';
+};
+function f(){
+ var k=Math.max(0,Math.min(1,1-my*.9+s*.5)),y=h*(1.05-k*.55),g=x.createLinearGradient(0,0,0,h),
+ m=function(a,b){return Math.round(a+(b-a)*k)};
+ g.addColorStop(0,'rgb('+m(11,70)+','+m(13,90)+','+m(26,170)+')');
+ g.addColorStop(.7,'rgb('+m(25,255)+','+m(20,170)+','+m(50,120)+')');
+ g.addColorStop(1,'rgb('+m(10,255)+','+m(8,225)+','+m(20,170)+')');
+ x.fillStyle=g;x.fillRect(0,0,w,h);
+ var rg=x.createRadialGradient(w/2,y,0,w/2,y,h*.5);
+ rg.addColorStop(0,'rgba(255,250,220,'+(.3+k*.7)+')');rg.addColorStop(.15,'rgba(255,200,120,'+k*.5+')');rg.addColorStop(1,'rgba(255,150,80,0)');
+ x.fillStyle=rg;x.fillRect(0,0,w,h);
+ x.fillStyle='#0b0d1a';x.beginPath();x.moveTo(0,h);
+ for(var i=0;i<=w;i+=8)x.lineTo(i,h*.86+Math.sin(i*.007)*h*.03+Math.sin(i*.021)*h*.01);
+ x.lineTo(w,h);x.fill();
+ s*=.995;requestAnimationFrame(f)}
+f();
+})();
+</script>
+</section>
