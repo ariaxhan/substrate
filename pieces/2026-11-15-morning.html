@@ -1,0 +1,28 @@
+<section data-date='2026-11-15' data-type='morning'>
+<style>
+#d{position:relative;height:100vh;overflow:hidden;cursor:crosshair;font:italic 6vmin/1.5 Georgia,serif;display:flex;align-items:center;justify-content:center;text-align:center;transition:color .6s}
+#d div{max-width:70%;position:relative}
+#d i{font-style:normal;opacity:0;transition:opacity 2.5s}
+#d i.on{opacity:1}
+#d small{position:absolute;bottom:3vmin;left:0;right:0;font:12px monospace;letter-spacing:.4em;opacity:.5}
+</style>
+<div id="d"><div>nothing is written<span id="w"></span></div><small>RISE · CLICK</small></div>
+<script>
+(function(){
+var d=document.getElementById('d'),w=document.getElementById('w'),
+L="yet,the,light,is,early,and,kind,begin".split(','),n=0,x=.5,y=.9;
+function p(){
+var t=1-y,l=5+t*62;
+d.style.background='radial-gradient(circle at '+x*100+'% '+(y*100)+'%,hsl('+(10+t*45)+',100%,'+(52+t*38)+'%) 0,hsla('+(10+t*45)+',90%,60%,0) '+(28+t*20)+'%),linear-gradient(hsl('+(238-t*40)+',45%,'+l*.7+'%),hsl('+(250-t*60)+',60%,'+l+'%))';
+d.style.color=l>40?'#2a1f33':'#f6e9dc'
+}
+d.onmousemove=function(e){var r=d.getBoundingClientRect();x=(e.clientX-r.left)/r.width;y=Math.min(.98,Math.max(0,(e.clientY-r.top)/r.height));p()};
+d.onclick=function(){
+if(n==L.length){w.innerHTML='';n=0;return}
+w.innerHTML+=' <i>'+L[n++]+'</i>';
+var s=w.lastChild;setTimeout(function(){s.className='on'},30)
+};
+p()
+})()
+</script>
+</section>
