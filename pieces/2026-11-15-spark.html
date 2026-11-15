@@ -1,0 +1,37 @@
+<section data-date='2026-11-15' data-type='spark'>
+<style>
+#kw{background:#07070c;display:block;margin:auto;max-width:100%;cursor:crosshair}
+</style>
+<canvas id="kw" width="600" height="360"></canvas>
+<script>
+(()=>{
+const c=document.getElementById('kw'),x=c.getContext('2d'),W=600,H=360,
+P=[["salt","water","brine"],["ash","seed","garden"],["stone","wind","dune"],["you","I","we"],["night","lamp","dusk"],["iron","rain","rust"],["mouth","mouth","kiss"]];
+let n=0,a={x:120,y:180},b={x:500,y:90,p:0},m={x:120,y:180},S=[],F=[],t=0;
+c.onmousemove=e=>{let r=c.getBoundingClientRect();m.x=(e.clientX-r.left)*W/r.width;m.y=(e.clientY-r.top)*H/r.height};
+c.onclick=()=>{n=(n+1)%P.length;b.x=W-40;b.y=Math.random()*H};
+function boom(px,py,w){
+ for(let i=0;i<40;i++){let q=Math.random()*6.28,s=1+Math.random()*3;S.push({x:px,y:py,vx:Math.cos(q)*s,vy:Math.sin(q)*s,l:1,h:i%2?190:20})}
+ F.push({x:px,y:py,w:w,l:1})
+}
+function T(s,px,py,al,h,z){x.font=z+'px Georgia,serif';x.textAlign='center';x.fillStyle='hsla('+h+',80%,70%,'+al+')';x.fillText(s,px,py)}
+function f(){
+ t+=.03;
+ x.fillStyle='rgba(7,7,12,.18)';x.fillRect(0,0,W,H);
+ a.x+=(m.x-a.x)*.12;a.y+=(m.y-a.y)*.12;
+ b.x+=(a.x-b.x)*.008+Math.cos(t*2)*.9;
+ b.y+=(a.y-b.y)*.008+Math.sin(t*3)*.9;
+ let d=Math.hypot(a.x-b.x,a.y-b.y);
+ if(d<40){boom((a.x+b.x)/2,(a.y+b.y)/2,P[n][2]);n=(n+1)%P.length;b.x=W-40;b.y=Math.random()*H}
+ x.strokeStyle='rgba(255,255,255,'+Math.max(0,.5-d/600)+')';
+ x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();
+ T(P[n][0],a.x,a.y,1,20,22+Math.max(0,60-d)/3);
+ T(P[n][1],b.x,b.y,1,190,22+Math.max(0,60-d)/3);
+ S=S.filter(s=>s.l>0);S.forEach(s=>{s.x+=s.vx;s.y+=s.vy;s.vx*=.97;s.vy*=.97;s.l-=.02;x.fillStyle='hsla('+s.h+',90%,65%,'+s.l+')';x.fillRect(s.x,s.y,2,2)});
+ F=F.filter(w=>w.l>0);F.forEach(w=>{w.y-=.4;w.l-=.006;T(w.w,w.x,w.y,w.l,300+w.l*60,38)});
+ requestAnimationFrame(f)
+}
+f()
+})()
+</script>
+</section>
