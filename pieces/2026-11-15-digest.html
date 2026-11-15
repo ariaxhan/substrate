@@ -1,0 +1,42 @@
+<section data-date='2026-11-15' data-type='digest'>
+<style>
+#t{position:relative;background:#0e0d0b;height:100vh;overflow:hidden;cursor:crosshair;font:italic 15px Georgia,serif;color:#d9c9a3}
+#t canvas{position:absolute;inset:0}
+#t p{position:absolute;left:24px;bottom:20px;margin:0;letter-spacing:.08em;opacity:.7;transition:opacity 1s}
+</style>
+<div id="t"><canvas></canvas><p>noise. touch it.</p></div>
+<script>
+(()=>{
+const t=document.getElementById('t'),c=t.querySelector('canvas'),x=c.getContext('2d'),p=t.querySelector('p');
+let W,H,S=[],G=46,M=null;
+const rs=()=>{W=c.width=t.clientWidth;H=c.height=t.clientHeight};rs();addEventListener('resize',rs);
+const D=[...Array(170)].map(()=>({x:Math.random()*W,y:Math.random()*H,a:Math.random()*6.28,o:0}));
+const words=['noise','signal','pattern','lattice','structure','memory','knowing'];
+t.onclick=e=>{const r=t.getBoundingClientRect();S.push({x:e.clientX-r.left,y:e.clientY-r.top,r:0})};
+t.onmousemove=e=>{const r=t.getBoundingClientRect();M={x:e.clientX-r.left,y:e.clientY-r.top}};
+t.onmouseleave=()=>M=null;
+(function f(){
+x.fillStyle='rgba(14,13,11,.25)';x.fillRect(0,0,W,H);
+S.forEach(s=>{s.r=Math.min(s.r+1.6,Math.min(W,H)*.45)});
+let n=0;
+D.forEach(d=>{
+let b=null,bd=1e9;
+S.forEach(s=>{const k=Math.hypot(d.x-s.x,d.y-s.y);if(k<s.r&&k<bd){bd=k;b=s}});
+if(b){
+const tx=b.x+Math.round((d.x-b.x)/G)*G,ty=b.y+Math.round((d.y-b.y)/G)*G;
+d.x+=(tx-d.x)*.04;d.y+=(ty-d.y)*.04;d.o=Math.min(1,d.o+.02);
+}else{d.a+=(Math.random()-.5)*.4;d.x=(d.x+Math.cos(d.a)*.6+W)%W;d.y=(d.y+Math.sin(d.a)*.6+H)%H;d.o=Math.max(0,d.o-.01)}
+if(M&&Math.hypot(d.x-M.x,d.y-M.y)<90){x.strokeStyle='rgba(217,201,163,.25)';x.beginPath();x.moveTo(M.x,M.y);x.lineTo(d.x,d.y);x.stroke()}
+if(d.o>.9)n++;
+});
+for(let i=0;i<D.length;i++)for(let j=i+1;j<D.length;j++){
+const a=D[i],b=D[j];if(a.o<.3||b.o<.3)continue;
+const k=Math.hypot(a.x-b.x,a.y-b.y);
+if(k<G*1.05){x.strokeStyle=`rgba(232,184,96,${Math.min(a.o,b.o)*.8})`;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}
+}
+D.forEach(d=>{x.fillStyle=d.o>.5?'#e8b860':'rgba(217,201,163,.5)';x.fillRect(d.x-1.5,d.y-1.5,3,3)});
+if(S.length)p.textContent=words[Math.min(6,Math.floor(n/D.length*14))]+' · '+n+'/'+D.length;
+requestAnimationFrame(f)})();
+})();
+</script>
+</section>
