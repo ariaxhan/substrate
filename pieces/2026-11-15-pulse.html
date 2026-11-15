@@ -1,0 +1,25 @@
+<section data-date='2026-11-15' data-type='pulse'><style>#h{display:block;width:100%;height:100vh;background:linear-gradient(90deg,#f1e6cf,#16141f);cursor:crosshair}</style><canvas id=h></canvas><script>
+(()=>{let c=document.getElementById('h'),x=c.getContext('2d'),W,H,t=0,a=.5,v=0,f=1,r=[],T=0,k=0;
+function z(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight}z();onresize=z;
+c.onmousemove=e=>{let b=c.getBoundingClientRect();t=((e.clientX-b.left)/W-.5)*.9};
+c.onclick=()=>f=-f;
+(function d(){T++;v+=(t-a)*.02;v*=.93;a+=v;
+let cx=W/2,cy=H*.6,L=W*.38,lv=Math.abs(a)<.02&&Math.abs(v)<.002;
+x.clearRect(0,0,W,H);
+x.save();x.translate(cx,cy);x.rotate(a);
+x.fillStyle='#8a7f72';x.fillRect(-L,-1,2*L,2);
+for(let i=-1;i<2;i+=2){x.beginPath();x.arc(i*L,-16,13,0,7);x.fillStyle=i*f<0?'#e0872a':'#dcd8ea';x.fill();
+if(i*f>0){x.beginPath();x.arc(i*L+6,-20,11,0,7);x.fillStyle='#16141f';x.globalAlpha=.5;x.fill();x.globalAlpha=1}}
+x.restore();
+x.fillStyle='#b9774a';x.beginPath();x.moveTo(cx,cy);x.lineTo(cx-16,cy+40);x.lineTo(cx+16,cy+40);x.fill();
+if(lv&&T%50==0)r.push(0);
+k+=(lv-k)*.04;
+x.strokeStyle='#b9774a';
+r=r.filter(q=>q<W/2);
+r=r.map(q=>{x.globalAlpha=1-q/(W/2);x.beginPath();x.arc(cx,cy,q,0,7);x.stroke();return q+2});
+x.globalAlpha=k;x.globalCompositeOperation='difference';x.fillStyle='#fff';x.textAlign='center';
+x.font='italic '+W/28+'px Georgia,serif';x.fillText('12:00',cx,cy-H*.3);
+x.font=W/60+'px Georgia,serif';x.fillText('halfway is not a place. it is a held breath.',cx,cy-H*.3+W/30);
+x.globalAlpha=1;x.globalCompositeOperation='source-over';
+requestAnimationFrame(d)})()})()
+</script></section>
