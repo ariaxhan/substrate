@@ -1,0 +1,35 @@
+<section data-date='2026-11-16' data-type='morning'>
+<style>
+#dw{position:relative;width:100%;height:100vh;min-height:420px;overflow:hidden;cursor:crosshair;font:italic 1.3rem/1.6 Georgia,'Times New Roman',serif;user-select:none;background:var(--bg,#0b0d1a)}
+#dw .g{position:absolute;inset:0;background:radial-gradient(circle at var(--x,50%) var(--y,100%),var(--c1,#3a2a4a) 0,var(--c2,#14162b) 38%,transparent 75%);transition:background .2s}
+#dw h1{position:absolute;left:0;right:0;top:38%;margin:0;text-align:center;font:inherit;font-size:clamp(1.4rem,4vw,2.4rem);letter-spacing:.08em;color:var(--t,#8a86a8);transition:color 2s}
+#dw h1 i{opacity:.35;font-size:.5em;display:block;margin-top:1em;letter-spacing:.3em}
+#dw b{position:absolute;font-weight:400;transform:translate(-50%,-50%);color:var(--t,#fff);animation:u 6s forwards;pointer-events:none;text-shadow:0 0 18px var(--c1)}
+@keyframes u{0%{opacity:0;letter-spacing:-.2em}15%{opacity:1}100%{opacity:0;letter-spacing:.6em;margin-top:-60px}}
+</style>
+<div id="dw"><div class="g"></div><h1>the page is still empty<i>touch the dark</i></h1></div>
+<script>
+(function(){
+var d=document.getElementById('dw'),w=['begin','yet','open','again','now','light','you','warm','first','almost'],p=0,s=Date.now(),k=0,mx=50,my=100;
+function paint(){
+ var q=Math.min(1,(Date.now()-s)/90000+p);
+ var h=250-q*210,l=6+q*80;
+ d.style.setProperty('--bg','hsl('+(h+10)+',40%,'+(l*.5)+'%)');
+ d.style.setProperty('--c1','hsl('+(h+30)+',90%,'+(30+q*55)+'%)');
+ d.style.setProperty('--c2','hsl('+(h+5)+',50%,'+(8+q*50)+'%)');
+ d.style.setProperty('--t',q>.55?'#3b2417':'hsl(40,60%,'+(55+q*40)+'%)');
+ d.style.setProperty('--x',mx+'%');
+ d.style.setProperty('--y',my+'%');
+}
+d.onmousemove=function(e){var r=d.getBoundingClientRect();mx=(e.clientX-r.left)/r.width*100;my=(e.clientY-r.top)/r.height*100;paint()};
+d.onclick=function(e){
+ var r=d.getBoundingClientRect(),n=document.createElement('b');
+ n.textContent=w[k++%w.length];
+ n.style.left=e.clientX-r.left+'px';n.style.top=e.clientY-r.top+'px';
+ d.appendChild(n);setTimeout(function(){n.remove()},6000);
+ p=Math.min(.5,p+.06);paint();
+};
+setInterval(paint,500);paint();
+})();
+</script>
+</section>
