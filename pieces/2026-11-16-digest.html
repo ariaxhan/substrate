@@ -1,0 +1,34 @@
+<section data-date='2026-11-16' data-type='digest'>
+<style>
+#c{background:#efe8d8;display:block;width:100%;height:100vh;cursor:crosshair}
+.t{position:absolute;left:0;right:0;bottom:6vh;text-align:center;font:italic 18px Georgia,serif;color:#3a3226;letter-spacing:.08em;pointer-events:none;transition:opacity 2s}
+</style>
+<canvas id="c"></canvas>
+<div class="t" id="t">drop something you know</div>
+<script>
+(()=>{
+const c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t');
+let W,H,P=[],G=60,words=['a note','a pattern','a habit','a map','a lattice','a mind'];
+const R=()=>{W=c.width=innerWidth;H=c.height=innerHeight};R();onresize=R;
+// nearest hex-lattice site
+const site=(a,b)=>{let r=Math.round(b/(G*.866)),o=r%2?G/2:0;return[Math.round((a-o)/G)*G+o,r*G*.866]};
+const add=(a,b)=>{P.push({x:a,y:b,s:0,tx:0,ty:0});
+ let n=P.length;t.textContent=n<7?words[n-1]:n+' facts, '+(new Set(P.map(p=>p.tx+','+p.ty)).size)+' places';
+ let q=site(a,b);P[n-1].tx=q[0];P[n-1].ty=q[1]};
+onclick=e=>add(e.clientX,e.clientY);
+onmousemove=e=>{if(Math.random()<.12)add(e.clientX+Math.random()*30,e.clientY+Math.random()*30)};
+for(let i=0;i<5;i++)add(Math.random()*innerWidth,Math.random()*innerHeight);
+const f=()=>{
+ x.fillStyle='rgba(239,232,216,.25)';x.fillRect(0,0,W,H);
+ for(let p of P){let k=.012;p.x+=(p.tx-p.x)*k+(Math.random()-.5)*(1-p.s)*2;p.y+=(p.ty-p.y)*k+(Math.random()-.5)*(1-p.s)*2;
+  p.s=1-Math.min(1,Math.hypot(p.tx-p.x,p.ty-p.y)/40)}
+ for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){
+  let a=P[i],b=P[j],d=Math.hypot(a.x-b.x,a.y-b.y);
+  if(d<G*1.3){let s=Math.min(a.s,b.s);x.strokeStyle=`rgba(${60+s*140},${50-s*20},${40+s*10},${.15+s*.7})`;
+   x.lineWidth=.5+s*1.5;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}}
+ for(let p of P){x.fillStyle=p.s>.9?'#b8432b':'#3a3226';x.beginPath();x.arc(p.x,p.y,2+p.s*3,0,7);x.fill()}
+ if(P.length>150)P.splice(0,P.length-150);
+ requestAnimationFrame(f)};
+f()})();
+</script>
+</section>
