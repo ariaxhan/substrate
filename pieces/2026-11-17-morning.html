@@ -1,0 +1,41 @@
+<section data-date='2026-11-17' data-type='morning'>
+<style>
+.dw{position:relative;min-height:100vh;overflow:hidden;cursor:crosshair;margin:0;
+--x:50%;--y:115%;
+background:radial-gradient(circle at var(--x) var(--y),#fffbe6,#ffc27d 14%,#d9667f 32%,#4a3470 58%,#0b0a1e 90%);
+font:italic 1.1rem/1.4 Georgia,'Times New Roman',serif;color:#fff;user-select:none}
+.dw h1{all:unset;position:absolute;left:0;right:0;top:42%;text-align:center;
+font-size:clamp(1.6rem,5vw,3.4rem);letter-spacing:.04em;mix-blend-mode:difference;
+transition:opacity 2s;pointer-events:none}
+.dw i{position:absolute;transform:translate(-50%,-50%);mix-blend-mode:difference;
+animation:w 1.6s ease-out both;pointer-events:none;white-space:nowrap}
+@keyframes w{from{opacity:0;letter-spacing:.8em;filter:blur(8px)}to{opacity:1;letter-spacing:.06em;filter:blur(0)}}
+.dw small{position:absolute;bottom:1.2rem;width:100%;text-align:center;opacity:.5;
+font:.7rem monospace;letter-spacing:.3em;mix-blend-mode:difference}
+</style>
+<div class="dw">
+<h1>nothing is written yet</h1>
+<small>move to raise the light · click to write</small>
+</div>
+<script>
+(function(){
+var d=document.currentScript.previousElementSibling,h=d.firstElementChild,
+W='begin yet soft now open here again almost warm first maybe'.split(' '),
+x=50,y=115,tx=50,ty=115,n=0,t=0,m=0;
+d.onmousemove=d.ontouchmove=function(e){
+var p=e.touches?e.touches[0]:e,r=d.getBoundingClientRect();
+m=1;tx=(p.clientX-r.left)/r.width*100;ty=(p.clientY-r.top)/r.height*100+20};
+d.onclick=function(e){
+var r=d.getBoundingClientRect(),i=document.createElement('i');
+i.textContent=W[n++%W.length];
+i.style.left=e.clientX-r.left+'px';i.style.top=e.clientY-r.top+'px';
+d.appendChild(i);h.style.opacity=Math.max(0,1-n/4);
+ty-=8};
+(function f(){
+t++;if(!m)ty=115-Math.min(t/12,40)+Math.sin(t/60)*2;
+x+=(tx-x)*.05;y+=(ty-y)*.05;
+d.style.setProperty('--x',x+'%');d.style.setProperty('--y',y+'%');
+requestAnimationFrame(f)})()
+})()
+</script>
+</section>
