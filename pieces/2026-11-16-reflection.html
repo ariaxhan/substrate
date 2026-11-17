@@ -1,0 +1,33 @@
+<section data-date='2026-11-16' data-type='reflection'>
+<style>
+.nt{position:relative;height:100vh;min-height:360px;background:linear-gradient(#0b1026,#1a1840 70%,#3a2a4a);overflow:hidden;cursor:crosshair;font:italic 18px Georgia,serif;color:#cfd6ff}
+.nt canvas{position:absolute;inset:0;width:100%;height:100%}
+.nt p{position:absolute;bottom:8%;width:100%;text-align:center;margin:0;letter-spacing:.3em;opacity:.35;transition:opacity 3s}
+</style>
+<div class="nt"><canvas></canvas><p>the day is complete. touch the dark.</p></div>
+<script>
+(()=>{
+const d=document.currentScript.previousElementSibling,c=d.querySelector('canvas'),x=c.getContext('2d'),p=d.querySelector('p'),
+W=['rest','enough','held','soft','still','slow','kept','here','tomorrow','sleep'],S=[];
+let w,h,m=null;
+const R=()=>{w=c.width=d.clientWidth;h=c.height=d.clientHeight};R();addEventListener('resize',R);
+for(let i=0;i<40;i++)S.push({x:Math.random(),y:Math.random()*.8,r:Math.random()*1.2+.3,t:Math.random()*9,l:0,w:''});
+d.onclick=e=>{const b=d.getBoundingClientRect();S.push({x:(e.clientX-b.left)/w,y:(e.clientY-b.top)/h,r:2.4,t:0,l:1,w:W[S.length%W.length],a:0});p.style.opacity=0};
+d.onmousemove=e=>{const b=d.getBoundingClientRect();m=[e.clientX-b.left,e.clientY-b.top]};
+d.onmouseleave=()=>m=null;
+(function f(t){
+x.clearRect(0,0,w,h);
+S.forEach(s=>{
+const a=.4+.4*Math.sin(t/900+s.t),X=s.x*w,Y=s.y*h;
+if(s.l){s.a=Math.min(1,s.a+.01)}
+x.fillStyle=`rgba(255,248,220,${s.l?s.a:a})`;
+x.beginPath();x.arc(X,Y,s.r*(s.l?1+.2*Math.sin(t/700):1),0,7);x.fill();
+if(s.l){x.font='italic 15px Georgia';x.fillText(s.w,X+9,Y+4)}
+if(m){const q=Math.hypot(X-m[0],Y-m[1]);
+if(q<130){x.strokeStyle=`rgba(180,190,255,${(1-q/130)*.5})`;x.beginPath();x.moveTo(m[0],m[1]);x.lineTo(X,Y);x.stroke();
+S.forEach(o=>{const u=o.x*w,v=o.y*h,z=Math.hypot(X-u,Y-v);if(o!==s&&z<90&&q<130){x.strokeStyle=`rgba(180,190,255,${(1-z/90)*.25})`;x.beginPath();x.moveTo(X,Y);x.lineTo(u,v);x.stroke()}})}}
+});
+requestAnimationFrame(f)})(0);
+})();
+</script>
+</section>
