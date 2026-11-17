@@ -1,0 +1,47 @@
+<section data-date='2026-11-17' data-type='spark'>
+<style>
+#s{position:relative;background:#07060b;height:420px;overflow:hidden;cursor:crosshair;font:13px/1.6 Georgia,serif;color:#d9d2c4}
+#s canvas{display:block;width:100%;height:100%}
+#t{position:absolute;left:0;right:0;bottom:18px;text-align:center;letter-spacing:.3em;text-transform:lowercase;opacity:.8;transition:opacity 1s;pointer-events:none}
+</style>
+<div id="s"><canvas id="c"></canvas><div id="t">move. two things want each other.</div></div>
+<script>
+(function(){
+var s=document.getElementById('s'),c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),
+W,H,m={x:0,y:0,on:0},P=[],S=[],n=0,
+L=['heat + salt = ','you + the other = ','neither, then both: ','a third thing: '],
+W2=['bloom','ember','tide','seam','glass','dawn'];
+function rs(){W=c.width=s.clientWidth;H=c.height=s.clientHeight}
+rs();m.x=W*.8;m.y=H*.3;
+var A={x:W*.2,y:H*.7,vx:1,vy:-1,h:30},B={x:W*.8,y:H*.2,vx:-1,vy:1,h:190};
+s.onmousemove=function(e){var r=s.getBoundingClientRect();m.x=e.clientX-r.left;m.y=e.clientY-r.top;m.on=1};
+s.onmouseleave=function(){m.on=0};
+function burst(px,py){
+for(var i=0;i<90;i++){var a=Math.random()*6.28,v=Math.random()*4+.5;
+S.push({x:px,y:py,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:1,h:i%2?30:190,m:i%3==0})}
+t.style.opacity=1;t.textContent=L[n%4]+W2[n%6];n++}
+s.onclick=function(e){var r=s.getBoundingClientRect();burst(e.clientX-r.left,e.clientY-r.top);A.x=m.x;A.y=m.y;B.x=m.x;B.y=m.y;A.vx=-2;B.vx=2}
+function mv(o,tx,ty,k){
+o.vx+=(tx-o.x)*k;o.vy+=(ty-o.y)*k;o.vx*=.96;o.vy*=.96;o.x+=o.vx;o.y+=o.vy}
+function orb(o,r){var g=x.createRadialGradient(o.x,o.y,0,o.x,o.y,r*3);
+g.addColorStop(0,'hsla('+o.h+',90%,65%,.9)');g.addColorStop(1,'hsla('+o.h+',90%,50%,0)');
+x.fillStyle=g;x.beginPath();x.arc(o.x,o.y,r*3,0,6.28);x.fill()}
+var hit=0;
+function f(){
+x.fillStyle='rgba(7,6,11,.18)';x.fillRect(0,0,W,H);
+mv(A,m.on?m.x:W/2,m.on?m.y:H/2,.0006);
+mv(B,B.x+(A.x>B.x?1:-1)*0+(m.on?W-m.x:W/2)-B.x,(m.on?H-m.y:H/2),.0006);
+var d=Math.hypot(A.x-B.x,A.y-B.y);
+if(d<260){x.strokeStyle='hsla(60,80%,70%,'+(1-d/260)*.6+')';x.lineWidth=1;x.beginPath();
+for(var i=0;i<=12;i++){var u=i/12,wx=A.x+(B.x-A.x)*u+Math.sin(u*20+hit)*8*(d/260),wy=A.y+(B.y-A.y)*u+Math.cos(u*20+hit)*8*(d/260);i?x.lineTo(wx,wy):x.moveTo(wx,wy)}x.stroke()}
+hit+=.2;
+if(d<22&&!A.c){burst((A.x+B.x)/2,(A.y+B.y)/2);A.c=1;A.vx=-3;B.vx=3}
+if(d>60)A.c=0;
+orb(A,10);orb(B,10);
+for(var i=S.length-1;i>=0;i--){var p=S[i];p.x+=p.vx;p.y+=p.vy;p.vx*=.97;p.vy*=.97;p.l-=.012;
+if(p.l<=0){S.splice(i,1);continue}
+x.fillStyle='hsla('+(p.m?110:p.h)+',90%,'+(60+p.l*20)+'%,'+p.l+')';x.fillRect(p.x,p.y,2,2)}
+requestAnimationFrame(f)}
+f()})();
+</script>
+</section>
