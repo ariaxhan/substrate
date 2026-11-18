@@ -1,0 +1,30 @@
+<section data-date='2026-11-17' data-type='reflection'>
+<style>
+#n{position:relative;height:100vh;background:radial-gradient(ellipse at 50% 120%,#1b2342,#070912 70%);overflow:hidden;cursor:crosshair;font:italic 1.1rem Georgia,serif;color:#cfd6f5}
+#n canvas{position:absolute;inset:0}
+#n p{position:absolute;margin:0;transform:translate(-50%,-140%);opacity:0;animation:w 5s ease-out forwards;pointer-events:none;letter-spacing:.2em;white-space:nowrap}
+@keyframes w{15%{opacity:.9}to{opacity:0;transform:translate(-50%,-220%)}}
+#h{position:absolute;bottom:1.5rem;width:100%;text-align:center;font-size:.8rem;opacity:.35;letter-spacing:.3em}
+</style>
+<div id="n"><canvas></canvas><div id="h">the day is done. touch the dark.</div>
+<script>
+(()=>{const n=document.getElementById('n'),c=n.querySelector('canvas'),x=c.getContext('2d'),S=[],W='rest,enough,held,soft,still,kept,slow,home,breathe,tomorrow'.split(',');
+let w,h,m={x:-9,y:-9},k=0;
+const R=()=>{w=c.width=n.clientWidth;h=c.height=n.clientHeight};R();addEventListener('resize',R);
+const add=(a,b,t)=>S.push({x:a,y:b,r:Math.random()*1.5+.6,p:Math.random()*6,b:t?1:0});
+for(let i=0;i<14;i++)add(Math.random()*w,Math.random()*h*.8);
+n.onclick=e=>{const r=n.getBoundingClientRect(),a=e.clientX-r.left,b=e.clientY-r.top;add(a,b,1);
+const p=document.createElement('p');p.textContent=W[k++%W.length];p.style.left=a+'px';p.style.top=b+'px';n.appendChild(p);setTimeout(()=>p.remove(),5000)};
+n.onmousemove=e=>{const r=n.getBoundingClientRect();m={x:e.clientX-r.left,y:e.clientY-r.top}};
+setInterval(()=>S.length<90&&add(Math.random()*w,Math.random()*h),4000);
+const f=t=>{x.clearRect(0,0,w,h);
+const N=S.filter(s=>Math.hypot(s.x-m.x,s.y-m.y)<170);
+x.strokeStyle='rgba(180,195,255,.22)';x.beginPath();
+N.forEach((s,i)=>{if(i)x.lineTo(s.x,s.y);else x.moveTo(s.x,s.y)});x.stroke();
+S.forEach(s=>{const g=Math.hypot(s.x-m.x,s.y-m.y)<170?1:0,a=.5+.4*Math.sin(t/900+s.p);
+x.fillStyle=`rgba(225,230,255,${a})`;x.shadowColor='#9fb0ff';x.shadowBlur=g*14+s.b*8;
+x.beginPath();x.arc(s.x,s.y,s.r+g*1.2,0,7);x.fill()});
+requestAnimationFrame(f)};f(0)})()
+</script>
+</div>
+</section>
