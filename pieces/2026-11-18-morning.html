@@ -1,0 +1,31 @@
+<section data-date='2026-11-18' data-type='morning'>
+<style>
+.dw{position:relative;height:100vh;min-height:420px;overflow:hidden;background:#070a1c;color:#fdf1dc;font:italic 300 clamp(20px,4vw,38px)/1.5 Georgia,serif;cursor:pointer;text-align:center;--x:50%;--d:0}
+.dw::before{content:"";position:absolute;inset:0;opacity:var(--d);transition:opacity 2.2s ease;background:radial-gradient(circle at var(--x) calc(100% - 12% * var(--d) - 30%),#ffd9a0 0,#ff9a6a 14%,#c8567a 34%,transparent 70%),linear-gradient(#3b4a8a,#e8a0a0 85%,#ffe2b8)}
+.dw i{position:absolute;left:0;right:0;bottom:30%;height:1px;background:#fdf1dc;opacity:.5;transition:box-shadow 2s;box-shadow:0 0 calc(40px * var(--d)) calc(8px * var(--d)) #ffb070}
+.dw b{position:absolute;left:0;right:0;bottom:0;height:30%;background:#04050f;transition:background 2.2s}
+.dw p{position:absolute;left:0;right:0;top:22%;margin:0;z-index:2}
+.dw span{display:block;opacity:0;transform:translateY(12px);transition:opacity 1.8s,transform 1.8s,color 2s}
+.dw span.on{opacity:1;transform:none}
+.dw span:hover{letter-spacing:.12em;transition:letter-spacing .6s}
+.dw .z{opacity:.35;font-size:.5em;position:absolute;bottom:10%;left:0;right:0;z-index:2;letter-spacing:.3em;font-style:normal}
+</style>
+<div class="dw"><i></i><b></b>
+<p></p><div class="z">TOUCH THE DARK</div>
+<script>
+(function(){
+var r=document.currentScript.parentNode,p=r.querySelector('p'),z=r.querySelector('.z'),
+L=['the page is blank','and holds its breath','something is about to','be','yours','begin.'],n=0,s=[];
+L.forEach(function(t){var e=document.createElement('span');e.textContent=t;p.appendChild(e);s.push(e)});
+r.onmousemove=function(e){var b=r.getBoundingClientRect();r.style.setProperty('--x',(e.clientX-b.left)/b.width*100+'%')};
+r.onclick=function(){
+if(n==L.length){n=0;s.forEach(function(e){e.className='';e.style.color=''});z.style.opacity='';}
+else{s[n].className='on';n++;z.style.opacity=0}
+r.style.setProperty('--d',n/L.length);
+r.style.color=n>3?'#2a1a3a':'#fdf1dc';
+if(n==L.length)z.textContent='AGAIN',z.style.opacity=.5;else z.textContent='TOUCH THE DARK';
+};
+})();
+</script>
+</div>
+</section>
