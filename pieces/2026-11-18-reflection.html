@@ -1,0 +1,35 @@
+<section data-date='2026-11-18' data-type='reflection'>
+<style>
+#nt{position:relative;height:100vh;min-height:360px;overflow:hidden;background:linear-gradient(#0b1030,#1b1740 60%,#3a2450 100%);font:italic 15px Georgia,serif;color:#e8e0ff;cursor:crosshair}
+#nt canvas{position:absolute;inset:0;width:100%;height:100%}
+#nt p{position:absolute;left:0;right:0;bottom:7%;margin:0;text-align:center;letter-spacing:.3em;opacity:.35;transition:opacity 4s;pointer-events:none}
+</style>
+<div id="nt"><canvas></canvas><p>the day is complete</p></div>
+<script>
+(()=>{
+const r=document.getElementById('nt'),c=r.querySelector('canvas'),x=c.getContext('2d'),p=r.querySelector('p');
+const W=['rest','done','enough','still','held','soft','kept','here','slept','begin later'];
+let S=[],m=null,w,h,n=0;
+const fit=()=>{w=c.width=r.clientWidth;h=c.height=r.clientHeight};
+fit();addEventListener('resize',fit);
+const add=(px,py,t)=>{S.push({x:px,y:py,t:t||'',b:performance.now(),f:Math.random()*6});p.style.opacity=0};
+for(let i=0;i<5;i++)setTimeout(()=>add(Math.random()*w,Math.random()*h*.7),i*1500);
+setInterval(()=>S.length<40&&add(Math.random()*w,Math.random()*h*.8),4000);
+r.onclick=e=>{const b=r.getBoundingClientRect();add(e.clientX-b.left,e.clientY-b.top,W[n++%W.length])};
+r.onmousemove=e=>{const b=r.getBoundingClientRect();m={x:e.clientX-b.left,y:e.clientY-b.top}};
+r.onmouseleave=()=>m=null;
+(function f(t){
+x.clearRect(0,0,w,h);
+for(const s of S){
+ const a=Math.min(1,(t-s.b)/3000),g=a*(.7+.3*Math.sin(t/900+s.f));
+ x.fillStyle=`rgba(255,248,220,${g})`;
+ x.shadowColor='#fff4c0';x.shadowBlur=8*a;
+ x.beginPath();x.arc(s.x,s.y,1.6+a,0,7);x.fill();
+ if(s.t){x.shadowBlur=0;x.fillStyle=`rgba(232,224,255,${a*.8})`;x.fillText(s.t,s.x+8,s.y+4-(1-a)*10)}
+ if(m)for(const o of S){const d=Math.hypot(s.x-o.x,s.y-o.y),k=Math.hypot(s.x-m.x,s.y-m.y);
+  if(o!==s&&d<180&&k<160){x.shadowBlur=0;x.strokeStyle=`rgba(180,170,255,${.35*(1-k/160)})`;x.beginPath();x.moveTo(s.x,s.y);x.lineTo(o.x,o.y);x.stroke()}}
+}
+requestAnimationFrame(f)})(0);
+})();
+</script>
+</section>
