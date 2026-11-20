@@ -1,0 +1,41 @@
+<section data-date='2026-11-20' data-type='digest'>
+<style>
+.k{position:relative;height:100vh;background:#0b1020;overflow:hidden;cursor:crosshair}
+.k canvas{display:block}
+</style>
+<div class=k><canvas id=c></canvas></div>
+<script>
+(()=>{
+const c=document.getElementById('c'),x=c.getContext('2d'),W=c.width=innerWidth,H=c.height=innerHeight,g=44,
+R=Math.random,S=[],
+L=['scattered.','one point insists.','neighbors agree.','a lattice remembers.','structure was always the noise, listening.'],
+P=[...Array(170)].map(()=>({x:R()*W,y:R()*H}));
+c.onclick=e=>S.push({x:e.offsetX,y:e.offsetY,a:0});
+(function f(){
+x.fillStyle='rgba(11,16,32,.35)';x.fillRect(0,0,W,H);
+for(const s of S)s.a=Math.min(1,s.a+.004);
+for(const p of P){
+ let b=null,d=1e9;
+ for(const s of S){const q=Math.hypot(p.x-s.x,p.y-s.y);if(q<d){d=q;b=s}}
+ if(b){
+  const r=Math.round((p.y-b.y)/(g*.87)),o=(r&1)*g/2,
+  tx=b.x+Math.round((p.x-b.x-o)/g)*g+o,ty=b.y+r*g*.87,
+  k=.04*b.a*Math.exp(-d/300);
+  p.x+=(tx-p.x)*k;p.y+=(ty-p.y)*k;p.t=k;
+ }
+ p.x+=(R()-.5)*(b?.3:1.4);p.y+=(R()-.5)*(b?.3:1.4);
+ p.x=(p.x+W)%W;p.y=(p.y+H)%H;
+}
+for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){
+ const a=P[i],e=P[j],d=Math.hypot(a.x-e.x,a.y-e.y);
+ if(d<g*1.2){x.strokeStyle=`rgba(255,200,110,${(1-d/(g*1.2))*.5})`;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(e.x,e.y);x.stroke()}
+}
+for(const p of P){x.fillStyle=p.t>.01?'#ffd27a':'#6b7aa8';x.beginPath();x.arc(p.x,p.y,p.t>.01?2.4:1.4,0,7);x.fill()}
+for(const s of S){x.strokeStyle=`rgba(255,255,255,${.3*s.a})`;x.beginPath();x.arc(s.x,s.y,6+s.a*8,0,7);x.stroke()}
+x.fillStyle='#0b1020';x.fillRect(0,H-48,W,48);
+x.fillStyle='#e8e2d0';x.font='italic 18px Georgia,serif';
+x.fillText(L[Math.min(S.length,4)],20,H-18);
+requestAnimationFrame(f)})();
+})();
+</script>
+</section>
