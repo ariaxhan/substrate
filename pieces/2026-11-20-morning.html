@@ -1,0 +1,41 @@
+<section data-date='2026-11-20' data-type='morning'>
+<style>
+#d{--h:85;position:relative;height:100vh;min-height:440px;overflow:hidden;cursor:crosshair;user-select:none;
+background:linear-gradient(#0b0e1a,#241f3d calc(var(--h)*1% - 25%),#d9667a calc(var(--h)*1% - 5%),#f7b58a calc(var(--h)*1%),#fff1cf calc(var(--h)*1% + 30%));
+font:italic 24px/1 Georgia,serif;text-align:center;display:flex;flex-direction:column;justify-content:space-evenly}
+#d p{margin:0;color:#fff;mix-blend-mode:difference;transition:opacity .6s,letter-spacing .6s}
+#d small{position:absolute;bottom:10px;width:100%;font:11px monospace;color:#fff;mix-blend-mode:difference;opacity:.5}
+</style>
+<div id=d>
+<small>move to raise the light · click to write a line</small>
+</div>
+<script>
+(()=>{
+const d=document.getElementById('d'),
+W=['not yet','a window','the kettle, waiting','before the first word','nobody has spoken','nothing is spent','your name, unsaid','begin'],
+P=W.map(w=>{const p=document.createElement('p');p.textContent='·';p.style.opacity=.2;d.insertBefore(p,d.lastChild);return p}),
+S=new Set;
+let y=.85;
+const f=()=>{
+const r=d.getBoundingClientRect();
+d.style.setProperty('--h',y*100);
+P.forEach((p,i)=>{
+const q=p.getBoundingClientRect(),
+k=Math.max(0,1-Math.abs(q.top+q.height/2-r.top-y*r.height)/(r.height*.3)),
+on=k>.25||S.has(i);
+p.textContent=on?W[i]:'·';
+p.style.opacity=S.has(i)?1:.2+.8*k;
+p.style.letterSpacing=on?'0':'.5em'
+})};
+d.onmousemove=e=>{y=(e.clientY-d.getBoundingClientRect().top)/d.offsetHeight;f()};
+d.ontouchmove=e=>{d.onmousemove(e.touches[0])};
+d.onclick=e=>{
+let b=0,m=1e9;
+P.forEach((p,i)=>{const q=p.getBoundingClientRect(),v=Math.abs(q.top+q.height/2-e.clientY);if(v<m){m=v;b=i}});
+S.has(b)?S.delete(b):S.add(b);
+if(S.size==W.length)d.querySelector('small').textContent='the day is written. it was always yours.';
+f()};
+f()
+})()
+</script>
+</section>
