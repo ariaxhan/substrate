@@ -1,0 +1,25 @@
+<section data-date='2026-11-20' data-type='reflection'>
+<style>
+#n{position:relative;height:100vh;overflow:hidden;background:radial-gradient(ellipse at 50% 120%,#2a2350,#0b0b1e 55%,#03030a);font:italic 1.3rem Georgia,serif;cursor:crosshair}
+#n canvas{position:absolute;inset:0;width:100%;height:100%}
+#n p{position:absolute;left:0;right:0;bottom:12%;margin:0;text-align:center;color:#c9c3ea;letter-spacing:.3em;opacity:.5;transition:opacity 3s;pointer-events:none}
+#n i{position:absolute;color:#e8e2ff;font-size:.95rem;pointer-events:none;transform:translate(-50%,-2rem);animation:f 7s forwards}
+@keyframes f{0%{opacity:0}15%{opacity:.9}100%{opacity:0}}
+</style>
+<div id="n"><canvas></canvas><p>the day is done. touch the dark.</p></div>
+<script>
+(()=>{const n=document.getElementById('n'),c=n.querySelector('canvas'),g=c.getContext('2d'),p=n.querySelector('p'),
+S=[],W=['rest','enough','held','soft','tomorrow','breathe','kept','still','slow','here'];let w,h,k=0;
+const R=()=>{w=c.width=n.clientWidth;h=c.height=n.clientHeight};R();onresize=R;
+for(let i=0;i<40;i++)S.push({x:Math.random()*w,y:Math.random()*h*.8,r:Math.random()*.8+.3,b:0,p:Math.random()*9});
+n.onclick=e=>{const r=n.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
+S.push({x,y,r:2.2,b:1,p:0});p.style.opacity=0;
+const t=document.createElement('i');t.textContent=W[k++%W.length];t.style.left=x+'px';t.style.top=y+'px';n.appendChild(t);setTimeout(()=>t.remove(),7e3)};
+n.onmousemove=e=>{const r=n.getBoundingClientRect();S.forEach(s=>{if(Math.hypot(s.x-e.clientX+r.left,s.y-e.clientY+r.top)<70)s.b=Math.min(s.b+.08,1)})};
+(function d(t){g.clearRect(0,0,w,h);
+S.forEach((s,i)=>{s.b*=.995;const a=.35+.3*Math.sin(t/1500+s.p)+s.b;
+S.forEach((o,j)=>{if(j>i&&s.b+o.b>.3){const D=Math.hypot(s.x-o.x,s.y-o.y);if(D<220){g.strokeStyle=`rgba(190,180,255,${(1-D/220)*Math.min(s.b,o.b)*.8})`;g.beginPath();g.moveTo(s.x,s.y);g.lineTo(o.x,o.y);g.stroke()}}});
+g.fillStyle=`rgba(240,236,255,${Math.min(a,1)})`;g.shadowColor='#b9aaff';g.shadowBlur=6+s.b*14;g.beginPath();g.arc(s.x,s.y,s.r+s.b,0,7);g.fill()});
+requestAnimationFrame(d)})(0)})()
+</script>
+</section>
