@@ -1,0 +1,40 @@
+<section data-date='2026-11-21' data-type='digest'>
+<style>
+#c{position:relative;height:100vh;background:#f2ecdf;overflow:hidden;cursor:crosshair;font:italic 20px Georgia,serif;color:#2b2622}
+#c canvas{position:absolute;inset:0;width:100%;height:100%}
+#t{position:absolute;left:5vw;bottom:5vh;letter-spacing:.04em;pointer-events:none}
+#t small{display:block;font:11px ui-monospace,monospace;opacity:.5;margin-top:6px;font-style:normal}
+</style>
+<div id=c><canvas></canvas><div id=t>scatter<small></small></div></div>
+<script>
+(()=>{
+const c=document.querySelector('#c'),k=c.firstChild,x=k.getContext('2d'),t=document.querySelector('#t'),s=t.lastChild;
+let W,H,P=[],R=150,m=0;
+const sz=()=>{W=k.width=c.clientWidth;H=k.height=c.clientHeight;R=Math.min(W,H)/5};
+sz();addEventListener('resize',sz);
+const add=(a,b)=>P.push({x:a,y:b,vx:0,vy:0,age:0});
+const W8=['scatter','noise','a pattern?','alignment','lattice','structure','crystal'];
+for(let i=0;i<6;i++)add(Math.random()*W,Math.random()*H);
+c.onclick=e=>{const r=c.getBoundingClientRect();add(e.clientX-r.left,e.clientY-r.top)};
+c.onmousemove=e=>{const r=c.getBoundingClientRect();m=[e.clientX-r.left,e.clientY-r.top]};
+setInterval(()=>P.length<90&&add(Math.random()*W,Math.random()*H),2600);
+(function f(){
+x.fillStyle='rgba(242,236,223,.35)';x.fillRect(0,0,W,H);
+let L=0,T=0;
+P.forEach((p,i)=>{
+p.age++;
+P.forEach((q,j)=>{if(i<j){let d=Math.hypot(p.x-q.x,p.y-q.y);
+if(d<R){L++;
+const w=(d-R*.55)*.0006;p.vx+=(q.x-p.x)*w;p.vy+=(q.y-p.y)*w;q.vx-=(q.x-p.x)*w;q.vy-=(q.y-p.y)*w;
+x.strokeStyle='rgba(43,38,34,'+(1-d/R)*.6+')';x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke();
+P.forEach((r,n)=>{if(j<n&&Math.hypot(p.x-r.x,p.y-r.y)<R&&Math.hypot(q.x-r.x,q.y-r.y)<R){T++;
+x.fillStyle='hsla('+(20+(i*7+j*3+n)%40)+',70%,50%,.07)';x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.lineTo(r.x,r.y);x.fill()}})}}});
+if(m){let d=Math.hypot(p.x-m[0],p.y-m[1]);if(d<R){x.fillStyle='#b4452a';x.font='10px monospace';x.fillText(p.age+'',p.x+8,p.y-6)}}
+p.vx*=.9;p.vy*=.9;p.x+=p.vx+Math.sin(p.age/50+i)*.15;p.y+=p.vy+Math.cos(p.age/60+i)*.15;
+x.fillStyle='#2b2622';x.beginPath();x.arc(p.x,p.y,2.5,0,7);x.fill()});
+t.firstChild.nodeValue=W8[Math.min(6,T/6|0)];
+s.textContent=P.length+' facts · '+L+' ties · '+T+' faces — click to add, hover to read age';
+requestAnimationFrame(f)})()
+})()
+</script>
+</section>
