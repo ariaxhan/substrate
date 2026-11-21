@@ -1,0 +1,26 @@
+<section data-date='2026-11-21' data-type='morning'>
+<style>
+#dw{position:relative;height:100vh;overflow:hidden;cursor:crosshair;font:italic 300 clamp(18px,3vw,30px)/1.9 Georgia,serif;text-align:center;user-select:none}
+#dw .s{position:absolute;width:14vmin;height:14vmin;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none}
+#dw .h{position:absolute;left:0;right:0;bottom:0;height:22%;background:#0b0a12}
+#dw p{position:absolute;left:0;right:0;bottom:26%;margin:0;transition:opacity 1.6s,letter-spacing 3s;opacity:0}
+#dw p.on{opacity:1;letter-spacing:.12em}
+#dw b{position:absolute;font:normal 400 14px monospace;letter-spacing:.3em;transform:translate(-50%,-50%);animation:f 4s forwards;pointer-events:none}
+@keyframes f{to{opacity:0;margin-top:-60px}}
+</style>
+<div id="dw"><div class="s"></div><div class="h"></div>
+<p>nothing is written yet</p><p>the page is only warm</p><p>a word leans toward the light</p><p>and you have not decided</p><p>begin</p></div>
+<script>
+(()=>{const d=document.getElementById('dw'),s=d.querySelector('.s'),P=[...d.querySelectorAll('p')],W=['begin','open','rise','say','stay'];let L=0,t=0,x=.5;
+const m=(a,b,k)=>Math.round(a+(b-a)*k);
+function draw(){const k=L,c=(A,B)=>`rgb(${m(A[0],B[0],k)},${m(A[1],B[1],k)},${m(A[2],B[2],k)})`;
+d.style.background=`linear-gradient(${c([8,8,20],[255,214,170])} 0%,${c([14,12,30],[255,150,120])} 55%,${c([20,16,36],[255,236,200])} 80%)`;
+s.style.left=x*100+'%';s.style.top=(80-k*58)+'%';
+s.style.background=`radial-gradient(${c([60,50,80],[255,250,225])} 25%,rgba(255,200,140,${k*.5}) 55%,transparent 72%)`;
+d.style.color=k>.6?'#3a2230':'#e8dccb';
+P.forEach((p,i)=>p.style.top=(10+i*10)+'%',P.forEach((p,i)=>p.classList.toggle('on',k>.12+i*.17)))}
+d.onmousemove=e=>{const r=d.getBoundingClientRect();L=Math.max(0,Math.min(1,1-(e.clientY-r.top)/r.height*1.15));x=(e.clientX-r.left)/r.width;draw()};
+d.onclick=e=>{const r=d.getBoundingClientRect(),b=document.createElement('b');b.textContent=W[t++%5];b.style.left=e.clientX-r.left+'px';b.style.top=e.clientY-r.top+'px';d.appendChild(b);setTimeout(()=>b.remove(),4000)};
+draw()})()
+</script>
+</section>
