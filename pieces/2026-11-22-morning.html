@@ -1,0 +1,35 @@
+<section data-date='2026-11-22' data-type='morning'>
+<style>
+.dw{position:relative;height:100vh;overflow:hidden;cursor:crosshair;font:italic 300 clamp(18px,3vw,30px)/1.4 Georgia,serif;color:#fff;transition:background .6s}
+.dw h1{position:absolute;inset:0;margin:0;display:flex;align-items:center;justify-content:center;font:inherit;letter-spacing:.3em;text-transform:lowercase;opacity:.7;transition:opacity 1.5s;pointer-events:none;mix-blend-mode:difference}
+.dw b{position:absolute;font-weight:300;opacity:0;transform:translate(-50%,10px);transition:opacity 2s,transform 2s;mix-blend-mode:difference;pointer-events:none}
+.dw b.on{opacity:1;transform:translate(-50%,-50%)}
+.dw i{position:absolute;bottom:1.2em;width:100%;text-align:center;font-size:12px;letter-spacing:.4em;opacity:.35;mix-blend-mode:difference}
+</style>
+<div class="dw">
+<h1>nothing is written yet</h1>
+<i>move &middot; the light follows &middot; touch &middot; write</i>
+</div>
+<script>
+(function(){
+var d=document.currentScript.previousElementSibling,t=d.firstElementChild,
+W="begin,not yet,yes,a door,breath,still blank,warm,this one,you,open,now,slowly,there".split(","),
+n=0,x=.5,h=.08;
+function p(){
+d.style.background="radial-gradient(circle at "+x*100+"% "+(108-h*80)+"%,#fff7d6 0,#ffc27a "+(4+h*8)+"%,#d4607a "+(14+h*22)+"%,#3a2a66 "+(45+h*40)+"%,#080818)"}
+d.onmousemove=function(e){var r=d.getBoundingClientRect();
+x=(e.clientX-r.left)/r.width;
+h=Math.max(h,.08+.5*(1-(e.clientY-r.top)/r.height)*(n/8+.3));
+p()};
+d.onclick=function(e){
+var r=d.getBoundingClientRect(),b=document.createElement("b");
+b.textContent=W[n++%W.length];
+b.style.left=e.clientX-r.left+"px";b.style.top=e.clientY-r.top+"px";
+d.appendChild(b);
+requestAnimationFrame(function(){requestAnimationFrame(function(){b.className="on"})});
+h=Math.min(1,h+.07);t.style.opacity=Math.max(0,.7-n*.15);p()};
+p();
+setInterval(function(){h=Math.max(.08,h-.002);p()},200);
+})();
+</script>
+</section>
