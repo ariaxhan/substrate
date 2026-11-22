@@ -1,0 +1,38 @@
+<section data-date='2026-11-22' data-type='digest'>
+<style>
+#k{position:relative;height:100vh;background:#f1ece0;overflow:hidden;cursor:crosshair;font:italic 15px Georgia,serif;color:#2a2622}
+#k canvas{position:absolute;inset:0;width:100%;height:100%}
+#k p{position:absolute;left:5vw;bottom:5vh;margin:0;transition:opacity 2s;letter-spacing:.04em}
+</style>
+<div id="k"><canvas></canvas><p id="t">scattered. touch to gather.</p></div>
+<script>
+(()=>{
+const k=document.getElementById('k'),c=k.querySelector('canvas'),x=c.getContext('2d'),t=k.querySelector('#t');
+let W,H,P=[],m=null,G=46,R=80;
+const rs=()=>{W=c.width=k.clientWidth;H=c.height=k.clientHeight};
+rs();addEventListener('resize',rs);
+const add=(a,b)=>P.push({x:a,y:b,vx:0,vy:0,a:0});
+for(let i=0;i<40;i++)add(Math.random()*W,Math.random()*H);
+k.addEventListener('mousemove',e=>{const r=k.getBoundingClientRect();m={x:e.clientX-r.left,y:e.clientY-r.top}});
+k.addEventListener('mouseleave',()=>m=null);
+k.addEventListener('click',e=>{const r=k.getBoundingClientRect();
+for(let i=0;i<6;i++)add(e.clientX-r.left+(Math.random()-.5)*90,e.clientY-r.top+(Math.random()-.5)*90)});
+const words=['scattered. touch to gather.','something is listening.','edges remember.','the grid was always there.','structure is what is left after noise.'];
+(function f(){
+x.fillStyle='rgba(241,236,224,.35)';x.fillRect(0,0,W,H);
+let L=0;
+for(const p of P){
+let n=0;
+for(const q of P){if(p===q)continue;const d=Math.hypot(p.x-q.x,p.y-q.y);
+if(d<R){n++;if(p<q){L++;x.strokeStyle=`rgba(40,34,30,${(1-d/R)*.6})`;x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke()}}}
+if(m&&Math.hypot(p.x-m.x,p.y-m.y)<R*1.5){x.strokeStyle='rgba(180,60,40,.5)';x.beginPath();x.moveTo(p.x,p.y);x.lineTo(m.x,m.y);x.stroke();p.vx+=(m.x-p.x)*.0006;p.vy+=(m.y-p.y)*.0006}
+const gx=Math.round(p.x/G)*G,gy=Math.round(p.y/G)*G,s=Math.min(n,4)*.004;
+p.vx+=(gx-p.x)*s+(Math.random()-.5)*(.25/(1+n));p.vy+=(gy-p.y)*s+(Math.random()-.5)*(.25/(1+n));
+p.vx*=.9;p.vy*=.9;p.x+=p.vx;p.y+=p.vy;
+x.fillStyle=n>3?'#b43c28':'#2a2622';x.beginPath();x.arc(p.x,p.y,n>3?3.2:2,0,7);x.fill()}
+const i=Math.min(4,Math.floor(L/40));
+if(t.dataset.i!=i){t.dataset.i=i;t.textContent=words[i]}
+requestAnimationFrame(f)})();
+})();
+</script>
+</section>
