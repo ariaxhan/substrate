@@ -1,0 +1,62 @@
+<section data-date='2026-11-23' data-type='digest'>
+<style>
+#d{position:relative;background:#0e0d0b;height:100vh;overflow:hidden;cursor:crosshair;font:italic 15px Georgia,serif;color:#e8dcc0}
+#d canvas{position:absolute;inset:0}
+#d p{position:absolute;left:24px;bottom:18px;margin:0;opacity:.5;letter-spacing:.06em;pointer-events:none}
+</style>
+<div id=d><canvas></canvas><p id=t>scatter. touch it.</p></div>
+<script>
+(()=>{
+const d=document.getElementById('d'),c=d.querySelector('canvas'),x=c.getContext('2d'),t=d.querySelector('#t');
+let W,H,N=[],D=[],M={x:-9,y:-9};
+const words=['seen','kept','linked','again','known','held','woven','named','kin','true','near','whole'];
+const R=()=>{W=c.width=d.clientWidth;H=c.height=d.clientHeight};
+R();onresize=R;
+for(let i=0;i<160;i++)D.push({x:Math.random()*W,y:Math.random()*H,a:Math.random()*6.28});
+d.onclick=e=>{
+ const r=d.getBoundingClientRect();
+ N.push({x:e.clientX-r.left,y:e.clientY-r.top,w:words[N.length%12],b:0});
+ t.textContent=N.length+' known';
+};
+d.onmousemove=e=>{const r=d.getBoundingClientRect();M={x:e.clientX-r.left,y:e.clientY-r.top}};
+const L=110;
+function f(){
+ x.fillStyle='rgba(14,13,11,.25)';x.fillRect(0,0,W,H);
+ // dust drifts, then is drawn toward nearest node: information becoming structure
+ for(const p of D){
+  p.a+=(Math.random()-.5)*.4;
+  p.x+=Math.cos(p.a)*.4;p.y+=Math.sin(p.a)*.4;
+  let n=null,m=1e9;
+  for(const q of N){const k=Math.hypot(q.x-p.x,q.y-p.y);if(k<m){m=k;n=q}}
+  if(n&&m<260){p.x+=(n.x-p.x)*.004;p.y+=(n.y-p.y)*.004}
+  p.x=(p.x+W)%W;p.y=(p.y+H)%H;
+  x.fillStyle='rgba(232,220,192,.35)';x.fillRect(p.x,p.y,1.5,1.5);
+ }
+ // edges and crystallized triangles
+ for(let i=0;i<N.length;i++)for(let j=i+1;j<N.length;j++){
+  const a=N[i],b=N[j];
+  if(Math.hypot(a.x-b.x,a.y-b.y)>L*2)continue;
+  x.strokeStyle='rgba(240,180,90,.55)';
+  x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();
+  for(let k=j+1;k<N.length;k++){
+   const q=N[k];
+   if(Math.hypot(a.x-q.x,a.y-q.y)<L*2&&Math.hypot(b.x-q.x,b.y-q.y)<L*2){
+    x.fillStyle=`hsla(${30+(i*40+j*17+k*9)%50},80%,60%,.14)`;
+    x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.lineTo(q.x,q.y);x.fill();
+   }
+  }
+ }
+ // nodes; hover reveals their hidden word
+ for(const n of N){
+  const h=Math.hypot(n.x-M.x,n.y-M.y)<40;
+  n.b+=((h?1:0)-n.b)*.1;
+  x.fillStyle='#f0b45a';
+  x.beginPath();x.arc(n.x,n.y,3+n.b*4,0,6.28);x.fill();
+  if(n.b>.05){x.fillStyle=`rgba(232,220,192,${n.b})`;x.fillText(n.w,n.x+12,n.y-8)}
+ }
+ requestAnimationFrame(f);
+}
+f();
+})();
+</script>
+</section>
