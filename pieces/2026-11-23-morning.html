@@ -1,0 +1,22 @@
+<section data-date='2026-11-23' data-type='morning'>
+<style>
+#d{--x:50%;--y:100%;--h:0;position:relative;width:100%;height:100vh;overflow:hidden;cursor:crosshair;font:italic 5vmin/1.9 Georgia,'Times New Roman',serif;color:#fff;
+background:radial-gradient(circle at var(--x) var(--y),hsl(calc(30 + var(--h)*20) 90% 70%),hsl(calc(340 - var(--h)*60) 50% 40%) 35%,#0b0b24 80%);transition:filter 2s}
+#d p{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);margin:0;text-align:center;width:80%;
+-webkit-mask:radial-gradient(circle at var(--m,50% 50%),#000,transparent 28vmin);mask:radial-gradient(circle at var(--x) var(--y),#000,transparent 30vmin);mix-blend-mode:overlay}
+#d i{display:block;opacity:.15;transition:opacity 1.5s,letter-spacing 3s}
+#d.on i{opacity:1;letter-spacing:.08em}
+#d i:hover{opacity:1;letter-spacing:.2em}
+#d small{position:absolute;bottom:3vh;width:100%;text-align:center;font:11px monospace;letter-spacing:.3em;opacity:.5}
+</style>
+<div id=d>
+<p><i>the page is empty</i><i>and that is not</i><i>the same as nothing</i><i>the day has not</i><i>decided</i><i>yet</i></p>
+<small>move · click</small>
+</div>
+<script>
+(function(){var d=document.getElementById('d'),n=0;
+d.onmousemove=function(e){d.style.setProperty('--x',e.clientX+'px');d.style.setProperty('--y',e.clientY+'px')};
+d.onclick=function(){n++;d.classList.toggle('on');d.style.setProperty('--h',n%2)};
+})()
+</script>
+</section>
