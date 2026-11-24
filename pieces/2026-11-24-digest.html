@@ -1,0 +1,35 @@
+<section data-date='2026-11-24' data-type='digest'>
+<style>
+#c{background:#efe8d8;display:block;width:100%;height:100vh;cursor:crosshair}
+.t{position:absolute;left:5vw;bottom:5vh;font:italic 14px Georgia,serif;color:#3a3226;pointer-events:none;letter-spacing:.1em}
+</style>
+<canvas id=c></canvas>
+<div class=t id=t>click: leave a thought</div>
+<script>
+(function(){
+var c=document.getElementById('c'),x=c.getContext('2d'),T=document.getElementById('t'),
+W,H,P=[],G=48,M=['noise','a pattern?','yes','structure','it holds','knowing'];
+function R(){W=c.width=c.clientWidth;H=c.height=c.clientHeight}
+R();onresize=R;
+function add(a,b,n){for(var i=0;i<n;i++)P.push({x:a+(Math.random()-.5)*160,y:b+(Math.random()-.5)*160,a:0,s:Math.random()*6})}
+function snap(p){var r=Math.round(p.y/(G*.866)),o=r%2?G/2:0;return[Math.round((p.x-o)/G)*G+o,r*G*.866]}
+c.onclick=function(e){add(e.offsetX,e.offsetY,9);var k=Math.min(5,P.length/20|0);T.textContent=M[k]+' · '+P.length}
+add(W/2,H/2,6);
+(function f(){
+x.fillStyle='rgba(239,232,216,.25)';x.fillRect(0,0,W,H);
+P.forEach(function(p){
+p.a=Math.min(1,p.a+.0015);
+var q=snap(p);
+p.x+=(q[0]-p.x)*.02*p.a+Math.sin(p.s+=.02)*(1-p.a)*.8;
+p.y+=(q[1]-p.y)*.02*p.a+Math.cos(p.s)*(1-p.a)*.8});
+for(var i=0;i<P.length;i++)for(var j=i+1;j<P.length;j++){
+var a=P[i],b=P[j],d=Math.hypot(a.x-b.x,a.y-b.y);
+if(d<G*1.2){var k=(a.a+b.a)/2;
+x.strokeStyle='rgba(58,50,38,'+(.1+k*.6)+')';x.lineWidth=.4+k;
+x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}}
+P.forEach(function(p){x.fillStyle=p.a>.95?'#b5472b':'#3a3226';
+x.beginPath();x.arc(p.x,p.y,1.5+p.a*2,0,7);x.fill()});
+requestAnimationFrame(f)})()
+})()
+</script>
+</section>
