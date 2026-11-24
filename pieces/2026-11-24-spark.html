@@ -1,0 +1,55 @@
+<section data-date='2026-11-24' data-type='spark'>
+<style>
+#c{display:block;width:100%;height:100vh;background:#0a0710;cursor:crosshair}
+#k{position:absolute;bottom:3vmin;width:100%;text-align:center;font:12px monospace;letter-spacing:.4em;color:#fff;opacity:.4;pointer-events:none}
+</style>
+<canvas id=c></canvas><div id=k>move to steer — click to throw two things together</div>
+<script>
+(function(){
+var c=document.getElementById('c'),x=c.getContext('2d'),W,H,my,
+A='ember salt tide glass iron hush moth wire'.split(' '),
+B='frost honey storm bone silk static lark rust'.split(' '),
+P=[],M=[],F=[],r=Math.random;
+function R(){W=c.width=innerWidth;H=c.height=innerHeight;my=H/2}
+R();onresize=R;
+function pick(a){return a[r()*a.length|0]}
+function pair(y){
+var a={w:pick(A),x:-40,y:y,v:2+r()*2,h:20},b={w:pick(B),x:W+40,y:y+(r()-.5)*H*.3,v:-2-r()*2,h:200};
+a.o=b;b.o=a;P.push(a,b)}
+c.onmousemove=function(e){my=e.clientY};
+c.onclick=function(e){pair(e.clientY)};
+setInterval(function(){pair(r()*H)},1800);
+pair(H/2);
+function merge(a,b){
+var h=Math.ceil(a.w.length/2),s=a.w.slice(0,h)+b.w.slice(b.w.length>>1);
+M.push({w:s,x:(a.x+b.x)/2,y:(a.y+b.y)/2,l:1});
+for(var i=0;i<14;i++){var q=r()*6.28,v=1+r()*4;
+F.push({x:(a.x+b.x)/2,y:(a.y+b.y)/2,vx:Math.cos(q)*v,vy:Math.sin(q)*v,l:1})}
+F.push({x:(a.x+b.x)/2,y:(a.y+b.y)/2,R:1,l:1})}
+function f(){
+x.globalCompositeOperation='source-over';
+x.fillStyle='rgba(10,7,16,.22)';x.fillRect(0,0,W,H);
+x.globalCompositeOperation='lighter';
+x.font='italic 5vmin Georgia,serif';x.textAlign='center';
+for(var i=P.length;i--;){
+var p=P[i];p.x+=p.v;
+p.y+=((p.o.y+my)/2-p.y)*.012;
+x.fillStyle='hsl('+p.h+',90%,'+(55)+'%)';
+x.fillText(p.w,p.x,p.y);
+if(Math.abs(p.x-p.o.x)<50&&P.indexOf(p.o)>i){merge(p,p.o);P.splice(P.indexOf(p.o),1);P.splice(i,1)}
+else if(p.x<-200||p.x>W+200)P.splice(i,1)}
+for(i=M.length;i--;){
+var m=M[i];m.l-=.004;m.y-=.4;
+if(m.l<=0){M.splice(i,1);continue}
+x.fillStyle='hsla(110,80%,75%,'+m.l+')';
+x.font='bold 7vmin Georgia,serif';
+x.fillText(m.w,m.x,m.y)}
+for(i=F.length;i--;){
+var s=F[i];s.l-=.02;
+if(s.l<=0){F.splice(i,1);continue}
+if(s.R){x.strokeStyle='hsla(110,90%,70%,'+s.l+')';x.beginPath();x.arc(s.x,s.y,(1-s.l)*160,0,6.28);x.stroke()}
+else{s.x+=s.vx;s.y+=s.vy;x.fillStyle='hsla('+(s.vx>0?200:20)+',90%,65%,'+s.l+')';x.fillRect(s.x,s.y,3,3)}}
+requestAnimationFrame(f)}
+f()})();
+</script>
+</section>
