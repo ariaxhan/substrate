@@ -1,0 +1,37 @@
+<section data-date='2026-11-25' data-type='morning'>
+<style>
+.dw{position:relative;height:100vh;min-height:360px;overflow:hidden;background:#05060d;font-family:Georgia,'Times New Roman',serif;cursor:crosshair}
+.dw canvas{position:absolute;inset:0;width:100%;height:100%}
+.dw p{position:absolute;left:0;right:0;bottom:9%;margin:0;text-align:center;font-style:italic;font-size:clamp(14px,2.4vw,24px);letter-spacing:.3em;color:#fff;mix-blend-mode:difference;pointer-events:none}
+</style>
+<div class="dw"><canvas></canvas><p>nothing is written yet</p></div>
+<script>
+(()=>{
+const w=document.currentScript.parentNode,c=w.querySelector('canvas'),x=c.getContext('2d'),p=w.querySelector('p');
+const W=['begin','again','light','open','now','yes','maybe','here'];
+let m=0,t=0,s=0,words=[],mx=.5,W_,H;
+function R(){W_=c.width=c.clientWidth;H=c.height=c.clientHeight}
+R();addEventListener('resize',R);
+w.onmousemove=e=>{const r=w.getBoundingClientRect();mx=(e.clientX-r.left)/r.width;m=Math.max(0,Math.min(1,1-(e.clientY-r.top)/r.height))};
+w.onclick=e=>{const r=w.getBoundingClientRect();words.push({s:W[s++%8],x:e.clientX-r.left,y:e.clientY-r.top,a:0});p.textContent=s>2?'every morning is a first draft':'something is being written'};
+function f(){
+t+=.01;
+const h=Math.max(m,.5+.5*Math.sin(t*.3)*.2+.08*(m?0:1)),sy=H*(1.05-h*.8),sx=W_*mx;
+const g=x.createLinearGradient(0,0,0,H);
+g.addColorStop(0,`hsl(${230-h*20},45%,${4+h*14}%)`);
+g.addColorStop(.6,`hsl(${340-h*300},70%,${10+h*45}%)`);
+g.addColorStop(1,`hsl(${30+h*20},90%,${20+h*55}%)`);
+x.fillStyle=g;x.fillRect(0,0,W_,H);
+const r=x.createRadialGradient(sx,sy,0,sx,sy,H*(.2+h*.6));
+r.addColorStop(0,'rgba(255,240,200,.95)');r.addColorStop(.15,'rgba(255,170,90,.5)');r.addColorStop(1,'rgba(255,100,60,0)');
+x.fillStyle=r;x.fillRect(0,0,W_,H);
+x.fillStyle='#05060d';x.beginPath();x.moveTo(0,H);
+for(let i=0;i<=W_;i+=8)x.lineTo(i,H*.86-Math.sin(i*.006+1)*H*.04-Math.sin(i*.019)*H*.015);
+x.lineTo(W_,H);x.fill();
+x.font='italic 28px Georgia';x.textAlign='center';
+words.forEach(o=>{o.a=Math.min(1,o.a+.01);o.y-=.15;x.fillStyle=`rgba(255,250,235,${o.a*(1-Math.max(0,(H-o.y)/H)*0)*Math.max(0,1-(H*.86-o.y<0?0:0))})`;x.fillText(o.s,o.x,o.y)});
+requestAnimationFrame(f)}
+f();
+})();
+</script>
+</section>
