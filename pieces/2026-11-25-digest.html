@@ -1,0 +1,37 @@
+<section data-date='2026-11-25' data-type='digest'>
+<style>
+#d{margin:0;background:#0b0c10;position:relative;height:100vh;overflow:hidden;cursor:crosshair;font:italic 15px Georgia,serif;color:#9fb;user-select:none}
+#d canvas{position:absolute;inset:0;width:100%;height:100%}
+#d p{position:absolute;left:24px;bottom:20px;margin:0;opacity:.6;letter-spacing:.2em;transition:opacity 1s}
+</style>
+<div id=d><canvas id=c></canvas><p id=t>everything drifts until something is kept</p></div>
+<script>
+(()=>{
+const d=document.getElementById('d'),c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t');
+let W,H,S=34,P=[],K=[],m={x:-9,y:-9},W8=['noise','signal','habit','shape','memory','form','know'];
+const R=()=>{W=c.width=d.clientWidth;H=c.height=d.clientHeight};R();onresize=R;
+for(let i=0;i<220;i++)P.push({x:Math.random()*W,y:Math.random()*H,a:Math.random()*6.28,s:.2+Math.random()*.4,k:null});
+d.onmousemove=e=>{let r=d.getBoundingClientRect();m={x:e.clientX-r.left,y:e.clientY-r.top}};
+d.onclick=e=>{let r=d.getBoundingClientRect(),cx=e.clientX-r.left,cy=e.clientY-r.top,k={x:cx,y:cy,w:W8[K.length%7],n:0};K.push(k);t.style.opacity=0;
+ P.filter(p=>!p.k).map(p=>[p,Math.hypot(p.x-cx,p.y-cy)]).sort((a,b)=>a[1]-b[1]).slice(0,19).forEach(([p],i)=>{
+  // hex spiral slots: ring 0 centre, ring1 six, ring2 twelve
+  let ring=i?(i<7?1:2):0,n=ring==1?6:12,j=ring==1?i-1:i-7,an=ring?j/n*6.28+ring*.5236:0;
+  p.k=k;p.tx=cx+Math.cos(an)*S*ring;p.ty=cy+Math.sin(an)*S*ring;k.n++})};
+function f(){
+ x.fillStyle='rgba(11,12,16,.25)';x.fillRect(0,0,W,H);
+ for(let p of P){
+  if(p.k){p.x+=(p.tx-p.x)*.05;p.y+=(p.ty-p.y)*.05}
+  else{p.a+=(Math.random()-.5)*.3;p.x=(p.x+Math.cos(p.a)*p.s+W)%W;p.y=(p.y+Math.sin(p.a)*p.s+H)%H;
+   let h=Math.hypot(p.x-m.x,p.y-m.y);if(h<90){x.strokeStyle='rgba(120,255,190,'+(1-h/90)*.5+')';x.beginPath();x.moveTo(p.x,p.y);x.lineTo(m.x,m.y);x.stroke()}}
+  x.fillStyle=p.k?'#9fb':'#456';x.beginPath();x.arc(p.x,p.y,p.k?2.6:1.4,0,6.28);x.fill()}
+ let hv=null;
+ for(let k of K){
+  let q=P.filter(p=>p.k==k);
+  x.strokeStyle='rgba(159,255,187,.35)';
+  for(let a of q)for(let b of q)if(a<b&&Math.hypot(a.x-b.x,a.y-b.y)<S*1.2){x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}
+  if(Math.hypot(m.x-k.x,m.y-k.y)<S*2.2)hv=k}
+ if(hv){x.fillStyle='#fff';x.font='italic 22px Georgia';x.textAlign='center';x.fillText(hv.w,hv.x,hv.y-S*2.4)}
+ requestAnimationFrame(f)}
+f()})();
+</script>
+</section>
