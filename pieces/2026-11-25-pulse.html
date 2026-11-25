@@ -1,0 +1,43 @@
+<section data-date='2026-11-25' data-type='pulse'>
+<style>
+body{margin:0;background:#f1ebdd;overflow:hidden;cursor:crosshair}
+canvas{display:block}
+</style>
+<canvas id=c></canvas>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d');
+let W,H,a=0,t=0,m=null,k=0,R=[];
+const rs=()=>{W=c.width=innerWidth;H=c.height=innerHeight};rs();onresize=rs;
+onmousemove=e=>m=(e.clientX/W-.5)*2;
+ontouchmove=e=>m=(e.touches[0].clientX/W-.5)*2;
+onclick=()=>{m=0;R.push(0)};
+(function f(){
+ const d=new Date(),h=d.getHours()+d.getMinutes()/60;
+ const nat=Math.sin((h-12)/12*Math.PI)*-.5;
+ const g=(m===null?nat:m*.5);
+ a+=(g-a)*.06;
+ const lvl=Math.abs(a)<.02;
+ k+=((lvl?1:0)-k)*.05;
+ x.fillStyle='rgba(241,235,221,.25)';x.fillRect(0,0,W,H);
+ const cx=W/2,cy=H*.6,L=Math.min(W*.4,380);
+ x.save();x.translate(cx,cy);
+ R=R.map(r=>r+2).filter(r=>r<W);
+ if(lvl&&Math.random()<.03)R.push(0);
+ R.forEach(r=>{x.strokeStyle=`rgba(40,30,50,${1-r/W})`;x.beginPath();x.arc(0,0,r,0,7);x.stroke()});
+ x.fillStyle='#2a2233';x.beginPath();x.moveTo(0,0);x.lineTo(-18,70);x.lineTo(18,70);x.fill();
+ x.rotate(a);
+ x.strokeStyle='#2a2233';x.lineWidth=2;
+ x.beginPath();x.moveTo(-L,0);x.lineTo(L,0);x.stroke();
+ for(let i=-12;i<=12;i++){x.beginPath();x.moveTo(i*L/12,0);x.lineTo(i*L/12,i%6?-6:-14);x.stroke()}
+ [[-1,'#e8a23a'],[1,'#3b3a8f']].forEach(([s,col])=>{
+  x.fillStyle=col;x.beginPath();x.arc(s*L,-30,26+4*Math.sin(t*2+s),0,7);x.fill()});
+ x.restore();
+ x.fillStyle=`rgba(42,34,51,${.15+.85*k})`;
+ x.font='italic 22px Georgia,serif';x.textAlign='center';
+ x.fillText(lvl?'noon, held':'tilt',cx,cy+110);
+ x.font='12px Georgia,serif';
+ x.fillStyle=`rgba(42,34,51,${.5})`;
+ x.fillText(lvl?'':'the day leans; click to hold it still',cx,cy+135);
+ t+=.016;requestAnimationFrame(f)})();
+</script>
+</section>
