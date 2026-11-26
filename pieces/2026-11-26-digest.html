@@ -1,0 +1,40 @@
+<section data-date='2026-11-26' data-type='digest'>
+<style>
+section{position:fixed;inset:0;margin:0;background:#efe8d8;font:italic 15px Georgia,serif;color:#2b2622;cursor:crosshair}
+canvas{display:block;width:100%;height:100%}
+</style>
+<canvas id=c></canvas>
+<script>
+const c=document.getElementById('c'),x=c.getContext('2d'),
+W_=['noted','linked','again','kept','twice','known','echo','whole','held','almost'];
+let W,H,P=[],m={x:-99,y:-99},n=0;
+function R(){W=c.width=innerWidth;H=c.height=innerHeight}R();onresize=R;
+function add(a,b){P.push({x:a,y:b,vx:0,vy:0,w:W_[n++%10]});if(P.length>70)P.shift()}
+for(let i=0;i<12;i++)add(Math.random()*W,Math.random()*H);
+c.onclick=e=>add(e.clientX,e.clientY);
+c.onmousemove=e=>{m.x=e.clientX;m.y=e.clientY};
+const D=120,d=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+function f(){
+x.fillStyle='#efe8d8';x.fillRect(0,0,W,H);
+let s=0,deg=P.map(_=>0);
+P.forEach((a,i)=>{
+ a.vx+=(Math.random()-.5)*.05;a.vy+=(Math.random()-.5)*.05;
+ P.forEach((b,j)=>{if(i==j)return;let q=d(a,b);
+  if(q<D&&q>1){deg[i]++;let k=(q-70)*.0008;a.vx+=(b.x-a.x)*k;a.vy+=(b.y-a.y)*k}});
+ a.vx*=.94;a.vy*=.94;a.x+=a.vx;a.y+=a.vy});
+for(let i=0;i<P.length;i++)for(let j=i+1;j<P.length;j++){
+ let q=d(P[i],P[j]);if(q>D)continue;
+ for(let k=j+1;k<P.length;k++)if(d(P[i],P[k])<D&&d(P[j],P[k])<D){
+  s++;x.fillStyle=`hsla(${(i*37+j*11+k*5)%50+8},60%,45%,.13)`;
+  x.beginPath();x.moveTo(P[i].x,P[i].y);x.lineTo(P[j].x,P[j].y);x.lineTo(P[k].x,P[k].y);x.fill()}
+ x.strokeStyle=`rgba(43,38,34,${1-q/D})`;x.beginPath();x.moveTo(P[i].x,P[i].y);x.lineTo(P[j].x,P[j].y);x.stroke()}
+let h=null,hd=44;
+P.forEach((a,i)=>{x.fillStyle=deg[i]>1?'#a4381c':'#2b2622';
+ x.beginPath();x.arc(a.x,a.y,2+Math.min(deg[i],6)/2,0,7);x.fill();
+ let q=d(a,m);if(q<hd){hd=q;h=[a,deg[i]]}});
+if(h)x.fillText(h[0].w+' · '+h[1],h[0].x+10,h[0].y-8);
+x.fillStyle='#2b2622aa';x.fillText(P.length+' facts, '+s+' shapes. add one.',24,H-24);
+requestAnimationFrame(f)}
+f();
+</script>
+</section>
