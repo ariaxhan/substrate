@@ -1,0 +1,48 @@
+<section data-date='2026-11-26' data-type='pulse'>
+<style>
+#fl{position:relative;height:100vh;margin:0;background:linear-gradient(90deg,#f1e3c4,#e9d8b4 46%,#1b2236 54%,#0e1322);overflow:hidden;cursor:crosshair}
+#fl canvas{display:block;width:100%;height:100%}
+#fl p{position:absolute;left:0;right:0;bottom:9%;text-align:center;font:italic 22px/1 Georgia,serif;color:#c9a24a;margin:0;opacity:0;transition:opacity 1.6s;letter-spacing:.4em;pointer-events:none}
+</style>
+<div id="fl"><canvas id="c"></canvas><p id="t">noon</p></div>
+<script>
+(function(){
+var c=document.getElementById('c'),x=c.getContext('2d'),t=document.getElementById('t'),
+W,H,a=0,g=0,v=0,N=18,f=0;
+function R(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight}
+R();onresize=R;
+// target angle: pointer decides; absent pointer, the hour decides
+var d=new Date(),h=(d.getHours()+d.getMinutes()/60)/24;
+g=(h-.5)*1.2;
+c.onmousemove=function(e){g=(e.offsetX/W-.5)*.9};
+c.ontouchmove=function(e){g=(e.touches[0].clientX/W-.5)*.9};
+c.onclick=function(){g=-g;f=1};
+function L(s,m,n){x.fillStyle=s;for(var i=0;i<N;i++){
+var u=(i+1)/N*.42*W*Math.cos(a),k=m*(1+i*.5);
+var y=H*.5+Math.sin(a)*m*(i+1)/N*.42*W;
+// dots slide toward the heavy end
+var q=Math.max(0,Math.min(1,.5+(m*a)*3.2));
+x.beginPath();x.arc(W*.5+m*u,y-14-(i%3)*7*q,4+q*3,0,7);x.fill()}}
+function T(){
+v+=(g-a)*.03;v*=.9;a+=v;f*=.96;
+x.clearRect(0,0,W,H);
+x.save();
+// beam
+x.strokeStyle='#c9a24a';x.lineWidth=2;x.beginPath();
+x.moveTo(W*.5-Math.cos(a)*W*.42,H*.5-Math.sin(a)*W*.42);
+x.lineTo(W*.5+Math.cos(a)*W*.42,H*.5+Math.sin(a)*W*.42);x.stroke();
+// morning dots (dark on light), evening dots (light on dark)
+L('#3b2f1c',-1);L('#e8d9b0',1);
+// fulcrum
+x.fillStyle='#c9a24a';x.beginPath();x.moveTo(W*.5,H*.5);
+x.lineTo(W*.5-18,H*.5+60);x.lineTo(W*.5+18,H*.5+60);x.fill();
+// ripple when level
+var lv=Math.abs(a)<.012&&Math.abs(v)<.002;
+if(lv||f>.05){x.strokeStyle='rgba(201,162,74,'+(lv?.5:f)+')';
+for(var r=1;r<4;r++){x.beginPath();x.arc(W*.5,H*.5,r*30+(Date.now()/40%30),0,7);x.stroke()}}
+t.style.opacity=lv?1:0;
+x.restore();requestAnimationFrame(T)}
+T();
+})();
+</script>
+</section>
