@@ -1,0 +1,42 @@
+<section data-date='2026-11-25' data-type='reflection'>
+<style>
+.nt{position:relative;height:70vh;min-height:360px;background:radial-gradient(ellipse at 50% 120%,#2a1f4d,#0b0e24 55%,#04050f);overflow:hidden;cursor:crosshair;font-family:Georgia,'Times New Roman',serif}
+.nt canvas{position:absolute;inset:0;width:100%;height:100%}
+.nt p{position:absolute;bottom:14px;width:100%;margin:0;text-align:center;font-style:italic;font-size:13px;letter-spacing:.3em;color:#8d93c4;opacity:.6;pointer-events:none}
+</style>
+<div class="nt"><canvas></canvas><p>the day is complete. touch the dark.</p></div>
+<script>
+(()=>{
+const w=document.currentScript.previousElementSibling,c=w.firstElementChild,x=c.getContext('2d');
+const W=['rest','enough','done','soft','still','held','soon','sleep','here','kept'];
+let S=[],T=[],m={x:-9,y:-9},k=0,W_,H;
+const R=()=>{W_=c.width=w.clientWidth;H=c.height=w.clientHeight};
+R();addEventListener('resize',R);
+for(let i=0;i<70;i++)S.push({x:Math.random(),y:Math.random()*.9,r:Math.random()*1.2+.3,p:Math.random()*9,u:0});
+w.onclick=e=>{
+const b=c.getBoundingClientRect(),X=(e.clientX-b.left)/W_,Y=(e.clientY-b.top)/H;
+S.push({x:X,y:Y,r:2.2,p:0,u:1,t:0});
+T.push({x:X,y:Y,w:W[k++%W.length],a:0});
+};
+w.onmousemove=e=>{const b=c.getBoundingClientRect();m={x:e.clientX-b.left,y:e.clientY-b.top}};
+(function f(t){
+x.clearRect(0,0,W_,H);
+S.forEach(s=>{
+const px=s.x*W_,py=s.y*H,d=Math.hypot(px-m.x,py-m.y),g=d<110?1-d/110:0;
+s.g=g;
+x.globalAlpha=.35+.35*Math.sin(t/900+s.p)+g*.5;
+x.fillStyle=s.u?'#ffe9b0':'#cfd6ff';
+x.shadowBlur=s.u?14:g*12;x.shadowColor='#ffe9b0';
+x.beginPath();x.arc(px,py,s.r+g*1.5,0,7);x.fill();
+});
+x.shadowBlur=0;
+for(let i=0;i<S.length;i++)for(let j=i+1;j<S.length;j++){
+const a=S[i],b=S[j],q=Math.min(a.g,b.g);
+if(q>0){const D=Math.hypot((a.x-b.x)*W_,(a.y-b.y)*H);
+if(D<150){x.globalAlpha=q*(1-D/150)*.7;x.strokeStyle='#ffe9b0';x.beginPath();x.moveTo(a.x*W_,a.y*H);x.lineTo(b.x*W_,b.y*H);x.stroke()}}}
+x.font='italic 18px Georgia';x.textAlign='center';x.fillStyle='#ffe9b0';
+T.forEach(o=>{o.a=Math.min(1,o.a+.008);x.globalAlpha=o.a*.85;x.fillText(o.w,o.x*W_,o.y*H-14-o.a*8)});
+requestAnimationFrame(f)})(0);
+})();
+</script>
+</section>
