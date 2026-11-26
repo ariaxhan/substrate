@@ -1,0 +1,34 @@
+<section data-date='2026-11-26' data-type='morning'>
+<style>
+#d{--x:50%;--y:70%;--t:0;position:relative;height:100vh;min-height:420px;overflow:hidden;cursor:crosshair;user-select:none;
+background:radial-gradient(circle 30vmin at var(--x) var(--y),hsla(40,100%,70%,calc(.1 + var(--t)*.5)),transparent),
+linear-gradient(#070a22,hsl(calc(250 - var(--t)*215),calc(40% + var(--t)*50%),calc(8% + var(--t)*58%)));transition:--t 1s}
+#d p{position:absolute;inset:0;margin:0;padding:12vh 10vw;box-sizing:border-box;font:italic 5.5vmin/1.7 Georgia,serif;color:#fff8e6;
+-webkit-mask:radial-gradient(circle 22vmin at var(--x) var(--y),#000 20%,transparent);mask:radial-gradient(circle 22vmin at var(--x) var(--y),#000 20%,transparent)}
+#d span{display:block;opacity:0;transition:opacity 2s}
+#d span.on{opacity:1}
+#d i{position:absolute;left:0;right:0;bottom:0;height:1px;background:#fff8;box-shadow:0 0 calc(4px + var(--t)*40px) calc(var(--t)*8px) #ffd27a}
+</style>
+<div id=d><p>
+<span>nothing is written yet.</span>
+<span>the dark is only ink, not yet dry.</span>
+<span>a thin line at the edge. you.</span>
+<span>light is not made. it is allowed.</span>
+<span>every hour, a blank page leaning toward a hand.</span>
+<span>begin.</span>
+</p><i></i></div>
+<script>
+(function(){
+var d=document.getElementById('d'),s=d.querySelectorAll('span'),n=0;
+s[0].className='on';
+d.onpointermove=function(e){var r=d.getBoundingClientRect();
+d.style.setProperty('--x',e.clientX-r.left+'px');d.style.setProperty('--y',e.clientY-r.top+'px')};
+d.onclick=function(){
+n++;
+if(n>=s.length){n=0;[].forEach.call(s,function(x){x.className=''})}
+s[n].className='on';
+d.style.setProperty('--t',n/(s.length-1));
+};
+})();
+</script>
+</section>
