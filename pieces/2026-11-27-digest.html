@@ -1,0 +1,37 @@
+<section data-date='2026-11-27' data-type='digest'>
+<style>
+#k{margin:0;background:#efe8d8;height:100vh;position:relative;overflow:hidden;cursor:crosshair;font:italic 15px Georgia,serif;color:#2a2a35}
+#k canvas{position:absolute;inset:0}
+#k p{position:absolute;left:0;right:0;bottom:6vh;text-align:center;margin:0;letter-spacing:.2em;transition:opacity 1s}
+</style>
+<div id="k"><canvas></canvas><p>one fact is only dust</p></div>
+<script>
+(()=>{
+const k=document.getElementById('k'),c=k.querySelector('canvas'),x=c.getContext('2d'),p=k.querySelector('p');
+const W=['seen','kept','linked','named','folded','known','held','kin','shape','still'];
+let w,h,N=[],m={x:-9,y:-9};
+const R=()=>{w=c.width=k.clientWidth;h=c.height=k.clientHeight};R();addEventListener('resize',R);
+const add=(a,b)=>N.push({x:a,y:b,vx:0,vy:0,t:W[N.length%10],b:0});
+k.onclick=e=>{const r=k.getBoundingClientRect();add(e.clientX-r.left,e.clientY-r.top);
+ p.textContent=N.length<5?'dust':N.length<12?'dust, then thread':'structure was never added, only allowed';};
+k.onmousemove=e=>{const r=k.getBoundingClientRect();m={x:e.clientX-r.left,y:e.clientY-r.top}};
+(function f(){
+x.fillStyle='rgba(239,232,216,.35)';x.fillRect(0,0,w,h);
+N.forEach(a=>{
+ N.forEach(b=>{if(a==b)return;const dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1,s=70;
+  const F=(d-s)*.0006;if(d<s*2.2){a.vx+=dx/d*F;a.vy+=dy/d*F}});
+ a.x+=a.vx;a.y+=a.vy;a.vx*=.9;a.vy*=.9;
+ a.b+=(Math.hypot(m.x-a.x,m.y-a.y)<40?1-a.b:-a.b)*.1;
+});
+x.lineWidth=1;
+N.forEach((a,i)=>{for(let j=i+1;j<N.length;j++){const b=N[j],d=Math.hypot(a.x-b.x,a.y-b.y);
+ if(d<150){x.strokeStyle=`rgba(42,42,53,${1-d/150})`;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();
+  for(let l=j+1;l<N.length;l++){const q=N[l];if(Math.hypot(a.x-q.x,a.y-q.y)<150&&Math.hypot(b.x-q.x,b.y-q.y)<150){
+   x.fillStyle='rgba(180,70,50,.07)';x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.lineTo(q.x,q.y);x.fill()}}}}
+});
+N.forEach(a=>{x.fillStyle='#b44632';x.beginPath();x.arc(a.x,a.y,2+a.b*3,0,7);x.fill();
+ if(a.b>.05){x.fillStyle=`rgba(42,42,53,${a.b})`;x.font='italic 14px Georgia';x.fillText(a.t,a.x+9,a.y-7)}});
+requestAnimationFrame(f)})();
+})();
+</script>
+</section>
