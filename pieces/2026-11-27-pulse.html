@@ -1,0 +1,39 @@
+<section data-date='2026-11-27' data-type='pulse'>
+<style>
+section[data-type=pulse]{position:relative;height:100vh;overflow:hidden;cursor:crosshair;font:italic 15px Georgia,serif;color:#fff;mix-blend-mode:normal}
+section[data-type=pulse] svg{position:absolute;inset:0;width:100%;height:100%;mix-blend-mode:difference}
+section[data-type=pulse] .l{position:absolute;top:50%;margin-top:-1em;letter-spacing:.4em;mix-blend-mode:difference;opacity:.6}
+section[data-type=pulse] #t{position:absolute;left:0;right:0;bottom:12%;text-align:center;font:italic 64px Georgia,serif;letter-spacing:.2em;mix-blend-mode:difference;opacity:0}
+</style>
+<span class=l style="left:6%">before</span><span class=l style="right:6%">after</span>
+<svg viewBox="-100 -60 200 120" preserveAspectRatio="xMidYMid meet" fill="none" stroke="#fff" stroke-width=".6">
+<path d="M0 0L-9 40H9Z"/>
+<g id=b><path d="M-80 0H80"/><circle r="2" fill="#fff"/></g>
+</svg>
+<div id=t>noon</div>
+<script>
+(function(){
+var s=document.currentScript.parentNode,b=s.querySelector('#b'),t=s.querySelector('#t'),
+a=0,v=0,g=0,m=0,N='http://www.w3.org/2000/svg',e=[],i,k;
+for(k=-1;k<2;k+=2){
+ var h=document.createElementNS(N,'g');
+ h.innerHTML='<path d="M0 0V26"/><circle cy="30" r="5"/>';
+ for(i=0;i<9;i++)h.innerHTML+='<circle fill="#fff" stroke="none" r=".9" cx="'+(Math.cos(i*2.4)*(i%4+1)*1.1)+'" cy="'+(30+Math.sin(i*2.4)*(i%4+1)*1.1)+'"/>';
+ b.parentNode.appendChild(h);e.push([h,k*80])}
+s.addEventListener('pointermove',function(x){m=Date.now();g=(x.clientX/innerWidth-.5)*50});
+s.addEventListener('click',function(){g=-g;m=Date.now()});
+(function f(){
+ var T=Date.now();
+ if(T-m>3000)g=Math.sin(T/900)*18*Math.exp(-(T-m-3000)/9e4);
+ v+=(g-a)*.03;v*=.92;a+=v;
+ b.setAttribute('transform','rotate('+a+')');
+ e.forEach(function(q){
+  var r=a*Math.PI/180;
+  q[0].setAttribute('transform','translate('+q[1]*Math.cos(r)+' '+q[1]*Math.sin(r)+')')});
+ var d=Math.abs(a);
+ t.style.opacity=Math.max(0,1-d*.8);
+ s.style.background='linear-gradient(90deg,#f5cfa8 '+(50+a*1.6)+'%,#2b2850 0)';
+ requestAnimationFrame(f)})()
+})()
+</script>
+</section>
