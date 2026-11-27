@@ -1,0 +1,29 @@
+<section data-date='2026-11-27' data-type='morning'>
+<style>
+#d{position:relative;height:100vh;min-height:420px;overflow:hidden;cursor:crosshair;font:italic 300 clamp(18px,3vw,30px)/1.5 Georgia,serif;color:#fff;background:#0b0d1a;transition:background 1.5s}
+#d i{position:absolute;pointer-events:none;font-style:inherit;opacity:0;animation:w 6s forwards;text-shadow:0 0 12px #fff8;transform:translate(-50%,-50%)}
+@keyframes w{10%{opacity:.95}to{opacity:.0;margin-top:-60px}}
+#h{position:absolute;left:0;right:0;bottom:0;height:22%;background:#05060c}
+#t{position:absolute;bottom:6%;width:100%;text-align:center;letter-spacing:.4em;font-size:12px;opacity:.6;pointer-events:none}
+</style>
+<div id=d><div id=h></div><div id=t>the day is unwritten · touch it</div></div>
+<script>
+(()=>{
+const d=document.getElementById('d'),W='begin hush gold maybe again open breath soft yes now light stay'.split(' ');
+let x=.5,y=0,n=0;
+function p(){
+ const k=Math.max(0,Math.min(1,1-y)),X=x*100,Y=78-k*50;
+ d.style.background=`radial-gradient(circle at ${X}% ${Y}%,hsl(${40+k*10},100%,${60+k*20}%) 0,hsla(${20+k*20},90%,60%,.7) ${4+k*6}%,transparent ${30+k*30}%),linear-gradient(#0b0d1a,hsl(${340-k*300},${50+k*30}%,${12+k*45}%) 78%)`;
+}
+d.onmousemove=e=>{const r=d.getBoundingClientRect();x=(e.clientX-r.left)/r.width;y=(e.clientY-r.top)/r.height;p()};
+d.onclick=e=>{
+ const r=d.getBoundingClientRect(),s=document.createElement('i');
+ s.textContent=W[n++%W.length];
+ s.style.left=e.clientX-r.left+'px';s.style.top=e.clientY-r.top+'px';
+ d.appendChild(s);setTimeout(()=>s.remove(),6000);
+ y=Math.max(0,y-.08);p();
+};
+p();
+})();
+</script>
+</section>
