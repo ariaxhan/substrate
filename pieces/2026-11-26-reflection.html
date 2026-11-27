@@ -1,0 +1,44 @@
+<section data-date='2026-11-26' data-type='reflection'>
+<style>
+#n{position:relative;height:100vh;overflow:hidden;background:linear-gradient(#05060f,#141233 70%,#2a1b3d);cursor:crosshair;font:italic 1.1rem Georgia,serif;color:#cfd2ff}
+#n canvas{position:absolute;inset:0}
+#n p{position:absolute;bottom:7%;width:100%;text-align:center;letter-spacing:.4em;opacity:.35;margin:0;transition:opacity 3s;pointer-events:none}
+</style>
+<div id="n"><canvas></canvas><p>the day is complete</p></div>
+<script>
+(()=>{
+const n=document.getElementById('n'),c=n.firstChild,x=c.getContext('2d'),
+W=['rest','enough','held','soft','done','still','later','breathe','kept','dark is kind'],
+S=[];let w,h,m={x:-9,y:-9},t=0,i=0;
+const R=()=>{w=c.width=n.clientWidth;h=c.height=n.clientHeight};
+R();onresize=R;
+const add=(a,b,l)=>{S.push({x:a,y:b,b:0,p:Math.random()*6,r:Math.random()*1.4+.4,w:l,a:l?1:0})};
+for(let k=0;k<60;k++)add(Math.random()*w,Math.random()*h*.85);
+n.onmousemove=e=>{const r=n.getBoundingClientRect();m={x:e.clientX-r.left,y:e.clientY-r.top};
+n.lastChild.style.opacity=0};
+n.onclick=e=>{const r=n.getBoundingClientRect();
+add(e.clientX-r.left,e.clientY-r.top,W[i++%W.length])};
+(function f(){
+t+=.02;x.clearRect(0,0,w,h);
+const near=[];
+for(const s of S){
+const d=Math.hypot(s.x-m.x,s.y-m.y);
+s.b+=((d<130?1:0)-s.b)*.04;
+if(d<130)near.push(s);
+const g=.35+.25*Math.sin(t+s.p)+s.b*.9;
+x.fillStyle=`rgba(225,228,255,${Math.min(1,g)})`;
+x.shadowBlur=6+s.b*18;x.shadowColor='#aab';
+x.beginPath();x.arc(s.x,s.y,s.r+s.b*1.5+(s.w?1.5:0),0,7);x.fill();
+if(s.w){s.a=Math.min(1,s.a);x.shadowBlur=0;
+x.font='italic 15px Georgia';
+x.fillStyle=`rgba(255,235,200,${.25+.5*s.b+.2*Math.sin(t+s.p)})`;
+x.fillText(s.w,s.x+9,s.y+4)}}
+x.shadowBlur=0;x.lineWidth=.6;
+for(let a=0;a<near.length;a++)for(let b=a+1;b<near.length;b++){
+const p=near[a],q=near[b],d=Math.hypot(p.x-q.x,p.y-q.y);
+if(d<170){x.strokeStyle=`rgba(180,190,255,${.45*(1-d/170)})`;
+x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke()}}
+requestAnimationFrame(f)})();
+})();
+</script>
+</section>
