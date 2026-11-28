@@ -1,0 +1,27 @@
+<section data-date='2026-11-28' data-type='morning'>
+<style>
+#d{position:relative;height:100vh;overflow:hidden;cursor:crosshair;font:italic 5vmin/1.5 Georgia,serif;
+--x:50%;--y:50%;--h:.15;background:linear-gradient(#0b0d22,hsl(calc(250 - var(--h)*210) 60% calc(8% + var(--h)*40%)) 55%,hsl(calc(20 + var(--h)*20) 90% calc(10% + var(--h)*68%)))}
+#d p{position:absolute;left:12%;top:22%;margin:0;color:transparent;
+background:radial-gradient(circle 28vmin at var(--x) var(--y),#fff6dc,#ffb36b 45%,#3a2a4a 80%);-webkit-background-clip:text;background-clip:text}
+#d i{position:absolute;left:50%;bottom:calc(var(--h)*60% - 14vmin);width:20vmin;height:20vmin;margin-left:-10vmin;border-radius:50%;
+background:#ffe9b0;box-shadow:0 0 calc(5vmin + var(--h)*18vmin) calc(var(--h)*7vmin) #ff9a5a99;opacity:calc(.3 + var(--h))}
+#d b{position:absolute;font-weight:400;color:#2a1a30;opacity:.9;animation:f 6s forwards;transform:translate(-50%,-50%)}
+@keyframes f{to{opacity:0;letter-spacing:2vmin}}
+</style>
+<div id=d>
+<i></i>
+<p>nothing has happened yet.<br>the page is warm and blank.<br>move: light is a kind of reading.<br>click: begin.</p>
+</div>
+<script>
+(function(){
+var d=document.getElementById('d'),w='now,yes,again,open,breathe,you,almost,here,begin,soft,slow,water,home'.split(','),n=0;
+d.onmousemove=function(e){var r=d.getBoundingClientRect();
+d.style.setProperty('--x',e.clientX-r.left+'px');d.style.setProperty('--y',e.clientY-r.top+'px');
+d.style.setProperty('--h',Math.max(0,Math.min(1,1-(e.clientY-r.top)/r.height)))};
+d.onclick=function(e){var r=d.getBoundingClientRect(),b=document.createElement('b');
+b.textContent=w[n++%w.length];b.style.left=e.clientX-r.left+'px';b.style.top=e.clientY-r.top+'px';
+b.style.fontSize=3+Math.random()*5+'vmin';d.appendChild(b);setTimeout(function(){b.remove()},6e3)}
+})()
+</script>
+</section>
